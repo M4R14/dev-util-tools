@@ -1,20 +1,17 @@
 
 import React from 'react';
-import { Copy, Check } from 'lucide-react';
 import ToolLayout from '../ui/ToolLayout';
-import { Button } from '../ui/Button';
 import { Textarea } from '../ui/Textarea';
 import { useBase64 } from '../../hooks/useBase64';
+import { CopyButton } from '../ui/CopyButton';
 
 const Base64Tool: React.FC = () => {
     const {
         text,
         base64,
         error,
-        copyState,
         handleTextChange,
-        handleBase64Change,
-        copy
+        handleBase64Change
     } = useBase64();
 
   return (
@@ -24,15 +21,7 @@ const Base64Tool: React.FC = () => {
         <ToolLayout.Panel 
             title="Plain Text"
             actions={
-                <Button 
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => copy(text, 'text')}
-                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                  title="Copy Text"
-                >
-                  {copyState === 'text' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-                </Button>
+                <CopyButton value={text} />
             }
         >
           <Textarea
@@ -48,15 +37,7 @@ const Base64Tool: React.FC = () => {
         <ToolLayout.Panel 
             title="Base64 Output"
             actions={
-                <Button 
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => copy(base64, 'base64')}
-                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                  title="Copy Base64"
-                >
-                  {copyState === 'base64' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-                </Button>
+                <CopyButton value={base64} />
             }
             className={error ? 'border-destructive/50 box-border' : ''}
         >

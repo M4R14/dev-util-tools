@@ -1,10 +1,11 @@
 
 import React from 'react';
-import { Copy, Trash2, AlignLeft, Minimize2, Check } from 'lucide-react';
+import { Trash2, AlignLeft, Minimize2 } from 'lucide-react';
 import ToolLayout from '../ui/ToolLayout';
 import { Button } from '../ui/Button';
 import { Textarea } from '../ui/Textarea';
 import { useJsonFormatter } from '../../hooks/useJsonFormatter';
+import { CopyButton } from '../ui/CopyButton';
 
 const JSONFormatter: React.FC = () => {
     const {
@@ -12,10 +13,8 @@ const JSONFormatter: React.FC = () => {
         setInput,
         error,
         setError,
-        copied,
         formatJSON,
         minifyJSON,
-        copyToClipboard,
         clear
     } = useJsonFormatter();
 
@@ -46,15 +45,7 @@ const JSONFormatter: React.FC = () => {
               </div>
             
               <div className="flex gap-2">
-                <Button 
-                    variant="ghost"
-                    size="icon"
-                    onClick={copyToClipboard}
-                    className="text-muted-foreground hover:text-foreground hover:bg-muted h-8 w-8"
-                    title="Copy Result"
-                >
-                    {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-                </Button>
+                <CopyButton value={input} />
                 <Button 
                     variant="ghost"
                     size="icon"

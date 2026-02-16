@@ -1,47 +1,26 @@
-import React, { useState, useEffect } from 'react';
-import { Copy, RefreshCw, Check, ShieldCheck, ShieldAlert } from 'lucide-react';
+import React from 'react';
+import { RefreshCw, Check, ShieldCheck, ShieldAlert } from 'lucide-react';
 import ToolLayout from '../ui/ToolLayout';
 import { Button } from '../ui/Button';
 import { Card, CardContent } from '../ui/Card';
-import { cn } from '../../lib/utils';
+import { CopyButton } from '../ui/CopyButton';
+import { usePasswordGenerator } from '../../hooks/usePasswordGenerator';
 
 const PasswordGenerator: React.FC = () => {
-  const [length, setLength] = useState(16);
-  const [includeUpper, setIncludeUpper] = useState(true);
-  const [includeLower, setIncludeLower] = useState(true);
-  const [includeNumbers, setIncludeNumbers] = useState(true);
-  const [includeSymbols, setIncludeSymbols] = useState(true);
-  const [password, setPassword] = useState('');
-  const [copied, setCopied] = useState(false);
-
-  const generatePassword = () => {
-    let charset = '';
-    if (includeUpper) charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    if (includeLower) charset += 'abcdefghijklmnopqrstuvwxyz';
-    if (includeNumbers) charset += '0123456789';
-    if (includeSymbols) charset += '!@#$%^&*()_+-=[]{}|;:,.<>?';
-
-    if (!charset) {
-      setPassword('Select at least one option');
-      return;
-    }
-
-    let generated = '';
-    for (let i = 0; i < length; i++) {
-      generated += charset.charAt(Math.floor(Math.random() * charset.length));
-    }
-    setPassword(generated);
-  };
-
-  useEffect(() => {
-    generatePassword();
-  }, [length, includeUpper, includeLower, includeNumbers, includeSymbols]);
-
-  const copy = () => {
-    navigator.clipboard.writeText(password);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+    const {
+        length,
+        setLength,
+        includeUpper,
+        setIncludeUpper,
+        includeLower,
+        setIncludeLower,
+        includeNumbers,
+        setIncludeNumbers,
+        includeSymbols,
+        setIncludeSymbols,
+        password,
+        generatePassword
+    } = usePasswordGenerator();
 
   const getStrength = () => {
     const activeOptions = [includeUpper, includeLower, includeNumbers, includeSymbols].filter(Boolean).length;
@@ -65,39 +44,36 @@ const PasswordGenerator: React.FC = () => {
             <Card className="border-2 border-border hover:border-primary transition-colors">
                 <CardContent className="p-6 flex items-center justify-between gap-4">
                     <div className="font-mono text-xl md:text-2xl text-foreground break-all flex-1">
-                        {password}
-                    </div>
-                    <div className="flex gap-2 shrink-0">
-                        <Button
-                            variant="secondary"
-                            size="icon"
-                            onClick={() => { generatePassword(); }}
-                            title="Regenerate"
-                            className="bg-muted hover:bg-muted/80"
-                        >
-                            <RefreshCw className="w-5 h-5" />
-                        </Button>
-                        <Button
-                            variant={copied ? "default" : "secondary"}
-                            size="icon"
-                            onClick={copy}
-                            title="Copy"
-                            className={copied ? "bg-green-600 hover:bg-green-700" : "bg-muted hover:bg-muted/80"}
-                        >
-                            {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
-                        </Button>
+                        {password || <span className="text-muted-foreground italic">Select at least one option</span>}
                     </div>
                 </CardContent>
             </Card>
             
             <div className="flex items-center gap-3 px-1">
                 <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                    <div 
+                   <div 
                         className={`h-full transition-all duration-500 ${strength.color}`} 
                         style={{ width: `${Math.min((length / 32) * 100, 100)}%` }}
                     />
                 </div>
                 <div className={`flex items-center gap-1.5 text-xs font-bold uppercase ${strength.textColor}`}>
+                    {strength.icon}
+                    {strength.label}
+                </div>
+            </div>
+
+            <div className="flex justify-end gap-2 mt-2">
+                <Button
+                    variant="secondary"
+                    onClick={generatePassword}
+                    title="Regenerate"
+                    className="bg-muted hover:bg-muted/80"
+                >
+                    <RefreshCw className="mr-2 h-4 w-4" /> Regenerate
+                </Button>
+                <CopyButton value={password} className="bg-muted hover:bg-muted/80" />
+            </div>
+        </div>
                     {strength.icon} {strength.label}
                 </div>
             </div>

@@ -13,6 +13,7 @@ import AIAssistant from './components/tools/AIAssistant';
 import ThaiDateConverter from './components/tools/ThaiDateConverter';
 import TimezoneConverter from './components/tools/TimezoneConverter';
 import CrontabTool from './components/tools/CrontabTool';
+import { Toaster } from './components/ui/sonner';
 
 const App: React.FC = () => {
   return (
@@ -32,6 +33,7 @@ const App: React.FC = () => {
             <Route path="/" element={<Dashboard />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          <Toaster />
         </MainLayout>
       </UserPreferencesProvider>
     </ThemeProvider>
