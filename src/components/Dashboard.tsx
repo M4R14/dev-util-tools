@@ -148,7 +148,7 @@ interface ToolCardProps {
   onToggleFavorite: (id: ToolID) => void;
 }
 
-const ToolCard: React.FC<ToolCardProps> = ({ tool, isFavorite, onToggleFavorite }) => {
+const ToolCard: React.FC<ToolCardProps> = React.memo(({ tool, isFavorite, onToggleFavorite }) => {
   return (
     <div className="group relative bg-card rounded-xl border border-border shadow-sm hover:shadow-lg hover:border-primary/50 transition-all duration-300 flex flex-col h-full overflow-hidden">
       <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
@@ -185,6 +185,6 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, isFavorite, onToggleFavorite 
       </NavLink>
     </div>
   );
-};
+});
 
-export default Dashboard;
+export default React.memo(Dashboard);

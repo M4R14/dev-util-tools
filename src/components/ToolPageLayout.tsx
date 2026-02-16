@@ -35,4 +35,4 @@ const ToolPageLayout: React.FC<ToolPageLayoutProps> = ({
   );
 };
 
-export default ToolPageLayout;
+export default React.memo(ToolPageLayout);

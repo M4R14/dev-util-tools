@@ -1,27 +1,40 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ToolID } from './types';
 import MainLayout from './components/MainLayout';
 import { ThemeProvider } from './context/ThemeContext';
 import { UserPreferencesProvider } from './context/UserPreferencesContext';
-import Dashboard from './components/Dashboard';
-import JSONFormatter from './components/tools/JSONFormatter';
-import Base64Tool from './components/tools/Base64Tool';
-import CaseConverter from './components/tools/CaseConverter';
-import PasswordGenerator from './components/tools/PasswordGenerator';
-import AIAssistant from './components/tools/AIAssistant';
-import ThaiDateConverter from './components/tools/ThaiDateConverter';
-import TimezoneConverter from './components/tools/TimezoneConverter';
-import CrontabTool from './components/tools/CrontabTool';
-import UUIDGenerator from './components/tools/UUIDGenerator';
-import UrlParser from './components/tools/UrlParser';
+
+// Lazy-loaded tool pages — each becomes its own chunk
+const Dashboard = lazy(() => import('./components/Dashboard'));
+const JSONFormatter = lazy(() => import('./components/tools/JSONFormatter'));
+const Base64Tool = lazy(() => import('./components/tools/Base64Tool'));
+const CaseConverter = lazy(() => import('./components/tools/CaseConverter'));
+const PasswordGenerator = lazy(() => import('./components/tools/PasswordGenerator'));
+const AIAssistant = lazy(() => import('./components/tools/AIAssistant'));
+const ThaiDateConverter = lazy(() => import('./components/tools/ThaiDateConverter'));
+const TimezoneConverter = lazy(() => import('./components/tools/TimezoneConverter'));
+const CrontabTool = lazy(() => import('./components/tools/CrontabTool'));
+const UUIDGenerator = lazy(() => import('./components/tools/UUIDGenerator'));
+const UrlParser = lazy(() => import('./components/tools/UrlParser'));
+
+// Lightweight loading fallback
+const PageLoader = () => (
+  <div className="flex items-center justify-center h-64">
+    <div className="flex flex-col items-center gap-3">
+      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      <span className="text-sm text-muted-foreground">Loading…</span>
+    </div>
+  </div>
+);
 
 const App: React.FC = () => {
   return (
     <ThemeProvider>
       <UserPreferencesProvider>
         <MainLayout>
-          <Routes>
+          <Suspense fallback={<PageLoader />}>
+            <Routes>
             <Route path={`/${ToolID.URL_PARSER}`} element={<UrlParser />} />
             <Route path={`/${ToolID.UUID_GENERATOR}`} element={<UUIDGenerator />} />
             <Route path={`/${ToolID.JSON_FORMATTER}`} element={<JSONFormatter />} />
@@ -36,6 +49,7 @@ const App: React.FC = () => {
             <Route path="/" element={<Dashboard />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          </Suspense>
         </MainLayout>
       </UserPreferencesProvider>
     </ThemeProvider>
