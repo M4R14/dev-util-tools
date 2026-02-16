@@ -118,7 +118,7 @@ const CrontabTool: React.FC = () => {
 
         {/* Right Column: Cheatsheet */}
         <ToolLayout.Section title="Quick Cheatsheet">
-          <Card className="border-border shadow-sm h-full max-h-[600px] overflow-hidden flex flex-col">
+          <Card className="border-border shadow-sm h-full max-h-full overflow-hidden flex flex-col">
             <CardContent className="p-0 overflow-y-auto custom-scrollbar">
               <div className="divide-y divide-border/50">
                 {COMMON_EXAMPLES.map((item, idx) => (
