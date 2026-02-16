@@ -23,6 +23,7 @@ const TOOL_COMPONENTS: Record<ToolID, React.LazyExoticComponent<ComponentType>> 
   [ToolID.UUID_GENERATOR]: lazy(() => import('./components/tools/UUIDGenerator')),
   [ToolID.URL_PARSER]: lazy(() => import('./components/tools/UrlParser')),
   [ToolID.DIFF_VIEWER]: lazy(() => import('./components/tools/DiffViewer')),
+  [ToolID.REGEX_TESTER]: lazy(() => import('./components/tools/RegexTester')),
   [ToolID.XML_FORMATTER]: lazy(() => import('./components/tools/XMLFormatter')),
 };
 

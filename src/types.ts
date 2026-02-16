@@ -4,6 +4,7 @@ export enum ToolID {
   CRONTAB = 'crontab-guru',
   URL_PARSER = 'url-parser',
   DIFF_VIEWER = 'diff-viewer',
+  REGEX_TESTER = 'regex-tester',
 
   // generator
   UUID_GENERATOR = 'uuid-generator',

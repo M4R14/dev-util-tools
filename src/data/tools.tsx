@@ -76,14 +76,21 @@ export const TOOLS: ToolMetadata[] = [
     name: 'Crontab Guru',
     description: 'The quick and simple editor for cron schedule expressions.',
     icon: Clock,
-    tags: ['cron', 'crontab', 'schedule', 'job', 'timer'],
+    tags: ['cron', 'crontab', 'schedule', 'job', 'timer', 'external tool'],
   },
   {
     id: ToolID.DIFF_VIEWER,
     name: 'Diff Viewer',
-    description: 'Compare two texts side-by-side and view differences.',
+    description: 'Compare two texts side-by-side to find differences (diff).',
     icon: FileDiff,
-    tags: ['diff', 'compare', 'text', 'merge', 'changes'],
+    tags: ['diff', 'compare', 'text', 'code', 'difference'],
+  },
+  {
+    id: ToolID.REGEX_TESTER,
+    name: 'Regex Tester',
+    description: 'Create, test, debug and explain Regular Expressions (redirects to regex101.com).',
+    icon: Code2, // Fallback icon
+    tags: ['regex', 'regexp', 'regular expression', 'match', 'replace', 'find'],
   },
   {
     id: ToolID.AI_ASSISTANT,
