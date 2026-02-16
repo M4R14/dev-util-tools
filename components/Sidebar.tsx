@@ -5,15 +5,13 @@ import { Sparkles, LayoutDashboard, Search, Star, Clock } from 'lucide-react';
 import { Input } from './ui/Input';
 import { Card, CardContent, CardTitle, CardDescription } from './ui/Card';
 import { cn } from '../lib/utils';
+import { useUserPreferences } from '../context/UserPreferencesContext';
+import { useToolSearch } from '../hooks/useToolSearch';
+import { TOOLS } from '../config/tools';
 
 interface SidebarProps {
-  tools: ToolMetadata[];
   isOpen: boolean;
   onClose: () => void;
-  searchTerm: string;
-  onSearch: (term: string) => void;
-  favorites: ToolID[];
-  recents: ToolID[];
 }
 
 // Helper component to handle scrolling ref
@@ -60,7 +58,7 @@ const ToolLinkItem: React.FC<{
             ? "bg-muted text-muted-foreground"
             : "bg-muted/50 text-muted-foreground group-hover:text-foreground group-hover:bg-muted"
       )}>
-        {React.cloneElement(tool.icon as React.ReactElement, { size: 16, className: "w-4 h-4" })}
+        {React.isValidElement(tool.icon) ? React.cloneElement(tool.icon as React.ReactElement<{ size?: number | string; className?: string }>, { size: 16, className: "w-4 h-4" }) : tool.icon}
       </span>
       <div className="text-left flex-1 min-w-0">
           <div className="truncate flex items-center gap-1.5">
@@ -79,31 +77,35 @@ const ToolLinkItem: React.FC<{
 };
 
 const Sidebar: React.FC<SidebarProps> = ({ 
-  tools, 
   isOpen, 
-  onClose, 
-  searchTerm, 
-  onSearch,
-  favorites,
-  recents
+  onClose
 }) => {
+  const { 
+    favorites, 
+    recents, 
+    searchTerm, 
+    setSearchTerm 
+  } = useUserPreferences();
+
+  const filteredTools = useToolSearch(searchTerm);
+  const onSearch = setSearchTerm;
+  const tools = TOOLS;
   const location = useLocation();
   const navigate = useNavigate();
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
+  const LIMIT_RECENTS = 3; // Limit to 3 recent tools
+
   const visibleTools = useMemo(() => {
     if (searchTerm) {
-      return tools.filter(tool => 
-        tool.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        tool.description.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+      return filteredTools;
     }
 
     const favs = tools.filter(t => favorites.includes(t.id));
     const recs = recents
       .map(id => tools.find(t => t.id === id))
       .filter((t): t is ToolMetadata => !!t && !favorites.includes(t.id))
-      .slice(0, 5); // Limit to 5 recent tools
+      .slice(0, LIMIT_RECENTS);
     
     // We duplicate tools in the display (Favorites, Recents, All Tools),
     // but for navigation index keying, we probably want to navigate through them as they appear.
@@ -157,16 +159,11 @@ const Sidebar: React.FC<SidebarProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [visibleTools, selectedIndex, navigate, onClose]);
 
-  const filteredTools = tools.filter(tool => 
-    tool.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    tool.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   const favoriteTools = tools.filter(t => favorites.includes(t.id));
   const recentTools = recents
     .map(id => tools.find(t => t.id === id))
     .filter((t): t is ToolMetadata => !!t && !favorites.includes(t.id))
-    .slice(0, 3); // Limit to 5 recent tools
+    .slice(0, LIMIT_RECENTS); 
 
   const renderToolLink = (tool: ToolMetadata, contextPrefix: string, indexOffset: number) => {
     return <ToolLinkItem 

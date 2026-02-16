@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { Search, Sparkles, Star, Clock, ArrowRight, LayoutDashboard } from 'lucide-react';
 import { ToolID, ToolMetadata } from '../types';
 import { useUserPreferences } from '../context/UserPreferencesContext';
+import { useToolSearch } from '../hooks/useToolSearch';
 import { TOOLS } from '../config/tools';
 
 const TIPS = [
@@ -25,14 +26,7 @@ const Dashboard: React.FC = () => {
   const [tip] = useState(() => TIPS[Math.floor(Math.random() * TIPS.length)]);
   
   const tools = TOOLS;
-
-  const filteredTools = useMemo(() => {
-    if (!searchTerm) return tools;
-    return tools.filter(t => 
-      t.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-      t.description.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [tools, searchTerm]);
+  const filteredTools = useToolSearch(searchTerm);
 
   const favoriteTools = tools.filter(t => favorites.includes(t.id));
   

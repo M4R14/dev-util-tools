@@ -1,20 +1,21 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Search, Command, X, ArrowRight } from 'lucide-react';
-import { ToolMetadata } from '../types';
 import { useNavigate } from 'react-router-dom';
+import { useToolSearch } from '../hooks/useToolSearch';
 
 interface CommandPaletteProps {
   isOpen: boolean;
   onClose: () => void;
-  tools: ToolMetadata[];
 }
 
-const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, tools }) => {
+const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
   const navigate = useNavigate();
+
+  const filteredTools = useToolSearch(searchTerm);
 
   useEffect(() => {
     if (isOpen) {
@@ -24,11 +25,6 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, tools 
       setTimeout(() => inputRef.current?.focus(), 50);
     }
   }, [isOpen]);
-
-  const filteredTools = tools.filter(tool => 
-    tool.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    tool.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   useEffect(() => {
     setSelectedIndex(0);

@@ -52,17 +52,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <CommandPalette 
         isOpen={isCommandPaletteOpen}
         onClose={() => setIsCommandPaletteOpen(false)}
-        tools={TOOLS}
       />
 
       <Sidebar 
-        tools={TOOLS} 
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
-        searchTerm={searchTerm}
-        onSearch={setSearchTerm}
-        favorites={favorites}
-        recents={recents}
       />
 
       {/* Main Content Area */}
