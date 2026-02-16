@@ -7,6 +7,7 @@ import ToolPageLayout from './ToolPageLayout';
 import { ToolID } from '../types';
 import { TOOLS } from '../config/tools';
 import { useUserPreferences } from '../context/UserPreferencesContext';
+import { Toaster } from './ui/sonner';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -84,6 +85,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           </div>
         </main>
 
+        <Toaster />
         <footer className="p-4 text-center text-slate-500 dark:text-slate-600 text-xs border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
           DevPulse © {new Date().getFullYear()} • Privacy-first Client-side Processing
         </footer>

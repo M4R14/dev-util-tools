@@ -7,7 +7,9 @@ export enum ToolID {
   TIMEZONE_CONVERTER = 'timezone-converter',
   AI_ASSISTANT = 'ai-assistant',
   THAI_DATE_CONVERTER = 'thai-date-converter',
-  CRONTAB = 'crontab-guru'
+  CRONTAB = 'crontab-guru',
+  UUID_GENERATOR = 'uuid-generator',
+  URL_PARSER = 'url-parser'
 }
 
 export interface ToolMetadata {

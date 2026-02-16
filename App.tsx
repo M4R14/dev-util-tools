@@ -13,6 +13,8 @@ import AIAssistant from './components/tools/AIAssistant';
 import ThaiDateConverter from './components/tools/ThaiDateConverter';
 import TimezoneConverter from './components/tools/TimezoneConverter';
 import CrontabTool from './components/tools/CrontabTool';
+import UUIDGenerator from './components/tools/UUIDGenerator';
+import UrlParser from './components/tools/UrlParser';
 import { Toaster } from './components/ui/sonner';
 
 const App: React.FC = () => {
@@ -21,6 +23,8 @@ const App: React.FC = () => {
       <UserPreferencesProvider>
         <MainLayout>
           <Routes>
+            <Route path={`/${ToolID.URL_PARSER}`} element={<UrlParser />} />
+            <Route path={`/${ToolID.UUID_GENERATOR}`} element={<UUIDGenerator />} />
             <Route path={`/${ToolID.JSON_FORMATTER}`} element={<JSONFormatter />} />
             <Route path={`/${ToolID.BASE64_TOOL}`} element={<Base64Tool />} />
             <Route path={`/${ToolID.CASE_CONVERTER}`} element={<CaseConverter />} />
@@ -33,7 +37,6 @@ const App: React.FC = () => {
             <Route path="/" element={<Dashboard />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-          <Toaster />
         </MainLayout>
       </UserPreferencesProvider>
     </ThemeProvider>

@@ -7,6 +7,7 @@ import { Input } from '../ui/Input';
 import { Textarea } from '../ui/Textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '../ui/Card';
 import { cn } from '../../lib/utils';
+import { toast } from 'sonner';
 
 
 const STORAGE_KEY = 'devpulse_secure_config';
@@ -42,8 +43,10 @@ const CodeBlock: React.FC<{ language: string, code: string }> = ({ language, cod
   const handleCopy = () => {
     navigator.clipboard.writeText(code);
     setCopied(true);
+    toast.success("Code snippet copied");
     setTimeout(() => setCopied(false), 2000);
   };
+
 
   return (
     <Card className="rounded-lg overflow-hidden border-border bg-muted/50 my-4 shadow-sm">
@@ -107,11 +110,13 @@ const AIAssistant: React.FC = () => {
     setApiKey(tempKey);
     localStorage.setItem(STORAGE_KEY, encrypt(tempKey));
     setShowSettings(false);
+    toast.success("API configuration saved successfully");
   };
 
   const handleClearChat = () => {
     setMessages([]);
     setError(null);
+    toast.info("Conversation cleared");
   };
 
   const handleAsk = async () => {
@@ -146,6 +151,7 @@ const AIAssistant: React.FC = () => {
       setMessages(prev => [...prev, aiMsg]);
     } catch (err: any) {
       setError(err.message);
+      toast.error(err.message || "Failed to communicate with AI service");
       // Remove user message on error? Or keep it so they can retry?
       // Keeping it is better UX, maybe mark as failed.
     } finally {

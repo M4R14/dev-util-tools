@@ -7,11 +7,25 @@ import {
     Sparkles, 
     CalendarDays,
     Globe,
-    Clock
+    Clock,
+    Fingerprint,
+    Link2
   } from 'lucide-react';
 import { ToolID, ToolMetadata } from '../types';
 
 export const TOOLS: ToolMetadata[] = [
+    { 
+      id: ToolID.URL_PARSER,
+      name: 'URL Parser',
+      description: 'Parse, encode, and decode URLs.',
+      icon: <Link2 className="w-5 h-5" /> 
+    },
+    { 
+      id: ToolID.UUID_GENERATOR,
+      name: 'UUID Generator',
+      description: 'Generate version 4 UUIDs (GUIDs).',
+      icon: <Fingerprint className="w-5 h-5" /> 
+    },
     { 
       id: ToolID.JSON_FORMATTER, 
       name: 'JSON Formatter', 
