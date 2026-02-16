@@ -1,19 +1,22 @@
-import React from 'react';
-import { Trash2, AlignLeft, Minimize2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { Trash2, AlignLeft, Minimize2, Pencil, Eye } from 'lucide-react';
 import ToolLayout from '../ui/ToolLayout';
 import { Button } from '../ui/Button';
 import { Textarea } from '../ui/Textarea';
 import { useJsonFormatter } from '../../hooks/useJsonFormatter';
 import { CopyButton } from '../ui/CopyButton';
+import { CodeHighlight } from '../ui/CodeHighlight';
 import { toast } from 'sonner';
 
 const JSONFormatter: React.FC = () => {
   const { input, setInput, error, setError, formatJSON, minifyJSON, clear } = useJsonFormatter();
+  const [isEditing, setIsEditing] = useState(true);
 
   const handleFormat = () => {
     const result = formatJSON(2);
     if (result && input.trim()) {
       toast.success('JSON Formatted');
+      setIsEditing(false);
     } else if (input.trim()) {
       toast.error('Invalid JSON content');
     }
@@ -23,6 +26,7 @@ const JSONFormatter: React.FC = () => {
     const result = minifyJSON();
     if (result && input.trim()) {
       toast.success('JSON Minified');
+      setIsEditing(false);
     } else if (input.trim()) {
       toast.error('Invalid JSON content');
     }
@@ -55,12 +59,24 @@ const JSONFormatter: React.FC = () => {
             </div>
 
             <div className="flex gap-2">
+              {input.trim() && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsEditing(!isEditing)}
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                  title={isEditing ? 'Preview' : 'Edit'}
+                >
+                  {isEditing ? <Eye className="w-4 h-4" /> : <Pencil className="w-4 h-4" />}
+                </Button>
+              )}
               <CopyButton value={input} onCopy={() => toast.success('JSON content copied')} />
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => {
                   clear();
+                  setIsEditing(true);
                   toast.info('Editor cleared');
                 }}
                 className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 h-8 w-8"
@@ -74,15 +90,25 @@ const JSONFormatter: React.FC = () => {
         className={error ? 'border-destructive/50' : ''}
       >
         <div className="h-[calc(100vh-16rem)] min-h-[500px]">
-          <Textarea
-            value={input}
-            onChange={(e) => {
-              setInput(e.target.value);
-              if (error) setError(null);
-            }}
-            placeholder="Paste your JSON here..."
-            className="w-full h-full bg-transparent border-none focus-visible:ring-0 p-0 font-mono text-sm resize-none placeholder-muted-foreground"
-          />
+          {isEditing ? (
+            <Textarea
+              value={input}
+              onChange={(e) => {
+                setInput(e.target.value);
+                if (error) setError(null);
+              }}
+              placeholder="Paste your JSON here..."
+              className="w-full h-full bg-transparent border-none focus-visible:ring-0 p-0 font-mono text-sm resize-none placeholder-muted-foreground"
+            />
+          ) : (
+            <div
+              className="w-full h-full overflow-auto cursor-text"
+              onClick={() => setIsEditing(true)}
+              title="Click to edit"
+            >
+              <CodeHighlight code={input} language="json" />
+            </div>
+          )}
           {error && (
             <div className="absolute bottom-4 left-4 right-4 p-3 bg-destructive/90 backdrop-blur border border-destructive/30 rounded-lg text-destructive-foreground text-xs shadow-lg animate-in fade-in slide-in-from-bottom-2 flex items-center gap-2">
               <span className="font-bold bg-background/20 px-1.5 rounded">Error</span> {error}

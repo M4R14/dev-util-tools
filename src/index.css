@@ -1,6 +1,33 @@
+/* highlight.js — light theme (GitHub-inspired) */
+@import 'highlight.js/styles/github.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* highlight.js — dark theme override */
+@media (prefers-color-scheme: dark) {
+  .hljs {
+    color: #c9d1d9;
+    background: transparent;
+  }
+}
+
+.dark .hljs { color: #c9d1d9; background: transparent; }
+.dark .hljs-keyword,
+.dark .hljs-selector-tag { color: #ff7b72; }
+.dark .hljs-string,
+.dark .hljs-attr { color: #a5d6ff; }
+.dark .hljs-number,
+.dark .hljs-literal { color: #79c0ff; }
+.dark .hljs-name,
+.dark .hljs-tag { color: #7ee787; }
+.dark .hljs-attribute { color: #d2a8ff; }
+.dark .hljs-comment { color: #8b949e; }
+.dark .hljs-meta { color: #79c0ff; }
+.dark .hljs-title { color: #d2a8ff; }
+
+:root .hljs { background: transparent; }
 
 @layer base {
   :root {

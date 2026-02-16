@@ -1,15 +1,21 @@
 export enum ToolID {
-  JSON_FORMATTER = 'json-formatter',
   BASE64_TOOL = 'base64-tool',
-  CASE_CONVERTER = 'case-converter',
-  PASSWORD_GEN = 'password-gen',
-  TIMEZONE_CONVERTER = 'timezone-converter',
   AI_ASSISTANT = 'ai-assistant',
-  THAI_DATE_CONVERTER = 'thai-date-converter',
   CRONTAB = 'crontab-guru',
-  UUID_GENERATOR = 'uuid-generator',
   URL_PARSER = 'url-parser',
   DIFF_VIEWER = 'diff-viewer',
+
+  // generator
+  UUID_GENERATOR = 'uuid-generator',
+  PASSWORD_GEN = 'password-gen',
+
+  // converter
+  THAI_DATE_CONVERTER = 'thai-date-converter',
+  TIMEZONE_CONVERTER = 'timezone-converter',
+  CASE_CONVERTER = 'case-converter',
+  
+  // formatter
+  JSON_FORMATTER = 'json-formatter',
   XML_FORMATTER = 'xml-formatter',
 }
 
