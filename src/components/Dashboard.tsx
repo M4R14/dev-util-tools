@@ -3,6 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { Search, Sparkles, Star, Clock, ArrowRight, LayoutDashboard } from 'lucide-react';
 import { ToolID, ToolMetadata } from '../types';
 import { useUserPreferences } from '../context/UserPreferencesContext';
+import { useSearch } from '../context/SearchContext';
 import { useToolSearch } from '../hooks/useToolSearch';
 import { TOOLS } from '../data/tools';
 
@@ -15,7 +16,8 @@ const TIPS = [
 ];
 
 const Dashboard: React.FC = () => {
-  const { favorites, recents, toggleFavorite, searchTerm, setSearchTerm } = useUserPreferences();
+  const { favorites, recents, toggleFavorite } = useUserPreferences();
+  const { searchTerm, setSearchTerm } = useSearch();
 
   const [tip] = useState(() => TIPS[Math.floor(Math.random() * TIPS.length)]);
 

@@ -5,6 +5,7 @@ import { Sparkles, LayoutDashboard, Search, Star } from 'lucide-react';
 import { Input } from './ui/Input';
 import { cn } from '../lib/utils';
 import { useUserPreferences } from '../context/UserPreferencesContext';
+import { useSearch } from '../context/SearchContext';
 import { useToolSearch } from '../hooks/useToolSearch';
 import { TOOLS } from '../data/tools';
 
@@ -94,7 +95,8 @@ const ToolLinkItem: React.FC<{
 };
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
-  const { favorites, recents, searchTerm, setSearchTerm } = useUserPreferences();
+  const { favorites, recents } = useUserPreferences();
+  const { searchTerm, setSearchTerm } = useSearch();
 
   const filteredTools = useToolSearch(searchTerm);
   const onSearch = setSearchTerm;

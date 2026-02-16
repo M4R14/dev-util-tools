@@ -1,35 +1,8 @@
 import { useState } from 'react';
+import { toSnakeCase, toKebabCase, toCamelCase, toPascalCase } from '../lib/caseUtils';
 
 export const useCaseConverter = () => {
   const [input, setInput] = useState('');
-
-  const toSnakeCase = (str: string) => {
-    return (
-      str
-        .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
-        ?.map((x) => x.toLowerCase())
-        .join('_') || ''
-    );
-  };
-
-  const toKebabCase = (str: string) => {
-    return (
-      str
-        .match(/[A-Z]{2,}(?=[A-Z][a-z]+[0-9]*|\b)|[A-Z]?[a-z]+[0-9]*|[A-Z]|[0-9]+/g)
-        ?.map((x) => x.toLowerCase())
-        .join('-') || ''
-    );
-  };
-
-  const toCamelCase = (str: string) => {
-    return str
-      .replace(/(?:^\w|[A-Z]|\b\w)/g, (w, i) => (i === 0 ? w.toLowerCase() : w.toUpperCase()))
-      .replace(/\s+/g, '');
-  };
-
-  const toPascalCase = (str: string) => {
-    return str.replace(/(?:^\w|[A-Z]|\b\w)/g, (w) => w.toUpperCase()).replace(/\s+/g, '');
-  };
 
   const conversions = [
     { label: 'UPPERCASE', value: input.toUpperCase() },

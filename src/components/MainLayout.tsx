@@ -7,6 +7,7 @@ import ToolPageLayout from './ToolPageLayout';
 import { ToolID } from '../types';
 import { TOOLS } from '../data/tools';
 import { useUserPreferences } from '../context/UserPreferencesContext';
+import { useSearch } from '../context/SearchContext';
 import { Toaster } from './ui/sonner';
 
 interface MainLayoutProps {
@@ -17,7 +18,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const location = useLocation();
-  const { favorites, toggleFavorite, searchTerm, setSearchTerm } = useUserPreferences();
+  const { favorites, toggleFavorite } = useUserPreferences();
+  const { searchTerm, setSearchTerm } = useSearch();
 
   const activeToolId = location.pathname.substring(1) as ToolID;
   const activeTool = TOOLS.find((t) => t.id === activeToolId);

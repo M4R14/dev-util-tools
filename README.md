@@ -9,27 +9,59 @@ DevPulse is a comprehensive collection of developer tools integrated with AI cap
 - 🌑 **Dark Mode UI**: Clean, modern interface designed for extended coding sessions.
 - 🔗 **Dynamic Routing**: Instant tool switching with URL synchronization.
 - 🤖 **AI-Powered Assistance**: Integrated Gemini AI smart assistant for code analysis and problem-solving.
+- ♿ **Accessible**: WCAG-compliant with ARIA labels, skip-to-content, keyboard navigation, and proper focus management.
+- ⚡ **Lazy Loading**: Code-split routes with `React.lazy()` and optimized vendor chunks for fast initial loads.
+- 🛡️ **Error Boundaries**: Per-tool error boundaries prevent a single tool crash from taking down the entire app.
 
 ### 🛠️ Available Tools
 
-1.  📝 **JSON Formatter**: Prettify, minify, and validate JSON data.
-2.  🔢 **Base64 Tool**: Encode and decode strings/files to Base64.
-3.  🔠 **Case Converter**: Switch between camelCase, PascalCase, snake_case, kebab-case, and more.
-4.  🔐 **Password Generator**: Create secure, random passwords instantly with customizable options.
-5.  🌍 **Timezone Converter**: Easily convert dates and times across different global timezones.
-6.  📅 **Thai Date Converter**: Convert Gregorian dates to Thai Buddhist Era (BE) formats.
-7.  ⏰ **Crontab Guru**: Generate and explain cron schedule expressions.
-8.  ✨ **AI Smart Assistant**: Analyze code snippets and get intelligent suggestions.
-9.  🆔 **UUID Generator**: Create Version 4 UUIDs (GUIDs).
-10. 🔗 **URL Parser**: Parse, encode, and decode URLs.
+| #   | Tool                   | Description                                                             |
+| --- | ---------------------- | ----------------------------------------------------------------------- |
+| 1   | 📝 JSON Formatter      | Prettify, minify, and validate JSON data.                               |
+| 2   | 🔢 Base64 Tool         | Encode and decode strings/files to Base64.                              |
+| 3   | 🔠 Case Converter      | Switch between camelCase, PascalCase, snake_case, kebab-case, and more. |
+| 4   | 🔐 Password Generator  | Create secure, random passwords with customizable options.              |
+| 5   | 🌍 Timezone Converter  | Convert dates and times across different global timezones.              |
+| 6   | 📅 Thai Date Converter | Convert Gregorian dates to Thai Buddhist Era (BE) formats.              |
+| 7   | ⏰ Crontab Guru        | Generate and explain cron schedule expressions.                         |
+| 8   | ✨ AI Smart Assistant  | Analyze code snippets and get intelligent suggestions via Gemini AI.    |
+| 9   | 🆔 UUID Generator      | Create Version 4 UUIDs (GUIDs).                                         |
+| 10  | 🔗 URL Parser          | Parse, encode, and decode URLs.                                         |
 
 ## 💻 Tech Stack
 
-- ⚛️ **Frontend**: React 19, TypeScript, Vite
-- 🎨 **Styling**: Tailwind CSS
-- 🔹 **Icons**: Lucide React
-- 🧠 **AI**: Google Gemini API
-- 🛣️ **Routing**: React Router DOM
+| Category        | Technologies                                    |
+| --------------- | ----------------------------------------------- |
+| ⚛️ Frontend     | React 19, TypeScript 5.8, Vite 6                |
+| 🎨 Styling      | Tailwind CSS 3, Radix UI (Switch, Slider, Slot) |
+| 🔹 Icons        | Lucide React                                    |
+| 🧠 AI           | Google Gemini API (`@google/genai`)             |
+| 🛣️ Routing      | React Router DOM 7                              |
+| 📦 UI Utilities | CVA, clsx, tailwind-merge, Sonner (toasts)      |
+| 🧹 Code Quality | ESLint 8, Prettier 3, TypeScript strict mode    |
+| 🔄 CI/CD        | GitHub Actions (lint, format, typecheck)        |
+
+## 📁 Project Structure
+
+```
+src/
+├── components/
+│   ├── tools/          # Individual tool page components
+│   ├── ui/             # Shared UI primitives (Button, Card, Input, etc.)
+│   ├── Dashboard.tsx   # Landing page with tool grid
+│   ├── Sidebar.tsx     # Navigation sidebar
+│   ├── Header.tsx      # App header with controls
+│   ├── MainLayout.tsx  # Top-level layout wrapper
+│   ├── CommandPalette.tsx  # Cmd+K search modal
+│   ├── ErrorBoundary.tsx   # Per-tool error boundary
+│   └── ToolPageLayout.tsx  # Tool page wrapper
+├── hooks/              # Custom hooks (business logic per tool)
+├── context/            # Theme & user preferences providers
+├── data/               # Tool registry
+├── services/           # API services (Gemini)
+├── lib/                # Shared utilities
+└── types.ts            # Shared type definitions
+```
 
 ## 🏁 Getting Started
 
@@ -43,8 +75,8 @@ DevPulse is a comprehensive collection of developer tools integrated with AI cap
 1.  Clone the repository:
 
     ```bash
-    git clone https://github.com/yourusername/devpulse.git
-    cd devpulse
+    git clone https://github.com/M4R14/dev-util-tools.git
+    cd dev-util-tools
     ```
 
 2.  Install dependencies:
@@ -53,15 +85,14 @@ DevPulse is a comprehensive collection of developer tools integrated with AI cap
     npm install
     ```
 
-3.  **Configure API Key**:
-    You can configure the Gemini API key in two ways:
-    - **Option A (Recommended for local dev)**: Create a `.env.local` file in the root directory:
+3.  **Configure API Key** (for AI Assistant):
+    - **Option A (Recommended)**: Create a `.env.local` file in the root directory:
       ```env
       GEMINI_API_KEY=your_gemini_api_key_here
       ```
-    - **Option B (UI)**: Enter your key directly in the AI Assistant settings (stored securely in browser local storage).
+    - **Option B (UI)**: Enter your key directly in the AI Assistant settings (stored in browser local storage).
 
-    You can get an API key from [Google AI Studio](https://aistudio.google.com/).
+    Get an API key from [Google AI Studio](https://aistudio.google.com/).
 
 4.  Run the development server:
 
@@ -71,11 +102,35 @@ DevPulse is a comprehensive collection of developer tools integrated with AI cap
 
 5.  Open your browser and navigate to `http://localhost:3000`.
 
-## Keyboard Shortcuts
+## 📜 Available Scripts
 
-- `Cmd+K` / `Ctrl+K`: Open Command Palette
-- `Arrow Up/Down`: Navigate Sidebar or Command Palette results
-- `Enter`: Select Tool
+| Command                | Description                                   |
+| ---------------------- | --------------------------------------------- |
+| `npm run dev`          | Start the Vite development server             |
+| `npm run build`        | Build for production                          |
+| `npm run preview`      | Preview the production build locally          |
+| `npm run lint`         | Run ESLint on `.ts` and `.tsx` files          |
+| `npm run lint:fix`     | Run ESLint with auto-fix                      |
+| `npm run format`       | Format all files with Prettier                |
+| `npm run format:check` | Check formatting without writing changes      |
+| `npm run typecheck`    | Run TypeScript type checking (`tsc --noEmit`) |
+
+## ⌨️ Keyboard Shortcuts
+
+| Shortcut                  | Action                                      |
+| ------------------------- | ------------------------------------------- |
+| `Cmd+K` / `Ctrl+K`        | Open Command Palette                        |
+| `Arrow Up` / `Arrow Down` | Navigate Sidebar or Command Palette results |
+| `Enter`                   | Select Tool                                 |
+| `Escape`                  | Close Command Palette                       |
+
+## 🔄 CI/CD
+
+The project includes a GitHub Actions workflow (`.github/workflows/ci.yml`) that runs on every push and pull request to `main`:
+
+1. **Lint** — ESLint checks for code quality issues
+2. **Format** — Prettier verifies consistent formatting
+3. **Typecheck** — TypeScript validates type safety
 
 ## License
 

@@ -6,8 +6,6 @@ import { TOOLS } from '../data/tools';
 interface UserPreferencesContextType {
   favorites: ToolID[];
   recents: ToolID[];
-  searchTerm: string;
-  setSearchTerm: (term: string) => void;
   toggleFavorite: (id: ToolID) => void;
   addRecent: (id: ToolID) => void;
 }
@@ -27,8 +25,6 @@ interface UserPreferencesProviderProps {
 }
 
 export const UserPreferencesProvider: React.FC<UserPreferencesProviderProps> = ({ children }) => {
-  const [searchTerm, setSearchTerm] = useState('');
-
   const [favorites, setFavorites] = useState<ToolID[]>(() => {
     const saved = localStorage.getItem('favorites');
     return saved ? JSON.parse(saved) : [];
@@ -76,8 +72,6 @@ export const UserPreferencesProvider: React.FC<UserPreferencesProviderProps> = (
   const value = {
     favorites,
     recents,
-    searchTerm,
-    setSearchTerm,
     toggleFavorite,
     addRecent,
   };

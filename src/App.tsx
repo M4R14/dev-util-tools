@@ -5,6 +5,7 @@ import MainLayout from './components/MainLayout';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ThemeProvider } from './context/ThemeContext';
 import { UserPreferencesProvider } from './context/UserPreferencesContext';
+import { SearchProvider } from './context/SearchContext';
 
 // Lazy-loaded tool pages — each becomes its own chunk
 const Dashboard = lazy(() => import('./components/Dashboard'));
@@ -33,95 +34,97 @@ const App: React.FC = () => {
   return (
     <ThemeProvider>
       <UserPreferencesProvider>
-        <MainLayout>
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              <Route
-                path={`/${ToolID.URL_PARSER}`}
-                element={
-                  <ErrorBoundary>
-                    <UrlParser />
-                  </ErrorBoundary>
-                }
-              />
-              <Route
-                path={`/${ToolID.UUID_GENERATOR}`}
-                element={
-                  <ErrorBoundary>
-                    <UUIDGenerator />
-                  </ErrorBoundary>
-                }
-              />
-              <Route
-                path={`/${ToolID.JSON_FORMATTER}`}
-                element={
-                  <ErrorBoundary>
-                    <JSONFormatter />
-                  </ErrorBoundary>
-                }
-              />
-              <Route
-                path={`/${ToolID.BASE64_TOOL}`}
-                element={
-                  <ErrorBoundary>
-                    <Base64Tool />
-                  </ErrorBoundary>
-                }
-              />
-              <Route
-                path={`/${ToolID.CASE_CONVERTER}`}
-                element={
-                  <ErrorBoundary>
-                    <CaseConverter />
-                  </ErrorBoundary>
-                }
-              />
-              <Route
-                path={`/${ToolID.PASSWORD_GEN}`}
-                element={
-                  <ErrorBoundary>
-                    <PasswordGenerator />
-                  </ErrorBoundary>
-                }
-              />
-              <Route
-                path={`/${ToolID.TIMEZONE_CONVERTER}`}
-                element={
-                  <ErrorBoundary>
-                    <TimezoneConverter />
-                  </ErrorBoundary>
-                }
-              />
-              <Route
-                path={`/${ToolID.THAI_DATE_CONVERTER}`}
-                element={
-                  <ErrorBoundary>
-                    <ThaiDateConverter />
-                  </ErrorBoundary>
-                }
-              />
-              <Route
-                path={`/${ToolID.CRONTAB}`}
-                element={
-                  <ErrorBoundary>
-                    <CrontabTool />
-                  </ErrorBoundary>
-                }
-              />
-              <Route
-                path={`/${ToolID.AI_ASSISTANT}`}
-                element={
-                  <ErrorBoundary>
-                    <AIAssistant />
-                  </ErrorBoundary>
-                }
-              />
+        <SearchProvider>
+          <MainLayout>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                <Route
+                  path={`/${ToolID.URL_PARSER}`}
+                  element={
+                    <ErrorBoundary>
+                      <UrlParser />
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path={`/${ToolID.UUID_GENERATOR}`}
+                  element={
+                    <ErrorBoundary>
+                      <UUIDGenerator />
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path={`/${ToolID.JSON_FORMATTER}`}
+                  element={
+                    <ErrorBoundary>
+                      <JSONFormatter />
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path={`/${ToolID.BASE64_TOOL}`}
+                  element={
+                    <ErrorBoundary>
+                      <Base64Tool />
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path={`/${ToolID.CASE_CONVERTER}`}
+                  element={
+                    <ErrorBoundary>
+                      <CaseConverter />
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path={`/${ToolID.PASSWORD_GEN}`}
+                  element={
+                    <ErrorBoundary>
+                      <PasswordGenerator />
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path={`/${ToolID.TIMEZONE_CONVERTER}`}
+                  element={
+                    <ErrorBoundary>
+                      <TimezoneConverter />
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path={`/${ToolID.THAI_DATE_CONVERTER}`}
+                  element={
+                    <ErrorBoundary>
+                      <ThaiDateConverter />
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path={`/${ToolID.CRONTAB}`}
+                  element={
+                    <ErrorBoundary>
+                      <CrontabTool />
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path={`/${ToolID.AI_ASSISTANT}`}
+                  element={
+                    <ErrorBoundary>
+                      <AIAssistant />
+                    </ErrorBoundary>
+                  }
+                />
 
-              <Route path="/" element={<Dashboard />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </Suspense>
-        </MainLayout>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </Suspense>
+          </MainLayout>
+        </SearchProvider>
       </UserPreferencesProvider>
     </ThemeProvider>
   );
