@@ -1,192 +1,93 @@
-import React, { useState, useEffect } from 'react';
-import { Clock, Copy, Check, ArrowLeftRight, Calendar, Globe } from 'lucide-react';
+import React, { useState } from 'react';
+import { Clock, ArrowLeftRight, ChevronDown, Calendar, Globe, MapPin } from 'lucide-react';
 import ToolLayout from '../ui/ToolLayout';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
-import { Card, CardContent } from '../ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
+import { CopyButton } from '../ui/CopyButton';
 import { cn } from '../../lib/utils';
-
-const COMMON_TIMEZONES = [
-  { value: 'UTC', label: 'UTC (Universal Time Coordinated)', abbr: 'UTC' },
-  { value: 'Asia/Bangkok', label: 'Bangkok (Indochina Time)', abbr: 'ICT' },
-  { value: 'Asia/Tokyo', label: 'Tokyo (Japan Standard Time)', abbr: 'JST' },
-  { value: 'Asia/Seoul', label: 'Seoul (Korea Standard Time)', abbr: 'KST' },
-  { value: 'Asia/Singapore', label: 'Singapore (Singapore Time)', abbr: 'SGT' },
-  { value: 'Asia/Shanghai', label: 'Shanghai (China Standard Time)', abbr: 'CST' },
-  { value: 'Asia/Kolkata', label: 'Kolkata (India Standard Time)', abbr: 'IST' },
-  { value: 'Australia/Sydney', label: 'Sydney (Eastern Australia)', abbr: 'AEDT' },
-  { value: 'Europe/London', label: 'London (Greenwich Mean Time)', abbr: 'GMT/BST' },
-  { value: 'Europe/Paris', label: 'Paris (Central European Time)', abbr: 'CET' },
-  { value: 'Europe/Berlin', label: 'Berlin (Central European Time)', abbr: 'CET' },
-  { value: 'Europe/Moscow', label: 'Moscow (Moscow Standard Time)', abbr: 'MSK' },
-  { value: 'America/New_York', label: 'New York (Eastern Time)', abbr: 'ET' },
-  { value: 'America/Los_Angeles', label: 'Los Angeles (Pacific Time)', abbr: 'PT' },
-  { value: 'America/Chicago', label: 'Chicago (Central Time)', abbr: 'CT' },
-  { value: 'America/Sao_Paulo', label: 'São Paulo (Brasilia Time)', abbr: 'BRT' },
-  { value: 'Pacific/Auckland', label: 'Auckland (New Zealand Time)', abbr: 'NZDT' },
-];
+import { useTimezoneConverter } from '../../hooks/useTimezoneConverter';
 
 const TimezoneConverter: React.FC = () => {
-  // Default to current time, local timezone, and UTC as target
-  const [date, setDate] = useState<string>(() => {
-    const now = new Date();
-    // Format for datetime-local input: YYYY-MM-DDThh:mm
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  });
-
-  const [sourceTz, setSourceTz] = useState<string>(Intl.DateTimeFormat().resolvedOptions().timeZone);
-  const [targetTz, setTargetTz] = useState<string>('UTC');
-  const [result, setResult] = useState<string>('');
-  const [resultDatePart, setResultDatePart] = useState<string>('');
-  const [resultTimePart, setResultTimePart] = useState<string>('');
-  const [resultTzAbbr, setResultTzAbbr] = useState<string>('');
-  
-  const [copied, setCopied] = useState(false);
-
-  useEffect(() => {
-    convertTime();
-  }, [date, sourceTz, targetTz]);
-
-  const convertTime = () => {
-    try {
-      if (!date) return;
-
-      const [datePart, timePart] = date.split('T');
-      const [year, month, day] = datePart.split('-').map(Number);
-      const [hours, minutes] = timePart.split(':').map(Number);
-      
-      const targetDate = getDateFromTimezone(year, month - 1, day, hours, minutes, sourceTz);
-      
-      // Detailed parts formatting
-      const formatter = new Intl.DateTimeFormat('en-GB', {
-        timeZone: targetTz,
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        weekday: 'long',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false,
-        timeZoneName: 'short'
-      });
-
-      const parts = formatter.formatToParts(targetDate);
-      const getPart = (type: string) => parts.find(p => p.type === type)?.value || '';
-      
-      // Full formatting for copy
-      const formattedDate = `${getPart('year')}-${parts.find(p=>p.type==='month')?.value.slice(0,3)}-${getPart('day')} ${getPart('hour')}:${getPart('minute')}:${getPart('second')} ${getPart('timeZoneName')}`;
-      setResult(formattedDate);
-
-      // UI Parts
-      setResultDatePart(`${getPart('weekday')}, ${getPart('day')} ${getPart('month')} ${getPart('year')}`);
-      setResultTimePart(`${getPart('hour')}:${getPart('minute')}`);
-      setResultTzAbbr(getPart('timeZoneName'));
-
-    } catch (error) {
-      console.error(error);
-      setResult('Invalid Date');
-    }
-  };
-
-  const swapTimezones = () => {
-    const temp = sourceTz;
-    setSourceTz(targetTz);
-    setTargetTz(temp);
-  };
-
-  // Helper to create a Date object representing specific wall-clock time in a specific timezone
-  const getDateFromTimezone = (year: number, month: number, day: number, hour: number, minute: number, timeZone: string): Date => {
-    let guess = new Date(Date.UTC(year, month, day, hour, minute));
-    for (let i = 0; i < 3; i++) {
-        const parts = new Intl.DateTimeFormat('en-US', {
-            timeZone,
-            year: 'numeric', month: 'numeric', day: 'numeric',
-            hour: 'numeric', minute: 'numeric', second: 'numeric',
-            hour12: false
-        }).formatToParts(guess);
-        
-        const getVal = (t: string) => parseInt(parts.find(p => p.type === t)?.value || '0', 10);
-        const observedInTzAsUtc = new Date(Date.UTC(getVal('year'), getVal('month') - 1, getVal('day'), getVal('hour') === 24 ? 0 : getVal('hour'), getVal('minute')));
-        const diff = guess.getTime() - observedInTzAsUtc.getTime();
-        if (diff === 0) break;
-        guess = new Date(guess.getTime() + diff);
-    }
-    return guess;
-  };
-
-  const copyToClipboard = () => {
-    if (result) {
-      navigator.clipboard.writeText(result);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
-
-  const setNow = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    setDate(`${year}-${month}-${day}T${hours}:${minutes}`);
-  };
+    const {
+        date,
+        setDate,
+        sourceTz,
+        setSourceTz,
+        targetTz,
+        setTargetTz,
+        result,
+        resultDatePart,
+        resultTimePart,
+        resultTzAbbr,
+        swapTimezones,
+        setNow,
+        commonTimezones
+    } = useTimezoneConverter();
 
   return (
     <ToolLayout>
-      <div className="space-y-6">
-        <div className="flex justify-end">
+      <div className="space-y-8 max-w-5xl mx-auto">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div>
+                <h3 className="text-lg font-semibold flex items-center gap-2">
+                    <Globe className="w-5 h-5 text-primary" />
+                    Global Time Converter
+                </h3>
+                <p className="text-sm text-muted-foreground">Compare times across different cities and zones.</p>
+            </div>
             <Button 
                 variant="outline"
                 size="sm"
                 onClick={setNow}
-                className="gap-2"
+                className="gap-2 bg-background hover:bg-muted"
             >
                 <Clock className="w-3.5 h-3.5" />
-                Reset to Now
+                Set to Now
             </Button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-6 items-center">
+        <div className="relative grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-6 items-stretch">
           
           {/* Source Panel */}
-          <Card>
-            <CardContent className="p-6 space-y-4">
+          <Card className="border-border shadow-sm group hover:border-primary/30 transition-colors">
+            <CardHeader className="pb-2 border-b border-border/50 bg-muted/20">
+                <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                    <MapPin className="w-4 h-4" /> From Location
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6 space-y-6">
                 <div className="space-y-2">
-                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Date & Time</label>
-                    <Input
-                        type="datetime-local"
-                        value={date}
-                        onChange={(e) => setDate(e.target.value)}
-                        className="w-full"
-                    />
+                    <label className="text-xs font-semibold text-foreground">Select Date & Time</label>
+                    <div className="relative">
+                        <Input
+                            type="datetime-local"
+                            value={date}
+                            onChange={(e) => setDate(e.target.value)}
+                            className="w-full h-14 text-lg font-mono bg-background"
+                        />
+                        <Calendar className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none opacity-50" />
+                    </div>
                 </div>
                 
                 <div className="space-y-2">
-                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Source Timezone</label>
+                    <label className="text-xs font-semibold text-foreground">Source Timezone</label>
                     <div className="relative">
                         <select
                             value={sourceTz}
                             onChange={(e) => setSourceTz(e.target.value)}
                             className={cn(
-                                "flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none"
+                                "flex h-12 w-full items-center justify-between rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 appearance-none cursor-pointer hover:bg-muted/50 transition-colors"
                             )}
                         >
-                            {COMMON_TIMEZONES.map((tz) => (
+                            {commonTimezones.map((tz) => (
                             <option key={tz.value} value={tz.value}>
                                 {tz.label}
                             </option>
                             ))}
                         </select>
                         <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-muted-foreground">
-                             <ChevronDownIcon className="w-4 h-4" />
+                             <ChevronDown className="w-4 h-4" />
                         </div>
                     </div>
                 </div>
@@ -194,68 +95,82 @@ const TimezoneConverter: React.FC = () => {
           </Card>
 
           {/* Swap Trigger */}
-          <div className="flex justify-center -my-2 lg:my-0 z-10">
+          <div className="hidden lg:flex flex-col justify-center relative z-10 -mx-3">
+             <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-px bg-border/50 -z-10" />
             <Button
               variant="outline"
               size="icon"
               onClick={swapTimezones}
-              className="rounded-full shadow-lg"
+              className="rounded-full shadow-md h-12 w-12 border-border bg-background hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all hover:scale-110"
               title="Swap Timezones"
             >
-              <ArrowLeftRight className="w-5 h-5 lg:rotate-0 rotate-90" />
+              <ArrowLeftRight className="w-5 h-5" />
             </Button>
           </div>
+          {/* Mobile Swap */}
+           <div className="flex lg:hidden justify-center items-center py-2">
+             <Button
+                variant="ghost"
+                size="sm"
+                onClick={swapTimezones}
+                className="gap-2 text-muted-foreground hover:text-primary"
+             >
+                <ArrowLeftRight className="w-4 h-4 rotate-90" /> Swap Direction
+             </Button>
+           </div>
+
 
           {/* Result Panel */}
-          <Card className="bg-primary/5 border-primary/20">
-            <CardContent className="p-6 relative group">
-                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <Button
-                        variant="ghost" 
-                        size="icon"
-                        onClick={() => {
-                            if(result) {
-                                navigator.clipboard.writeText(result);
-                                setCopied(true);
-                                setTimeout(() => setCopied(false), 2000);
-                            }
-                        }}
-                        className="h-8 w-8 text-primary hover:text-primary/80"
-                        title="Copy full date"
-                    >
-                        {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-                    </Button>
+          <Card className="border-primary/20 shadow-lg bg-gradient-to-br from-background via-background to-primary/5 group hover:shadow-xl transition-all duration-300 ring-1 ring-primary/5">
+             <CardHeader className="pb-2 border-b border-border/50 bg-primary/5">
+                <CardTitle className="text-sm font-medium text-primary uppercase tracking-wider flex items-center gap-2">
+                    <MapPin className="w-4 h-4" /> To Location
+                </CardTitle>
+            </CardHeader>
+            <CardContent className="p-6 relative flex flex-col justify-between">
+                <div className="space-y-6">
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                            <label className="text-xs font-semibold text-primary uppercase tracking-widest">
+                                Converted Time
+                            </label>
+                            <CopyButton value={result} className="h-6 w-6 text-muted-foreground hover:text-primary" />
+                        </div>
+                        
+                        <div className="relative group/input bg-primary/5 rounded-lg border border-primary/10 hover:border-primary/30 hover:bg-primary/10 transition-all duration-300">
+                             <Input 
+                                readOnly
+                                value={`${resultDatePart}T${resultTimePart}`}
+                                className="text-xl sm:text-2xl h-14 font-mono font-bold text-primary tracking-tight border-none bg-transparent shadow-none focus-visible:ring-0 px-4 cursor-text selection:bg-primary/20 w-full"
+                            />
+                            <div className="absolute top-1/2 -translate-y-1/2 right-4 pointer-events-none">
+                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-background/50 text-xs font-medium text-primary/80 backdrop-blur-sm">
+                                    <Globe className="w-3 h-3" />
+                                    <span>{resultTzAbbr}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div className="mb-6 space-y-1">
-                    <label className="text-xs font-medium text-primary/70 uppercase tracking-wider">Converted Time</label>
-                    <div className="text-3xl md:text-3xl font-mono font-bold text-foreground tracking-tight flex flex-wrap items-baseline gap-2 md:gap-3">
-                        {resultTimePart}
-                        <span className="text-lg md:text-xl font-sans font-medium text-primary">{resultTzAbbr}</span>
-                    </div>
-                    <div className="text-muted-foreground font-medium">
-                        {resultDatePart}
-                    </div>
-                </div>
-
-                <div className="space-y-2 pt-4 border-t border-border">
-                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Target Timezone</label>
+                <div className="space-y-2 pt-6 border-t border-border/40 mt-auto">
+                    <label className="text-xs font-semibold text-foreground">Target Timezone</label>
                     <div className="relative">
                         <select
                             value={targetTz}
                             onChange={(e) => setTargetTz(e.target.value)}
                             className={cn(
-                                "flex h-10 w-full items-center justify-between rounded-md border border-input bg-background/50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none"
+                                "flex h-12 w-full items-center justify-between rounded-lg border border-input bg-background/50 px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 appearance-none cursor-pointer hover:bg-background transition-colors"
                             )}
                         >
-                            {COMMON_TIMEZONES.map((tz) => (
+                            {commonTimezones.map((tz) => (
                             <option key={tz.value} value={tz.value}>
                                 {tz.label}
                             </option>
                             ))}
                         </select>
                         <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-muted-foreground">
-                            <ChevronDownIcon className="w-4 h-4" />
+                            <ChevronDown className="w-4 h-4" />
                         </div>
                     </div>
                 </div>
@@ -264,18 +179,17 @@ const TimezoneConverter: React.FC = () => {
 
         </div>
 
-        {/* Footer Info */}
-        <div className="mt-8 text-center text-muted-foreground text-xs">
-           Displaying conversion from <span className="text-primary font-medium">{COMMON_TIMEZONES.find(t=>t.value===sourceTz)?.abbr || sourceTz }</span> to <span className="text-primary font-medium">{COMMON_TIMEZONES.find(t=>t.value===targetTz)?.abbr || targetTz}</span>
+        {/* Global Badge footer */}
+         <div className="flex justify-center">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-muted/50 text-xs text-muted-foreground border border-border/50">
+                <Globe className="w-3.5 h-3.5" />
+                <span>Supporting {commonTimezones.length} major global timezones</span>
+            </div>
         </div>
 
       </div>
     </ToolLayout>
   );
 };
-// Helper Icon
-const ChevronDownIcon = ({ className }: { className?: string }) => (
-    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-)
 
 export default TimezoneConverter;
