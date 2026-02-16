@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ToolID } from './types';
 import MainLayout from './components/MainLayout';
+import ErrorBoundary from './components/ErrorBoundary';
 import { ThemeProvider } from './context/ThemeContext';
 import { UserPreferencesProvider } from './context/UserPreferencesContext';
 
@@ -35,16 +36,16 @@ const App: React.FC = () => {
         <MainLayout>
           <Suspense fallback={<PageLoader />}>
             <Routes>
-            <Route path={`/${ToolID.URL_PARSER}`} element={<UrlParser />} />
-            <Route path={`/${ToolID.UUID_GENERATOR}`} element={<UUIDGenerator />} />
-            <Route path={`/${ToolID.JSON_FORMATTER}`} element={<JSONFormatter />} />
-            <Route path={`/${ToolID.BASE64_TOOL}`} element={<Base64Tool />} />
-            <Route path={`/${ToolID.CASE_CONVERTER}`} element={<CaseConverter />} />
-            <Route path={`/${ToolID.PASSWORD_GEN}`} element={<PasswordGenerator />} />
-            <Route path={`/${ToolID.TIMEZONE_CONVERTER}`} element={<TimezoneConverter />} />
-            <Route path={`/${ToolID.THAI_DATE_CONVERTER}`} element={<ThaiDateConverter />} />
-            <Route path={`/${ToolID.CRONTAB}`} element={<CrontabTool />} />
-            <Route path={`/${ToolID.AI_ASSISTANT}`} element={<AIAssistant />} />
+            <Route path={`/${ToolID.URL_PARSER}`} element={<ErrorBoundary><UrlParser /></ErrorBoundary>} />
+            <Route path={`/${ToolID.UUID_GENERATOR}`} element={<ErrorBoundary><UUIDGenerator /></ErrorBoundary>} />
+            <Route path={`/${ToolID.JSON_FORMATTER}`} element={<ErrorBoundary><JSONFormatter /></ErrorBoundary>} />
+            <Route path={`/${ToolID.BASE64_TOOL}`} element={<ErrorBoundary><Base64Tool /></ErrorBoundary>} />
+            <Route path={`/${ToolID.CASE_CONVERTER}`} element={<ErrorBoundary><CaseConverter /></ErrorBoundary>} />
+            <Route path={`/${ToolID.PASSWORD_GEN}`} element={<ErrorBoundary><PasswordGenerator /></ErrorBoundary>} />
+            <Route path={`/${ToolID.TIMEZONE_CONVERTER}`} element={<ErrorBoundary><TimezoneConverter /></ErrorBoundary>} />
+            <Route path={`/${ToolID.THAI_DATE_CONVERTER}`} element={<ErrorBoundary><ThaiDateConverter /></ErrorBoundary>} />
+            <Route path={`/${ToolID.CRONTAB}`} element={<ErrorBoundary><CrontabTool /></ErrorBoundary>} />
+            <Route path={`/${ToolID.AI_ASSISTANT}`} element={<ErrorBoundary><AIAssistant /></ErrorBoundary>} />
             
             <Route path="/" element={<Dashboard />} />
             <Route path="*" element={<Navigate to="/" replace />} />
