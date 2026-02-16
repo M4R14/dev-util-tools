@@ -1,5 +1,6 @@
 import React from 'react';
-import { Copy, RotateCcw } from 'lucide-react';
+import { cn } from '../../lib/utils';
+import { Card, CardContent } from './Card';
 
 interface ToolLayoutProps {
   children: React.ReactNode;
@@ -20,50 +21,49 @@ interface ToolPanelProps {
   className?: string;
 }
 
-const ToolLayout: React.FC<ToolLayoutProps> & {
-  Section: React.FC<ToolSectionProps>;
-  Panel: React.FC<ToolPanelProps>;
-} = ({ children, className = '' }) => {
+const ToolLayout = ({ children, className }: ToolLayoutProps) => {
   return (
-    <div className={`p-6 space-y-6 ${className}`}>
+    <div className={cn("p-6 space-y-6 max-w-7xl mx-auto", className)}>
       {children}
     </div>
   );
 };
 
-const Section: React.FC<ToolSectionProps> = ({ title, children, actions, className = '' }) => {
+const Section = ({ title, children, actions, className }: ToolSectionProps) => {
   return (
-    <div className={`space-y-4 ${className}`}>
+    <div className={cn("space-y-4", className)}>
       {(title || actions) && (
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between px-1">
           {title && (
-            <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
               {title}
             </h3>
           )}
           {actions && <div className="flex items-center gap-2">{actions}</div>}
         </div>
       )}
-      <div className="bg-white dark:bg-slate-950/50 rounded-xl border border-slate-200 dark:border-slate-700/50 overflow-hidden shadow-sm transition-colors">
-        {children}
-      </div>
+      <Card className="overflow-hidden bg-background/50 backdrop-blur-sm border-border">
+        <div className="p-0">
+          {children}
+        </div>
+      </Card>
     </div>
   );
 };
 
-const Panel: React.FC<ToolPanelProps> = ({ title, children, actions, className = '' }) => {
+const Panel = ({ title, children, actions, className }: ToolPanelProps) => {
   return (
-    <div className={`flex flex-col h-full bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-sm transition-colors ${className}`}>
+    <Card className={cn("flex flex-col h-full overflow-hidden bg-background border-border shadow-sm", className)}>
         {(title || actions) && (
-            <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-900/50">
-               {title && <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{title}</span>}
+            <div className="px-4 py-3 border-b border-border flex items-center justify-between bg-muted/30">
+               {title && <span className="text-sm font-medium text-foreground">{title}</span>}
                {actions && <div className="flex items-center gap-2">{actions}</div>}
             </div>
         )}
-        <div className="flex-1 p-4 relative text-slate-700 dark:text-slate-300">
+        <div className="flex-1 p-4 relative text-foreground">
             {children}
         </div>
-    </div>
+    </Card>
   );
 };
 

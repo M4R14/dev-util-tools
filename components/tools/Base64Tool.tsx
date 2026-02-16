@@ -1,7 +1,9 @@
 
 import React, { useState } from 'react';
-import { ArrowLeftRight, Copy, Check } from 'lucide-react';
+import { Copy, Check } from 'lucide-react';
 import ToolLayout from '../ui/ToolLayout';
+import { Button } from '../ui/Button';
+import { Textarea } from '../ui/Textarea';
 
 const Base64Tool: React.FC = () => {
   const [text, setText] = useState('');
@@ -49,20 +51,22 @@ const Base64Tool: React.FC = () => {
         <ToolLayout.Panel 
             title="Plain Text"
             actions={
-                <button 
+                <Button 
+                  variant="ghost"
+                  size="icon"
                   onClick={() => copy(text, 'text')}
-                  className="p-1.5 text-slate-400 hover:text-white transition-colors hover:bg-slate-800 rounded-md"
+                  className="h-8 w-8 text-slate-400 hover:text-white"
                   title="Copy Text"
                 >
                   {copyState === 'text' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-                </button>
+                </Button>
             }
         >
-          <textarea
+          <Textarea
             value={text}
             onChange={(e) => handleTextChange(e.target.value)}
             placeholder="Type here..."
-            className="w-full h-full bg-transparent border-none focus:ring-0 p-0 font-mono text-sm resize-none placeholder-slate-600"
+            className="w-full h-full bg-transparent border-none focus-visible:ring-0 p-0 font-mono text-sm resize-none placeholder-slate-400 dark:placeholder-slate-600 shadow-none"
           />
         </ToolLayout.Panel>
 
@@ -71,21 +75,23 @@ const Base64Tool: React.FC = () => {
         <ToolLayout.Panel 
             title="Base64 Output"
             actions={
-                <button 
+                <Button 
+                  variant="ghost"
+                  size="icon"
                   onClick={() => copy(base64, 'base64')}
-                  className="p-1.5 text-slate-400 hover:text-white transition-colors hover:bg-slate-800 rounded-md"
+                  className="h-8 w-8 text-slate-400 hover:text-white"
                   title="Copy Base64"
                 >
                   {copyState === 'base64' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-                </button>
+                </Button>
             }
             className={error ? 'border-red-500/50 box-border' : ''}
         >
-          <textarea
+          <Textarea
             value={base64}
             onChange={(e) => handleBase64Change(e.target.value)}
             placeholder="Base64 result..."
-            className="w-full h-full bg-transparent border-none focus:ring-0 p-0 font-mono text-sm resize-none placeholder-slate-600"
+            className="w-full h-full bg-transparent border-none focus-visible:ring-0 p-0 font-mono text-sm resize-none placeholder-slate-400 dark:placeholder-slate-600 shadow-none"
           />
           {error && (
             <div className="absolute bottom-4 left-4 right-4 p-3 bg-red-900/90 backdrop-blur border border-red-500/30 rounded-lg text-red-200 text-xs shadow-lg animate-in fade-in slide-in-from-bottom-2">
@@ -97,6 +103,7 @@ const Base64Tool: React.FC = () => {
     </ToolLayout>
   );
 };
+
 
 
 export default Base64Tool;

@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, Copy, Check, ArrowLeftRight, Calendar, Globe } from 'lucide-react';
 import ToolLayout from '../ui/ToolLayout';
+import { Button } from '../ui/Button';
+import { Input } from '../ui/Input';
+import { Card, CardContent } from '../ui/Card';
+import { cn } from '../../lib/utils';
 
 const COMMON_TIMEZONES = [
   { value: 'UTC', label: 'UTC (Universal Time Coordinated)', abbr: 'UTC' },
@@ -124,6 +128,7 @@ const TimezoneConverter: React.FC = () => {
     }
   };
 
+
   const setNow = () => {
     const now = new Date();
     const year = now.getFullYear();
@@ -138,86 +143,41 @@ const TimezoneConverter: React.FC = () => {
     <ToolLayout>
       <div className="space-y-6">
         <div className="flex justify-end">
-            <button 
+            <Button 
+                variant="outline"
+                size="sm"
                 onClick={setNow}
-                className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm transition-colors border border-slate-700"
+                className="gap-2"
             >
                 <Clock className="w-3.5 h-3.5" />
                 Reset to Now
-            </button>
+            </Button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-6 items-center">
           
           {/* Source Panel */}
-          <ToolLayout.Section title="Input Time">
-            <div className="space-y-3">
-                <input
-                    type="datetime-local"
-                    value={date}
-                    onChange={(e) => setDate(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:border-indigo-500 outline-none transition-all"
-                />
+          <Card>
+            <CardContent className="p-6 space-y-4">
+                <div className="space-y-2">
+                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Date & Time</label>
+                    <Input
+                        type="datetime-local"
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
+                        className="w-full"
+                    />
+                </div>
                 
-                <div className="relative">
-                <select
-                    value={sourceTz}
-                    onChange={(e) => setSourceTz(e.target.value)}
-                    className="w-full appearance-none bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:border-indigo-500 outline-none transition-all cursor-pointer"
-                >
-                    {COMMON_TIMEZONES.map((tz) => (
-                    <option key={tz.value} value={tz.value}>
-                        {tz.label}
-                    </option>
-                    ))}
-                </select>
-                <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-400">
-                    <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
-                </div>
-                </div>
-            </div>
-          </ToolLayout.Section>
-
-          {/* Swap Trigger */}
-          <div className="flex justify-center -my-2 lg:my-0 z-10 pt-6">
-            <button 
-              onClick={swapTimezones}
-              className="p-3 bg-slate-800 hover:bg-indigo-600 text-slate-400 hover:text-white rounded-full border border-slate-700 hover:border-indigo-500 transition-all shadow-lg"
-              title="Swap Timezones"
-            >
-              <ArrowLeftRight className="w-5 h-5 lg:rotate-0 rotate-90" />
-            </button>
-          </div>
-
-          {/* Result Panel */}
-          <ToolLayout.Section title="Converted Result">
-             <div className="bg-gradient-to-br from-indigo-900/20 to-slate-900/50 rounded-xl border border-indigo-500/20 overflow-hidden relative group">
-                <div className="p-6">
-                    <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button
-                            onClick={copyToClipboard}
-                            className="p-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg shadow-sm border border-slate-700 transition-colors"
-                            title="Copy full date"
-                        >
-                            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                        </button>
-                    </div>
-
-                    <div className="mb-4">
-                        <div className="text-3xl md:text-4xl font-mono font-bold text-white tracking-tight flex flex-wrap items-baseline gap-2 md:gap-3">
-                            {resultTimePart}
-                            <span className="text-lg md:text-xl font-sans font-medium text-indigo-400">{resultTzAbbr}</span>
-                        </div>
-                        <div className="text-slate-400 font-medium mt-1">
-                            {resultDatePart}
-                        </div>
-                    </div>
-
-                    <div className="relative pt-2 border-t border-indigo-500/20 mt-4">
+                <div className="space-y-2">
+                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Source Timezone</label>
+                    <div className="relative">
                         <select
-                            value={targetTz}
-                            onChange={(e) => setTargetTz(e.target.value)}
-                            className="w-full appearance-none bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:border-indigo-500 outline-none transition-all cursor-pointer mt-4"
+                            value={sourceTz}
+                            onChange={(e) => setSourceTz(e.target.value)}
+                            className={cn(
+                                "flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none"
+                            )}
                         >
                             {COMMON_TIMEZONES.map((tz) => (
                             <option key={tz.value} value={tz.value}>
@@ -225,24 +185,91 @@ const TimezoneConverter: React.FC = () => {
                             </option>
                             ))}
                         </select>
-                        <div className="absolute inset-y-0 right-0 flex items-center px-4 pt-6 pointer-events-none text-slate-400">
-                            <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                        <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-muted-foreground">
+                             <ChevronDownIcon className="w-4 h-4" />
                         </div>
                     </div>
                 </div>
-             </div>
-          </ToolLayout.Section>
+            </CardContent>
+          </Card>
+
+          {/* Swap Trigger */}
+          <div className="flex justify-center -my-2 lg:my-0 z-10">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={swapTimezones}
+              className="rounded-full shadow-lg"
+              title="Swap Timezones"
+            >
+              <ArrowLeftRight className="w-5 h-5 lg:rotate-0 rotate-90" />
+            </Button>
+          </div>
+
+          {/* Result Panel */}
+          <Card className="bg-primary/5 dark:bg-primary/10 border-primary/20">
+            <CardContent className="p-6 relative group">
+                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Button
+                        variant="ghost" 
+                        size="icon"
+                        onClick={copyToClipboard}
+                        className="h-8 w-8"
+                        title="Copy full date"
+                    >
+                        {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                    </Button>
+                </div>
+
+                <div className="mb-6 space-y-1">
+                    <label className="text-xs font-medium text-primary/70 uppercase tracking-wider">Converted Time</label>
+                    <div className="text-3xl md:text-3xl font-mono font-bold text-foreground tracking-tight flex flex-wrap items-baseline gap-2 md:gap-3">
+                        {resultTimePart}
+                        <span className="text-lg md:text-xl font-sans font-medium text-primary">{resultTzAbbr}</span>
+                    </div>
+                    <div className="text-muted-foreground font-medium">
+                        {resultDatePart}
+                    </div>
+                </div>
+
+                <div className="space-y-2 pt-4 border-t border-border">
+                    <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Target Timezone</label>
+                    <div className="relative">
+                        <select
+                            value={targetTz}
+                            onChange={(e) => setTargetTz(e.target.value)}
+                            className={cn(
+                                "flex h-10 w-full items-center justify-between rounded-md border border-input bg-background/50 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 appearance-none"
+                            )}
+                        >
+                            {COMMON_TIMEZONES.map((tz) => (
+                            <option key={tz.value} value={tz.value}>
+                                {tz.label}
+                            </option>
+                            ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-muted-foreground">
+                            <ChevronDownIcon className="w-4 h-4" />
+                        </div>
+                    </div>
+                </div>
+            </CardContent>
+          </Card>
 
         </div>
 
         {/* Footer Info */}
-        <div className="mt-8 text-center text-slate-500 text-xs">
-           Displaying conversion from <span className="text-indigo-400 font-medium">{COMMON_TIMEZONES.find(t=>t.value===sourceTz)?.abbr || sourceTz }</span> to <span className="text-emerald-400 font-medium">{COMMON_TIMEZONES.find(t=>t.value===targetTz)?.abbr || targetTz}</span>
+        <div className="mt-8 text-center text-muted-foreground text-xs">
+           Displaying conversion from <span className="text-primary font-medium">{COMMON_TIMEZONES.find(t=>t.value===sourceTz)?.abbr || sourceTz }</span> to <span className="text-primary font-medium">{COMMON_TIMEZONES.find(t=>t.value===targetTz)?.abbr || targetTz}</span>
         </div>
 
       </div>
     </ToolLayout>
   );
 };
+// Helper Icon
+const ChevronDownIcon = ({ className }: { className?: string }) => (
+    <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+)
 
 export default TimezoneConverter;

@@ -2,6 +2,9 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { ToolID, ToolMetadata } from '../types';
 import { Sparkles, LayoutDashboard, Search, Star, Clock } from 'lucide-react';
+import { Input } from './ui/Input';
+import { Card, CardContent, CardTitle, CardDescription } from './ui/Card';
+import { cn } from '../lib/utils';
 
 interface SidebarProps {
   tools: ToolMetadata[];
@@ -39,35 +42,35 @@ const ToolLinkItem: React.FC<{
       onClick={() => {
         if (window.innerWidth < 768) onClose();
       }}
-      className={({ isActive }) => `
-        w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group
-        ${isActive
-          ? 'bg-indigo-50 dark:bg-indigo-600/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 font-medium' 
-          : isSelected 
-             ? 'bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-200 border border-slate-200 dark:border-slate-700' 
-             : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900/80 hover:text-slate-900 dark:hover:text-slate-200 border border-transparent'
-        }
-      `}
+      className={({ isActive }) => cn(
+        "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group border border-transparent",
+        isActive 
+            ? "bg-primary/10 text-primary border-primary/20 font-medium" 
+            : isSelected 
+                ? "bg-accent text-accent-foreground border-border" 
+                : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+      )}
     >
       {({ isActive }) => (
       <>
-      <span className={`p-1.5 rounded-md transition-colors ${
+      <span className={cn("p-1.5 rounded-md transition-colors",
         isActive 
-          ? 'bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-300' 
-          : isSelected ? 'bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200'
-          : 'bg-slate-100 dark:bg-slate-800/50 text-slate-500 dark:text-slate-500 group-hover:text-slate-700 dark:group-hover:text-slate-300 group-hover:bg-slate-200 dark:group-hover:bg-slate-800'
-      }`}>
+          ? "bg-primary/20 text-primary shadow-sm" 
+          : isSelected 
+            ? "bg-muted text-muted-foreground"
+            : "bg-muted/50 text-muted-foreground group-hover:text-foreground group-hover:bg-muted"
+      )}>
         {tool.icon}
       </span>
       <div className="text-left flex-1 min-w-0">
-          <div className="font-medium truncate flex items-center gap-2">
+          <div className="font-medium truncate flex items-center gap-2 text-sm">
             {tool.name}
             {favorites.includes(tool.id) && <Star className="w-3 h-3 text-amber-400 fill-amber-400" />}
           </div>
-          {searchTerm && <div className="text-xs text-slate-500 truncate">{tool.description}</div>}
+          {searchTerm && <div className="text-xs text-muted-foreground truncate">{tool.description}</div>}
       </div>
       {(isActive || isSelected) && (
-          <div className={`w-1.5 h-1.5 rounded-full ml-auto ${isActive ? 'bg-indigo-500' : 'bg-slate-400 dark:bg-slate-600'}`}></div>
+          <div className={cn("w-1.5 h-1.5 rounded-full ml-auto", isActive ? "bg-primary" : "bg-muted-foreground/30")}></div>
       )}
       </>
       )}
@@ -99,7 +102,8 @@ const Sidebar: React.FC<SidebarProps> = ({
     const favs = tools.filter(t => favorites.includes(t.id));
     const recs = recents
       .map(id => tools.find(t => t.id === id))
-      .filter((t): t is ToolMetadata => !!t && !favorites.includes(t.id));
+      .filter((t): t is ToolMetadata => !!t && !favorites.includes(t.id))
+      .slice(0, 5); // Limit to 5 recent tools
     
     // We duplicate tools in the display (Favorites, Recents, All Tools),
     // but for navigation index keying, we probably want to navigate through them as they appear.
@@ -161,7 +165,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   const favoriteTools = tools.filter(t => favorites.includes(t.id));
   const recentTools = recents
     .map(id => tools.find(t => t.id === id))
-    .filter((t): t is ToolMetadata => !!t && !favorites.includes(t.id));
+    .filter((t): t is ToolMetadata => !!t && !favorites.includes(t.id))
+    .slice(0, 3); // Limit to 5 recent tools
 
   const renderToolLink = (tool: ToolMetadata, contextPrefix: string, indexOffset: number) => {
     return <ToolLinkItem 
@@ -191,26 +196,26 @@ const Sidebar: React.FC<SidebarProps> = ({
         } md:translate-x-0 flex flex-col shadow-2xl md:shadow-none`}
       >
         {/* Brand */}
-        <div className="p-6 border-b border-slate-200 dark:border-slate-800/50 flex items-center gap-3">
-          <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-2.5 rounded-xl shadow-lg shadow-indigo-500/20">
-            <LayoutDashboard className="w-6 h-6 text-white" />
+        <div className="p-6 border-b border-border flex items-center gap-3">
+          <div className="bg-primary p-2.5 rounded-xl shadow-lg shadow-primary/20 text-primary-foreground">
+            <LayoutDashboard className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">DevPulse</h1>
-            <p className="text-xs text-slate-500 dark:text-slate-500 font-medium">Developer Utility Suite</p>
+            <h1 className="text-xl font-bold text-foreground tracking-tight">DevPulse</h1>
+            <p className="text-xs text-muted-foreground font-medium">Developer Utility Suite</p>
           </div>
         </div>
 
         {/* Search */}
         <div className="px-4 py-4">
           <div className="relative group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-500 dark:group-focus-within:text-indigo-400 transition-colors" />
-            <input
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-foreground transition-colors" />
+            <Input
               type="text"
               placeholder="Search tools..."
               value={searchTerm}
               onChange={(e) => onSearch(e.target.value)}
-              className="w-full bg-slate-100 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-sm text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500/50 transition-all"
+              className="pl-10 bg-muted/30 border-input shadow-none"
             />
           </div>
         </div>
@@ -260,17 +265,19 @@ const Sidebar: React.FC<SidebarProps> = ({
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-slate-200 dark:border-slate-800/50 bg-slate-50 dark:bg-slate-950/50 backdrop-blur-xl">
-          <div className="bg-white dark:bg-gradient-to-r dark:from-slate-900 dark:to-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700/50 shadow-sm relative overflow-hidden group">
-            <div className="absolute top-0 right-0 w-16 h-16 bg-indigo-500/10 rounded-full blur-xl -mr-8 -mt-8 transition-all group-hover:bg-indigo-500/20"></div>
-            <div className="flex items-center gap-2 mb-1.5 text-indigo-600 dark:text-indigo-400 relative z-10">
-              <Sparkles className="w-4 h-4" />
-              <span className="text-sm font-semibold">Gemini Powered</span>
-            </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed relative z-10">
-              AI assistant ready to help with your code.
-            </p>
-          </div>
+        <div className="p-4 border-t border-border bg-muted/5 backdrop-blur-xl">
+          <Card className="rounded-xl border border-border shadow-sm relative overflow-hidden group bg-background/50">
+            <CardContent className="p-4">
+                <div className="absolute top-0 right-0 w-16 h-16 bg-primary/10 rounded-full blur-xl -mr-8 -mt-8 transition-all group-hover:bg-primary/20"></div>
+                <div className="flex items-center gap-2 mb-1.5 text-primary relative z-10">
+                <Sparkles className="w-4 h-4" />
+                <span className="text-sm font-semibold">Gemini Powered</span>
+                </div>
+                <p className="text-xs text-muted-foreground leading-relaxed relative z-10">
+                AI assistant ready to help with your code.
+                </p>
+            </CardContent>
+          </Card>
         </div>
       </aside>
     </>

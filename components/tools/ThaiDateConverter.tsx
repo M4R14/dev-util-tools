@@ -2,6 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { Copy, Check, Calendar, RotateCcw, ArrowRightLeft, Search, Info } from 'lucide-react';
 import ToolLayout from '../ui/ToolLayout';
+import { Button } from '../ui/Button';
+import { Input } from '../ui/Input';
+import { Card, CardContent } from '../ui/Card';
 
 const ThaiDateConverter: React.FC = () => {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -134,6 +137,8 @@ const ThaiDateConverter: React.FC = () => {
     ];
   };
 
+  const formats = getFormats();
+
   const handleCopy = (val: string, id: string) => {
     navigator.clipboard.writeText(val);
     setCopiedId(id);
@@ -144,95 +149,105 @@ const ThaiDateConverter: React.FC = () => {
     setDate(new Date().toISOString().split('T')[0]);
   };
 
-  const formats = getFormats();
-
   return (
     <ToolLayout>
       <ToolLayout.Section title="Reverse Parser (Thai String → ISO)">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-950/50 p-6 rounded-xl border border-dashed border-indigo-500/30">
-          <div className="space-y-2">
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Input Thai Date String</label>
-            <div className="relative">
-              <input
-                type="text"
-                value={parseInput}
-                onChange={(e) => setParseInput(e.target.value)}
-                placeholder="เช่น 16 กุมภาพันธ์ 2569"
-                className="w-full bg-slate-950 border border-slate-700 rounded-xl pl-10 pr-4 py-3 text-indigo-100 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-700"
-              />
-              <Search className="w-4 h-4 text-slate-600 absolute left-3 top-1/2 -translate-y-1/2" />
+        <Card className="border-dashed border-indigo-200 dark:border-indigo-500/30 bg-indigo-50/50 dark:bg-slate-950/50">
+          <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Input Thai Date String</label>
+                <div className="relative">
+                <Input
+                    type="text"
+                    value={parseInput}
+                    onChange={(e) => setParseInput(e.target.value)}
+                    placeholder="เช่น 16 กุมภาพันธ์ 2569"
+                    className="pl-10"
+                />
+                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                </div>
             </div>
-          </div>
 
-          <div className="space-y-2">
-            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Converted ISO Date</label>
-            <div className={`w-full min-h-[50px] bg-slate-950 border rounded-xl p-3 flex items-center justify-between transition-all ${parseResult ? 'border-green-500/50 bg-green-500/5' : 'border-slate-800 opacity-50'}`}>
-              <div className="font-mono text-lg text-indigo-300">
-                {parseResult ? parseResult.formatted : 'Waiting for valid input...'}
-              </div>
-              {parseResult && (
-                <button
-                  onClick={() => handleCopy(parseResult.formatted, 'parsed-result')}
-                  className={`p-2 rounded-lg transition-all ${copiedId === 'parsed-result' ? 'bg-green-600 text-white' : 'hover:bg-slate-800 text-slate-500'}`}
-                >
-                  {copiedId === 'parsed-result' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                </button>
-              )}
+            <div className="space-y-2">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Converted ISO Date</label>
+                <div className={`w-full h-10 border rounded-md px-3 flex items-center justify-between transition-all ${
+                    parseResult 
+                        ? 'border-green-500/50 bg-green-50 dark:bg-green-500/10' 
+                        : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 opacity-50'
+                }`}>
+                <div className="font-mono text-sm text-indigo-600 dark:text-indigo-300">
+                    {parseResult ? parseResult.formatted : 'Waiting for input...'}
+                </div>
+                {parseResult && (
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleCopy(parseResult.formatted, 'parsed-result')}
+                        className={`h-7 w-7 ${copiedId === 'parsed-result' ? 'text-green-600' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                    >
+                    {copiedId === 'parsed-result' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                    </Button>
+                )}
+                </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </ToolLayout.Section>
-
-      <div className="h-px bg-slate-800 w-full my-2"></div>
 
       <ToolLayout.Section 
         title="Forward Converter"
         actions={
-            <button
+            <Button
+                variant="ghost"
+                size="sm"
                 onClick={resetToday}
-                className="flex items-center gap-2 text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
-                >
-                <RotateCcw className="w-3.5 h-3.5" /> Note: Default is Today
-            </button>
+                className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20"
+            >
+                <RotateCcw className="w-3.5 h-3.5 mr-2" /> Today
+            </Button>
         }
       >
-         <div className="bg-slate-950 p-6">
+         <div className="p-6 bg-white dark:bg-slate-950">
             <div className="mb-6">
-                 <input
+                 <Input
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-indigo-100 focus:border-indigo-500 outline-none transition-all appearance-none"
+                    className="w-full"
                   />
             </div>
           
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {formats.map((f) => (
-                <div key={f.id} className="bg-slate-900/50 p-4 rounded-xl border border-slate-800/60 group hover:border-slate-700 transition-all">
-                    <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{f.label}</span>
-                        <div className="relative group/tooltip">
-                        <Info className="w-3 h-3 text-slate-600 cursor-help" />
-                        <div className="absolute bottom-full left-0 mb-2 hidden group-hover/tooltip:block w-48 p-2 bg-slate-800 text-[10px] text-slate-300 rounded border border-slate-700 shadow-2xl z-50 pointer-events-none">
-                            <p className="font-semibold text-indigo-400 mb-1">Usage:</p>
-                            {f.tooltip}
+                <Card key={f.id} className="group hover:border-slate-300 dark:hover:border-slate-700 transition-all">
+                    <CardContent className="p-4 space-y-3">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{f.label}</span>
+                                <div className="relative group/tooltip">
+                                <Info className="w-3 h-3 text-slate-400 cursor-help" />
+                                <div className="absolute bottom-full left-0 mb-2 hidden group-hover/tooltip:block w-48 p-2 bg-slate-800 text-[10px] text-slate-200 rounded border border-slate-700 shadow-xl z-50 pointer-events-none">
+                                    <p className="font-semibold text-indigo-400 mb-1">Usage:</p>
+                                    {f.tooltip}
+                                </div>
+                                </div>
+                            </div>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleCopy(String(f.value), f.id)}
+                                className={`h-6 w-6 ${
+                                copiedId === f.id ? 'text-green-600' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
+                                }`}
+                            >
+                                {copiedId === f.id ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                            </Button>
                         </div>
+                        <div className="font-mono text-sm text-indigo-600 dark:text-indigo-300 break-all bg-slate-50 dark:bg-slate-900/50 p-2 rounded border border-slate-200 dark:border-slate-800/50">
+                            {f.value}
                         </div>
-                    </div>
-                    <button
-                        onClick={() => handleCopy(f.value, f.id)}
-                        className={`p-1.5 rounded-lg transition-all ${
-                        copiedId === f.id ? 'bg-green-600 text-white' : 'hover:bg-slate-800 text-slate-500 group-hover:text-slate-300'
-                        }`}
-                    >
-                        {copiedId === f.id ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                    </button>
-                    </div>
-                    <div className="font-mono text-sm text-indigo-200/90 break-all bg-slate-950/50 p-3 rounded-lg border border-slate-800/30">
-                    {f.value}
-                    </div>
-                </div>
+                    </CardContent>
+                </Card>
                 ))}
             </div>
          </div>

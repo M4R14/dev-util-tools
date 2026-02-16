@@ -2,6 +2,8 @@
 import React, { useState } from 'react';
 import { Copy, Trash2, AlignLeft, Minimize2, Check } from 'lucide-react';
 import ToolLayout from '../ui/ToolLayout';
+import { Button } from '../ui/Button';
+import { Textarea } from '../ui/Textarea';
 
 const JSONFormatter: React.FC = () => {
   const [input, setInput] = useState('');
@@ -44,49 +46,57 @@ const JSONFormatter: React.FC = () => {
             <>
               {/* Toolbar */}
               <div className="flex gap-2 mr-4 border-r border-slate-700 pr-4">
-                <button 
+                <Button 
+                    variant="outline"
+                    size="sm"
                     onClick={() => formatJSON(2)} 
-                    className="flex items-center gap-2 px-3 py-1.5 bg-indigo-600/20 hover:bg-indigo-600/40 hover:text-indigo-300 text-indigo-400 rounded-lg text-xs font-medium transition-colors border border-indigo-500/20"
+                    className="flex items-center gap-2 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-400 hover:text-indigo-300 border-indigo-500/20"
                 >
                     <AlignLeft className="w-3.5 h-3.5" /> Format
-                </button>
-                <button 
+                </Button>
+                <Button 
+                    variant="outline"
+                    size="sm"
                     onClick={minifyJSON} 
-                    className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium transition-colors border border-slate-700"
+                    className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700"
                 >
                     <Minimize2 className="w-3.5 h-3.5" /> Minify
-                </button>
+                </Button>
               </div>
             
               <div className="flex gap-2">
-                <button 
+                <Button 
+                    variant="ghost"
+                    size="icon"
                     onClick={copyToClipboard}
-                    className="p-1.5 text-slate-400 hover:text-white transition-colors hover:bg-slate-800 rounded-md"
+                    className="text-slate-400 hover:text-white hover:bg-slate-800 h-8 w-8"
                     title="Copy Result"
                 >
                     {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-                </button>
-                <button 
+                </Button>
+                <Button 
+                    variant="ghost"
+                    size="icon"
                     onClick={() => setInput('')}
-                    className="p-1.5 text-slate-400 hover:text-red-400 transition-colors hover:bg-red-900/20 rounded-md"
+                    className="text-slate-400 hover:text-red-400 hover:bg-red-900/20 h-8 w-8"
                     title="Clear"
                 >
                     <Trash2 className="w-4 h-4" />
-                </button>
+                </Button>
               </div>
             </>
         }
         className={error ? 'border-red-500/50' : ''}
       >
         <div className="h-[calc(100vh-16rem)] min-h-[500px]">
-            <textarea
+            <Textarea
             value={input}
             onChange={(e) => {
                 setInput(e.target.value);
                 if (error) setError(null);
             }}
             placeholder="Paste your JSON here..."
-            className="w-full h-full bg-transparent border-none focus:ring-0 p-0 font-mono text-sm resize-none placeholder-slate-600"
+            className="w-full h-full bg-transparent border-none focus-visible:ring-0 p-0 font-mono text-sm resize-none placeholder-slate-600"
             />
             {error && (
             <div className="absolute bottom-4 left-4 right-4 p-3 bg-red-900/90 backdrop-blur border border-red-500/30 rounded-lg text-red-200 text-xs shadow-lg animate-in fade-in slide-in-from-bottom-2 flex items-center gap-2">

@@ -2,6 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Send, Loader2, Sparkles, Settings, Save, Trash2, Copy, Check, ChevronDown, ChevronUp, Code2 } from 'lucide-react';
 import { askGemini } from '../../services/gemini';
 import ToolLayout from '../ui/ToolLayout';
+import { Button } from '../ui/Button';
+import { Input } from '../ui/Input';
+import { Textarea } from '../ui/Textarea';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '../ui/Card';
+import { cn } from '../../lib/utils';
+
 
 const STORAGE_KEY = 'devpulse_secure_config';
 
@@ -40,21 +46,23 @@ const CodeBlock: React.FC<{ language: string, code: string }> = ({ language, cod
   };
 
   return (
-    <div className="rounded-lg overflow-hidden border border-slate-700 bg-slate-950/50 my-4">
-      <div className="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-700/50">
-        <span className="text-xs font-mono text-slate-400">{language || 'code'}</span>
-        <button 
+    <Card className="rounded-lg overflow-hidden border-border bg-muted/50 my-4 shadow-sm">
+      <div className="flex items-center justify-between px-4 py-2 bg-muted/80 border-b border-border/50">
+        <span className="text-xs font-mono text-muted-foreground">{language || 'code'}</span>
+        <Button 
+          variant="ghost"
+          size="sm"
           onClick={handleCopy}
-          className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-indigo-400 transition-colors"
+          className="h-6 gap-1.5 text-xs text-muted-foreground hover:text-foreground px-2"
         >
           {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
           {copied ? 'Copied!' : 'Copy'}
-        </button>
+        </Button>
       </div>
-      <pre className="p-4 overflow-x-auto text-sm font-mono text-slate-300 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+      <pre className="p-4 overflow-x-auto text-sm font-mono text-primary/90 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
         <code>{code}</code>
       </pre>
-    </div>
+    </Card>
   );
 };
 
@@ -148,107 +156,116 @@ const AIAssistant: React.FC = () => {
   return (
     <ToolLayout>
        {showSettings && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-slate-700/50 rounded-2xl p-6 w-full max-w-md shadow-2xl relative overflow-hidden animate-in fade-in zoom-in duration-200">
+        <div className="fixed inset-0 bg-background/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <Card className="w-full max-w-md shadow-2xl relative overflow-hidden animate-in fade-in zoom-in duration-200 border-border/50">
              {/* Glossy background effect */}
-             <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
 
-            <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2 relative z-10">
-              <Settings className="w-5 h-5 text-indigo-400" /> Settings
-            </h3>
-            <p className="text-sm text-slate-400 mb-6 relative z-10">
-              Configure your AI assistant. API keys are stored securely in your browser's local storage and are never sent to our servers.
-            </p>
+             <CardHeader className="relative z-10 pb-0">
+                <CardTitle className="flex items-center gap-2">
+                    <Settings className="w-5 h-5 text-primary" /> Settings
+                </CardTitle>
+                <CardDescription>
+                    Configure your AI assistant. API keys are stored securely in your browser's local storage and are never sent to our servers.
+                </CardDescription>
+             </CardHeader>
 
-            <div className="space-y-4 relative z-10">
+            <CardContent className="space-y-4 relative z-10 pt-6">
               <div>
-                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Gemini API Key</label>
+                <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Gemini API Key</label>
                 <div className="relative">
-                  <input 
+                  <Input 
                     type="password" 
                     value={tempKey}
                     onChange={(e) => setTempKey(e.target.value)}
                     placeholder="Provide your Gemini API Key..."
-                    className="w-full bg-slate-950/50 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all font-mono text-sm"
+                    className="font-mono text-sm"
                   />
                 </div>
-                <p className="mt-2 text-xs text-slate-500">
+                <p className="mt-2 text-xs text-muted-foreground">
                   Your key is obfuscated before storage to prevent casual inspection.
                 </p>
               </div>
 
               <div className="flex justify-end gap-3 pt-4">
 
-                <button 
+                <Button 
+                  variant="ghost"
                   onClick={() => setShowSettings(false)}
-                  className="px-4 py-2 text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-colors"
                 >
                   Cancel
-                </button>
-                <button 
+                </Button>
+                <Button 
                   onClick={handleSaveSettings}
-                  className="px-4 py-2 text-sm font-medium bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg transition-all shadow-lg shadow-indigo-600/20 flex items-center gap-2"
+                  className="gap-2"
                 >
                   <Save className="w-4 h-4" /> Save Configuration
-                </button>
+                </Button>
               </div>
-            </div>
+            </CardContent>
             
-            <div className="mt-6 pt-4 border-t border-slate-800/50 text-xs text-center text-slate-500 relative z-10">
-               Need an API key? <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-indigo-400 hover:text-indigo-300 hover:underline transition-colors">Get one from Google AI Studio</a>
-            </div>
-          </div>
+            <CardFooter className="pt-0 relative z-10 justify-center border-t border-border/50 mt-4 py-4">
+                 <div className="text-xs text-muted-foreground">
+                    Need an API key? <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline transition-colors">Get one from Google AI Studio</a>
+                 </div>
+            </CardFooter>
+          </Card>
         </div>
       )}
 
       <div className="flex flex-col h-[calc(100vh-10rem)] max-w-5xl mx-auto">
         <div className="flex-none mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-slate-200 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-indigo-400" /> 
-                <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">
+            <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-primary" /> 
+                <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-400">
                     AI Developer Assistant
                 </span>
             </h2>
             <div className="flex gap-2">
-                <button 
+                <Button 
+                    variant="ghost"
+                    size="icon"
                     onClick={handleClearChat}
-                    className="p-2 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-red-400 transition-colors"
+                    className="text-muted-foreground hover:text-destructive"
                     title="Clear Chat"
                 >
                     <Trash2 className="w-4 h-4" />
-                </button>
-                <button 
+                </Button>
+                <Button 
+                    variant="ghost"
+                    size="icon"
                     onClick={openSettings}
-                    className="p-2 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-indigo-400 transition-colors"
+                    className="text-muted-foreground hover:text-primary"
                     title="Settings"
                 >
                     <Settings className="w-4 h-4" />
-                </button>
+                </Button>
             </div>
         </div>
 
         {/* Chat Area */}
-        <div className="flex-1 bg-slate-900/50 border border-slate-800 rounded-2xl overflow-hidden flex flex-col relative shadow-inner">
+        <Card className="flex-1 overflow-hidden flex flex-col relative shadow-inner bg-muted/5 border-border">
             
             {/* Messages List */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-6 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
+            <div className="flex-1 overflow-y-auto p-4 space-y-6 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
                 {messages.length === 0 && (
                     <div className="h-full flex flex-col items-center justify-center text-center p-8 opacity-60">
-                        <div className="w-20 h-20 bg-slate-800/50 rounded-2xl flex items-center justify-center mb-6 shadow-xl shadow-black/20">
-                            <Sparkles className="w-10 h-10 text-indigo-400" />
+                        <div className="w-20 h-20 bg-muted/50 rounded-2xl flex items-center justify-center mb-6 shadow-xl shadow-black/10">
+                            <Sparkles className="w-10 h-10 text-primary" />
                         </div>
-                        <h3 className="text-lg font-medium text-slate-200 mb-2">How can I help you today?</h3>
-                        <p className="text-slate-400 max-w-sm mb-8">
+                        <h3 className="text-lg font-medium text-foreground mb-2">How can I help you today?</h3>
+                        <p className="text-muted-foreground max-w-sm mb-8">
                             I can analyze your code, explain complex concepts, find bugs, or help you refactor.
                         </p>
                         
                         {!apiKey && (
-                            <button 
+                            <Button 
+                                variant="outline"
                                 onClick={openSettings}
-                                className="px-4 py-2 bg-indigo-600/20 text-indigo-300 border border-indigo-500/30 rounded-lg text-sm hover:bg-indigo-600/30 transition-all flex items-center gap-2"
+                                className="gap-2"
                             >
                                 <Settings className="w-4 h-4" /> Configure API Key to Start
-                            </button>
+                            </Button>
                         )}
                     </div>
                 )}
@@ -256,27 +273,26 @@ const AIAssistant: React.FC = () => {
                 {messages.map((msg) => (
                     <div 
                         key={msg.id} 
-                        className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
+                        className={cn("flex gap-4", msg.role === 'user' ? 'flex-row-reverse' : '')}
                     >
-                        <div className={`
-                            w-8 h-8 rounded-full flex items-center justify-center shrink-0
-                            ${msg.role === 'user' ? 'bg-indigo-600' : 'bg-emerald-600'}
-                        `}>
+                        <div className={cn(
+                            "w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm",
+                            msg.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-green-600 text-white'
+                        )}>
                             {msg.role === 'user' ? (
-                                <div className="text-xs font-bold">YO</div> 
+                                <div className="text-xs font-bold">ME</div> 
                             ) : (
                                 <Sparkles className="w-4 h-4 text-white" />
                             )}
                         </div>
                         
-                        <div className={`
-                            max-w-[85%] rounded-2xl p-4 shadow-sm
-                            ${msg.role === 'user' 
-                                ? 'bg-indigo-600/10 border border-indigo-500/20 text-indigo-100 rounded-tr-none' 
-                                : 'bg-slate-800/50 border border-slate-700/50 text-slate-200 rounded-tl-none'
-                            }
-                        `}>
-                            <div className="prose prose-invert prose-sm max-w-none">
+                        <div className={cn(
+                            "max-w-[85%] rounded-2xl p-4 shadow-sm",
+                            msg.role === 'user' 
+                                ? 'bg-primary/10 border border-primary/20 text-foreground rounded-tr-none' 
+                                : 'bg-muted/50 border border-border text-foreground rounded-tl-none'
+                        )}>
+                            <div className="prose prose-invert prose-sm max-w-none text-foreground dark:prose-invert prose-slate">
                                 <MessageContent content={msg.content} />
                             </div>
                         </div>
@@ -285,10 +301,10 @@ const AIAssistant: React.FC = () => {
 
                 {loading && (
                     <div className="flex gap-4">
-                        <div className="w-8 h-8 rounded-full bg-emerald-600 flex items-center justify-center shrink-0 animate-pulse">
+                        <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center shrink-0 animate-pulse">
                             <Sparkles className="w-4 h-4 text-white" />
                         </div>
-                        <div className="bg-slate-800/50 border border-slate-700/50 rounded-2xl rounded-tl-none p-4 flex items-center gap-2 text-slate-400 text-sm">
+                        <div className="bg-muted/50 border border-border rounded-2xl rounded-tl-none p-4 flex items-center gap-2 text-muted-foreground text-sm">
                             <Loader2 className="w-4 h-4 animate-spin" /> Thinking...
                         </div>
                     </div>
@@ -296,7 +312,7 @@ const AIAssistant: React.FC = () => {
                 
                 {error && (
                     <div className="flex justify-center my-4">
-                        <div className="bg-red-900/20 border border-red-900/50 px-4 py-2 rounded-xl text-red-400 text-sm flex items-center gap-2">
+                        <div className="bg-destructive/10 border border-destructive/20 px-4 py-2 rounded-xl text-destructive text-sm flex items-center gap-2">
                             <Trash2 className="w-4 h-4" /> {error}
                         </div>
                     </div>
@@ -306,39 +322,44 @@ const AIAssistant: React.FC = () => {
             </div>
 
             {/* Input Area */}
-            <div className="p-4 bg-slate-950/30 border-t border-slate-800 backdrop-blur-sm">
+            <div className="p-4 bg-muted/30 border-t border-border backdrop-blur-sm">
                 
                 {/* Context Toggle */}
                 <div className="mb-2">
-                    <button 
+                    <Button 
+                        variant="ghost"
+                        size="sm"
                         onClick={() => setIsContextOpen(!isContextOpen)}
-                        className={`flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-lg transition-all ${
+                        className={cn("text-xs font-medium h-8 gap-2", 
                             isContextOpen || codeContext 
-                                ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20' 
-                                : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800'
-                        }`}
+                                ? 'bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 hover:text-primary' 
+                                : 'text-muted-foreground hover:text-foreground'
+                        )}
                     >
                        <Code2 className="w-3.5 h-3.5" />
                        {isContextOpen ? 'Hide Context' : codeContext ? 'Context Active' : 'Add Context Code'}
                        {isContextOpen ? <ChevronDown className="w-3 h-3" /> : <ChevronUp className="w-3 h-3" />}
-                    </button>
+                    </Button>
                     
                     {isContextOpen && (
                         <div className="mt-2 animate-in slide-in-from-top-2 duration-200">
-                             <ToolLayout.Panel className="min-h-[150px] shadow-lg border-indigo-500/20">
-                                <textarea
+                             <Card className="shadow-lg border-primary/20 bg-muted/50">
+                                <Textarea
                                     value={codeContext}
                                     onChange={(e) => setCodeContext(e.target.value)}
                                     placeholder="Paste relevant code snippets here for context..."
-                                    className="w-full h-32 bg-transparent border-none focus:ring-0 p-2 font-mono text-sm resize-none placeholder-slate-600 text-slate-300"
+                                    className="min-h-[150px] border-0 bg-transparent focus-visible:ring-0 font-mono text-sm resize-none"
                                 />
-                             </ToolLayout.Panel>
+                             </Card>
                         </div>
                     )}
                 </div>
 
-                <div className="relative flex items-end gap-2 bg-slate-900 border border-slate-700 rounded-xl p-2 focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500/50 transition-all shadow-lg">
-                    <textarea
+                <div className={cn(
+                    "relative flex items-end gap-2 rounded-xl p-2 border border-input bg-background transition-all shadow-sm",
+                    "focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2"
+                )}>
+                    <Textarea
                         value={prompt}
                         onChange={(e) => setPrompt(e.target.value)}
                         onKeyDown={(e) => {
@@ -348,23 +369,24 @@ const AIAssistant: React.FC = () => {
                            }
                         }}
                         placeholder="Ask a question..."
-                        className="w-full max-h-32 min-h-[44px] bg-transparent border-none focus:ring-0 p-2 text-sm resize-none placeholder-slate-500 text-slate-200"
+                        className="w-full min-h-[44px] max-h-32 bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 p-2 text-sm resize-none shadow-none"
                         style={{ height: 'auto' }}
                         rows={1}
                     />
-                    <button
+                    <Button
                         onClick={handleAsk}
                         disabled={loading || !prompt.trim() || !apiKey}
-                        className="p-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-800 disabled:text-slate-600 disabled:cursor-not-allowed text-white rounded-lg transition-all shadow-lg shadow-indigo-600/20 shrink-0 mb-0.5"
+                        size="icon"
+                        className="shrink-0 mb-0.5 shadow-sm"
                     >
                         {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-                    </button>
+                    </Button>
                 </div>
-                <div className="text-[10px] text-slate-600 text-center mt-2">
-                    Start with <span className="font-mono bg-slate-800 px-1 rounded text-slate-400">Context</span> to give the AI code awareness. Press <span className="font-mono bg-slate-800 px-1 rounded text-slate-400">Enter</span> to send.
+                <div className="text-[10px] text-muted-foreground text-center mt-2">
+                    Start with <span className="font-mono bg-muted px-1 rounded text-foreground">Context</span> to give the AI code awareness. Press <span className="font-mono bg-muted px-1 rounded text-foreground">Enter</span> to send.
                 </div>
             </div>
-        </div>
+        </Card>
       </div>
     </ToolLayout>
   );
