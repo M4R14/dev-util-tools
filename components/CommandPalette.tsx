@@ -72,16 +72,16 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, tools 
     <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[20vh] px-4">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm transition-opacity"
+        className="absolute inset-0 bg-background/80 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-2xl bg-slate-900 border border-slate-700 rounded-xl shadow-2xl shadow-black/50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="relative w-full max-w-2xl bg-popover border border-border rounded-xl shadow-2xl shadow-black/20 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         
         {/* Search Input */}
-        <div className="flex items-center gap-3 px-4 py-4 border-b border-slate-700/50">
-          <Search className="w-5 h-5 text-slate-400" />
+        <div className="flex items-center gap-3 px-4 py-4 border-b border-border/50">
+          <Search className="w-5 h-5 text-muted-foreground" />
           <input
             ref={inputRef}
             type="text"
@@ -89,13 +89,13 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, tools 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="flex-1 bg-transparent text-lg text-slate-200 placeholder-slate-500 outline-none border-none focus:ring-0"
+            className="flex-1 bg-transparent text-lg text-foreground placeholder-muted-foreground outline-none border-none focus:ring-0"
           />
           <div className="flex items-center gap-2">
-            <kbd className="hidden md:inline-flex h-6 px-2 items-center bg-slate-800 border border-slate-700 rounded text-xs text-slate-400 font-mono">
+            <kbd className="hidden md:inline-flex h-6 px-2 items-center bg-muted border border-border rounded text-xs text-muted-foreground font-mono">
               ESC
             </kbd>
-            <button onClick={onClose} className="p-1 hover:bg-slate-800 rounded-md text-slate-400 hover:text-white transition-colors">
+            <button onClick={onClose} className="p-1 hover:bg-muted rounded-md text-muted-foreground hover:text-foreground transition-colors">
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -112,42 +112,42 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, tools 
                     onMouseEnter={() => setSelectedIndex(index)}
                     className={`w-full flex items-center gap-4 px-4 py-3 rounded-lg text-left transition-all ${
                         index === selectedIndex 
-                        ? 'bg-indigo-600/20 text-indigo-300 border border-indigo-500/30' 
-                        : 'text-slate-400 hover:bg-slate-800/50 border border-transparent'
+                        ? 'bg-primary/20 text-primary border border-primary/30' 
+                        : 'text-muted-foreground hover:bg-muted/50 border border-transparent'
                     }`}
                   >
-                    <div className={`p-2 rounded-lg ${index === selectedIndex ? 'bg-indigo-500/20 text-indigo-300' : 'bg-slate-800 text-slate-500'}`}>
+                    <div className={`p-2 rounded-lg ${index === selectedIndex ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground'}`}>
                       {tool.icon}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-medium text-slate-200 truncate flex items-center justify-between">
+                      <div className="font-medium text-foreground truncate flex items-center justify-between">
                          {tool.name}
                          {index === selectedIndex && <ArrowRight className="w-4 h-4 opacity-50" />}
                       </div>
-                      <div className="text-xs text-slate-500 truncate">{tool.description}</div>
+                      <div className="text-xs text-muted-foreground truncate">{tool.description}</div>
                     </div>
                   </button>
                 </li>
               ))}
             </ul>
           ) : (
-            <div className="py-12 px-4 text-center text-slate-500">
+            <div className="py-12 px-4 text-center text-muted-foreground">
               <Command className="w-12 h-12 mx-auto mb-4 opacity-20" />
-              <p>No commands found matching "<span className="text-slate-300">{searchTerm}</span>"</p>
+              <p>No commands found matching "<span className="text-foreground">{searchTerm}</span>"</p>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="px-4 py-3 bg-slate-950/50 border-t border-slate-800/50 text-xs text-slate-500 flex items-center justify-between">
+        <div className="px-4 py-3 bg-muted/50 border-t border-border/50 text-xs text-muted-foreground flex items-center justify-between">
             <div className="flex items-center gap-4">
                 <span className="flex items-center gap-1.5">
-                    <kbd className="bg-slate-800 border border-slate-700 rounded px-1.5 py-0.5 font-mono text-[10px]">↑</kbd>
-                    <kbd className="bg-slate-800 border border-slate-700 rounded px-1.5 py-0.5 font-mono text-[10px]">↓</kbd>
+                    <kbd className="bg-muted border border-border rounded px-1.5 py-0.5 font-mono text-[10px]">↑</kbd>
+                    <kbd className="bg-muted border border-border rounded px-1.5 py-0.5 font-mono text-[10px]">↓</kbd>
                     to navigate
                 </span>
                 <span className="flex items-center gap-1.5">
-                    <kbd className="bg-slate-800 border border-slate-700 rounded px-1.5 py-0.5 font-mono text-[10px]">↵</kbd>
+                    <kbd className="bg-muted border border-border rounded px-1.5 py-0.5 font-mono text-[10px]">↵</kbd>
                     to select
                 </span>
             </div>

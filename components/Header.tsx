@@ -27,25 +27,25 @@ const Header: React.FC<HeaderProps> = ({
   const { theme, toggleTheme } = useTheme();
 
   return (
-    <header className="h-16 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between px-4 md:px-8 transition-colors">
+    <header className="h-16 border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between px-4 md:px-8 transition-colors">
       <div className="flex items-center gap-4">
         <Button 
           variant="ghost" 
           size="icon"
           onClick={onToggleSidebar}
-          className="md:hidden text-slate-500 dark:text-slate-400"
+          className="md:hidden text-muted-foreground"
         >
           <Menu className="w-6 h-6" />
         </Button>
         
-        <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200 hidden md:flex items-center gap-3">
+        <h2 className="text-xl font-semibold text-foreground hidden md:flex items-center gap-3">
           {title}
           {onToggleFavorite && (
             <Button 
               variant="ghost" 
               size="icon"
               onClick={onToggleFavorite}
-              className={`rounded-full ${isFavorite ? 'text-amber-400 hover:text-amber-500' : 'text-slate-300 dark:text-slate-600 hover:text-slate-400'}`}
+              className={`rounded-full ${isFavorite ? 'text-amber-400 hover:text-amber-500' : 'text-muted-foreground/30 hover:text-muted-foreground'}`}
               title={isFavorite ? "Remove from Favorites" : "Add to Favorites"}
             >
               <Star className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
@@ -57,13 +57,13 @@ const Header: React.FC<HeaderProps> = ({
       <div className="flex-1 max-w-xl px-8 hidden md:block">
         {showSearch && onSearch && (
           <div className="relative group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors z-10" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors z-10" />
             <Input
               type="text"
               placeholder="Search tools (Cmd+K)..."
               value={searchTerm}
               onChange={(e) => onSearch(e.target.value)}
-              className="pl-10 bg-slate-100 dark:bg-slate-800 border-transparent focus-visible:ring-indigo-500/20"
+              className="pl-10 bg-muted border-transparent focus-visible:ring-primary/20"
             />
           </div>
         )}
@@ -74,7 +74,7 @@ const Header: React.FC<HeaderProps> = ({
           variant="ghost"
           size="icon"
           onClick={toggleTheme}
-          className="text-slate-500 dark:text-slate-400 rounded-full"
+          className="text-muted-foreground rounded-full"
           title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
         >
           {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
@@ -84,7 +84,7 @@ const Header: React.FC<HeaderProps> = ({
           variant="ghost"
           size="icon"
           asChild
-          className="text-slate-500 dark:text-slate-400 rounded-full"
+          className="text-muted-foreground rounded-full"
         >
           <a 
             href="https://github.com/StartYourProject/DevPulse" 

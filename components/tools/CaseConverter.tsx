@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
 import { Copy, Check } from 'lucide-react';
 import ToolLayout from '../ui/ToolLayout';
 import { Button } from '../ui/Button';
 import { Textarea } from '../ui/Textarea';
 import { Card, CardContent } from '../ui/Card';
+import { cn } from '../../lib/utils';
 
 const CaseConverter: React.FC = () => {
   const [text, setText] = useState('');
@@ -38,31 +38,33 @@ const CaseConverter: React.FC = () => {
       </ToolLayout.Section>
 
       <div className="space-y-4">
-        <h3 className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider flex items-center justify-between">
             Conversions
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {conversions.map((conv) => {
             const result = conv.fn ? conv.fn(text) : '';
             return (
-                <Card key={conv.label} className="group hover:border-slate-300 dark:hover:border-slate-700 transition-colors">
+                <Card key={conv.label} className="group hover:border-primary/50 transition-colors">
                  <CardContent className="p-4 space-y-2">
                     <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{conv.label}</span>
+                        <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{conv.label}</span>
                         <Button 
                         variant="ghost"
                         size="icon"
                         disabled={!result}
-                        onClick={() => handleCopy(result, conv.label)}
-                        className={`h-7 w-7 ${
-                            copiedId === conv.label ? 'text-green-600 dark:text-green-500' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
-                        } disabled:opacity-0`}
+                        onClick={() => {
+                            if (result) handleCopy(result, conv.label);
+                        }}
+                        className={cn("h-7 w-7 disabled:opacity-0",
+                            copiedId === conv.label ? "text-green-500" : "text-muted-foreground hover:text-foreground"
+                        )}
                         >
                         {copiedId === conv.label ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                         </Button>
                     </div>
-                    <div className="font-mono text-sm truncate text-indigo-600 dark:text-indigo-400 min-h-[1.5rem]" title={result}>
-                        {result || <span className="text-slate-300 dark:text-slate-700 select-none">...</span>}
+                    <div className="font-mono text-sm truncate text-primary min-h-[1.5rem]" title={result}>
+                        {result || <span className="text-muted/50 select-none">...</span>}
                     </div>
                  </CardContent>
                 </Card>

@@ -1,9 +1,9 @@
-
 import React, { useState, useEffect } from 'react';
 import { Copy, RefreshCw, Check, ShieldCheck, ShieldAlert } from 'lucide-react';
 import ToolLayout from '../ui/ToolLayout';
 import { Button } from '../ui/Button';
 import { Card, CardContent } from '../ui/Card';
+import { cn } from '../../lib/utils';
 
 const PasswordGenerator: React.FC = () => {
   const [length, setLength] = useState(16);
@@ -46,7 +46,7 @@ const PasswordGenerator: React.FC = () => {
   const getStrength = () => {
     const activeOptions = [includeUpper, includeLower, includeNumbers, includeSymbols].filter(Boolean).length;
     if (length < 8 || activeOptions < 2) return { 
-      label: 'Weak', color: 'bg-red-500', icon: <ShieldAlert className="w-4 h-4" />, textColor: 'text-red-500' };
+      label: 'Weak', color: 'bg-destructive', icon: <ShieldAlert className="w-4 h-4" />, textColor: 'text-destructive' };
     if (length < 12 || activeOptions < 3) return { 
       label: 'Medium', color: 'bg-yellow-500', icon: <ShieldAlert className="w-4 h-4" />, textColor: 'text-yellow-500'
     };
@@ -62,9 +62,9 @@ const PasswordGenerator: React.FC = () => {
       <div className="space-y-6">
         {/* Result Area */}
         <div className="space-y-2">
-            <Card className="border-2 border-slate-200 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-500 transition-colors">
+            <Card className="border-2 border-border hover:border-primary transition-colors">
                 <CardContent className="p-6 flex items-center justify-between gap-4">
-                    <div className="font-mono text-xl md:text-2xl text-slate-800 dark:text-white break-all flex-1">
+                    <div className="font-mono text-xl md:text-2xl text-foreground break-all flex-1">
                         {password}
                     </div>
                     <div className="flex gap-2 shrink-0">
@@ -73,7 +73,7 @@ const PasswordGenerator: React.FC = () => {
                             size="icon"
                             onClick={() => { generatePassword(); }}
                             title="Regenerate"
-                            className="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"
+                            className="bg-muted hover:bg-muted/80"
                         >
                             <RefreshCw className="w-5 h-5" />
                         </Button>
@@ -82,7 +82,7 @@ const PasswordGenerator: React.FC = () => {
                             size="icon"
                             onClick={copy}
                             title="Copy"
-                            className={copied ? "bg-green-600 hover:bg-green-700" : "bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700"}
+                            className={copied ? "bg-green-600 hover:bg-green-700" : "bg-muted hover:bg-muted/80"}
                         >
                             {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
                         </Button>
@@ -91,7 +91,7 @@ const PasswordGenerator: React.FC = () => {
             </Card>
             
             <div className="flex items-center gap-3 px-1">
-                <div className="flex-1 h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden">
+                <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                     <div 
                         className={`h-full transition-all duration-500 ${strength.color}`} 
                         style={{ width: `${Math.min((length / 32) * 100, 100)}%` }}
@@ -108,8 +108,8 @@ const PasswordGenerator: React.FC = () => {
             <div className="p-6 space-y-8">
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                        <label className="text-sm font-semibold text-slate-700 dark:text-slate-400">Password Length</label>
-                        <span className="text-indigo-600 dark:text-indigo-400 font-mono text-lg font-bold">{length}</span>
+                        <label className="text-sm font-semibold text-foreground">Password Length</label>
+                        <span className="text-primary font-mono text-lg font-bold">{length}</span>
                     </div>
                     <input 
                         type="range" 
@@ -117,7 +117,7 @@ const PasswordGenerator: React.FC = () => {
                         max="64" 
                         value={length} 
                         onChange={(e) => setLength(parseInt(e.target.value))}
-                        className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+                        className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer accent-primary"
                     />
                 </div>
 
@@ -130,20 +130,20 @@ const PasswordGenerator: React.FC = () => {
                 ].map((opt) => (
                     <label 
                         key={opt.id}
-                        className={`flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-all ${
+                        className={cn("flex items-center justify-between p-4 rounded-xl border cursor-pointer transition-all",
                             opt.checked 
-                                ? 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-200 dark:border-indigo-500/50' 
-                                : 'bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
-                        }`}
+                                ? "bg-primary/10 border-primary/20" 
+                                : "bg-card border-border hover:border-border/80"
+                        )}
                     >
-                        <span className={`font-medium ${opt.checked ? 'text-indigo-700 dark:text-indigo-300' : 'text-slate-600 dark:text-slate-400'}`}>
+                        <span className={cn("font-medium", opt.checked ? "text-primary" : "text-muted-foreground")}>
                             {opt.label}
                         </span>
                         <input 
                             type="checkbox" 
                             checked={opt.checked}
                             onChange={(e) => opt.set(e.target.checked)}
-                            className="w-5 h-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                            className="w-5 h-5 rounded border-border text-primary focus:ring-primary"
                         />
                     </label>
                 ))}

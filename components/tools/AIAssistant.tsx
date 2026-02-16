@@ -29,7 +29,7 @@ const MessageContent: React.FC<{ content: string }> = ({ content }) => {
         }
         // Basic paragraph handling
         return part.split('\n\n').map((p, i) => (
-             p.trim() && <p key={`${index}-${i}`} className="whitespace-pre-wrap leading-relaxed text-slate-300">{p}</p>
+             p.trim() && <p key={`${index}-${i}`} className="whitespace-pre-wrap leading-relaxed text-foreground/90">{p}</p>
         ));
       })}
     </div>

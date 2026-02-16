@@ -55,7 +55,7 @@ const Base64Tool: React.FC = () => {
                   variant="ghost"
                   size="icon"
                   onClick={() => copy(text, 'text')}
-                  className="h-8 w-8 text-slate-400 hover:text-white"
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
                   title="Copy Text"
                 >
                   {copyState === 'text' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
@@ -66,7 +66,7 @@ const Base64Tool: React.FC = () => {
             value={text}
             onChange={(e) => handleTextChange(e.target.value)}
             placeholder="Type here..."
-            className="w-full h-full bg-transparent border-none focus-visible:ring-0 p-0 font-mono text-sm resize-none placeholder-slate-400 dark:placeholder-slate-600 shadow-none"
+            className="w-full h-full bg-transparent border-none focus-visible:ring-0 p-0 font-mono text-sm resize-none placeholder-muted-foreground shadow-none"
           />
         </ToolLayout.Panel>
 
@@ -79,22 +79,22 @@ const Base64Tool: React.FC = () => {
                   variant="ghost"
                   size="icon"
                   onClick={() => copy(base64, 'base64')}
-                  className="h-8 w-8 text-slate-400 hover:text-white"
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground"
                   title="Copy Base64"
                 >
                   {copyState === 'base64' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
                 </Button>
             }
-            className={error ? 'border-red-500/50 box-border' : ''}
+            className={error ? 'border-destructive/50 box-border' : ''}
         >
           <Textarea
             value={base64}
             onChange={(e) => handleBase64Change(e.target.value)}
             placeholder="Base64 result..."
-            className="w-full h-full bg-transparent border-none focus-visible:ring-0 p-0 font-mono text-sm resize-none placeholder-slate-400 dark:placeholder-slate-600 shadow-none"
+            className="w-full h-full bg-transparent border-none focus-visible:ring-0 p-0 font-mono text-sm resize-none placeholder-muted-foreground shadow-none"
           />
           {error && (
-            <div className="absolute bottom-4 left-4 right-4 p-3 bg-red-900/90 backdrop-blur border border-red-500/30 rounded-lg text-red-200 text-xs shadow-lg animate-in fade-in slide-in-from-bottom-2">
+            <div className="absolute bottom-4 left-4 right-4 p-3 bg-destructive/90 backdrop-blur border border-destructive/30 rounded-lg text-destructive-foreground text-xs shadow-lg animate-in fade-in slide-in-from-bottom-2">
               {error}
             </div>
           )}

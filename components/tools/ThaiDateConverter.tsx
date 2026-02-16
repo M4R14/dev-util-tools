@@ -5,6 +5,7 @@ import ToolLayout from '../ui/ToolLayout';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Card, CardContent } from '../ui/Card';
+import { cn } from '@/lib/utils';
 
 const ThaiDateConverter: React.FC = () => {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -152,10 +153,10 @@ const ThaiDateConverter: React.FC = () => {
   return (
     <ToolLayout>
       <ToolLayout.Section title="Reverse Parser (Thai String → ISO)">
-        <Card className="border-dashed border-indigo-200 dark:border-indigo-500/30 bg-indigo-50/50 dark:bg-slate-950/50">
+        <Card className="border-dashed border-primary/20 bg-primary/5">
           <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Input Thai Date String</label>
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Input Thai Date String</label>
                 <div className="relative">
                 <Input
                     type="text"
@@ -164,18 +165,18 @@ const ThaiDateConverter: React.FC = () => {
                     placeholder="เช่น 16 กุมภาพันธ์ 2569"
                     className="pl-10"
                 />
-                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
                 </div>
             </div>
 
             <div className="space-y-2">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Converted ISO Date</label>
-                <div className={`w-full h-10 border rounded-md px-3 flex items-center justify-between transition-all ${
+                <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Converted ISO Date</label>
+                <div className={cn("w-full h-10 border rounded-md px-3 flex items-center justify-between transition-all",
                     parseResult 
-                        ? 'border-green-500/50 bg-green-50 dark:bg-green-500/10' 
-                        : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 opacity-50'
-                }`}>
-                <div className="font-mono text-sm text-indigo-600 dark:text-indigo-300">
+                        ? "border-green-500/50 bg-green-500/10"
+                        : "border-border bg-muted/50 opacity-50"
+                )}>
+                <div className="font-mono text-sm text-primary">
                     {parseResult ? parseResult.formatted : 'Waiting for input...'}
                 </div>
                 {parseResult && (
@@ -183,7 +184,7 @@ const ThaiDateConverter: React.FC = () => {
                         variant="ghost"
                         size="icon"
                         onClick={() => handleCopy(parseResult.formatted, 'parsed-result')}
-                        className={`h-7 w-7 ${copiedId === 'parsed-result' ? 'text-green-600' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'}`}
+                        className={cn("h-7 w-7", copiedId === 'parsed-result' ? "text-green-600" : "text-muted-foreground hover:text-foreground")}
                     >
                     {copiedId === 'parsed-result' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                     </Button>
@@ -201,13 +202,13 @@ const ThaiDateConverter: React.FC = () => {
                 variant="ghost"
                 size="sm"
                 onClick={resetToday}
-                className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/20"
+                className="text-xs text-primary hover:text-primary/80 hover:bg-primary/10"
             >
                 <RotateCcw className="w-3.5 h-3.5 mr-2" /> Today
             </Button>
         }
       >
-         <div className="p-6 bg-white dark:bg-slate-950">
+         <div className="p-6 bg-card">
             <div className="mb-6">
                  <Input
                     type="date"
@@ -219,15 +220,15 @@ const ThaiDateConverter: React.FC = () => {
           
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {formats.map((f) => (
-                <Card key={f.id} className="group hover:border-slate-300 dark:hover:border-slate-700 transition-all">
+                <Card key={f.id} className="group hover:border-primary/50 transition-all">
                     <CardContent className="p-4 space-y-3">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{f.label}</span>
+                                <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{f.label}</span>
                                 <div className="relative group/tooltip">
-                                <Info className="w-3 h-3 text-slate-400 cursor-help" />
-                                <div className="absolute bottom-full left-0 mb-2 hidden group-hover/tooltip:block w-48 p-2 bg-slate-800 text-[10px] text-slate-200 rounded border border-slate-700 shadow-xl z-50 pointer-events-none">
-                                    <p className="font-semibold text-indigo-400 mb-1">Usage:</p>
+                                <Info className="w-3 h-3 text-muted-foreground cursor-help" />
+                                <div className="absolute bottom-full left-0 mb-2 hidden group-hover/tooltip:block w-48 p-2 bg-popover text-[10px] text-popover-foreground rounded border border-border shadow-xl z-50 pointer-events-none">
+                                    <p className="font-semibold text-primary mb-1">Usage:</p>
                                     {f.tooltip}
                                 </div>
                                 </div>
@@ -236,14 +237,14 @@ const ThaiDateConverter: React.FC = () => {
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => handleCopy(String(f.value), f.id)}
-                                className={`h-6 w-6 ${
-                                copiedId === f.id ? 'text-green-600' : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
-                                }`}
+                                className={cn("h-6 w-6",
+                                copiedId === f.id ? "text-green-600" : "text-muted-foreground hover:text-foreground"
+                                )}
                             >
                                 {copiedId === f.id ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                             </Button>
                         </div>
-                        <div className="font-mono text-sm text-indigo-600 dark:text-indigo-300 break-all bg-slate-50 dark:bg-slate-900/50 p-2 rounded border border-slate-200 dark:border-slate-800/50">
+                        <div className="font-mono text-sm text-primary break-all bg-muted/50 p-2 rounded border border-border">
                             {f.value}
                         </div>
                     </CardContent>

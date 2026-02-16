@@ -207,14 +207,20 @@ const TimezoneConverter: React.FC = () => {
           </div>
 
           {/* Result Panel */}
-          <Card className="bg-primary/5 dark:bg-primary/10 border-primary/20">
+          <Card className="bg-primary/5 border-primary/20">
             <CardContent className="p-6 relative group">
                 <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
                     <Button
                         variant="ghost" 
                         size="icon"
-                        onClick={copyToClipboard}
-                        className="h-8 w-8"
+                        onClick={() => {
+                            if(result) {
+                                navigator.clipboard.writeText(result);
+                                setCopied(true);
+                                setTimeout(() => setCopied(false), 2000);
+                            }
+                        }}
+                        className="h-8 w-8 text-primary hover:text-primary/80"
                         title="Copy full date"
                     >
                         {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
