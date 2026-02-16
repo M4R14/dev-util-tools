@@ -65,11 +65,13 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[20vh] px-4">
+    <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[20vh] px-4" role="dialog" aria-modal="true" 
+    aria-label="Command palette">
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-background/80 backdrop-blur-sm transition-opacity"
         onClick={onClose}
+        aria-hidden="true"
       />
 
       {/* Modal */}
@@ -86,13 +88,18 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
             onChange={(e) => setSearchTerm(e.target.value)}
             onKeyDown={handleKeyDown}
             className="flex-1 bg-transparent text-lg text-foreground placeholder-muted-foreground outline-none border-none focus:ring-0"
+            aria-label="Search commands"
+            role="combobox"
+            aria-expanded="true"
+            aria-controls="command-palette-list"
+            aria-activedescendant={filteredTools[selectedIndex] ? `command-item-${filteredTools[selectedIndex].id}` : undefined}
           />
           <div className="flex items-center gap-2">
             <kbd className="hidden md:inline-flex h-6 px-2 items-center bg-muted border border-border rounded text-xs text-muted-foreground font-mono">
               ESC
             </kbd>
-            <button onClick={onClose} className="p-1 hover:bg-muted rounded-md text-muted-foreground hover:text-foreground transition-colors">
-              <X className="w-5 h-5" />
+            <button onClick={onClose} className="p-1 hover:bg-muted rounded-md text-muted-foreground hover:text-foreground transition-colors" aria-label="Close command palette">
+              <X className="w-5 h-5" aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -100,12 +107,13 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
         {/* Results */}
         <div className="max-h-[60vh] overflow-y-auto">
           {filteredTools.length > 0 ? (
-            <ul ref={listRef} className="p-2 space-y-1">
+            <ul ref={listRef} className="p-2 space-y-1" role="listbox" id="command-palette-list" aria-label="Available commands">
               {filteredTools.map((tool, index) => (
-                <li key={tool.id}>
+                <li key={tool.id} role="option" id={`command-item-${tool.id}`} aria-selected={index === selectedIndex}>
                   <button
                     onClick={() => handleSelect(tool.id)}
                     onMouseEnter={() => setSelectedIndex(index)}
+                    tabIndex={-1}
                     className={`w-full flex items-center gap-4 px-4 py-3 rounded-lg text-left transition-all ${
                         index === selectedIndex 
                         ? 'bg-primary/20 text-primary border border-primary/30' 

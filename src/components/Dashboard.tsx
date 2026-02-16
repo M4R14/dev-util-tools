@@ -58,6 +58,7 @@ const Dashboard: React.FC = () => {
               placeholder="Search tools (e.g., json, base64, ai)..."
               className="w-full bg-transparent border-none focus:ring-0 text-foreground placeholder-muted-foreground text-lg px-4 h-12"
               autoFocus
+              aria-label="Search developer tools"
             />
             <div className="hidden sm:flex px-3 py-1 bg-muted rounded-lg text-xs font-medium text-muted-foreground border border-border">
               Cmd + K
@@ -158,12 +159,14 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, isFavorite, onToggleFavorite 
             onToggleFavorite(tool.id);
           }}
           className={`p-1.5 rounded-full hover:bg-muted transition-colors ${isFavorite ? 'text-amber-400' : 'text-muted-foreground'}`}
+          aria-label={isFavorite ? `Remove ${tool.name} from favorites` : `Add ${tool.name} to favorites`}
+          aria-pressed={isFavorite}
         >
-          <Star className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
+          <Star className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} aria-hidden="true" />
         </button>
       </div>
 
-      <NavLink to={`/${tool.id}`} className="flex-1 p-6 flex flex-col">
+      <NavLink to={`/${tool.id}`} className="flex-1 p-6 flex flex-col" aria-label={`Open ${tool.name}`}>
         <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
            {React.isValidElement(tool.icon) ? React.cloneElement(tool.icon as React.ReactElement<{ className?: string }>, { className: "w-6 h-6" }) : tool.icon}
         </div>

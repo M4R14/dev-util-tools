@@ -186,6 +186,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         <div 
           className="fixed inset-0 bg-slate-900/60 z-40 md:hidden backdrop-blur-sm transition-opacity"
           onClick={onClose}
+          aria-hidden="true"
         />
       )}
 
@@ -195,6 +196,8 @@ const Sidebar: React.FC<SidebarProps> = ({
           isOpen ? 'translate-x-0' : '-translate-x-full',
           "md:translate-x-0"
         )}
+        role="navigation"
+        aria-label="Main navigation"
       >
         {/* Brand */}
         <NavLink
@@ -216,13 +219,14 @@ const Sidebar: React.FC<SidebarProps> = ({
         {/* Search */}
         <div className="px-3 py-3">
           <div className="relative group">
-            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground group-focus-within:text-foreground transition-colors" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground group-focus-within:text-foreground transition-colors" aria-hidden="true" />
             <Input
               type="text"
               placeholder="Search tools..."
               value={searchTerm}
               onChange={(e) => onSearch(e.target.value)}
               className="h-9 pl-8 text-sm bg-muted/40 border-transparent focus:bg-background focus:border-input shadow-none transition-all placeholder:text-muted-foreground/70"
+              aria-label="Search tools"
             />
           </div>
         </div>
