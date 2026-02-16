@@ -1,14 +1,10 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { ToolMetadata } from '../types';
-import { Sparkles, LayoutDashboard, Search, X } from 'lucide-react';
-import { Input } from './ui/Input';
+import React from 'react';
 import { cn } from '../lib/utils';
-import { useUserPreferences } from '../context/UserPreferencesContext';
-import { useSearch } from '../context/SearchContext';
-import { useToolSearch } from '../hooks/useToolSearch';
-import { TOOLS } from '../data/tools';
-import ToolLinkItem from './ToolLinkItem';
+import { useSidebarNavigation } from './sidebar/useSidebarNavigation';
+import SidebarBrand from './sidebar/SidebarBrand';
+import SidebarSearch from './sidebar/SidebarSearch';
+import SidebarNavigation from './sidebar/SidebarNavigation';
+import SidebarFooter from './sidebar/SidebarFooter';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -16,96 +12,16 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
-  const { favorites, recents } = useUserPreferences();
-  const { searchTerm, setSearchTerm } = useSearch();
-
-  const filteredTools = useToolSearch(searchTerm);
-  const onSearch = setSearchTerm;
-  const tools = TOOLS;
-  const navigate = useNavigate();
-  const [selectedIndex, setSelectedIndex] = useState(-1);
-
-  const LIMIT_RECENTS = 3; // Limit to 3 recent tools
-
-  const favoriteTools = useMemo(
-    () => tools.filter((t) => favorites.includes(t.id)),
-    [tools, favorites],
-  );
-
-  const recentTools = useMemo(
-    () =>
-      recents
-        .map((id) => tools.find((t) => t.id === id))
-        .filter((t): t is ToolMetadata => !!t && !favorites.includes(t.id))
-        .slice(0, LIMIT_RECENTS),
-    [tools, recents, favorites],
-  );
-
-  const visibleTools = useMemo(() => {
-    if (searchTerm) {
-      return filteredTools;
-    }
-
-    return [
-      ...favoriteTools.map((t) => ({ ...t, _virtualId: `fav-${t.id}` })),
-      ...recentTools.map((t) => ({ ...t, _virtualId: `rec-${t.id}` })),
-      ...tools.map((t) => ({ ...t, _virtualId: `all-${t.id}` })),
-    ];
-  }, [tools, searchTerm, favoriteTools, recentTools, filteredTools]);
-
-  // Reset selection when search changes
-  useEffect(() => {
-    setSelectedIndex(-1);
-  }, [searchTerm]);
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Only capture if sidebar is open (on mobile) or always on desktop
-      // and if we aren't focused on an input element (except our search box)
-      const isInput =
-        e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement;
-      const isSearchInput =
-        e.target instanceof HTMLInputElement &&
-        e.target.type === 'text' &&
-        e.target.placeholder.includes('Search');
-
-      if (isInput && !isSearchInput) return;
-
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        setSelectedIndex((prev) => (prev + 1) % visibleTools.length);
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        setSelectedIndex((prev) => (prev - 1 + visibleTools.length) % visibleTools.length);
-      } else if (e.key === 'Enter' && selectedIndex >= 0) {
-        e.preventDefault();
-        const tool = visibleTools[selectedIndex];
-        if (tool) {
-          navigate(`/${tool.id}`);
-          if (window.innerWidth < 768) onClose();
-          // Reset selection after navigation if desired, or keep it.
-          // setSelectedIndex(-1);
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [visibleTools, selectedIndex, navigate, onClose]);
-
-  const renderToolLink = (tool: ToolMetadata, contextPrefix: string, indexOffset: number) => {
-    return (
-      <ToolLinkItem
-        key={`${contextPrefix}-${tool.id}`}
-        tool={tool}
-        indexOffset={indexOffset}
-        selectedIndex={selectedIndex}
-        onClose={onClose}
-        searchTerm={searchTerm}
-        favorites={favorites}
-      />
-    );
-  };
+  const {
+    searchTerm,
+    setSearchTerm,
+    filteredTools,
+    favoriteTools,
+    recentTools,
+    selectedIndex,
+    favorites,
+    tools,
+  } = useSidebarNavigation(onClose);
 
   return (
     <>
@@ -127,113 +43,19 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         role="navigation"
         aria-label="Main navigation"
       >
-        {/* Brand */}
-        <NavLink to="/">
-          <div className="h-14 px-4 border-b border-border flex items-center gap-2.5">
-            <div className="bg-primary/10 p-1.5 rounded-lg text-primary">
-              <LayoutDashboard className="w-5 h-5" />
-            </div>
-            <div className="flex flex-col">
-              <h1 className="text-sm font-bold text-foreground tracking-tight leading-none">
-                DevPulse
-              </h1>
-              <p className="text-[10px] text-muted-foreground font-medium leading-none mt-0.5">
-                Developer Utility
-              </p>
-            </div>
-          </div>
-        </NavLink>
-
-        {/* Search */}
-        <div className="px-3 py-3">
-          <div className="relative group">
-            <Search
-              className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground group-focus-within:text-foreground transition-colors"
-              aria-hidden="true"
-            />
-            <Input
-              type="text"
-              placeholder="Search tools..."
-              value={searchTerm}
-              onChange={(e) => onSearch(e.target.value)}
-              className="h-9 pl-8 pr-8 text-sm bg-muted/40 border-transparent focus:bg-background focus:border-input shadow-none transition-all placeholder:text-muted-foreground/70"
-              aria-label="Search tools"
-            />
-            {searchTerm && (
-              <button
-                onClick={() => onSearch('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted-foreground/10 transition-colors"
-                aria-label="Clear search"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Navigation */}
-        <nav className="flex-1 px-2 py-2 space-y-0.5 overflow-y-auto scrollbar-thin hover:scrollbar-thumb-muted-foreground/20 scrollbar-thumb-transparent transition-colors">
-          {searchTerm ? (
-            <>
-              <div className="px-2 py-1.5 text-[10px] font-medium text-muted-foreground/60 uppercase tracking-widest">
-                Results
-              </div>
-              {filteredTools.length > 0 ? (
-                filteredTools.map((tool, i) => renderToolLink(tool, 'search', i))
-              ) : (
-                <div className="px-3 py-8 text-center text-muted-foreground text-xs">
-                  No tools found
-                </div>
-              )}
-            </>
-          ) : (
-            <>
-              {favoriteTools.length > 0 && (
-                <div className="mb-3">
-                  <div className="px-2 py-1.5 text-[10px] font-medium text-muted-foreground/60 uppercase tracking-widest flex items-center gap-1.5">
-                    Favorites
-                  </div>
-                  <div className="space-y-0.5">
-                    {favoriteTools.map((tool, i) => renderToolLink(tool, 'fav', i))}
-                  </div>
-                </div>
-              )}
-
-              {recentTools.length > 0 && (
-                <div className="mb-3">
-                  <div className="px-2 py-1.5 text-[10px] font-medium text-muted-foreground/60 uppercase tracking-widest flex items-center gap-1.5">
-                    Recent
-                  </div>
-                  <div className="space-y-0.5">
-                    {recentTools.map((tool, i) =>
-                      renderToolLink(tool, 'rec', i + favoriteTools.length),
-                    )}
-                  </div>
-                </div>
-              )}
-
-              <div className="px-2 py-1.5 text-[10px] font-medium text-muted-foreground/60 uppercase tracking-widest">
-                Apps
-              </div>
-              <div className="space-y-0.5">
-                {tools.map((tool, i) =>
-                  renderToolLink(tool, 'all', i + favoriteTools.length + recentTools.length),
-                )}
-              </div>
-            </>
-          )}
-        </nav>
-
-        {/* Footer */}
-        <div className="p-2 border-t border-border bg-muted/5">
-          <div className="px-2 py-2 flex items-center gap-2 text-xs text-muted-foreground transition-colors hover:text-foreground cursor-default group">
-            <div className="bg-primary/10 p-1 rounded-md text-primary group-hover:bg-primary/20 transition-colors">
-              <Sparkles className="w-3.5 h-3.5" />
-            </div>
-            <span className="font-medium">Gemini Powered</span>
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 ml-auto animate-pulse"></div>
-          </div>
-        </div>
+        <SidebarBrand />
+        <SidebarSearch searchTerm={searchTerm} onSearch={setSearchTerm} />
+        <SidebarNavigation
+          searchTerm={searchTerm}
+          filteredTools={filteredTools}
+          favoriteTools={favoriteTools}
+          recentTools={recentTools}
+          tools={tools}
+          selectedIndex={selectedIndex}
+          favorites={favorites}
+          onClose={onClose}
+        />
+        <SidebarFooter />
       </aside>
     </>
   );
