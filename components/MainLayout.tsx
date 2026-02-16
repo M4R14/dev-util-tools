@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import CommandPalette from './CommandPalette';
+import ToolPageLayout from './ToolPageLayout';
 import { ToolID } from '../types';
 import { TOOLS } from '../config/tools';
 import { useUserPreferences } from '../context/UserPreferencesContext';
@@ -74,21 +75,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         <main className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50 dark:bg-slate-900/50 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700">
           <div className="max-w-7xl mx-auto animate-fadeIn min-h-full">
             {activeTool ? (
-                <>
-                <div className="mb-6 md:mb-8">
-                  <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-3">
-                      <span className="p-2 bg-indigo-50 dark:bg-indigo-500/10 rounded-lg text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 shadow-sm">
-                        {activeTool.icon}
-                      </span>
-                      {activeTool.name}
-                  </h1>
-                  <p className="text-slate-600 dark:text-slate-400 text-lg ml-14">{activeTool.description}</p>
-                </div>
-                
-                <div className="bg-white dark:bg-slate-800/50 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl dark:shadow-2xl overflow-hidden backdrop-blur-sm transition-colors">
+                <ToolPageLayout tool={activeTool}>
                   {children}
-                </div>
-                </>
+                </ToolPageLayout>
             ) : (
                 children
             )}
