@@ -21,6 +21,8 @@ The tools have been refactored to follow a **Hook-View** pattern (Separation of 
 | `TimezoneConverter.tsx` | *(Pending Refactor)* | Converts dates/times across different timezones. |
 | `CrontabTool.tsx` | - | Link to Crontab.guru for managing cron expressions. |
 | `AIAssistant.tsx` | `askGemini` (Service) | AI-powered coding assistant using Google Gemini. |
+| `UUIDGenerator.tsx` | `useUUIDGenerator` | Generates Version 4 UUIDs. |
+| `UrlParser.tsx` | `useUrlParser` | Parses, encodes, and decodes URLs. |
 
 ## Shared UI Components
 

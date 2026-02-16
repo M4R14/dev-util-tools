@@ -4,7 +4,7 @@ import { Search, Sparkles, Star, Clock, ArrowRight, LayoutDashboard } from 'luci
 import { ToolID, ToolMetadata } from '../types';
 import { useUserPreferences } from '../context/UserPreferencesContext';
 import { useToolSearch } from '../hooks/useToolSearch';
-import { TOOLS } from '../config/tools';
+import { TOOLS } from '../data/tools';
 
 const TIPS = [
   "Use Cmd+K to quickly open the command palette.",

@@ -7,7 +7,7 @@ import { Card, CardContent, CardTitle, CardDescription } from './ui/Card';
 import { cn } from '../lib/utils';
 import { useUserPreferences } from '../context/UserPreferencesContext';
 import { useToolSearch } from '../hooks/useToolSearch';
-import { TOOLS } from '../config/tools';
+import { TOOLS } from '../data/tools';
 
 interface SidebarProps {
   isOpen: boolean;

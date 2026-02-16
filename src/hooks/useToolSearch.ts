@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { ToolMetadata } from '../types';
-import { TOOLS } from '../config/tools';
+import { TOOLS } from '../data/tools';
 
 /**
  * Hook to filter tools based on a search term.

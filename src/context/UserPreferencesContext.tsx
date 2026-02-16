@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { useLocation } from 'react-router-dom';
 import { ToolID } from '../types';
-import { TOOLS } from '../config/tools';
+import { TOOLS } from '../data/tools';
 
 interface UserPreferencesContextType {
   favorites: ToolID[];

@@ -20,6 +20,8 @@ DevPulse is a comprehensive collection of developer tools integrated with AI cap
 6.  📅 **Thai Date Converter**: Convert Gregorian dates to Thai Buddhist Era (BE) formats.
 7.  ⏰ **Crontab Guru**: Generate and explain cron schedule expressions.
 8.  ✨ **AI Smart Assistant**: Analyze code snippets and get intelligent suggestions.
+9.  🆔 **UUID Generator**: Create Version 4 UUIDs (GUIDs).
+10. 🔗 **URL Parser**: Parse, encode, and decode URLs.
 
 ## 💻 Tech Stack
 

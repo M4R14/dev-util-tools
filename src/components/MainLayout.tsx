@@ -5,7 +5,7 @@ import Header from './Header';
 import CommandPalette from './CommandPalette';
 import ToolPageLayout from './ToolPageLayout';
 import { ToolID } from '../types';
-import { TOOLS } from '../config/tools';
+import { TOOLS } from '../data/tools';
 import { useUserPreferences } from '../context/UserPreferencesContext';
 import { Toaster } from './ui/sonner';
 

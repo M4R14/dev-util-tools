@@ -15,7 +15,6 @@ import TimezoneConverter from './components/tools/TimezoneConverter';
 import CrontabTool from './components/tools/CrontabTool';
 import UUIDGenerator from './components/tools/UUIDGenerator';
 import UrlParser from './components/tools/UrlParser';
-import { Toaster } from './components/ui/sonner';
 
 const App: React.FC = () => {
   return (

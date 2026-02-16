@@ -16,8 +16,8 @@ import { ToolID, ToolMetadata } from '../types';
 export const TOOLS: ToolMetadata[] = [
     { 
       id: ToolID.URL_PARSER,
-      name: 'URL Parser',
-      description: 'Parse, encode, and decode URLs.',
+      name: 'URL Parser & Encoder',
+      description: 'Parse URLs into their components, encode/decode, and manage query parameters.',
       icon: <Link2 className="w-5 h-5" /> 
     },
     { 
