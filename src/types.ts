@@ -10,6 +10,7 @@ export enum ToolID {
   UUID_GENERATOR = 'uuid-generator',
   URL_PARSER = 'url-parser',
   DIFF_VIEWER = 'diff-viewer',
+  XML_FORMATTER = 'xml-formatter',
 }
 
 import type { LucideIcon } from 'lucide-react';

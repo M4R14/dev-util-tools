@@ -10,6 +10,7 @@ import {
   Fingerprint,
   Link2,
   FileDiff,
+  FileCode2,
 } from 'lucide-react';
 import { ToolID, ToolMetadata } from '../types';
 
@@ -90,6 +91,13 @@ export const TOOLS: ToolMetadata[] = [
     description: 'Analyze code snippets and solve dev problems with Gemini.',
     icon: Sparkles,
     tags: ['ai', 'gemini', 'code', 'assistant', 'analyze', 'chat'],
+  },
+  {
+    id: ToolID.XML_FORMATTER,
+    name: 'XML Formatter',
+    description: 'Prettify, minify, and validate XML data.',
+    icon: FileCode2,
+    tags: ['xml', 'format', 'prettify', 'minify', 'validate', 'markup'],
   },
 ];
 
