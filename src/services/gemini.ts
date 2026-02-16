@@ -1,12 +1,22 @@
 import { GoogleGenAI } from '@google/genai';
 
+let cachedAi: GoogleGenAI | null = null;
+let cachedKey = '';
+
+const getAI = (key: string): GoogleGenAI => {
+  if (cachedAi && cachedKey === key) return cachedAi;
+  cachedAi = new GoogleGenAI({ apiKey: key });
+  cachedKey = key;
+  return cachedAi;
+};
+
 export const askGemini = async (prompt: string, codeSnippet: string, apiKey?: string) => {
   const key = apiKey || process.env.API_KEY;
   if (!key) {
     throw new Error('Gemini API Key is missing. Please set it in settings.');
   }
 
-  const ai = new GoogleGenAI({ apiKey: key });
+  const ai = getAI(key);
   const model = 'gemini-3-flash-preview';
 
   const fullPrompt = `

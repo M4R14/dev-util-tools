@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { toast } from 'sonner';
 
 export interface UUIDOptions {
   version: 'v4';
@@ -51,11 +52,34 @@ export const useUUIDGenerator = () => {
     setUuids([]);
   }, []);
 
+  const copyAll = useCallback(() => {
+    if (uuids.length > 0) {
+      navigator.clipboard.writeText(uuids.join('\n'));
+      toast.success('Copied all UUIDs to clipboard');
+    }
+  }, [uuids]);
+
+  const download = useCallback(() => {
+    if (uuids.length === 0) return;
+    const blob = new Blob([uuids.join('\n')], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `uuids-${new Date().toISOString()}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast.success('Downloaded UUIDs as text file');
+  }, [uuids]);
+
   return {
     uuids,
     options,
     setOptions,
     generateUUID,
     clear,
+    copyAll,
+    download,
   };
 };

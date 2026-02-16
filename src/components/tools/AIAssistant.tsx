@@ -1,244 +1,55 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import {
   Send,
   Loader2,
   Sparkles,
   Settings,
-  Save,
   Trash2,
-  Copy,
-  Check,
   ChevronDown,
   ChevronUp,
   Code2,
 } from 'lucide-react';
-import { askGemini } from '../../services/gemini';
 import ToolLayout from '../ui/ToolLayout';
 import { Button } from '../ui/Button';
-import { Input } from '../ui/Input';
 import { Textarea } from '../ui/Textarea';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '../ui/Card';
+import { Card } from '../ui/Card';
 import { cn } from '../../lib/utils';
-import { toast } from 'sonner';
-import { encrypt, decrypt } from '../../lib/crypto';
-
-const STORAGE_KEY = 'devpulse_secure_config';
-
-// Helper to render markdown-like content (basic code block support)
-const MessageContent: React.FC<{ content: string }> = ({ content }) => {
-  const parts = content.split(/(```[\s\S]*?```)/g);
-
-  return (
-    <div className="space-y-3">
-      {parts.map((part, index) => {
-        if (part.startsWith('```')) {
-          const match = part.match(/```(\w*)?\n?([\s\S]*?)```/);
-          const lang = match ? match[1] : '';
-          const code = match ? match[2] : part.slice(3, -3);
-
-          return <CodeBlock key={index} language={lang} code={code.trim()} />;
-        }
-        // Basic paragraph handling
-        return part.split('\n\n').map(
-          (p, i) =>
-            p.trim() && (
-              <p
-                key={`${index}-${i}`}
-                className="whitespace-pre-wrap leading-relaxed text-foreground/90"
-              >
-                {p}
-              </p>
-            ),
-        );
-      })}
-    </div>
-  );
-};
-
-const CodeBlock: React.FC<{ language: string; code: string }> = ({ language, code }) => {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(code);
-    setCopied(true);
-    toast.success('Code snippet copied');
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  return (
-    <Card className="rounded-lg overflow-hidden border-border bg-muted/50 my-4 shadow-sm">
-      <div className="flex items-center justify-between px-4 py-2 bg-muted/80 border-b border-border/50">
-        <span className="text-xs font-mono text-muted-foreground">{language || 'code'}</span>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleCopy}
-          className="h-6 gap-1.5 text-xs text-muted-foreground hover:text-foreground px-2"
-        >
-          {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-          {copied ? 'Copied!' : 'Copy'}
-        </Button>
-      </div>
-      <pre className="p-4 overflow-x-auto text-sm font-mono text-primary/90 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
-        <code>{code}</code>
-      </pre>
-    </Card>
-  );
-};
-
-interface Message {
-  id: string;
-  role: 'user' | 'ai';
-  content: string;
-  timestamp: number;
-}
+import { useAIChat } from '../../hooks/useAIChat';
+import MessageContent from './ai/MessageContent';
+import SettingsModal from './ai/SettingsModal';
 
 const AIAssistant: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [prompt, setPrompt] = useState('');
-  const [codeContext, setCodeContext] = useState('');
-  const [isContextOpen, setIsContextOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const [apiKey, setApiKey] = useState(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? decrypt(saved) : '';
-  });
-  const [tempKey, setTempKey] = useState('');
-  const [showSettings, setShowSettings] = useState(false);
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages, loading]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const openSettings = () => {
-    setTempKey(apiKey);
-    setShowSettings(true);
-  };
-
-  const handleSaveSettings = () => {
-    setApiKey(tempKey);
-    localStorage.setItem(STORAGE_KEY, encrypt(tempKey));
-    setShowSettings(false);
-    toast.success('API configuration saved successfully');
-  };
-
-  const handleClearChat = () => {
-    setMessages([]);
-    setError(null);
-    toast.info('Conversation cleared');
-  };
-
-  const handleAsk = async () => {
-    if (!prompt.trim()) return;
-
-    const userMsg: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: prompt,
-      timestamp: Date.now(),
-    };
-
-    setMessages((prev) => [...prev, userMsg]);
-    setPrompt('');
-    setLoading(true);
-    setError(null);
-    setIsContextOpen(false); // Auto close context on send to focus on chat
-
-    try {
-      const keyToUse = apiKey;
-      if (!keyToUse) throw new Error('Please configure your Gemini API Key in settings.');
-
-      const result = await askGemini(userMsg.content, codeContext, keyToUse);
-
-      const aiMsg: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'ai',
-        content: typeof result === 'string' ? result : 'No response returned.',
-        timestamp: Date.now(),
-      };
-
-      setMessages((prev) => [...prev, aiMsg]);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to communicate with AI service';
-      setError(message);
-      toast.error(message);
-      // Remove user message on error? Or keep it so they can retry?
-      // Keeping it is better UX, maybe mark as failed.
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    messages,
+    prompt,
+    setPrompt,
+    codeContext,
+    setCodeContext,
+    isContextOpen,
+    setIsContextOpen,
+    loading,
+    error,
+    messagesEndRef,
+    apiKey,
+    tempKey,
+    setTempKey,
+    showSettings,
+    openSettings,
+    closeSettings,
+    handleSaveSettings,
+    handleClearChat,
+    handleAsk,
+  } = useAIChat();
 
   return (
     <ToolLayout>
       {showSettings && (
-        <div className="fixed inset-0 bg-background/80 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <Card className="w-full max-w-md shadow-2xl relative overflow-hidden animate-in fade-in zoom-in duration-200 border-border/50">
-            {/* Glossy background effect */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
-
-            <CardHeader className="relative z-10 pb-0">
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="w-5 h-5 text-primary" /> Settings
-              </CardTitle>
-              <CardDescription>
-                Configure your AI assistant. API keys are stored securely in your browser&apos;s
-                local storage and are never sent to our servers.
-              </CardDescription>
-            </CardHeader>
-
-            <CardContent className="space-y-4 relative z-10 pt-6">
-              <div>
-                <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                  Gemini API Key
-                </label>
-                <div className="relative">
-                  <Input
-                    type="password"
-                    value={tempKey}
-                    onChange={(e) => setTempKey(e.target.value)}
-                    placeholder="Provide your Gemini API Key..."
-                    className="font-mono text-sm"
-                  />
-                </div>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Your key is obfuscated before storage to prevent casual inspection.
-                </p>
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4">
-                <Button variant="ghost" onClick={() => setShowSettings(false)}>
-                  Cancel
-                </Button>
-                <Button onClick={handleSaveSettings} className="gap-2">
-                  <Save className="w-4 h-4" /> Save Configuration
-                </Button>
-              </div>
-            </CardContent>
-
-            <CardFooter className="pt-0 relative z-10 justify-center border-t border-border/50 mt-4 py-4">
-              <div className="text-xs text-muted-foreground">
-                Need an API key?{' '}
-                <a
-                  href="https://aistudio.google.com/app/apikey"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-primary hover:underline transition-colors"
-                >
-                  Get one from Google AI Studio
-                </a>
-              </div>
-            </CardFooter>
-          </Card>
-        </div>
+        <SettingsModal
+          tempKey={tempKey}
+          onTempKeyChange={setTempKey}
+          onSave={handleSaveSettings}
+          onClose={closeSettings}
+        />
       )}
 
       <div className="flex flex-col h-[calc(100vh-10rem)] max-w-5xl mx-auto">

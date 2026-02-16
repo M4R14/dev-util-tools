@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Fingerprint, Settings2, RefreshCw, Copy, Trash2, Download } from 'lucide-react';
 import ToolLayout from '../ui/ToolLayout';
 import { Button } from '../ui/Button';
@@ -8,39 +8,20 @@ import { Switch } from '../ui/Switch';
 import { Slider } from '../ui/Slider';
 import { CopyButton } from '../ui/CopyButton';
 import { useUUIDGenerator } from '../../hooks/useUUIDGenerator';
-import { toast } from 'sonner';
 
 const UUIDGenerator: React.FC = () => {
-  const { uuids, options, setOptions, generateUUID, clear } = useUUIDGenerator();
+  const { uuids, options, setOptions, generateUUID, clear, copyAll, download } = useUUIDGenerator();
 
+  const initialized = useRef(false);
   useEffect(() => {
-    generateUUID();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (!initialized.current) {
+      initialized.current = true;
+      generateUUID();
+    }
+  }, [generateUUID]);
 
   const handleChange = (key: keyof typeof options, value: string | number | boolean) => {
     setOptions((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const handleCopyAll = () => {
-    if (uuids.length > 0) {
-      navigator.clipboard.writeText(uuids.join('\n'));
-      toast.success('Copied all UUIDs to clipboard');
-    }
-  };
-
-  const handleDownload = () => {
-    if (uuids.length === 0) return;
-    const blob = new Blob([uuids.join('\n')], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `uuids-${new Date().toISOString()}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    toast.success('Downloaded UUIDs as text file');
   };
 
   return (
@@ -151,12 +132,7 @@ const UUIDGenerator: React.FC = () => {
             <div className="flex items-center gap-2">
               {uuids.length > 0 && (
                 <>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleDownload}
-                    title="Download .txt"
-                  >
+                  <Button variant="outline" size="sm" onClick={download} title="Download .txt">
                     <Download className="w-4 h-4 sm:mr-2" />
                     <span className="hidden sm:inline">Download</span>
                   </Button>
@@ -164,7 +140,7 @@ const UUIDGenerator: React.FC = () => {
                     <Trash2 className="w-4 h-4 sm:mr-2 text-muted-foreground" />
                     <span className="hidden sm:inline">Clear</span>
                   </Button>
-                  <Button variant="default" size="sm" onClick={handleCopyAll} title="Copy All">
+                  <Button variant="default" size="sm" onClick={copyAll} title="Copy All">
                     <Copy className="w-4 h-4 sm:mr-2" />
                     <span className="hidden sm:inline">Copy All</span>
                   </Button>

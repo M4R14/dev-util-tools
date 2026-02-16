@@ -27,32 +27,31 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   const LIMIT_RECENTS = 3; // Limit to 3 recent tools
 
+  const favoriteTools = useMemo(
+    () => tools.filter((t) => favorites.includes(t.id)),
+    [tools, favorites],
+  );
+
+  const recentTools = useMemo(
+    () =>
+      recents
+        .map((id) => tools.find((t) => t.id === id))
+        .filter((t): t is ToolMetadata => !!t && !favorites.includes(t.id))
+        .slice(0, LIMIT_RECENTS),
+    [tools, recents, favorites],
+  );
+
   const visibleTools = useMemo(() => {
     if (searchTerm) {
       return filteredTools;
     }
 
-    const favs = tools.filter((t) => favorites.includes(t.id));
-    const recs = recents
-      .map((id) => tools.find((t) => t.id === id))
-      .filter((t): t is ToolMetadata => !!t && !favorites.includes(t.id))
-      .slice(0, LIMIT_RECENTS);
-
-    // We duplicate tools in the display (Favorites, Recents, All Tools),
-    // but for navigation index keying, we probably want to navigate through them as they appear.
-    // However, the current render implementation repeats 'tools' at the bottom.
-    // If we want to support up/down navigation, we need a flat list that matches the rendered order.
-
-    // NOTE: The original render maps: [Favorites] then [Recents] then [All Tools].
-    // This creates duplicates in the visual list (e.g. a tool can be in Favorites AND in All Tools).
-    // The user likely wants to navigate visually.
-
     return [
-      ...favs.map((t) => ({ ...t, _virtualId: `fav-${t.id}` })),
-      ...recs.map((t) => ({ ...t, _virtualId: `rec-${t.id}` })),
+      ...favoriteTools.map((t) => ({ ...t, _virtualId: `fav-${t.id}` })),
+      ...recentTools.map((t) => ({ ...t, _virtualId: `rec-${t.id}` })),
       ...tools.map((t) => ({ ...t, _virtualId: `all-${t.id}` })),
     ];
-  }, [tools, searchTerm, favorites, recents, filteredTools]);
+  }, [tools, searchTerm, favoriteTools, recentTools, filteredTools]);
 
   // Reset selection when search changes
   useEffect(() => {
@@ -93,12 +92,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [visibleTools, selectedIndex, navigate, onClose]);
-
-  const favoriteTools = tools.filter((t) => favorites.includes(t.id));
-  const recentTools = recents
-    .map((id) => tools.find((t) => t.id === id))
-    .filter((t): t is ToolMetadata => !!t && !favorites.includes(t.id))
-    .slice(0, LIMIT_RECENTS);
 
   const renderToolLink = (tool: ToolMetadata, contextPrefix: string, indexOffset: number) => {
     return (
