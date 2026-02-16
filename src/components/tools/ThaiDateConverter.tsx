@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import dayjs from 'dayjs';
 import { Calendar, RotateCcw, ArrowRightLeft, Search, Info } from 'lucide-react';
 import ToolLayout from '../ui/ToolLayout';
 import { Button } from '../ui/Button';
@@ -11,15 +12,15 @@ import { cn } from '../../lib/utils';
 const ThaiDateConverter: React.FC = () => {
   const { date, setDate, parseInput, setParseInput, formats, parseResult } = useThaiDateConverter();
 
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState(dayjs());
 
   useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    const timer = setInterval(() => setCurrentTime(dayjs()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  const formatThaiDateTime = (date: Date) => {
-    return date.toLocaleDateString('th-TH', {
+  const formatThaiDateTime = (d: dayjs.Dayjs) => {
+    return d.toDate().toLocaleDateString('th-TH', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -87,7 +88,7 @@ const ThaiDateConverter: React.FC = () => {
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => setDate(new Date().toISOString().split('T')[0])}
+                    onClick={() => setDate(dayjs().format('YYYY-MM-DD'))}
                     className="h-11 w-11 shrink-0 bg-background hover:bg-primary/10 hover:text-primary transition-colors"
                     title="Reset to Today"
                   >

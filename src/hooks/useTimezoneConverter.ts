@@ -1,4 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 const COMMON_TIMEZONES = [
   { value: 'UTC', label: 'UTC (Universal Time Coordinated)', abbr: 'UTC' },
@@ -20,61 +26,8 @@ const COMMON_TIMEZONES = [
   { value: 'Pacific/Auckland', label: 'Auckland (New Zealand Time)', abbr: 'NZDT' },
 ];
 
-/**
- * Create a Date object representing a specific wall-clock time in a given timezone.
- * Uses iterative adjustment to resolve the UTC offset.
- */
-const getDateFromTimezone = (
-  year: number,
-  month: number,
-  day: number,
-  hour: number,
-  minute: number,
-  timeZone: string,
-): Date => {
-  let guess = new Date(Date.UTC(year, month, day, hour, minute));
-
-  for (let i = 0; i < 3; i++) {
-    const parts = new Intl.DateTimeFormat('en-US', {
-      timeZone,
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: 'numeric',
-      second: 'numeric',
-      hour12: false,
-    }).formatToParts(guess);
-
-    const getVal = (t: string) => parseInt(parts.find((p) => p.type === t)?.value || '0', 10);
-
-    const observedInTzAsUtc = new Date(
-      Date.UTC(
-        getVal('year'),
-        getVal('month') - 1,
-        getVal('day'),
-        getVal('hour') === 24 ? 0 : getVal('hour'),
-        getVal('minute'),
-      ),
-    );
-
-    const diff = guess.getTime() - observedInTzAsUtc.getTime();
-    if (Math.abs(diff) < 1000) break;
-    guess = new Date(guess.getTime() + diff);
-  }
-  return guess;
-};
-
 export const useTimezoneConverter = () => {
-  const [date, setDate] = useState<string>(() => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  });
+  const [date, setDate] = useState<string>(() => dayjs().format('YYYY-MM-DDTHH:mm'));
 
   const [sourceTz, setSourceTz] = useState<string>(
     Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -89,41 +42,24 @@ export const useTimezoneConverter = () => {
     try {
       if (!date) return;
 
-      const [datePart, timePart] = date.split('T');
-      const [year, month, day] = datePart.split('-').map(Number);
-      const [hours, minutes] = timePart.split(':').map(Number);
+      // Parse the input as wall-clock time in the source timezone
+      const sourceDate = dayjs.tz(date, sourceTz);
+      // Convert to the target timezone
+      const converted = sourceDate.tz(targetTz);
 
-      // This 'targetDate' is the actual point in time (UTC)
-      const targetDate = getDateFromTimezone(year, month - 1, day, hours, minutes, sourceTz);
-
-      // We need a numeric month for "same format"
-      const numericFormatter = new Intl.DateTimeFormat('en-GB', {
+      // Get timezone abbreviation via Intl (dayjs doesn't expose this directly)
+      const tzAbbr = new Intl.DateTimeFormat('en-US', {
         timeZone: targetTz,
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false,
         timeZoneName: 'short',
-      });
-      const numericParts = numericFormatter.formatToParts(targetDate);
-      const getNumPart = (type: string) => numericParts.find((p) => p.type === type)?.value || '';
+      })
+        .formatToParts(converted.toDate())
+        .find((p) => p.type === 'timeZoneName')?.value || targetTz;
 
-      const yyyy = getNumPart('year');
-      const mm = getNumPart('month');
-      const dd = getNumPart('day');
-      const hh = getNumPart('hour');
-      const min = getNumPart('minute');
-      const tz = getNumPart('timeZoneName');
-
-      // Format as ISO 8601-like (YYYY-MM-DDTHH:mm)
-      const isoString = `${yyyy}-${mm}-${dd}T${hh}:${min}`;
-      setResult(`${isoString} ${tz}`); // For copy
-
-      setResultDatePart(`${yyyy}-${mm}-${dd}`);
-      setResultTimePart(`${hh}:${min}`);
-      setResultTzAbbr(tz);
+      const isoString = converted.format('YYYY-MM-DDTHH:mm');
+      setResult(`${isoString} ${tzAbbr}`);
+      setResultDatePart(converted.format('YYYY-MM-DD'));
+      setResultTimePart(converted.format('HH:mm'));
+      setResultTzAbbr(tzAbbr);
     } catch (error) {
       console.error(error);
       setResult('Invalid Date');
@@ -141,13 +77,7 @@ export const useTimezoneConverter = () => {
   };
 
   const setNow = () => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    setDate(`${year}-${month}-${day}T${hours}:${minutes}`);
+    setDate(dayjs().format('YYYY-MM-DDTHH:mm'));
   };
 
   return {

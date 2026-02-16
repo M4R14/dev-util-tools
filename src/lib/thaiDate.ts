@@ -3,6 +3,8 @@
  * Extracted from useThaiDateConverter for reusability and testability.
  */
 
+import dayjs, { Dayjs } from 'dayjs';
+
 export const THAI_MONTHS = [
   'มกราคม',
   'กุมภาพันธ์',
@@ -58,14 +60,14 @@ export const fromThaiDigits = (str: string): string =>
     THAI_DIGITS.indexOf(d as (typeof THAI_DIGITS)[number]).toString(),
   );
 
-export const formatThaiDate = (dateOb: Date) => {
-  if (isNaN(dateOb.getTime())) return [];
+export const formatThaiDate = (input: Date | Dayjs | string) => {
+  const d = dayjs(input);
+  if (!d.isValid()) return [];
 
-  const day = dateOb.getDate();
-  const monthIndex = dateOb.getMonth();
-  const yearBE = dateOb.getFullYear() + 543;
-  const dayOfWeek = dateOb.getDay();
-  const yearAD = dateOb.getFullYear();
+  const day = d.date();
+  const monthIndex = d.month();
+  const yearBE = d.year() + 543;
+  const dayOfWeek = d.day();
 
   return [
     {
@@ -80,11 +82,11 @@ export const formatThaiDate = (dateOb: Date) => {
     },
     {
       label: 'Numerical (Slash)',
-      value: `${day.toString().padStart(2, '0')}/${(monthIndex + 1).toString().padStart(2, '0')}/${yearBE}`,
+      value: d.format(`DD/MM/${yearBE}`),
     },
     {
       label: 'ISO-like (Buddhist)',
-      value: `${yearBE}-${(monthIndex + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`,
+      value: `${yearBE}-${d.format('MM-DD')}`,
     },
     {
       label: 'Thai Digits',
@@ -95,7 +97,7 @@ export const formatThaiDate = (dateOb: Date) => {
     // AD formats for reference
     {
       label: 'ISO Date (AD)',
-      value: `${yearAD}-${(monthIndex + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`,
+      value: d.format('YYYY-MM-DD'),
     },
   ];
 };
@@ -143,12 +145,12 @@ export const parseThaiDate = (input: string): { iso: string; formatted: string }
 
   if (day !== null && month !== null && year !== null) {
     const adYear = year > 2400 ? year - 543 : year;
-    const d = new Date(adYear, month, day);
+    const d = dayjs(new Date(adYear, month, day));
 
-    if (!isNaN(d.getTime())) {
+    if (d.isValid()) {
       return {
-        iso: d.toISOString().split('T')[0],
-        formatted: d.toLocaleDateString('en-CA'),
+        iso: d.format('YYYY-MM-DD'),
+        formatted: d.format('YYYY-MM-DD'),
       };
     }
   }
