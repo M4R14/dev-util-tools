@@ -7,23 +7,28 @@ export const useJsonFormatter = () => {
 
   const formatJSON = (space: number = 2) => {
     try {
-      if (!input.trim()) return;
+      if (!input.trim()) return false;
       const parsed = JSON.parse(input);
       setInput(JSON.stringify(parsed, null, space));
       setError(null);
+      return true;
     } catch (e: any) {
       setError(e.message);
+      return false;
     }
+
   };
 
   const minifyJSON = () => {
     try {
-      if (!input.trim()) return;
+      if (!input.trim()) return false;
       const parsed = JSON.parse(input);
       setInput(JSON.stringify(parsed));
       setError(null);
+      return true;
     } catch (e: any) {
       setError(e.message);
+      return false;
     }
   };
 

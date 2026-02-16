@@ -4,6 +4,7 @@ import ToolLayout from '../ui/ToolLayout';
 import { Textarea } from '../ui/Textarea';
 import { useBase64 } from '../../hooks/useBase64';
 import { CopyButton } from '../ui/CopyButton';
+import { toast } from 'sonner';
 
 const Base64Tool: React.FC = () => {
     const {
@@ -21,7 +22,7 @@ const Base64Tool: React.FC = () => {
         <ToolLayout.Panel 
             title="Plain Text"
             actions={
-                <CopyButton value={text} />
+                <CopyButton value={text} onCopy={() => toast.success("Original text copied")} />
             }
         >
           <Textarea
@@ -37,7 +38,7 @@ const Base64Tool: React.FC = () => {
         <ToolLayout.Panel 
             title="Base64 Output"
             actions={
-                <CopyButton value={base64} />
+                <CopyButton value={base64} onCopy={() => toast.success("Base64 copied")} />
             }
             className={error ? 'border-destructive/50 box-border' : ''}
         >

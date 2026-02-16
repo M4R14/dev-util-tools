@@ -6,6 +6,7 @@ import { Button } from '../ui/Button';
 import { Textarea } from '../ui/Textarea';
 import { useJsonFormatter } from '../../hooks/useJsonFormatter';
 import { CopyButton } from '../ui/CopyButton';
+import { toast } from 'sonner';
 
 const JSONFormatter: React.FC = () => {
     const {
@@ -18,6 +19,24 @@ const JSONFormatter: React.FC = () => {
         clear
     } = useJsonFormatter();
 
+    const handleFormat = () => {
+        const result = formatJSON(2);
+        if (result && input.trim()) {
+            toast.success("JSON Formatted");
+        } else if (input.trim()) {
+            toast.error("Invalid JSON content");
+        }
+    };
+
+    const handleMinify = () => {
+        const result = minifyJSON();
+        if (result && input.trim()) {
+            toast.success("JSON Minified");
+        } else if (input.trim()) {
+            toast.error("Invalid JSON content");
+        }
+    };
+
   return (
     <ToolLayout>
       <ToolLayout.Panel
@@ -29,7 +48,7 @@ const JSONFormatter: React.FC = () => {
                 <Button 
                     variant="outline"
                     size="sm"
-                    onClick={() => formatJSON(2)} 
+                    onClick={handleFormat} 
                     className="flex items-center gap-2 bg-primary/20 hover:bg-primary/40 text-primary hover:text-primary/80 border-primary/20"
                 >
                     <AlignLeft className="w-3.5 h-3.5" /> Format
@@ -37,7 +56,7 @@ const JSONFormatter: React.FC = () => {
                 <Button 
                     variant="outline"
                     size="sm"
-                    onClick={minifyJSON} 
+                    onClick={handleMinify}
                     className="flex items-center gap-2 bg-muted hover:bg-muted/80 text-foreground border-border"
                 >
                     <Minimize2 className="w-3.5 h-3.5" /> Minify
@@ -45,11 +64,14 @@ const JSONFormatter: React.FC = () => {
               </div>
             
               <div className="flex gap-2">
-                <CopyButton value={input} />
+                <CopyButton value={input} onCopy={() => toast.success("JSON content copied")} />
                 <Button 
                     variant="ghost"
                     size="icon"
-                    onClick={clear}
+                    onClick={() => {
+                        clear();
+                        toast.info("Editor cleared");
+                    }} 
                     className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 h-8 w-8"
                     title="Clear"
                 >
