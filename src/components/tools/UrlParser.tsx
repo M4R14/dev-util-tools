@@ -1,5 +1,16 @@
 import React from 'react';
-import { Code, RotateCcw, Search, Hash, Lock, Trash2 } from 'lucide-react';
+import {
+  Code,
+  RotateCcw,
+  Lock,
+  Trash2,
+  Link,
+  Globe,
+  MapPin,
+  Hash as HashIcon,
+  FileText,
+  Search,
+} from 'lucide-react';
 import ToolLayout from '../ui/ToolLayout';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
@@ -8,8 +19,49 @@ import { CopyButton } from '../ui/CopyButton';
 import { useUrlParser } from '../../hooks/useUrlParser';
 import { toast } from 'sonner';
 
+interface UrlComponentInputProps {
+  label: string;
+  value: string;
+  icon?: React.ReactNode;
+  multiline?: boolean;
+}
+
+const UrlComponentInput: React.FC<UrlComponentInputProps> = ({
+  label,
+  value,
+  icon,
+  multiline = false,
+}) => (
+  <div className="space-y-2">
+    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+      {icon}
+      {label}
+    </label>
+    <div className="flex gap-2 group relative">
+      {multiline ? (
+        <Textarea
+          readOnly
+          value={value}
+          className="font-mono text-xs bg-muted/30 focus:bg-background min-h-[38px] h-auto border-primary/20 resize-none py-2 pr-9"
+          rows={1}
+        />
+      ) : (
+        <Input
+          readOnly
+          value={value}
+          className="font-mono text-xs bg-muted/30 focus:bg-background h-9 border-primary/20 pr-9"
+        />
+      )}
+      <div className="absolute right-1 top-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <CopyButton value={value} className="h-7 w-7" />
+      </div>
+    </div>
+  </div>
+);
+
 const UrlParser: React.FC = () => {
-  const { input, setInput, parsedUrl, error, params, encode, decode, updateParam } = useUrlParser();
+  const { input, setInput, parsedUrl, error, params, getEncoded, decodeUrl, updateParam } =
+    useUrlParser();
 
   // Helper to handle parameter changes
   const handleParamChange = (index: number, key: string, value: string) => {
@@ -17,7 +69,9 @@ const UrlParser: React.FC = () => {
   };
 
   const handleEncode = () => {
-    if (encode()) {
+    const encoded = getEncoded();
+    if (encoded) {
+      navigator.clipboard.writeText(encoded);
       toast.success('URL encoded and copied to clipboard');
     } else {
       toast.error('Failed to encode URL');
@@ -25,7 +79,7 @@ const UrlParser: React.FC = () => {
   };
 
   const handleDecode = () => {
-    if (decode()) {
+    if (decodeUrl()) {
       toast.success('URL decoded');
     } else {
       toast.error('Failed to decode URL');
@@ -110,7 +164,8 @@ const UrlParser: React.FC = () => {
                 <div className="grid gap-5">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                        <Lock className="w-3 h-3" />
                         Protocol
                       </label>
                       <div className="relative group">
@@ -129,7 +184,8 @@ const UrlParser: React.FC = () => {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+                        <Globe className="w-3 h-3" />
                         Port
                       </label>
                       <Input
@@ -140,76 +196,44 @@ const UrlParser: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                      Host
-                    </label>
-                    <div className="flex gap-2 group relative">
-                      <Input
-                        readOnly
-                        value={parsedUrl.hostname}
-                        className="font-mono text-xs bg-muted/30 focus:bg-background h-9 border-primary/20 pr-8"
-                      />
-                      <div className="absolute right-1 top-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <CopyButton value={parsedUrl.hostname} className="h-7 w-7" />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                      Origin
-                    </label>
-                    <div className="relative group">
-                      <Input
-                        readOnly
-                        value={parsedUrl.origin}
-                        className="font-mono text-xs bg-muted/30 focus:bg-background h-9 border-primary/20 pr-9"
-                      />
-                      <div className="absolute right-1 top-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <CopyButton value={parsedUrl.origin} className="h-7 w-7" />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                      Path
-                    </label>
-                    <div className="flex gap-2 group relative">
-                      <Textarea
-                        readOnly
-                        value={parsedUrl.pathname}
-                        className="font-mono text-xs bg-muted/30 focus:bg-background min-h-[38px] h-auto border-primary/20 resize-none py-2 pr-9"
-                        rows={1}
-                      />
-                      <div className="absolute right-1 top-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <CopyButton value={parsedUrl.pathname} className="h-7 w-7" />
-                      </div>
-                    </div>
-                  </div>
+                  <UrlComponentInput
+                    label="Host"
+                    value={parsedUrl.hostname}
+                    icon={<Globe className="w-3 h-3" />}
+                  />
+                  <UrlComponentInput
+                    label="Origin"
+                    value={parsedUrl.origin}
+                    icon={<Link className="w-3 h-3" />}
+                  />
+                  <UrlComponentInput
+                    label="Path"
+                    value={parsedUrl.pathname}
+                    icon={<MapPin className="w-3 h-3" />}
+                    multiline
+                  />
 
                   {parsedUrl.hash && (
-                    <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                        Hash
-                      </label>
-                      <div className="relative group">
-                        <Input
-                          readOnly
-                          value={parsedUrl.hash}
-                          className="font-mono text-xs bg-muted/30 focus:bg-background h-9 border-primary/20 pl-8 pr-9"
-                        />
-                        <Hash className="w-3.5 h-3.5 absolute left-3 top-3 text-muted-foreground/50" />
-                        <div className="absolute right-1 top-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <CopyButton value={parsedUrl.hash} className="h-7 w-7" />
-                        </div>
-                      </div>
-                    </div>
+                    <UrlComponentInput
+                      label="Hash"
+                      value={parsedUrl.hash}
+                      icon={<HashIcon className="w-3 h-3" />}
+                    />
+                  )}
+
+                  {parsedUrl.search && (
+                    <UrlComponentInput
+                      label="Query String"
+                      value={parsedUrl.search}
+                      icon={<FileText className="w-3 h-3" />}
+                      multiline
+                    />
                   )}
                 </div>
               </div>
             </ToolLayout.Panel>
+
+
 
             {/* Query Params */}
             <ToolLayout.Panel title={`Query Parameters (${params.length})`} className="bg-card/50">

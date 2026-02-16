@@ -8,11 +8,16 @@ export const useBase64 = () => {
   const handleTextChange = (val: string) => {
     setText(val);
     try {
-      setBase64(btoa(val));
+      // Use encodeURIComponent to handle Unicode characters (like Thai)
+      // btoa only supports ASCII
+      const escaped = encodeURIComponent(val).replace(/%([0-9A-F]{2})/g, (_, p1) =>
+        String.fromCharCode(parseInt(p1, 16)),
+      );
+      setBase64(btoa(escaped));
       setError(null);
     } catch (e) {
       setBase64('');
-      if (val) setError('Invalid characters for Base64 encoding');
+      if (val.trim()) setError('Invalid characters for Base64 encoding');
     }
   };
 
@@ -24,11 +29,18 @@ export const useBase64 = () => {
         setError(null);
         return;
       }
-      setText(atob(val));
+      const decoded = atob(val);
+      const unescaped = decodeURIComponent(
+        decoded
+          .split('')
+          .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join(''),
+      );
+      setText(unescaped);
       setError(null);
     } catch (e) {
       setText('');
-      setError('Invalid Base64 string');
+      if (val.trim()) setError('Invalid Base64 string');
     }
   };
 

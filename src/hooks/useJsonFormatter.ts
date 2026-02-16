@@ -12,7 +12,7 @@ export const useJsonFormatter = () => {
       setError(null);
       return true;
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Invalid JSON');
+      if (input.trim()) setError(e instanceof Error ? e.message : 'Invalid JSON');
       return false;
     }
   };
@@ -25,7 +25,7 @@ export const useJsonFormatter = () => {
       setError(null);
       return true;
     } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Invalid JSON');
+      if (input.trim()) setError(e instanceof Error ? e.message : 'Invalid JSON');
       return false;
     }
   };

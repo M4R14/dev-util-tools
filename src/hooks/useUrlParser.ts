@@ -1,9 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
+import { UrlParam, parseUrl, updateUrlParam } from '../lib/urlUtils';
 
-export interface UrlParam {
-  key: string;
-  value: string;
-}
+export { type UrlParam };
 
 export const useUrlParser = () => {
   const [input, setInput] = useState('');
@@ -12,49 +10,21 @@ export const useUrlParser = () => {
   const [params, setParams] = useState<UrlParam[]>([]);
 
   useEffect(() => {
-    if (!input) {
-      // Changed to check truthy to avoid running on empty string
-      setParsedUrl(null);
-      setError(null);
-      setParams([]);
-      return;
-    }
-
-    try {
-      let urlToCheck = input;
-
-      // Basic check for protocol, assume https if missing for parsing purposes
-      if (!input.match(/^[a-zA-Z][a-zA-Z\d+\-.]*:/)) {
-        urlToCheck = 'https://' + input;
-      }
-
-      const url = new URL(urlToCheck);
-      setParsedUrl(url);
-      setError(null);
-
-      const newParams: UrlParam[] = [];
-      url.searchParams.forEach((value, key) => {
-        newParams.push({ key, value });
-      });
-      setParams(newParams);
-    } catch (err) {
-      setParsedUrl(null);
-      setError('Invalid URL format');
-      setParams([]);
-    }
+    const result = parseUrl(input);
+    setParsedUrl(result.parsed);
+    setError(result.error);
+    setParams(result.params);
   }, [input]);
 
-  const encode = useCallback(() => {
+  const getEncoded = useCallback(() => {
     try {
-      const encoded = encodeURIComponent(input);
-      navigator.clipboard.writeText(encoded);
-      return true;
+      return encodeURIComponent(input);
     } catch {
-      return false;
+      return null;
     }
   }, [input]);
 
-  const decode = useCallback(() => {
+  const decodeUrl = useCallback(() => {
     try {
       const decoded = decodeURIComponent(input);
       setInput(decoded);
@@ -66,23 +36,10 @@ export const useUrlParser = () => {
 
   const updateParam = useCallback(
     (index: number, newKey: string, newValue: string) => {
-      if (!parsedUrl) return;
-
-      // Create new params array
-      const nextParams = [...params];
-      nextParams[index] = { key: newKey, value: newValue };
-
-      // Update URL search string
-      const newSearchParams = new URLSearchParams();
-      nextParams.forEach((p) => {
-        if (p.key) newSearchParams.append(p.key, p.value);
-      });
-
-      const newUrl = new URL(parsedUrl.toString());
-      newUrl.search = newSearchParams.toString();
-
-      // Update input which will trigger effect to re-parse
-      setInput(newUrl.toString());
+      const newUrl = updateUrlParam(parsedUrl, params, index, newKey, newValue);
+      if (newUrl) {
+        setInput(newUrl);
+      }
     },
     [parsedUrl, params],
   );
@@ -92,10 +49,9 @@ export const useUrlParser = () => {
     setInput,
     parsedUrl,
     error,
-    setError,
     params,
-    encode,
-    decode,
+    getEncoded,
+    decodeUrl,
     updateParam,
   };
 };
