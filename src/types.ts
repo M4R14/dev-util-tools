@@ -9,6 +9,7 @@ export enum ToolID {
   CRONTAB = 'crontab-guru',
   UUID_GENERATOR = 'uuid-generator',
   URL_PARSER = 'url-parser',
+  DIFF_VIEWER = 'diff-viewer',
 }
 
 import type { LucideIcon } from 'lucide-react';

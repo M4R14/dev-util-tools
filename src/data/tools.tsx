@@ -9,6 +9,7 @@ import {
   Clock,
   Fingerprint,
   Link2,
+  FileDiff,
 } from 'lucide-react';
 import { ToolID, ToolMetadata } from '../types';
 
@@ -66,6 +67,12 @@ export const TOOLS: ToolMetadata[] = [
     name: 'Crontab Guru',
     description: 'The quick and simple editor for cron schedule expressions.',
     icon: Clock,
+  },
+  {
+    id: ToolID.DIFF_VIEWER,
+    name: 'Diff Viewer',
+    description: 'Compare two texts side-by-side and view differences.',
+    icon: FileDiff,
   },
   {
     id: ToolID.AI_ASSISTANT,
