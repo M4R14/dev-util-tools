@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import { Search, Sparkles, Star, Clock, ArrowRight, LayoutDashboard } from 'lucide-react';
+import { Search, Sparkles, Star, Clock, ArrowRight, LayoutDashboard, X } from 'lucide-react';
 import { ToolID, ToolMetadata } from '../types';
 import { useUserPreferences } from '../context/UserPreferencesContext';
 import { useSearch } from '../context/SearchContext';
@@ -55,6 +55,15 @@ const Dashboard: React.FC = () => {
               autoFocus
               aria-label="Search developer tools"
             />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="p-1.5 mr-1 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                aria-label="Clear search"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
             <div className="hidden sm:flex px-3 py-1 bg-muted rounded-lg text-xs font-medium text-muted-foreground border border-border">
               Cmd + K
             </div>

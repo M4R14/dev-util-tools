@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, Search, Star, Sun, Moon } from 'lucide-react';
+import { Menu, Search, Star, Sun, Moon, X } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
@@ -68,9 +68,18 @@ const Header: React.FC<HeaderProps> = ({
               placeholder="Search tools (Cmd+K)..."
               value={searchTerm}
               onChange={(e) => onSearch(e.target.value)}
-              className="pl-10 bg-muted border-transparent focus-visible:ring-primary/20"
+              className="pl-10 pr-9 bg-muted border-transparent focus-visible:ring-primary/20"
               aria-label="Search tools"
             />
+            {searchTerm && (
+              <button
+                onClick={() => onSearch('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted-foreground/10 transition-colors z-10"
+                aria-label="Clear search"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
           </div>
         )}
       </div>

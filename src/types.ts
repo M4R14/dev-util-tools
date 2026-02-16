@@ -19,4 +19,5 @@ export interface ToolMetadata {
   name: string;
   description: string;
   icon: LucideIcon;
+  tags?: string[];
 }
