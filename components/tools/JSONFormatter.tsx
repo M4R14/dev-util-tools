@@ -1,42 +1,23 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Copy, Trash2, AlignLeft, Minimize2, Check } from 'lucide-react';
 import ToolLayout from '../ui/ToolLayout';
 import { Button } from '../ui/Button';
 import { Textarea } from '../ui/Textarea';
+import { useJsonFormatter } from '../../hooks/useJsonFormatter';
 
 const JSONFormatter: React.FC = () => {
-  const [input, setInput] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
-
-  const formatJSON = (space: number = 2) => {
-    try {
-      if (!input.trim()) return;
-      const parsed = JSON.parse(input);
-      setInput(JSON.stringify(parsed, null, space));
-      setError(null);
-    } catch (e: any) {
-      setError(e.message);
-    }
-  };
-
-  const minifyJSON = () => {
-    try {
-      if (!input.trim()) return;
-      const parsed = JSON.parse(input);
-      setInput(JSON.stringify(parsed));
-      setError(null);
-    } catch (e: any) {
-      setError(e.message);
-    }
-  };
-
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(input);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
+    const {
+        input,
+        setInput,
+        error,
+        setError,
+        copied,
+        formatJSON,
+        minifyJSON,
+        copyToClipboard,
+        clear
+    } = useJsonFormatter();
 
   return (
     <ToolLayout>
@@ -57,16 +38,7 @@ const JSONFormatter: React.FC = () => {
                 <Button 
                     variant="outline"
                     size="sm"
-                    onClick={() => {
-                        try {
-                            if (!input.trim()) return;
-                            const parsed = JSON.parse(input);
-                            setInput(JSON.stringify(parsed));
-                            setError(null);
-                        } catch (e: any) {
-                            setError(e.message);
-                        }
-                    }} 
+                    onClick={minifyJSON} 
                     className="flex items-center gap-2 bg-muted hover:bg-muted/80 text-foreground border-border"
                 >
                     <Minimize2 className="w-3.5 h-3.5" /> Minify
@@ -77,11 +49,7 @@ const JSONFormatter: React.FC = () => {
                 <Button 
                     variant="ghost"
                     size="icon"
-                    onClick={() => {
-                        navigator.clipboard.writeText(input);
-                        setCopied(true);
-                        setTimeout(() => setCopied(false), 2000);
-                    }}
+                    onClick={copyToClipboard}
                     className="text-muted-foreground hover:text-foreground hover:bg-muted h-8 w-8"
                     title="Copy Result"
                 >
@@ -90,7 +58,7 @@ const JSONFormatter: React.FC = () => {
                 <Button 
                     variant="ghost"
                     size="icon"
-                    onClick={() => setInput('')}
+                    onClick={clear}
                     className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 h-8 w-8"
                     title="Clear"
                 >

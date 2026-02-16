@@ -1,48 +1,21 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Copy, Check } from 'lucide-react';
 import ToolLayout from '../ui/ToolLayout';
 import { Button } from '../ui/Button';
 import { Textarea } from '../ui/Textarea';
+import { useBase64 } from '../../hooks/useBase64';
 
 const Base64Tool: React.FC = () => {
-  const [text, setText] = useState('');
-  const [base64, setBase64] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [copyState, setCopyState] = useState<'text' | 'base64' | null>(null);
-
-  const handleTextChange = (val: string) => {
-    setText(val);
-    try {
-      setBase64(btoa(val));
-      setError(null);
-    } catch (e) {
-      setBase64('');
-      if (val) setError('Invalid characters for Base64 encoding');
-    }
-  };
-
-  const handleBase64Change = (val: string) => {
-    setBase64(val);
-    try {
-      if (!val) {
-        setText('');
-        setError(null);
-        return;
-      }
-      setText(atob(val));
-      setError(null);
-    } catch (e) {
-      setText('');
-      setError('Invalid Base64 string');
-    }
-  };
-
-  const copy = (content: string, type: 'text' | 'base64') => {
-    navigator.clipboard.writeText(content);
-    setCopyState(type);
-    setTimeout(() => setCopyState(null), 2000);
-  };
+    const {
+        text,
+        base64,
+        error,
+        copyState,
+        handleTextChange,
+        handleBase64Change,
+        copy
+    } = useBase64();
 
   return (
     <ToolLayout>

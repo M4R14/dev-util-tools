@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '../../lib/utils';
-import { Card, CardContent } from './Card';
+import { Card, CardContent, CardHeader, CardTitle } from './Card';
 
 interface ToolLayoutProps {
   children: React.ReactNode;
@@ -23,7 +23,7 @@ interface ToolPanelProps {
 
 const ToolLayout = ({ children, className }: ToolLayoutProps) => {
   return (
-    <div className={cn("p-6 space-y-6 max-w-7xl mx-auto", className)}>
+    <div className={cn("p-6 space-y-6", className)}>
       {children}
     </div>
   );
@@ -43,9 +43,9 @@ const Section = ({ title, children, actions, className }: ToolSectionProps) => {
         </div>
       )}
       <Card className="overflow-hidden bg-background/50 backdrop-blur-sm border-border">
-        <div className="p-0">
+        <CardContent className="p-0">
           {children}
-        </div>
+        </CardContent>
       </Card>
     </div>
   );
@@ -55,14 +55,14 @@ const Panel = ({ title, children, actions, className }: ToolPanelProps) => {
   return (
     <Card className={cn("flex flex-col h-full overflow-hidden bg-background border-border shadow-sm", className)}>
         {(title || actions) && (
-            <div className="px-4 py-3 border-b border-border flex items-center justify-between bg-muted/30">
-               {title && <span className="text-sm font-medium text-foreground">{title}</span>}
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 px-4 py-3 border-b bg-muted/30">
+               {title && <CardTitle className="text-sm font-medium">{title}</CardTitle>}
                {actions && <div className="flex items-center gap-2">{actions}</div>}
-            </div>
+            </CardHeader>
         )}
-        <div className="flex-1 p-4 relative text-foreground">
+        <CardContent className="flex-1 p-4 relative text-foreground">
             {children}
-        </div>
+        </CardContent>
     </Card>
   );
 };
