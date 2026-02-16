@@ -46,6 +46,6 @@ export const useBase64 = () => {
     copyState,
     handleTextChange,
     handleBase64Change,
-    copy
+    copy,
   };
 };

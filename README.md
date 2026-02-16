@@ -25,43 +25,46 @@ DevPulse is a comprehensive collection of developer tools integrated with AI cap
 
 ## 💻 Tech Stack
 
--   ⚛️ **Frontend**: React 19, TypeScript, Vite
--   🎨 **Styling**: Tailwind CSS
--   🔹 **Icons**: Lucide React
--   🧠 **AI**: Google Gemini API
--   🛣️ **Routing**: React Router DOM
+- ⚛️ **Frontend**: React 19, TypeScript, Vite
+- 🎨 **Styling**: Tailwind CSS
+- 🔹 **Icons**: Lucide React
+- 🧠 **AI**: Google Gemini API
+- 🛣️ **Routing**: React Router DOM
 
 ## 🏁 Getting Started
 
 ### Prerequisites
 
--   Node.js (v18 or higher)
--   npm or yarn
+- Node.js (v18 or higher)
+- npm or yarn
 
 ### 📥 Installation
 
 1.  Clone the repository:
+
     ```bash
     git clone https://github.com/yourusername/devpulse.git
     cd devpulse
     ```
 
 2.  Install dependencies:
+
     ```bash
     npm install
     ```
 
 3.  **Configure API Key**:
     You can configure the Gemini API key in two ways:
-    -   **Option A (Recommended for local dev)**: Create a `.env.local` file in the root directory:
-        ```env
-        GEMINI_API_KEY=your_gemini_api_key_here
-        ```
-    -   **Option B (UI)**: Enter your key directly in the AI Assistant settings (stored securely in browser local storage).
+    - **Option A (Recommended for local dev)**: Create a `.env.local` file in the root directory:
+      ```env
+      GEMINI_API_KEY=your_gemini_api_key_here
+      ```
+    - **Option B (UI)**: Enter your key directly in the AI Assistant settings (stored securely in browser local storage).
 
     You can get an API key from [Google AI Studio](https://aistudio.google.com/).
 
 4.  Run the development server:
+
     ```bash
     npm run dev
     ```
@@ -70,9 +73,9 @@ DevPulse is a comprehensive collection of developer tools integrated with AI cap
 
 ## Keyboard Shortcuts
 
--   `Cmd+K` / `Ctrl+K`: Open Command Palette
--   `Arrow Up/Down`: Navigate Sidebar or Command Palette results
--   `Enter`: Select Tool
+- `Cmd+K` / `Ctrl+K`: Open Command Palette
+- `Arrow Up/Down`: Navigate Sidebar or Command Palette results
+- `Enter`: Select Tool
 
 ## License
 

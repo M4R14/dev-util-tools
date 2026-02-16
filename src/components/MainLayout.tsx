@@ -17,16 +17,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const location = useLocation();
-  const { 
-    favorites, 
-    recents, 
-    toggleFavorite, 
-    searchTerm, 
-    setSearchTerm 
-  } = useUserPreferences();
+  const { favorites, toggleFavorite, searchTerm, setSearchTerm } = useUserPreferences();
 
   const activeToolId = location.pathname.substring(1) as ToolID;
-  const activeTool = TOOLS.find(t => t.id === activeToolId);
+  const activeTool = TOOLS.find((t) => t.id === activeToolId);
 
   useEffect(() => {
     if (activeTool) {
@@ -38,10 +32,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-            e.preventDefault();
-            setIsCommandPaletteOpen(prev => !prev);
-        }
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsCommandPaletteOpen((prev) => !prev);
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -50,7 +44,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   return (
     <div className="flex h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-200 overflow-hidden transition-colors duration-200">
-      
       {/* Skip to content link for keyboard users */}
       <a
         href="#main-content"
@@ -59,37 +52,32 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         Skip to main content
       </a>
 
-      <CommandPalette 
+      <CommandPalette
         isOpen={isCommandPaletteOpen}
         onClose={() => setIsCommandPaletteOpen(false)}
       />
 
-      <Sidebar 
-        isOpen={isSidebarOpen}
-        onClose={() => setIsSidebarOpen(false)}
-      />
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 bg-white dark:bg-slate-900 transition-colors">
-        <Header 
-          title={activeTool?.name || 'Dashboard'} 
-          onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} 
+        <Header
+          title={activeTool?.name || 'Dashboard'}
+          onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
           searchTerm={searchTerm}
           onSearch={setSearchTerm}
           isFavorite={activeTool ? favorites.includes(activeTool.id) : false}
           onToggleFavorite={activeTool ? () => toggleFavorite(activeTool.id) : undefined}
           showSearch={!!activeTool} // Hide search in header on dashboard since it has its own
         />
-        
-        <main id="main-content" className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50 dark:bg-slate-900/50 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700" aria-label={activeTool?.name || 'Dashboard'}>
+
+        <main
+          id="main-content"
+          className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50 dark:bg-slate-900/50 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700"
+          aria-label={activeTool?.name || 'Dashboard'}
+        >
           <div className="max-w-7xl mx-auto animate-fadeIn min-h-full">
-            {activeTool ? (
-                <ToolPageLayout tool={activeTool}>
-                  {children}
-                </ToolPageLayout>
-            ) : (
-                children
-            )}
+            {activeTool ? <ToolPageLayout tool={activeTool}>{children}</ToolPageLayout> : children}
           </div>
         </main>
 

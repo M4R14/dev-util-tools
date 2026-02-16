@@ -49,7 +49,8 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
                 {this.props.fallbackTitle || 'Something went wrong'}
               </h2>
               <p className="text-sm text-muted-foreground">
-                This tool encountered an unexpected error. You can try again or go back to the dashboard.
+                This tool encountered an unexpected error. You can try again or go back to the
+                dashboard.
               </p>
             </div>
 
@@ -74,11 +75,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
                 <Home className="w-4 h-4" aria-hidden="true" />
                 Dashboard
               </Button>
-              <Button
-                onClick={this.handleReset}
-                className="gap-2"
-                aria-label="Try again"
-              >
+              <Button onClick={this.handleReset} className="gap-2" aria-label="Try again">
                 <RotateCcw className="w-4 h-4" aria-hidden="true" />
                 Try Again
               </Button>

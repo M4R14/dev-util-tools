@@ -28,7 +28,7 @@ interface UserPreferencesProviderProps {
 
 export const UserPreferencesProvider: React.FC<UserPreferencesProviderProps> = ({ children }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  
+
   const [favorites, setFavorites] = useState<ToolID[]>(() => {
     const saved = localStorage.getItem('favorites');
     return saved ? JSON.parse(saved) : [];
@@ -50,19 +50,15 @@ export const UserPreferencesProvider: React.FC<UserPreferencesProviderProps> = (
   }, [recents]);
 
   const toggleFavorite = (id: ToolID) => {
-    setFavorites(prev => 
-      prev.includes(id) 
-        ? prev.filter(fid => fid !== id)
-        : [...prev, id]
-    );
+    setFavorites((prev) => (prev.includes(id) ? prev.filter((fid) => fid !== id) : [...prev, id]));
   };
 
   const addRecent = (id: ToolID) => {
-    setRecents(prev => {
+    setRecents((prev) => {
       // Avoid adding if already at top
       if (prev[0] === id) return prev;
-      
-      const newRecents = [id, ...prev.filter(existingId => existingId !== id)].slice(0, 8);
+
+      const newRecents = [id, ...prev.filter((existingId) => existingId !== id)].slice(0, 8);
       return JSON.stringify(newRecents) !== JSON.stringify(prev) ? newRecents : prev;
     });
   };
@@ -70,10 +66,10 @@ export const UserPreferencesProvider: React.FC<UserPreferencesProviderProps> = (
   // Automatically update recents based on location/active tool
   useEffect(() => {
     const activeToolId = location.pathname.substring(1) as ToolID;
-    const activeTool = TOOLS.find(t => t.id === activeToolId);
-    
+    const activeTool = TOOLS.find((t) => t.id === activeToolId);
+
     if (activeTool && activeTool.id) {
-        addRecent(activeTool.id);
+      addRecent(activeTool.id);
     }
   }, [location.pathname]);
 
@@ -83,12 +79,10 @@ export const UserPreferencesProvider: React.FC<UserPreferencesProviderProps> = (
     searchTerm,
     setSearchTerm,
     toggleFavorite,
-    addRecent
+    addRecent,
   };
 
   return (
-    <UserPreferencesContext.Provider value={value}>
-      {children}
-    </UserPreferencesContext.Provider>
+    <UserPreferencesContext.Provider value={value}>{children}</UserPreferencesContext.Provider>
   );
 };

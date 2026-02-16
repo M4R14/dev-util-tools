@@ -12,11 +12,10 @@ export const useJsonFormatter = () => {
       setInput(JSON.stringify(parsed, null, space));
       setError(null);
       return true;
-    } catch (e: any) {
-      setError(e.message);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Invalid JSON');
       return false;
     }
-
   };
 
   const minifyJSON = () => {
@@ -26,8 +25,8 @@ export const useJsonFormatter = () => {
       setInput(JSON.stringify(parsed));
       setError(null);
       return true;
-    } catch (e: any) {
-      setError(e.message);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'Invalid JSON');
       return false;
     }
   };
@@ -53,6 +52,6 @@ export const useJsonFormatter = () => {
     formatJSON,
     minifyJSON,
     copyToClipboard,
-    clear
+    clear,
   };
 };

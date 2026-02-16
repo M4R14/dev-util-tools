@@ -1,4 +1,3 @@
-
 import React from 'react';
 import ToolLayout from '../ui/ToolLayout';
 import { Textarea } from '../ui/Textarea';
@@ -7,23 +6,15 @@ import { CopyButton } from '../ui/CopyButton';
 import { toast } from 'sonner';
 
 const Base64Tool: React.FC = () => {
-    const {
-        text,
-        base64,
-        error,
-        handleTextChange,
-        handleBase64Change
-    } = useBase64();
+  const { text, base64, error, handleTextChange, handleBase64Change } = useBase64();
 
   return (
     <ToolLayout>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-[calc(100vh-16rem)] min-h-[500px]">
         {/* String Area */}
-        <ToolLayout.Panel 
-            title="Plain Text"
-            actions={
-                <CopyButton value={text} onCopy={() => toast.success("Original text copied")} />
-            }
+        <ToolLayout.Panel
+          title="Plain Text"
+          actions={<CopyButton value={text} onCopy={() => toast.success('Original text copied')} />}
         >
           <Textarea
             value={text}
@@ -33,14 +24,11 @@ const Base64Tool: React.FC = () => {
           />
         </ToolLayout.Panel>
 
-
         {/* Base64 Area */}
-        <ToolLayout.Panel 
-            title="Base64 Output"
-            actions={
-                <CopyButton value={base64} onCopy={() => toast.success("Base64 copied")} />
-            }
-            className={error ? 'border-destructive/50 box-border' : ''}
+        <ToolLayout.Panel
+          title="Base64 Output"
+          actions={<CopyButton value={base64} onCopy={() => toast.success('Base64 copied')} />}
+          className={error ? 'border-destructive/50 box-border' : ''}
         >
           <Textarea
             value={base64}
@@ -58,7 +46,5 @@ const Base64Tool: React.FC = () => {
     </ToolLayout>
   );
 };
-
-
 
 export default Base64Tool;

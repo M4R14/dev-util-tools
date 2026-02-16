@@ -30,15 +30,15 @@ export const CopyButton = ({ value, className, iconClassName, ...props }: CopyBu
       variant="ghost"
       size="icon"
       onClick={handleCopy}
-      className={cn("h-8 w-8 text-muted-foreground hover:text-foreground", className)}
+      className={cn('h-8 w-8 text-muted-foreground hover:text-foreground', className)}
       title="Copy to clipboard"
-      aria-label={copied ? "Copied to clipboard" : "Copy to clipboard"}
+      aria-label={copied ? 'Copied to clipboard' : 'Copy to clipboard'}
       {...props}
     >
       {copied ? (
-        <Check className={cn("w-4 h-4 text-green-500", iconClassName)} aria-hidden="true" />
+        <Check className={cn('w-4 h-4 text-green-500', iconClassName)} aria-hidden="true" />
       ) : (
-        <Copy className={cn("w-4 h-4", iconClassName)} aria-hidden="true" />
+        <Copy className={cn('w-4 h-4', iconClassName)} aria-hidden="true" />
       )}
     </Button>
   );

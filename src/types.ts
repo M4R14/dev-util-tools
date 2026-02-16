@@ -1,4 +1,3 @@
-
 export enum ToolID {
   JSON_FORMATTER = 'json-formatter',
   BASE64_TOOL = 'base64-tool',
@@ -9,7 +8,7 @@ export enum ToolID {
   THAI_DATE_CONVERTER = 'thai-date-converter',
   CRONTAB = 'crontab-guru',
   UUID_GENERATOR = 'uuid-generator',
-  URL_PARSER = 'url-parser'
+  URL_PARSER = 'url-parser',
 }
 
 export interface ToolMetadata {

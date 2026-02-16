@@ -33,10 +33,10 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      setSelectedIndex(prev => (prev + 1) % filteredTools.length);
+      setSelectedIndex((prev) => (prev + 1) % filteredTools.length);
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      setSelectedIndex(prev => (prev - 1 + filteredTools.length) % filteredTools.length);
+      setSelectedIndex((prev) => (prev - 1 + filteredTools.length) % filteredTools.length);
     } else if (e.key === 'Enter') {
       e.preventDefault();
       if (filteredTools[selectedIndex]) {
@@ -57,7 +57,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
     if (listRef.current && listRef.current.children[selectedIndex]) {
       (listRef.current.children[selectedIndex] as HTMLElement).scrollIntoView({
         block: 'nearest',
-        behavior: 'smooth'
+        behavior: 'smooth',
       });
     }
   }, [selectedIndex]);
@@ -65,10 +65,14 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-start justify-center pt-[20vh] px-4" role="dialog" aria-modal="true" 
-    aria-label="Command palette">
+    <div
+      className="fixed inset-0 z-[100] flex items-start justify-center pt-[20vh] px-4"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Command palette"
+    >
       {/* Backdrop */}
-      <div 
+      <div
         className="absolute inset-0 bg-background/80 backdrop-blur-sm transition-opacity"
         onClick={onClose}
         aria-hidden="true"
@@ -76,7 +80,6 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
 
       {/* Modal */}
       <div className="relative w-full max-w-2xl bg-popover border border-border rounded-xl shadow-2xl shadow-black/20 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        
         {/* Search Input */}
         <div className="flex items-center gap-3 px-4 py-4 border-b border-border/50">
           <Search className="w-5 h-5 text-muted-foreground" />
@@ -92,13 +95,21 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
             role="combobox"
             aria-expanded="true"
             aria-controls="command-palette-list"
-            aria-activedescendant={filteredTools[selectedIndex] ? `command-item-${filteredTools[selectedIndex].id}` : undefined}
+            aria-activedescendant={
+              filteredTools[selectedIndex]
+                ? `command-item-${filteredTools[selectedIndex].id}`
+                : undefined
+            }
           />
           <div className="flex items-center gap-2">
             <kbd className="hidden md:inline-flex h-6 px-2 items-center bg-muted border border-border rounded text-xs text-muted-foreground font-mono">
               ESC
             </kbd>
-            <button onClick={onClose} className="p-1 hover:bg-muted rounded-md text-muted-foreground hover:text-foreground transition-colors" aria-label="Close command palette">
+            <button
+              onClick={onClose}
+              className="p-1 hover:bg-muted rounded-md text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="Close command palette"
+            >
               <X className="w-5 h-5" aria-hidden="true" />
             </button>
           </div>
@@ -107,28 +118,43 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
         {/* Results */}
         <div className="max-h-[60vh] overflow-y-auto">
           {filteredTools.length > 0 ? (
-            <ul ref={listRef} className="p-2 space-y-1" role="listbox" id="command-palette-list" aria-label="Available commands">
+            <ul
+              ref={listRef}
+              className="p-2 space-y-1"
+              role="listbox"
+              id="command-palette-list"
+              aria-label="Available commands"
+            >
               {filteredTools.map((tool, index) => (
-                <li key={tool.id} role="option" id={`command-item-${tool.id}`} aria-selected={index === selectedIndex}>
+                <li
+                  key={tool.id}
+                  role="option"
+                  id={`command-item-${tool.id}`}
+                  aria-selected={index === selectedIndex}
+                >
                   <button
                     onClick={() => handleSelect(tool.id)}
                     onMouseEnter={() => setSelectedIndex(index)}
                     tabIndex={-1}
                     className={`w-full flex items-center gap-4 px-4 py-3 rounded-lg text-left transition-all ${
-                        index === selectedIndex 
-                        ? 'bg-primary/20 text-primary border border-primary/30' 
+                      index === selectedIndex
+                        ? 'bg-primary/20 text-primary border border-primary/30'
                         : 'text-muted-foreground hover:bg-muted/50 border border-transparent'
                     }`}
                   >
-                    <div className={`p-2 rounded-lg ${index === selectedIndex ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground'}`}>
+                    <div
+                      className={`p-2 rounded-lg ${index === selectedIndex ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground'}`}
+                    >
                       {tool.icon}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="font-medium text-foreground truncate flex items-center justify-between">
-                         {tool.name}
-                         {index === selectedIndex && <ArrowRight className="w-4 h-4 opacity-50" />}
+                        {tool.name}
+                        {index === selectedIndex && <ArrowRight className="w-4 h-4 opacity-50" />}
                       </div>
-                      <div className="text-xs text-muted-foreground truncate">{tool.description}</div>
+                      <div className="text-xs text-muted-foreground truncate">
+                        {tool.description}
+                      </div>
                     </div>
                   </button>
                 </li>
@@ -137,25 +163,35 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
           ) : (
             <div className="py-12 px-4 text-center text-muted-foreground">
               <Command className="w-12 h-12 mx-auto mb-4 opacity-20" />
-              <p>No commands found matching "<span className="text-foreground">{searchTerm}</span>"</p>
+              <p>
+                No commands found matching &ldquo;
+                <span className="text-foreground">{searchTerm}</span>
+                &rdquo;
+              </p>
             </div>
           )}
         </div>
 
         {/* Footer */}
         <div className="px-4 py-3 bg-muted/50 border-t border-border/50 text-xs text-muted-foreground flex items-center justify-between">
-            <div className="flex items-center gap-4">
-                <span className="flex items-center gap-1.5">
-                    <kbd className="bg-muted border border-border rounded px-1.5 py-0.5 font-mono text-[10px]">↑</kbd>
-                    <kbd className="bg-muted border border-border rounded px-1.5 py-0.5 font-mono text-[10px]">↓</kbd>
-                    to navigate
-                </span>
-                <span className="flex items-center gap-1.5">
-                    <kbd className="bg-muted border border-border rounded px-1.5 py-0.5 font-mono text-[10px]">↵</kbd>
-                    to select
-                </span>
-            </div>
-            <span>DevPulse Command Palette</span>
+          <div className="flex items-center gap-4">
+            <span className="flex items-center gap-1.5">
+              <kbd className="bg-muted border border-border rounded px-1.5 py-0.5 font-mono text-[10px]">
+                ↑
+              </kbd>
+              <kbd className="bg-muted border border-border rounded px-1.5 py-0.5 font-mono text-[10px]">
+                ↓
+              </kbd>
+              to navigate
+            </span>
+            <span className="flex items-center gap-1.5">
+              <kbd className="bg-muted border border-border rounded px-1.5 py-0.5 font-mono text-[10px]">
+                ↵
+              </kbd>
+              to select
+            </span>
+          </div>
+          <span>DevPulse Command Palette</span>
         </div>
       </div>
     </div>

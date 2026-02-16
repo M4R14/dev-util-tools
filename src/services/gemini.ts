@@ -1,15 +1,14 @@
-
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI } from '@google/genai';
 
 export const askGemini = async (prompt: string, codeSnippet: string, apiKey?: string) => {
   const key = apiKey || process.env.API_KEY;
   if (!key) {
-    throw new Error("Gemini API Key is missing. Please set it in settings.");
+    throw new Error('Gemini API Key is missing. Please set it in settings.');
   }
 
   const ai = new GoogleGenAI({ apiKey: key });
   const model = 'gemini-3-flash-preview';
-  
+
   const fullPrompt = `
     You are a world-class senior developer assistant. 
     Help the user with the following request based on their code.
@@ -30,8 +29,10 @@ export const askGemini = async (prompt: string, codeSnippet: string, apiKey?: st
       contents: fullPrompt,
     });
     return response.text;
-  } catch (error: any) {
-    console.error("Gemini Error:", error);
-    throw new Error(error.message || "Failed to get response from AI assistant.");
+  } catch (error: unknown) {
+    console.error('Gemini Error:', error);
+    throw new Error(
+      error instanceof Error ? error.message : 'Failed to get response from AI assistant.',
+    );
   }
 };

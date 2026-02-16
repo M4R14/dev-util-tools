@@ -11,23 +11,23 @@ The tools have been refactored to follow a **Hook-View** pattern (Separation of 
 
 ## Available Tools
 
-| Tool Component | Context/Hook | Description |
-|---|---|---|
-| `JSONFormatter.tsx` | `useJsonFormatter` | Formats, validates, and minifies JSON data. |
-| `Base64Tool.tsx` | `useBase64` | Encodes and decodes Base64 strings. |
-| `CaseConverter.tsx` | `useCaseConverter` | Converts text casing (camelCase, snake_case, PascalCase, etc.). |
-| `PasswordGenerator.tsx` | `usePasswordGenerator` | Generates secure passwords with customizable criteria. |
-| `ThaiDateConverter.tsx` | `useThaiDateConverter` | Converts between Thai/Buddhist dates and ISO formats. |
-| `TimezoneConverter.tsx` | *(Pending Refactor)* | Converts dates/times across different timezones. |
-| `CrontabTool.tsx` | - | Link to Crontab.guru for managing cron expressions. |
-| `AIAssistant.tsx` | `askGemini` (Service) | AI-powered coding assistant using Google Gemini. |
-| `UUIDGenerator.tsx` | `useUUIDGenerator` | Generates Version 4 UUIDs. |
-| `UrlParser.tsx` | `useUrlParser` | Parses, encodes, and decodes URLs. |
+| Tool Component          | Context/Hook           | Description                                                     |
+| ----------------------- | ---------------------- | --------------------------------------------------------------- |
+| `JSONFormatter.tsx`     | `useJsonFormatter`     | Formats, validates, and minifies JSON data.                     |
+| `Base64Tool.tsx`        | `useBase64`            | Encodes and decodes Base64 strings.                             |
+| `CaseConverter.tsx`     | `useCaseConverter`     | Converts text casing (camelCase, snake_case, PascalCase, etc.). |
+| `PasswordGenerator.tsx` | `usePasswordGenerator` | Generates secure passwords with customizable criteria.          |
+| `ThaiDateConverter.tsx` | `useThaiDateConverter` | Converts between Thai/Buddhist dates and ISO formats.           |
+| `TimezoneConverter.tsx` | _(Pending Refactor)_   | Converts dates/times across different timezones.                |
+| `CrontabTool.tsx`       | -                      | Link to Crontab.guru for managing cron expressions.             |
+| `AIAssistant.tsx`       | `askGemini` (Service)  | AI-powered coding assistant using Google Gemini.                |
+| `UUIDGenerator.tsx`     | `useUUIDGenerator`     | Generates Version 4 UUIDs.                                      |
+| `UrlParser.tsx`         | `useUrlParser`         | Parses, encodes, and decodes URLs.                              |
 
 ## Shared UI Components
 
 Tools utilize shared components from `components/ui/` for consistency:
 
--   **`ToolLayout`**: Standardizes the layout structure (Header, Sections, Panels).
--   **`CopyButton`**: Provides uniform copy-to-clipboard functionality with toast notifications.
--   **`Card`**: Shadcn UI based card component for grouping content.
+- **`ToolLayout`**: Standardizes the layout structure (Header, Sections, Panels).
+- **`CopyButton`**: Provides uniform copy-to-clipboard functionality with toast notifications.
+- **`Card`**: Shadcn UI based card component for grouping content.
