@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { Copy, Trash2, AlignLeft, Minimize2, Check } from 'lucide-react';
+import ToolLayout from '../ui/ToolLayout';
 
 const JSONFormatter: React.FC = () => {
   const [input, setInput] = useState('');
@@ -36,62 +37,67 @@ const JSONFormatter: React.FC = () => {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-        <div className="flex gap-2">
-          <button 
-            onClick={() => formatJSON(2)} 
-            className="flex items-center gap-2 px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm transition-colors"
-          >
-            <AlignLeft className="w-4 h-4" /> Format (2 spaces)
-          </button>
-          <button 
-            onClick={minifyJSON} 
-            className="flex items-center gap-2 px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm transition-colors"
-          >
-            <Minimize2 className="w-4 h-4" /> Minify
-          </button>
+    <ToolLayout>
+      <ToolLayout.Panel
+        title="JSON Editor"
+        actions={
+            <>
+              {/* Toolbar */}
+              <div className="flex gap-2 mr-4 border-r border-slate-700 pr-4">
+                <button 
+                    onClick={() => formatJSON(2)} 
+                    className="flex items-center gap-2 px-3 py-1.5 bg-indigo-600/20 hover:bg-indigo-600/40 hover:text-indigo-300 text-indigo-400 rounded-lg text-xs font-medium transition-colors border border-indigo-500/20"
+                >
+                    <AlignLeft className="w-3.5 h-3.5" /> Format
+                </button>
+                <button 
+                    onClick={minifyJSON} 
+                    className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-medium transition-colors border border-slate-700"
+                >
+                    <Minimize2 className="w-3.5 h-3.5" /> Minify
+                </button>
+              </div>
+            
+              <div className="flex gap-2">
+                <button 
+                    onClick={copyToClipboard}
+                    className="p-1.5 text-slate-400 hover:text-white transition-colors hover:bg-slate-800 rounded-md"
+                    title="Copy Result"
+                >
+                    {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                </button>
+                <button 
+                    onClick={() => setInput('')}
+                    className="p-1.5 text-slate-400 hover:text-red-400 transition-colors hover:bg-red-900/20 rounded-md"
+                    title="Clear"
+                >
+                    <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            </>
+        }
+        className={error ? 'border-red-500/50' : ''}
+      >
+        <div className="h-[calc(100vh-16rem)] min-h-[500px]">
+            <textarea
+            value={input}
+            onChange={(e) => {
+                setInput(e.target.value);
+                if (error) setError(null);
+            }}
+            placeholder="Paste your JSON here..."
+            className="w-full h-full bg-transparent border-none focus:ring-0 p-0 font-mono text-sm resize-none placeholder-slate-600"
+            />
+            {error && (
+            <div className="absolute bottom-4 left-4 right-4 p-3 bg-red-900/90 backdrop-blur border border-red-500/30 rounded-lg text-red-200 text-xs shadow-lg animate-in fade-in slide-in-from-bottom-2 flex items-center gap-2">
+                <span className="font-bold bg-white/10 px-1.5 rounded">Error</span> {error}
+            </div>
+            )}
         </div>
-        
-        <div className="flex gap-2">
-          <button 
-            onClick={copyToClipboard}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-all ${
-              copied ? 'bg-green-600 text-white' : 'bg-slate-700 hover:bg-slate-600'
-            }`}
-          >
-            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-            {copied ? 'Copied!' : 'Copy'}
-          </button>
-          <button 
-            onClick={() => setInput('')}
-            className="flex items-center gap-2 px-3 py-1.5 bg-red-900/30 hover:bg-red-900/50 text-red-400 rounded-lg text-sm transition-colors"
-          >
-            <Trash2 className="w-4 h-4" /> Clear
-          </button>
-        </div>
-      </div>
-
-      <div className="relative">
-        <textarea
-          value={input}
-          onChange={(e) => {
-            setInput(e.target.value);
-            if (error) setError(null);
-          }}
-          placeholder="Paste your JSON here..."
-          className={`w-full h-96 bg-slate-950 text-indigo-300 font-mono p-4 rounded-xl border-2 transition-all focus:ring-4 focus:ring-indigo-500/20 focus:outline-none resize-none ${
-            error ? 'border-red-500' : 'border-slate-700 focus:border-indigo-500'
-          }`}
-        />
-        {error && (
-          <div className="mt-2 text-sm text-red-400 bg-red-900/20 border border-red-900/50 p-3 rounded-lg flex items-start gap-2">
-            <span className="font-bold">Error:</span> {error}
-          </div>
-        )}
-      </div>
-    </div>
+      </ToolLayout.Panel>
+    </ToolLayout>
   );
 };
+
 
 export default JSONFormatter;

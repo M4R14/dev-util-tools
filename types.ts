@@ -6,7 +6,8 @@ export enum ToolID {
   PASSWORD_GEN = 'password-gen',
   TIMEZONE_CONVERTER = 'timezone-converter',
   AI_ASSISTANT = 'ai-assistant',
-  THAI_DATE_CONVERTER = 'thai-date-converter'
+  THAI_DATE_CONVERTER = 'thai-date-converter',
+  CRONTAB = 'crontab-guru'
 }
 
 export interface ToolMetadata {

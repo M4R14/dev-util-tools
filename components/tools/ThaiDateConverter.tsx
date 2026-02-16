@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Copy, Check, Calendar, RotateCcw, ArrowRightLeft, Search, Info } from 'lucide-react';
+import ToolLayout from '../ui/ToolLayout';
 
 const ThaiDateConverter: React.FC = () => {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -146,16 +147,11 @@ const ThaiDateConverter: React.FC = () => {
   const formats = getFormats();
 
   return (
-    <div className="p-6 space-y-8">
-      <div className="bg-indigo-900/10 p-6 rounded-2xl border border-indigo-500/30">
-        <div className="flex items-center gap-3 mb-4 text-indigo-400">
-          <ArrowRightLeft className="w-5 h-5" />
-          <h2 className="text-sm font-bold uppercase tracking-wider">Reverse Parser (Thai String → ISO)</h2>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
+    <ToolLayout>
+      <ToolLayout.Section title="Reverse Parser (Thai String → ISO)">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-950/50 p-6 rounded-xl border border-dashed border-indigo-500/30">
           <div className="space-y-2">
-            <label className="text-[10px] font-bold text-slate-500 uppercase">Input Thai Date String</label>
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Input Thai Date String</label>
             <div className="relative">
               <input
                 type="text"
@@ -169,7 +165,7 @@ const ThaiDateConverter: React.FC = () => {
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-bold text-slate-500 uppercase">Converted ISO Date</label>
+            <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Converted ISO Date</label>
             <div className={`w-full min-h-[50px] bg-slate-950 border rounded-xl p-3 flex items-center justify-between transition-all ${parseResult ? 'border-green-500/50 bg-green-500/5' : 'border-slate-800 opacity-50'}`}>
               <div className="font-mono text-lg text-indigo-300">
                 {parseResult ? parseResult.formatted : 'Waiting for valid input...'}
@@ -185,61 +181,63 @@ const ThaiDateConverter: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
+      </ToolLayout.Section>
 
-      <div className="h-px bg-slate-800 w-full my-4"></div>
+      <div className="h-px bg-slate-800 w-full my-2"></div>
 
-      <div className="flex flex-col md:flex-row md:items-end gap-4 bg-slate-900/40 p-6 rounded-2xl border border-slate-700/50">
-        <div className="flex-1 space-y-2">
-          <label className="text-xs font-bold text-slate-500 uppercase flex items-center gap-2">
-            <Calendar className="w-3.5 h-3.5" /> Forward Converter (Select Date)
-          </label>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-indigo-100 focus:border-indigo-500 outline-none transition-all"
-          />
-        </div>
-        <button
-          onClick={resetToday}
-          className="flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 px-6 py-3 rounded-xl transition-all border border-slate-700 whitespace-nowrap"
-        >
-          <RotateCcw className="w-4 h-4" /> Today
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {formats.map((f) => (
-          <div key={f.id} className="bg-slate-900/30 p-4 rounded-xl border border-slate-800/60 group hover:border-slate-700 transition-all">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{f.label}</span>
-                <div className="relative group/tooltip">
-                  <Info className="w-3 h-3 text-slate-600 cursor-help" />
-                  <div className="absolute bottom-full left-0 mb-2 hidden group-hover/tooltip:block w-48 p-2 bg-slate-800 text-[10px] text-slate-300 rounded border border-slate-700 shadow-2xl z-50 pointer-events-none">
-                    <p className="font-semibold text-indigo-400 mb-1">Usage:</p>
-                    {f.tooltip}
-                    <div className="absolute -bottom-1 left-3 w-2 h-2 bg-slate-800 border-r border-b border-slate-700 rotate-45"></div>
-                  </div>
+      <ToolLayout.Section 
+        title="Forward Converter"
+        actions={
+            <button
+                onClick={resetToday}
+                className="flex items-center gap-2 text-xs text-indigo-400 hover:text-indigo-300 transition-colors"
+                >
+                <RotateCcw className="w-3.5 h-3.5" /> Note: Default is Today
+            </button>
+        }
+      >
+         <div className="bg-slate-950 p-6">
+            <div className="mb-6">
+                 <input
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-indigo-100 focus:border-indigo-500 outline-none transition-all appearance-none"
+                  />
+            </div>
+          
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {formats.map((f) => (
+                <div key={f.id} className="bg-slate-900/50 p-4 rounded-xl border border-slate-800/60 group hover:border-slate-700 transition-all">
+                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{f.label}</span>
+                        <div className="relative group/tooltip">
+                        <Info className="w-3 h-3 text-slate-600 cursor-help" />
+                        <div className="absolute bottom-full left-0 mb-2 hidden group-hover/tooltip:block w-48 p-2 bg-slate-800 text-[10px] text-slate-300 rounded border border-slate-700 shadow-2xl z-50 pointer-events-none">
+                            <p className="font-semibold text-indigo-400 mb-1">Usage:</p>
+                            {f.tooltip}
+                        </div>
+                        </div>
+                    </div>
+                    <button
+                        onClick={() => handleCopy(f.value, f.id)}
+                        className={`p-1.5 rounded-lg transition-all ${
+                        copiedId === f.id ? 'bg-green-600 text-white' : 'hover:bg-slate-800 text-slate-500 group-hover:text-slate-300'
+                        }`}
+                    >
+                        {copiedId === f.id ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                    </button>
+                    </div>
+                    <div className="font-mono text-sm text-indigo-200/90 break-all bg-slate-950/50 p-3 rounded-lg border border-slate-800/30">
+                    {f.value}
+                    </div>
                 </div>
-              </div>
-              <button
-                onClick={() => handleCopy(f.value, f.id)}
-                className={`p-1.5 rounded-lg transition-all ${
-                  copiedId === f.id ? 'bg-green-600 text-white' : 'hover:bg-slate-800 text-slate-500 group-hover:text-slate-300'
-                }`}
-              >
-                {copiedId === f.id ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-              </button>
+                ))}
             </div>
-            <div className="font-mono text-sm text-indigo-200/90 break-all bg-slate-950/50 p-3 rounded-lg border border-slate-800/30">
-              {f.value}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+         </div>
+      </ToolLayout.Section>
+    </ToolLayout>
   );
 };
 

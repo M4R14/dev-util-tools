@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Clock, Copy, Check, ArrowLeftRight, Calendar, Globe } from 'lucide-react';
+import ToolLayout from '../ui/ToolLayout';
 
 const COMMON_TIMEZONES = [
   { value: 'UTC', label: 'UTC (Universal Time Coordinated)', abbr: 'UTC' },
@@ -134,70 +135,54 @@ const TimezoneConverter: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto p-4 md:p-8">
-      <div className="bg-slate-800/80 backdrop-blur-sm rounded-2xl p-6 md:p-8 shadow-xl border border-slate-700">
-        
-        {/* Header Section */}
-        <div className="flex items-center justify-between mb-8 border-b border-slate-700 pb-6">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-blue-500/10 rounded-xl">
-              <Globe className="w-8 h-8 text-blue-400" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-slate-100">Timezone Converter</h2>
-              <p className="text-slate-400 text-sm">Convert date and time across different timezones instantly</p>
-            </div>
-          </div>
-          <button 
-              onClick={setNow}
-              className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-slate-200 text-sm font-medium rounded-lg transition-all border border-slate-600 hover:border-slate-500 shadow-sm"
-          >
-              <Clock className="w-4 h-4" />
-              Reset to Now
-          </button>
+    <ToolLayout>
+      <div className="space-y-6">
+        <div className="flex justify-end">
+            <button 
+                onClick={setNow}
+                className="flex items-center gap-2 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm transition-colors border border-slate-700"
+            >
+                <Clock className="w-3.5 h-3.5" />
+                Reset to Now
+            </button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_auto_1fr] gap-6 items-center">
           
           {/* Source Panel */}
-          <div className="space-y-4 bg-slate-900/50 p-6 rounded-xl border border-slate-700/50">
-            <label className="flex items-center gap-2 text-sm font-medium text-blue-300 uppercase tracking-wider">
-              <Calendar className="w-4 h-4" />
-              Input Time
-            </label>
-            
-            <div className="relative">
-              <input
-                type="datetime-local"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
-                className="w-full bg-slate-800 border-2 border-slate-700 hover:border-slate-600 rounded-lg px-4 py-3 text-slate-200 text-lg focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all placeholder-slate-500"
-              />
+          <ToolLayout.Section title="Input Time">
+            <div className="space-y-3">
+                <input
+                    type="datetime-local"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:border-indigo-500 outline-none transition-all"
+                />
+                
+                <div className="relative">
+                <select
+                    value={sourceTz}
+                    onChange={(e) => setSourceTz(e.target.value)}
+                    className="w-full appearance-none bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:border-indigo-500 outline-none transition-all cursor-pointer"
+                >
+                    {COMMON_TIMEZONES.map((tz) => (
+                    <option key={tz.value} value={tz.value}>
+                        {tz.label}
+                    </option>
+                    ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-400">
+                    <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                </div>
+                </div>
             </div>
-            
-            <div className="relative">
-              <select
-                value={sourceTz}
-                onChange={(e) => setSourceTz(e.target.value)}
-                className="w-full appearance-none bg-slate-800 border-2 border-slate-700 hover:border-slate-600 rounded-lg px-4 py-3 text-slate-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all cursor-pointer"
-              >
-                {COMMON_TIMEZONES.map((tz) => (
-                  <option key={tz.value} value={tz.value}>
-                    {tz.label}
-                  </option>
-                ))}
-              </select>
-              <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-slate-400">
-                <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
-              </div>
-            </div>
-          </div>
+          </ToolLayout.Section>
 
           {/* Swap Trigger */}
-          <div className="flex justify-center -my-2 lg:my-0 z-10">
+          <div className="flex justify-center -my-2 lg:my-0 z-10 pt-6">
             <button 
               onClick={swapTimezones}
-              className="p-3 bg-slate-700 hover:bg-blue-600 text-slate-300 hover:text-white rounded-full shadow-lg border-4 border-slate-800 transition-all transform hover:scale-110 active:rotate-180"
+              className="p-3 bg-slate-800 hover:bg-indigo-600 text-slate-400 hover:text-white rounded-full border border-slate-700 hover:border-indigo-500 transition-all shadow-lg"
               title="Swap Timezones"
             >
               <ArrowLeftRight className="w-5 h-5 lg:rotate-0 rotate-90" />
@@ -205,59 +190,58 @@ const TimezoneConverter: React.FC = () => {
           </div>
 
           {/* Result Panel */}
-          <div className="space-y-4 bg-gradient-to-br from-blue-900/20 to-slate-900/50 p-6 rounded-xl border border-blue-500/20 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
-               <button
-                  onClick={copyToClipboard}
-                  className="p-2 bg-slate-800/80 hover:bg-blue-600 text-slate-300 hover:text-white rounded-lg shadow-sm border border-slate-700 transition-colors"
-                  title="Copy full date"
-               >
-                  {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-               </button>
-            </div>
+          <ToolLayout.Section title="Converted Result">
+             <div className="bg-gradient-to-br from-indigo-900/20 to-slate-900/50 rounded-xl border border-indigo-500/20 overflow-hidden relative group">
+                <div className="p-6">
+                    <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                            onClick={copyToClipboard}
+                            className="p-2 bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white rounded-lg shadow-sm border border-slate-700 transition-colors"
+                            title="Copy full date"
+                        >
+                            {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                        </button>
+                    </div>
 
-            <label className="flex items-center gap-2 text-sm font-medium text-emerald-300 uppercase tracking-wider">
-              <Globe className="w-4 h-4" />
-              Converted Result
-            </label>
+                    <div className="mb-4">
+                        <div className="text-3xl md:text-4xl font-mono font-bold text-white tracking-tight flex flex-wrap items-baseline gap-2 md:gap-3">
+                            {resultTimePart}
+                            <span className="text-lg md:text-xl font-sans font-medium text-indigo-400">{resultTzAbbr}</span>
+                        </div>
+                        <div className="text-slate-400 font-medium mt-1">
+                            {resultDatePart}
+                        </div>
+                    </div>
 
-            <div className="pt-2 pb-1">
-               <div className="text-4xl md:text-5xl font-mono font-bold text-white tracking-tight flex items-baseline gap-3">
-                  {resultTimePart}
-                  <span className="text-lg md:text-xl font-sans font-medium text-blue-400">{resultTzAbbr}</span>
-               </div>
-               <div className="text-slate-400 font-medium mt-2">
-                  {resultDatePart}
-               </div>
-            </div>
-
-            <div className="relative pt-2">
-              <select
-                value={targetTz}
-                onChange={(e) => setTargetTz(e.target.value)}
-                className="w-full appearance-none bg-slate-800 border-2 border-slate-700 hover:border-slate-600 rounded-lg px-4 py-3 text-slate-200 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all cursor-pointer"
-              >
-                {COMMON_TIMEZONES.map((tz) => (
-                  <option key={tz.value} value={tz.value}>
-                    {tz.label}
-                  </option>
-                ))}
-              </select>
-              <div className="absolute inset-y-0 right-0 flex items-center px-4 pt-2 pointer-events-none text-slate-400">
-                <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
-              </div>
-            </div>
-          </div>
+                    <div className="relative pt-2 border-t border-indigo-500/20 mt-4">
+                        <select
+                            value={targetTz}
+                            onChange={(e) => setTargetTz(e.target.value)}
+                            className="w-full appearance-none bg-slate-950 border border-slate-700 rounded-xl px-4 py-3 text-slate-200 focus:border-indigo-500 outline-none transition-all cursor-pointer mt-4"
+                        >
+                            {COMMON_TIMEZONES.map((tz) => (
+                            <option key={tz.value} value={tz.value}>
+                                {tz.label}
+                            </option>
+                            ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-0 flex items-center px-4 pt-6 pointer-events-none text-slate-400">
+                            <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"/></svg>
+                        </div>
+                    </div>
+                </div>
+             </div>
+          </ToolLayout.Section>
 
         </div>
 
         {/* Footer Info */}
-        <div className="mt-8 text-center text-slate-500 text-sm">
-           Displaying conversion from <span className="text-blue-400 font-medium">{COMMON_TIMEZONES.find(t=>t.value===sourceTz)?.abbr || sourceTz }</span> to <span className="text-emerald-400 font-medium">{COMMON_TIMEZONES.find(t=>t.value===targetTz)?.abbr || targetTz}</span>
+        <div className="mt-8 text-center text-slate-500 text-xs">
+           Displaying conversion from <span className="text-indigo-400 font-medium">{COMMON_TIMEZONES.find(t=>t.value===sourceTz)?.abbr || sourceTz }</span> to <span className="text-emerald-400 font-medium">{COMMON_TIMEZONES.find(t=>t.value===targetTz)?.abbr || targetTz}</span>
         </div>
 
       </div>
-    </div>
+    </ToolLayout>
   );
 };
 

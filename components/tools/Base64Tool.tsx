@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { ArrowLeftRight, Copy, Check } from 'lucide-react';
+import ToolLayout from '../ui/ToolLayout';
 
 const Base64Tool: React.FC = () => {
   const [text, setText] = useState('');
@@ -42,61 +43,60 @@ const Base64Tool: React.FC = () => {
   };
 
   return (
-    <div className="p-6 space-y-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+    <ToolLayout>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 h-[calc(100vh-16rem)] min-h-[500px]">
         {/* String Area */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <label className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Normal String</label>
-            <button 
-              onClick={() => copy(text, 'text')}
-              className="text-slate-500 hover:text-slate-300 transition-colors"
-            >
-              {copyState === 'text' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-            </button>
-          </div>
+        <ToolLayout.Panel 
+            title="Plain Text"
+            actions={
+                <button 
+                  onClick={() => copy(text, 'text')}
+                  className="p-1.5 text-slate-400 hover:text-white transition-colors hover:bg-slate-800 rounded-md"
+                  title="Copy Text"
+                >
+                  {copyState === 'text' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                </button>
+            }
+        >
           <textarea
             value={text}
             onChange={(e) => handleTextChange(e.target.value)}
-            placeholder="Enter plain text..."
-            className="w-full h-64 bg-slate-950 border border-slate-700 rounded-xl p-4 font-mono text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none resize-none"
+            placeholder="Type here..."
+            className="w-full h-full bg-transparent border-none focus:ring-0 p-0 font-mono text-sm resize-none placeholder-slate-600"
           />
-        </div>
+        </ToolLayout.Panel>
 
-        {/* Action Divider (Mobile) */}
-        <div className="flex justify-center md:hidden">
-          <ArrowLeftRight className="w-6 h-6 text-slate-600 rotate-90" />
-        </div>
 
         {/* Base64 Area */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <label className="text-sm font-semibold text-slate-400 uppercase tracking-wider">Base64 Output</label>
-            <button 
-              onClick={() => copy(base64, 'base64')}
-              className="text-slate-500 hover:text-slate-300 transition-colors"
-            >
-              {copyState === 'base64' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-            </button>
-          </div>
+        <ToolLayout.Panel 
+            title="Base64 Output"
+            actions={
+                <button 
+                  onClick={() => copy(base64, 'base64')}
+                  className="p-1.5 text-slate-400 hover:text-white transition-colors hover:bg-slate-800 rounded-md"
+                  title="Copy Base64"
+                >
+                  {copyState === 'base64' ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                </button>
+            }
+            className={error ? 'border-red-500/50 box-border' : ''}
+        >
           <textarea
             value={base64}
             onChange={(e) => handleBase64Change(e.target.value)}
-            placeholder="Enter Base64..."
-            className={`w-full h-64 bg-slate-950 border rounded-xl p-4 font-mono text-sm focus:ring-1 outline-none resize-none ${
-              error ? 'border-red-500 focus:ring-red-500' : 'border-slate-700 focus:border-indigo-500 focus:ring-indigo-500'
-            }`}
+            placeholder="Base64 result..."
+            className="w-full h-full bg-transparent border-none focus:ring-0 p-0 font-mono text-sm resize-none placeholder-slate-600"
           />
-        </div>
+          {error && (
+            <div className="absolute bottom-4 left-4 right-4 p-3 bg-red-900/90 backdrop-blur border border-red-500/30 rounded-lg text-red-200 text-xs shadow-lg animate-in fade-in slide-in-from-bottom-2">
+              {error}
+            </div>
+          )}
+        </ToolLayout.Panel>
       </div>
-
-      {error && (
-        <div className="text-center p-3 bg-red-900/20 border border-red-900/50 rounded-lg text-red-400 text-sm">
-          {error}
-        </div>
-      )}
-    </div>
+    </ToolLayout>
   );
 };
+
 
 export default Base64Tool;

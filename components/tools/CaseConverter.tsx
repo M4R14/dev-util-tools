@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { Copy, Check } from 'lucide-react';
+import ToolLayout from '../ui/ToolLayout';
 
 const CaseConverter: React.FC = () => {
   const [text, setText] = useState('');
@@ -22,42 +23,43 @@ const CaseConverter: React.FC = () => {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="space-y-2">
-        <label className="text-sm font-semibold text-slate-400 uppercase">Input Text</label>
+    <ToolLayout>
+      <ToolLayout.Section title="Input Text">
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder="Type or paste your text here..."
-          className="w-full h-32 bg-slate-950 border border-slate-700 rounded-xl p-4 focus:border-indigo-500 outline-none resize-none transition-all"
+          className="w-full h-32 bg-slate-950 border-none rounded-xl p-4 focus:ring-0 outline-none resize-none transition-all placeholder-slate-600"
         />
-      </div>
+      </ToolLayout.Section>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {conversions.map((conv) => {
-          const result = conv.fn(text);
-          return (
-            <div key={conv.label} className="bg-slate-900/50 p-4 rounded-xl border border-slate-800 space-y-2 group">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-500 uppercase">{conv.label}</span>
-                <button 
-                  disabled={!result}
-                  onClick={() => handleCopy(result, conv.label)}
-                  className={`p-1.5 rounded-lg transition-all ${
-                    copiedId === conv.label ? 'bg-green-600 text-white' : 'hover:bg-slate-700 text-slate-500 group-hover:text-slate-300'
-                  } disabled:opacity-0`}
-                >
-                  {copiedId === conv.label ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                </button>
-              </div>
-              <div className="font-mono text-sm truncate text-indigo-200 min-h-[1.5rem]">
-                {result || '...'}
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
+      <ToolLayout.Section title="Conversions">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-transparent border-none">
+            {conversions.map((conv) => {
+            const result = conv.fn(text);
+            return (
+                <div key={conv.label} className="bg-slate-950/50 p-4 rounded-xl border border-slate-800 space-y-2 group hover:border-slate-700 transition-colors">
+                <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">{conv.label}</span>
+                    <button 
+                    disabled={!result}
+                    onClick={() => handleCopy(result, conv.label)}
+                    className={`p-1.5 rounded-lg transition-all ${
+                        copiedId === conv.label ? 'bg-green-600 text-white' : 'hover:bg-slate-700 text-slate-500 group-hover:text-slate-300'
+                    } disabled:opacity-0`}
+                    >
+                    {copiedId === conv.label ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                    </button>
+                </div>
+                <div className="font-mono text-sm truncate text-indigo-200 min-h-[1.5rem]">
+                    {result || <span className="text-slate-700 select-none">...</span>}
+                </div>
+                </div>
+            );
+            })}
+        </div>
+      </ToolLayout.Section>
+    </ToolLayout>
   );
 };
 

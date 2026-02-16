@@ -1,5 +1,5 @@
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { 
   Code2, 
@@ -12,7 +12,8 @@ import {
   Menu, 
   X,
   Github,
-  ChevronRight
+  ChevronRight,
+  Clock
 } from 'lucide-react';
 import { ToolID, ToolMetadata } from './types';
 import Sidebar from './components/Sidebar';
@@ -24,10 +25,22 @@ import PasswordGenerator from './components/tools/PasswordGenerator';
 import AIAssistant from './components/tools/AIAssistant';
 import ThaiDateConverter from './components/tools/ThaiDateConverter';
 import TimezoneConverter from './components/tools/TimezoneConverter';
+import CrontabTool from './components/tools/CrontabTool';
 
 const App: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  
+  const [favorites, setFavorites] = useState<ToolID[]>(() => {
+    const saved = localStorage.getItem('favorites');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const [recents, setRecents] = useState<ToolID[]>(() => {
+    const saved = localStorage.getItem('recents');
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const location = useLocation();
 
   const tools: ToolMetadata[] = useMemo(() => [
@@ -68,6 +81,12 @@ const App: React.FC = () => {
       icon: <CalendarDays className="w-5 h-5" /> 
     },
     { 
+      id: ToolID.CRONTAB, 
+      name: 'Crontab Guru', 
+      description: 'The quick and simple editor for cron schedule expressions.',
+      icon: <Clock className="w-5 h-5" /> 
+    },
+    { 
       id: ToolID.AI_ASSISTANT, 
       name: 'AI Smart Assistant', 
       description: 'Analyze code snippets and solve dev problems with Gemini.',
@@ -78,6 +97,31 @@ const App: React.FC = () => {
   const activeToolId = location.pathname.substring(1) as ToolID;
   const activeTool = tools.find(t => t.id === activeToolId) || tools[0];
 
+  useEffect(() => {
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+  }, [favorites]);
+
+  useEffect(() => {
+    localStorage.setItem('recents', JSON.stringify(recents));
+  }, [recents]);
+
+  useEffect(() => {
+    if (activeTool && activeTool.id) {
+       setRecents(prev => {
+         const newRecents = [activeTool.id, ...prev.filter(id => id !== activeTool.id)].slice(0, 5);
+         return JSON.stringify(newRecents) !== JSON.stringify(prev) ? newRecents : prev;
+       });
+    }
+  }, [activeTool?.id]);
+
+  const toggleFavorite = (id: ToolID) => {
+    setFavorites(prev => 
+      prev.includes(id) 
+        ? prev.filter(fid => fid !== id)
+        : [...prev, id]
+    );
+  };
+
   return (
     <div className="flex h-screen bg-slate-900 text-slate-200 overflow-hidden">
       
@@ -87,6 +131,8 @@ const App: React.FC = () => {
         onClose={() => setIsSidebarOpen(false)}
         searchTerm={searchTerm}
         onSearch={setSearchTerm}
+        favorites={favorites}
+        recents={recents}
       />
 
       {/* Main Content Area */}
@@ -96,6 +142,8 @@ const App: React.FC = () => {
           onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} 
           searchTerm={searchTerm}
           onSearch={setSearchTerm}
+          isFavorite={activeTool ? favorites.includes(activeTool.id) : false}
+          onToggleFavorite={() => activeTool && toggleFavorite(activeTool.id)}
         />
         
         <main className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-900">
@@ -119,6 +167,7 @@ const App: React.FC = () => {
                 <Route path={`/${ToolID.PASSWORD_GEN}`} element={<PasswordGenerator />} />
                 <Route path={`/${ToolID.TIMEZONE_CONVERTER}`} element={<TimezoneConverter />} />
                 <Route path={`/${ToolID.THAI_DATE_CONVERTER}`} element={<ThaiDateConverter />} />
+                <Route path={`/${ToolID.CRONTAB}`} element={<CrontabTool />} />
                 <Route path={`/${ToolID.AI_ASSISTANT}`} element={<AIAssistant />} />
                 <Route path="*" element={<Navigate to={`/${ToolID.JSON_FORMATTER}`} replace />} />
               </Routes>
