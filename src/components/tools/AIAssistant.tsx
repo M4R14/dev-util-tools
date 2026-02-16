@@ -20,25 +20,9 @@ import { Textarea } from '../ui/Textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '../ui/Card';
 import { cn } from '../../lib/utils';
 import { toast } from 'sonner';
+import { encrypt, decrypt } from '../../lib/crypto';
 
 const STORAGE_KEY = 'devpulse_secure_config';
-
-// Simple obfuscation helpers for API key storage (not cryptographic security)
-const encrypt = (text: string): string => {
-  try {
-    return btoa(text.split('').reverse().join(''));
-  } catch {
-    return text;
-  }
-};
-
-const decrypt = (encoded: string): string => {
-  try {
-    return atob(encoded).split('').reverse().join('');
-  } catch {
-    return encoded;
-  }
-};
 
 // Helper to render markdown-like content (basic code block support)
 const MessageContent: React.FC<{ content: string }> = ({ content }) => {

@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, ComponentType } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ToolID } from './types';
 import MainLayout from './components/MainLayout';
@@ -9,16 +9,20 @@ import { SearchProvider } from './context/SearchContext';
 
 // Lazy-loaded tool pages — each becomes its own chunk
 const Dashboard = lazy(() => import('./components/Dashboard'));
-const JSONFormatter = lazy(() => import('./components/tools/JSONFormatter'));
-const Base64Tool = lazy(() => import('./components/tools/Base64Tool'));
-const CaseConverter = lazy(() => import('./components/tools/CaseConverter'));
-const PasswordGenerator = lazy(() => import('./components/tools/PasswordGenerator'));
-const AIAssistant = lazy(() => import('./components/tools/AIAssistant'));
-const ThaiDateConverter = lazy(() => import('./components/tools/ThaiDateConverter'));
-const TimezoneConverter = lazy(() => import('./components/tools/TimezoneConverter'));
-const CrontabTool = lazy(() => import('./components/tools/CrontabTool'));
-const UUIDGenerator = lazy(() => import('./components/tools/UUIDGenerator'));
-const UrlParser = lazy(() => import('./components/tools/UrlParser'));
+
+/** Map each ToolID to its lazy-loaded component. */
+const TOOL_COMPONENTS: Record<ToolID, React.LazyExoticComponent<ComponentType>> = {
+  [ToolID.JSON_FORMATTER]: lazy(() => import('./components/tools/JSONFormatter')),
+  [ToolID.BASE64_TOOL]: lazy(() => import('./components/tools/Base64Tool')),
+  [ToolID.CASE_CONVERTER]: lazy(() => import('./components/tools/CaseConverter')),
+  [ToolID.PASSWORD_GEN]: lazy(() => import('./components/tools/PasswordGenerator')),
+  [ToolID.AI_ASSISTANT]: lazy(() => import('./components/tools/AIAssistant')),
+  [ToolID.THAI_DATE_CONVERTER]: lazy(() => import('./components/tools/ThaiDateConverter')),
+  [ToolID.TIMEZONE_CONVERTER]: lazy(() => import('./components/tools/TimezoneConverter')),
+  [ToolID.CRONTAB]: lazy(() => import('./components/tools/CrontabTool')),
+  [ToolID.UUID_GENERATOR]: lazy(() => import('./components/tools/UUIDGenerator')),
+  [ToolID.URL_PARSER]: lazy(() => import('./components/tools/UrlParser')),
+};
 
 // Lightweight loading fallback
 const PageLoader = () => (
@@ -38,86 +42,17 @@ const App: React.FC = () => {
           <MainLayout>
             <Suspense fallback={<PageLoader />}>
               <Routes>
-                <Route
-                  path={`/${ToolID.URL_PARSER}`}
-                  element={
-                    <ErrorBoundary>
-                      <UrlParser />
-                    </ErrorBoundary>
-                  }
-                />
-                <Route
-                  path={`/${ToolID.UUID_GENERATOR}`}
-                  element={
-                    <ErrorBoundary>
-                      <UUIDGenerator />
-                    </ErrorBoundary>
-                  }
-                />
-                <Route
-                  path={`/${ToolID.JSON_FORMATTER}`}
-                  element={
-                    <ErrorBoundary>
-                      <JSONFormatter />
-                    </ErrorBoundary>
-                  }
-                />
-                <Route
-                  path={`/${ToolID.BASE64_TOOL}`}
-                  element={
-                    <ErrorBoundary>
-                      <Base64Tool />
-                    </ErrorBoundary>
-                  }
-                />
-                <Route
-                  path={`/${ToolID.CASE_CONVERTER}`}
-                  element={
-                    <ErrorBoundary>
-                      <CaseConverter />
-                    </ErrorBoundary>
-                  }
-                />
-                <Route
-                  path={`/${ToolID.PASSWORD_GEN}`}
-                  element={
-                    <ErrorBoundary>
-                      <PasswordGenerator />
-                    </ErrorBoundary>
-                  }
-                />
-                <Route
-                  path={`/${ToolID.TIMEZONE_CONVERTER}`}
-                  element={
-                    <ErrorBoundary>
-                      <TimezoneConverter />
-                    </ErrorBoundary>
-                  }
-                />
-                <Route
-                  path={`/${ToolID.THAI_DATE_CONVERTER}`}
-                  element={
-                    <ErrorBoundary>
-                      <ThaiDateConverter />
-                    </ErrorBoundary>
-                  }
-                />
-                <Route
-                  path={`/${ToolID.CRONTAB}`}
-                  element={
-                    <ErrorBoundary>
-                      <CrontabTool />
-                    </ErrorBoundary>
-                  }
-                />
-                <Route
-                  path={`/${ToolID.AI_ASSISTANT}`}
-                  element={
-                    <ErrorBoundary>
-                      <AIAssistant />
-                    </ErrorBoundary>
-                  }
-                />
+                {Object.entries(TOOL_COMPONENTS).map(([toolId, LazyComponent]) => (
+                  <Route
+                    key={toolId}
+                    path={`/${toolId}`}
+                    element={
+                      <ErrorBoundary>
+                        <LazyComponent />
+                      </ErrorBoundary>
+                    }
+                  />
+                ))}
 
                 <Route path="/" element={<Dashboard />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
