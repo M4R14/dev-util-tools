@@ -11,7 +11,7 @@ import { useUUIDGenerator } from '../../hooks/useUUIDGenerator';
 import { toast } from 'sonner';
 
 const UUIDGenerator: React.FC = () => {
-  const { uuids, options, setOptions, generateUUID, clear, copyToClipboard } = useUUIDGenerator();
+  const { uuids, options, setOptions, generateUUID, clear } = useUUIDGenerator();
 
   useEffect(() => {
     generateUUID();
@@ -24,7 +24,7 @@ const UUIDGenerator: React.FC = () => {
 
   const handleCopyAll = () => {
     if (uuids.length > 0) {
-      copyToClipboard(uuids.join('\n'));
+      navigator.clipboard.writeText(uuids.join('\n'));
       toast.success('Copied all UUIDs to clipboard');
     }
   };

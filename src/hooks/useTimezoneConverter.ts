@@ -20,6 +20,51 @@ const COMMON_TIMEZONES = [
   { value: 'Pacific/Auckland', label: 'Auckland (New Zealand Time)', abbr: 'NZDT' },
 ];
 
+/**
+ * Create a Date object representing a specific wall-clock time in a given timezone.
+ * Uses iterative adjustment to resolve the UTC offset.
+ */
+const getDateFromTimezone = (
+  year: number,
+  month: number,
+  day: number,
+  hour: number,
+  minute: number,
+  timeZone: string,
+): Date => {
+  let guess = new Date(Date.UTC(year, month, day, hour, minute));
+
+  for (let i = 0; i < 3; i++) {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric',
+      hour12: false,
+    }).formatToParts(guess);
+
+    const getVal = (t: string) => parseInt(parts.find((p) => p.type === t)?.value || '0', 10);
+
+    const observedInTzAsUtc = new Date(
+      Date.UTC(
+        getVal('year'),
+        getVal('month') - 1,
+        getVal('day'),
+        getVal('hour') === 24 ? 0 : getVal('hour'),
+        getVal('minute'),
+      ),
+    );
+
+    const diff = guess.getTime() - observedInTzAsUtc.getTime();
+    if (Math.abs(diff) < 1000) break;
+    guess = new Date(guess.getTime() + diff);
+  }
+  return guess;
+};
+
 export const useTimezoneConverter = () => {
   const [date, setDate] = useState<string>(() => {
     const now = new Date();
@@ -39,52 +84,6 @@ export const useTimezoneConverter = () => {
   const [resultDatePart, setResultDatePart] = useState<string>('');
   const [resultTimePart, setResultTimePart] = useState<string>('');
   const [resultTzAbbr, setResultTzAbbr] = useState<string>('');
-
-  // Helper to create a Date object representing specific wall-clock time in a specific timezone
-  const getDateFromTimezone = (
-    year: number,
-    month: number,
-    day: number,
-    hour: number,
-    minute: number,
-    timeZone: string,
-  ): Date => {
-    // Create a date assuming UTC first to get close
-    let guess = new Date(Date.UTC(year, month, day, hour, minute));
-
-    // Iteratively adjust to account for offset
-    for (let i = 0; i < 3; i++) {
-      const parts = new Intl.DateTimeFormat('en-US', {
-        timeZone,
-        year: 'numeric',
-        month: 'numeric',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: 'numeric',
-        second: 'numeric',
-        hour12: false,
-      }).formatToParts(guess);
-
-      const getVal = (t: string) => parseInt(parts.find((p) => p.type === t)?.value || '0', 10);
-
-      // What time does 'guess' represent in the target timezone?
-      // We want to find a UTC moment that corresponds to the input wall clock time in sourceTz
-      const observedInTzAsUtc = new Date(
-        Date.UTC(
-          getVal('year'),
-          getVal('month') - 1,
-          getVal('day'),
-          getVal('hour') === 24 ? 0 : getVal('hour'),
-          getVal('minute'),
-        ),
-      );
-
-      const diff = guess.getTime() - observedInTzAsUtc.getTime();
-      if (Math.abs(diff) < 1000) break; // Close enough
-      guess = new Date(guess.getTime() + diff);
-    }
-    return guess;
-  };
 
   const convertTime = useCallback(() => {
     try {

@@ -1,48 +1,11 @@
 import { useState, useMemo, useEffect } from 'react';
-
-const thaiMonths = [
-  'มกราคม',
-  'กุมภาพันธ์',
-  'มีนาคม',
-  'เมษายน',
-  'พฤษภาคม',
-  'มิถุนายน',
-  'กรกฎาคม',
-  'สิงหาคม',
-  'กันยายน',
-  'ตุลาคม',
-  'พฤศจิกายน',
-  'ธันวาคม',
-];
-
-const thaiShortMonths = [
-  'ม.ค.',
-  'ก.พ.',
-  'มี.ค.',
-  'เม.ย.',
-  'พ.ค.',
-  'มิ.ย.',
-  'ก.ค.',
-  'ส.ค.',
-  'ก.ย.',
-  'ต.ค.',
-  'พ.ย.',
-  'ธ.ค.',
-];
-
-const thaiDays = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์'];
-
-const toThaiDigits = (num: number | string) => {
-  const digits = ['๐', '๑', '๒', '๓', '๔', '๕', '๖', '๗', '๘', '๙'];
-  return num
-    .toString()
-    .split('')
-    .map((d) => {
-      const parsed = parseInt(d);
-      return isNaN(parsed) ? d : digits[parsed];
-    })
-    .join('');
-};
+import {
+  THAI_MONTHS,
+  THAI_SHORT_MONTHS,
+  THAI_DAYS,
+  toThaiDigits,
+  fromThaiDigits,
+} from '../lib/thaiDate';
 
 export const useThaiDateConverter = () => {
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -63,13 +26,13 @@ export const useThaiDateConverter = () => {
     return [
       {
         label: 'Full Date (Official)',
-        value: `วัน${thaiDays[dayOfWeek]}ที่ ${day} ${thaiMonths[monthIndex]} พ.ศ. ${yearBE}`,
+        value: `วัน${THAI_DAYS[dayOfWeek]}ที่ ${day} ${THAI_MONTHS[monthIndex]} พ.ศ. ${yearBE}`,
       },
-      { label: 'Long Date', value: `${day} ${thaiMonths[monthIndex]} ${yearBE}` },
-      { label: 'Short Date', value: `${day} ${thaiShortMonths[monthIndex]} ${yearBE}` },
+      { label: 'Long Date', value: `${day} ${THAI_MONTHS[monthIndex]} ${yearBE}` },
+      { label: 'Short Date', value: `${day} ${THAI_SHORT_MONTHS[monthIndex]} ${yearBE}` },
       {
         label: 'Short Date (2-digit year)',
-        value: `${day} ${thaiShortMonths[monthIndex]} ${yearBE.toString().slice(-2)}`,
+        value: `${day} ${THAI_SHORT_MONTHS[monthIndex]} ${yearBE.toString().slice(-2)}`,
       },
       {
         label: 'Numerical (Slash)',
@@ -82,7 +45,7 @@ export const useThaiDateConverter = () => {
       {
         label: 'Thai Digits',
         value: toThaiDigits(
-          `วัน${thaiDays[dayOfWeek]}ที่ ${day} ${thaiMonths[monthIndex]} พ.ศ. ${yearBE}`,
+          `วัน${THAI_DAYS[dayOfWeek]}ที่ ${day} ${THAI_MONTHS[monthIndex]} พ.ศ. ${yearBE}`,
         ),
       },
       // AD formats for reference
@@ -109,21 +72,19 @@ export const useThaiDateConverter = () => {
     let year: number | null = null;
 
     for (const part of parts) {
-      const fullMonthIdx = thaiMonths.findIndex((m) => m === part);
+      const fullMonthIdx = THAI_MONTHS.findIndex((m) => m === part);
       if (fullMonthIdx !== -1) {
         month = fullMonthIdx;
         continue;
       }
 
-      const shortMonthIdx = thaiShortMonths.findIndex((m) => m === part || m === part + '.');
+      const shortMonthIdx = THAI_SHORT_MONTHS.findIndex((m) => m === part || m === part + '.');
       if (shortMonthIdx !== -1) {
         month = shortMonthIdx;
         continue;
       }
 
-      // Fix parseInt in map callback context
-      // Correct logic to replace thai digits with arabic digits
-      const arabicPart = part.replace(/[๐-๙]/g, (d) => '0123456789'['๐๑๒๓๔๕๖๗๘๙'.indexOf(d)] || d);
+      const arabicPart = fromThaiDigits(part);
       const num = parseInt(arabicPart);
 
       if (!isNaN(num)) {

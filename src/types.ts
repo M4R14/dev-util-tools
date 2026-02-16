@@ -11,9 +11,11 @@ export enum ToolID {
   URL_PARSER = 'url-parser',
 }
 
+import type { LucideIcon } from 'lucide-react';
+
 export interface ToolMetadata {
   id: ToolID;
   name: string;
   description: string;
-  icon: React.ReactNode;
+  icon: LucideIcon;
 }

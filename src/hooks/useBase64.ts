@@ -4,7 +4,6 @@ export const useBase64 = () => {
   const [text, setText] = useState('');
   const [base64, setBase64] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [copyState, setCopyState] = useState<'text' | 'base64' | null>(null);
 
   const handleTextChange = (val: string) => {
     setText(val);
@@ -33,19 +32,11 @@ export const useBase64 = () => {
     }
   };
 
-  const copy = (content: string, type: 'text' | 'base64') => {
-    navigator.clipboard.writeText(content);
-    setCopyState(type);
-    setTimeout(() => setCopyState(null), 2000);
-  };
-
   return {
     text,
     base64,
     error,
-    copyState,
     handleTextChange,
     handleBase64Change,
-    copy,
   };
 };

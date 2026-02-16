@@ -14,11 +14,7 @@ const ToolPageLayout: React.FC<ToolPageLayoutProps> = ({ tool, children, classNa
       <div className="mb-6 md:mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-3">
           <span className="p-2 bg-indigo-50 dark:bg-indigo-500/10 rounded-lg text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-500/20 shadow-sm">
-            {React.isValidElement(tool.icon)
-              ? React.cloneElement(tool.icon as React.ReactElement<{ className?: string }>, {
-                  className: 'w-6 h-6',
-                })
-              : tool.icon}
+            <tool.icon className="w-6 h-6" />
           </span>
           {tool.name}
         </h1>

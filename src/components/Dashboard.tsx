@@ -188,11 +188,7 @@ const ToolCard: React.FC<ToolCardProps> = React.memo(({ tool, isFavorite, onTogg
         aria-label={`Open ${tool.name}`}
       >
         <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-          {React.isValidElement(tool.icon)
-            ? React.cloneElement(tool.icon as React.ReactElement<{ className?: string }>, {
-                className: 'w-6 h-6',
-              })
-            : tool.icon}
+          <tool.icon className="w-6 h-6" />
         </div>
 
         <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">

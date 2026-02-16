@@ -145,7 +145,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
                     <div
                       className={`p-2 rounded-lg ${index === selectedIndex ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground'}`}
                     >
-                      {tool.icon}
+                      <tool.icon className="w-5 h-5" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="font-medium text-foreground truncate flex items-center justify-between">

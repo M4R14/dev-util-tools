@@ -62,12 +62,7 @@ const ToolLinkItem: React.FC<{
                   : 'bg-muted/50 text-muted-foreground group-hover:text-foreground group-hover:bg-muted',
             )}
           >
-            {React.isValidElement(tool.icon)
-              ? React.cloneElement(
-                  tool.icon as React.ReactElement<{ size?: number | string; className?: string }>,
-                  { size: 16, className: 'w-4 h-4' },
-                )
-              : tool.icon}
+            <tool.icon className="w-4 h-4" />
           </span>
           <div className="text-left flex-1 min-w-0">
             <div className="truncate flex items-center gap-1.5">
