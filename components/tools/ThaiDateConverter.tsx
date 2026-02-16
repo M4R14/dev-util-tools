@@ -19,48 +19,107 @@ const ThaiDateConverter: React.FC = () => {
         parseResult
     } = useThaiDateConverter();
 
+    const [currentTime, setCurrentTime] = useState(new Date());
+
+    useEffect(() => {
+        const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+        return () => clearInterval(timer);
+    }, []);
+
+    const formatThaiDateTime = (date: Date) => {
+        return date.toLocaleDateString('th-TH', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            weekday: 'long',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+        });
+    };
+
   return (
     <ToolLayout>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {/* Current Time Section */}
+      <ToolLayout.Section title="Current Time">
+        <Card className="border-primary/20 shadow-md bg-gradient-to-br from-background to-primary/5">
+            <CardContent className="p-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div className="space-y-2 relative">
+                         <div className="absolute -left-3 -top-3 w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                        <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                            <Calendar className="w-3.5 h-3.5" />
+                            Thai Date & Time
+                        </div>
+                        <div className="text-2xl md:text-3xl font-medium text-primary font-mono tracking-tight">
+                            {formatThaiDateTime(currentTime)}
+                        </div>
+                        <p className="text-xs text-muted-foreground/80">
+                            Updates automatically every second
+                        </p>
+                    </div>
+                    
+                    <div className="space-y-2">
+                        <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                            <RotateCcw className="w-3.5 h-3.5" />
+                            ISO 8601 Standard
+                        </div>
+                        <div className="flex items-center justify-between gap-3 bg-background/80 backdrop-blur-sm p-3 rounded-xl border border-border shadow-sm group hover:border-primary/50 transition-colors">
+                            <div className="text-base md:text-lg font-mono text-muted-foreground truncate select-all">
+                                {currentTime.toISOString()}
+                            </div>
+                            <CopyButton value={currentTime.toISOString()} className="h-9 w-9 shrink-0" />
+                        </div>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+      </ToolLayout.Section>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Converter Section */}
         <ToolLayout.Section title="Date Converter">
-            <Card className="border-border shadow-sm">
-                <CardContent className="p-6 space-y-6">
-                    <div className="space-y-4">
+            <Card className="border-border shadow-sm h-full flex flex-col">
+                <CardContent className="p-6 space-y-6 flex-1">
+                    <div className="space-y-4 bg-muted/30 p-4 rounded-xl border border-border/50">
                         <label className="text-sm font-medium text-muted-foreground uppercase tracking-wider block">
-                            Enter Date (A.D.)
+                            Pick a Date (A.D.)
                         </label>
-                        <div className="flex gap-4">
+                        <div className="flex gap-3">
                             <Input
                                 type="date"
                                 value={date}
                                 onChange={(e) => setDate(e.target.value)}
-                                className="h-12 text-lg"
+                                className="h-11 text-lg bg-background"
                             />
                             <Button
                                 variant="outline"
                                 size="icon"
                                 onClick={() => setDate(new Date().toISOString().split('T')[0])}
-                                className="h-12 w-12 shrink-0"
-                                title="Today"
+                                className="h-11 w-11 shrink-0 bg-background hover:bg-primary/10 hover:text-primary transition-colors"
+                                title="Reset to Today"
                             >
                                 <RotateCcw className="w-5 h-5" />
                             </Button>
                         </div>
                     </div>
 
-                    <div className="space-y-3 pt-2">
+                    <div className="grid grid-cols-1 gap-3 content-start">
                          {formats.map((format, index) => (
                              <div 
                                 key={index} 
-                                className="group relative bg-muted/30 hover:bg-muted/60 p-3 rounded-lg border border-transparent hover:border-border transition-all"
+                                className="group relative bg-card hover:bg-accent/50 p-4 rounded-xl border border-border hover:border-primary/30 transition-all shadow-sm hover:shadow-md"
                              >
-                                <div className="text-xs text-muted-foreground mb-1 font-medium">{format.label}</div>
-                                <div className="font-mono text-base md:text-lg text-primary pr-8 break-words">
-                                    {format.value}
+                                <div className="flex justify-between items-start mb-1">
+                                    <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
+                                        {format.label}
+                                    </div>
+                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                       <CopyButton value={format.value} className="h-6 w-6" iconClassName="w-3.5 h-3.5" />
+                                    </div>
                                 </div>
-                                <div className="absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <CopyButton value={format.value} className="h-8 w-8" />
+                                <div className="font-mono text-base text-card-foreground break-words font-medium">
+                                    {format.value}
                                 </div>
                              </div>
                          ))}
@@ -71,62 +130,77 @@ const ThaiDateConverter: React.FC = () => {
 
         {/* Parser Section */}
         <ToolLayout.Section title="Thai Date Parser">
-            <Card className="border-border shadow-sm h-full">
-                <CardContent className="p-6 space-y-6">
+            <Card className="border-border shadow-sm h-full flex flex-col">
+                <CardContent className="p-6 space-y-6 flex-1">
                      <div className="space-y-4">
                         <label className="text-sm font-medium text-muted-foreground uppercase tracking-wider block">
-                            Parse Thai Date
+                            Convert Thai Text to ISO
                         </label>
-                        <div className="relative">
+                        <div className="relative group">
                             <Input
                                 value={parseInput}
                                 onChange={(e) => setParseInput(e.target.value)}
                                 placeholder="e.g. 1 ม.ค. 2567, 12 สิงหา 60"
-                                className="h-12 text-lg pl-11"
+                                className="h-12 text-lg pl-11 transition-all group-hover:border-primary/50 focus:border-primary"
                             />
-                            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5" />
+                            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5 group-hover:text-primary transition-colors" />
                         </div>
-                        <p className="text-xs text-muted-foreground flex items-center gap-1.5">
-                            <Info className="w-3.5 h-3.5" />
-                            Supports various text formats: "1 มค 67", "12/08/2560"
-                        </p>
+                        
+                        <div className="flex flex-wrap gap-2">
+                            {['1 ม.ค. 2567', '12 สิงหาคม 60', '14/02/2569'].map((example) => (
+                                <button
+                                    key={example}
+                                    onClick={() => setParseInput(example)}
+                                    className="text-xs bg-muted hover:bg-muted/80 px-2.5 py-1 rounded-full text-muted-foreground transition-colors border border-transparent hover:border-border"
+                                >
+                                    {example}
+                                </button>
+                            ))}
+                        </div>
                     </div>
 
-                    <div className="relative">
+                    <div className="relative py-4">
                         <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-center">
-                            <div className="bg-background px-2 text-muted-foreground rotate-90 md:rotate-0">
-                                <ArrowRightLeft className="w-5 h-5" />
+                            <div className="bg-background p-2 rounded-full border border-border text-muted-foreground shadow-sm">
+                                <ArrowRightLeft className="w-4 h-4 rotate-90" />
                             </div>
                         </div>
-                        <div className="border-t border-border mt-8 mb-8" />
+                        <div className="border-t border-border border-dashed" />
                     </div>
 
                     <div className="space-y-4">
                         <label className="text-sm font-medium text-muted-foreground uppercase tracking-wider block">
-                            Result (ISO 8601)
+                            Conversion Result
                         </label>
                         
                         <div className={cn(
-                            "p-6 rounded-xl border-2 transition-all flex items-center justify-between",
+                            "min-h-[140px] p-6 rounded-xl border-2 transition-all flex flex-col items-center justify-center text-center gap-4 relative overflow-hidden",
                             parseResult 
-                                ? "bg-green-500/10 border-green-500/50 text-green-700 dark:text-green-300"
-                                : "bg-muted/30 border-dashed border-border text-muted-foreground"
+                                ? "bg-green-500/5 border-green-500/30 text-green-700 dark:text-green-300"
+                                : "bg-muted/20 border-border/50 border-dashed text-muted-foreground"
                         )}>
                             {parseResult ? (
                                 <>
-                                    <div className="space-y-1">
-                                        <div className="text-2xl font-mono font-bold">{parseResult.iso}</div>
-                                        <div className="text-sm opacity-80">Formatted: {parseResult.formatted}</div>
+                                    <div className="absolute top-0 right-0 p-4">
+                                        <CopyButton 
+                                            value={parseResult.iso} 
+                                            className="hover:bg-green-500/20 text-green-700 dark:text-green-300 h-9 w-9" 
+                                        />
                                     </div>
-                                    <CopyButton 
-                                        value={parseResult.iso} 
-                                        className="h-10 w-10 hover:bg-green-500/20 text-green-700 dark:text-green-300" 
-                                        iconClassName="w-5 h-5"
-                                    />
+                                    <div className="space-y-2 z-10">
+                                        <div className="text-3xl font-mono font-bold tracking-tight">{parseResult.iso}</div>
+                                        <div className="inline-block px-3 py-1 rounded-full bg-green-500/10 text-xs font-medium border border-green-500/20">
+                                            Formatted: {parseResult.formatted}
+                                        </div>
+                                    </div>
+                                    <div className="absolute inset-0 bg-green-500/5 animate-in fade-in duration-500" />
                                 </>
                             ) : (
-                                <div className="text-center w-full py-2">
-                                    {parseInput ? 'Invalid format' : 'Waiting for input...'}
+                                <div className="space-y-2 max-w-[200px]">
+                                    <Info className="w-8 h-8 mx-auto opacity-20" />
+                                    <p className="text-sm">
+                                        {parseInput ? 'Format not recognized' : 'Enter a Thai date string above to see the ISO equivalent'}
+                                    </p>
                                 </div>
                             )}
                         </div>
