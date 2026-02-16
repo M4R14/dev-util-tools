@@ -7,6 +7,7 @@ import {
   Lock, 
   Sparkles, 
   CalendarDays,
+  Globe,
   Menu, 
   X,
   Github,
@@ -21,6 +22,7 @@ import CaseConverter from './components/tools/CaseConverter';
 import PasswordGenerator from './components/tools/PasswordGenerator';
 import AIAssistant from './components/tools/AIAssistant';
 import ThaiDateConverter from './components/tools/ThaiDateConverter';
+import TimezoneConverter from './components/tools/TimezoneConverter';
 
 const App: React.FC = () => {
   const [activeToolId, setActiveToolId] = useState<ToolID>(ToolID.JSON_FORMATTER);
@@ -52,6 +54,12 @@ const App: React.FC = () => {
       icon: <Lock className="w-5 h-5" /> 
     },
     { 
+      id: ToolID.TIMEZONE_CONVERTER, 
+      name: 'Timezone Converter', 
+      description: 'Convert date and time across different timezones.',
+      icon: <Globe className="w-5 h-5" /> 
+    },
+    { 
       id: ToolID.THAI_DATE_CONVERTER, 
       name: 'Thai Date Converter', 
       description: 'Convert dates to various Thai formats (BE 25xx).',
@@ -73,6 +81,7 @@ const App: React.FC = () => {
       case ToolID.BASE64_TOOL: return <Base64Tool />;
       case ToolID.CASE_CONVERTER: return <CaseConverter />;
       case ToolID.PASSWORD_GEN: return <PasswordGenerator />;
+      case ToolID.TIMEZONE_CONVERTER: return <TimezoneConverter />;
       case ToolID.THAI_DATE_CONVERTER: return <ThaiDateConverter />;
       case ToolID.AI_ASSISTANT: return <AIAssistant />;
       default: return <JSONFormatter />;
