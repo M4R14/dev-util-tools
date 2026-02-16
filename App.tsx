@@ -1,20 +1,13 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { 
-  Code2, 
-  Binary, 
-  Type, 
-  Lock, 
-  Sparkles, 
-  CalendarDays,
-  Globe,
   Menu, 
   X,
   Github,
-  ChevronRight,
-  Clock
+  ChevronRight
 } from 'lucide-react';
 import { ToolID, ToolMetadata } from './types';
+import { TOOLS } from './config/tools';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import CommandPalette from './components/CommandPalette';
@@ -46,59 +39,8 @@ const App: React.FC = () => {
 
   const location = useLocation();
 
-  const tools: ToolMetadata[] = useMemo(() => [
-    { 
-      id: ToolID.JSON_FORMATTER, 
-      name: 'JSON Formatter', 
-      description: 'Prettify, minify, and validate JSON data.',
-      icon: <Code2 className="w-5 h-5" /> 
-    },
-    { 
-      id: ToolID.BASE64_TOOL, 
-      name: 'Base64 Tool', 
-      description: 'Encode and decode strings to Base64 format.',
-      icon: <Binary className="w-5 h-5" /> 
-    },
-    { 
-      id: ToolID.CASE_CONVERTER, 
-      name: 'Case Converter', 
-      description: 'Switch between camelCase, PascalCase, and more.',
-      icon: <Type className="w-5 h-5" /> 
-    },
-    { 
-      id: ToolID.PASSWORD_GEN, 
-      name: 'Password Generator', 
-      description: 'Create secure, random passwords instantly.',
-      icon: <Lock className="w-5 h-5" /> 
-    },
-    { 
-      id: ToolID.TIMEZONE_CONVERTER, 
-      name: 'Timezone Converter', 
-      description: 'Convert date and time across different timezones.',
-      icon: <Globe className="w-5 h-5" /> 
-    },
-    { 
-      id: ToolID.THAI_DATE_CONVERTER, 
-      name: 'Thai Date Converter', 
-      description: 'Convert dates to various Thai formats (BE 25xx).',
-      icon: <CalendarDays className="w-5 h-5" /> 
-    },
-    { 
-      id: ToolID.CRONTAB, 
-      name: 'Crontab Guru', 
-      description: 'The quick and simple editor for cron schedule expressions.',
-      icon: <Clock className="w-5 h-5" /> 
-    },
-    { 
-      id: ToolID.AI_ASSISTANT, 
-      name: 'AI Smart Assistant', 
-      description: 'Analyze code snippets and solve dev problems with Gemini.',
-      icon: <Sparkles className="w-5 h-5" /> 
-    },
-  ], []);
-
   const activeToolId = location.pathname.substring(1) as ToolID;
-  const activeTool = tools.find(t => t.id === activeToolId);
+  const activeTool = TOOLS.find(t => t.id === activeToolId);
 
   useEffect(() => {
     if (activeTool) {
@@ -155,11 +97,11 @@ const App: React.FC = () => {
       <CommandPalette 
         isOpen={isCommandPaletteOpen}
         onClose={() => setIsCommandPaletteOpen(false)}
-        tools={tools}
+        tools={TOOLS}
       />
 
       <Sidebar 
-        tools={tools} 
+        tools={TOOLS} 
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
         searchTerm={searchTerm}
@@ -211,7 +153,7 @@ const App: React.FC = () => {
                 <Routes>
                     <Route path="/" element={
                         <Dashboard 
-                            tools={tools}
+                            tools={TOOLS}
                             favorites={favorites}
                             recents={recents}
                             searchTerm={searchTerm}
