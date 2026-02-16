@@ -1,4 +1,3 @@
-
 import React, { useMemo, useState, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { 
@@ -18,6 +17,7 @@ import {
 import { ToolID, ToolMetadata } from './types';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
+import CommandPalette from './components/CommandPalette';
 import JSONFormatter from './components/tools/JSONFormatter';
 import Base64Tool from './components/tools/Base64Tool';
 import CaseConverter from './components/tools/CaseConverter';
@@ -29,6 +29,7 @@ import CrontabTool from './components/tools/CrontabTool';
 
 const App: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   
   const [favorites, setFavorites] = useState<ToolID[]>(() => {
@@ -98,6 +99,22 @@ const App: React.FC = () => {
   const activeTool = tools.find(t => t.id === activeToolId) || tools[0];
 
   useEffect(() => {
+    document.title = `${activeTool.name} - DevUtil`;
+  }, [activeTool]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+            e.preventDefault();
+            setIsCommandPaletteOpen(prev => !prev);
+        }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  useEffect(() => {
     localStorage.setItem('favorites', JSON.stringify(favorites));
   }, [favorites]);
 
@@ -114,6 +131,14 @@ const App: React.FC = () => {
     }
   }, [activeTool?.id]);
 
+  useEffect(() => {
+    if (activeTool) {
+      document.title = `${activeTool.name} - DevPulse`;
+    } else {
+      document.title = 'DevPulse - Developer Utilities';
+    }
+  }, [activeTool]);
+
   const toggleFavorite = (id: ToolID) => {
     setFavorites(prev => 
       prev.includes(id) 
@@ -125,6 +150,12 @@ const App: React.FC = () => {
   return (
     <div className="flex h-screen bg-slate-900 text-slate-200 overflow-hidden">
       
+      <CommandPalette 
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
+        tools={tools}
+      />
+
       <Sidebar 
         tools={tools} 
         isOpen={isSidebarOpen}
