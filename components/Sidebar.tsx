@@ -43,7 +43,7 @@ const ToolLinkItem: React.FC<{
         if (window.innerWidth < 768) onClose();
       }}
       className={({ isActive }) => cn(
-        "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group border border-transparent",
+        "w-full flex items-center gap-2 px-2 py-1.5 rounded-md transition-all duration-200 group border border-transparent text-sm",
         isActive 
             ? "bg-primary/10 text-primary border-primary/20 font-medium" 
             : isSelected 
@@ -53,24 +53,24 @@ const ToolLinkItem: React.FC<{
     >
       {({ isActive }) => (
       <>
-      <span className={cn("p-1.5 rounded-md transition-colors",
+      <span className={cn("p-1 rounded-md transition-colors flex items-center justify-center",
         isActive 
           ? "bg-primary/20 text-primary shadow-sm" 
           : isSelected 
             ? "bg-muted text-muted-foreground"
             : "bg-muted/50 text-muted-foreground group-hover:text-foreground group-hover:bg-muted"
       )}>
-        {tool.icon}
+        {React.cloneElement(tool.icon as React.ReactElement, { size: 16, className: "w-4 h-4" })}
       </span>
       <div className="text-left flex-1 min-w-0">
-          <div className="font-medium truncate flex items-center gap-2 text-sm">
+          <div className="truncate flex items-center gap-1.5">
             {tool.name}
             {favorites.includes(tool.id) && <Star className="w-3 h-3 text-amber-400 fill-amber-400" />}
           </div>
-          {searchTerm && <div className="text-xs text-muted-foreground truncate">{tool.description}</div>}
+          {searchTerm && <div className="text-[10px] text-muted-foreground truncate">{tool.description}</div>}
       </div>
       {(isActive || isSelected) && (
-          <div className={cn("w-1.5 h-1.5 rounded-full ml-auto", isActive ? "bg-primary" : "bg-muted-foreground/30")}></div>
+          <div className={cn("w-1 h-1 rounded-full ml-auto", isActive ? "bg-primary" : "bg-muted-foreground/30")}></div>
       )}
       </>
       )}
@@ -191,93 +191,96 @@ const Sidebar: React.FC<SidebarProps> = ({
       )}
 
       <aside 
-        className={`fixed md:static inset-y-0 left-0 w-72 bg-white dark:bg-slate-950 border-r border-slate-200 dark:border-slate-800/50 z-50 transition-all duration-300 transform ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        } md:translate-x-0 flex flex-col shadow-2xl md:shadow-none`}
+        className={cn(
+          "fixed md:static inset-y-0 left-0 w-64 bg-background border-r border-border z-50 transition-all duration-300 transform flex flex-col shadow-2xl md:shadow-none",
+          isOpen ? 'translate-x-0' : '-translate-x-full',
+          "md:translate-x-0"
+        )}
       >
         {/* Brand */}
-        <div className="p-6 border-b border-border flex items-center gap-3">
-          <div className="bg-primary p-2.5 rounded-xl shadow-lg shadow-primary/20 text-primary-foreground">
-            <LayoutDashboard className="w-6 h-6" />
+        <div className="h-14 px-4 border-b border-border flex items-center gap-2.5">
+          <div className="bg-primary/10 p-1.5 rounded-lg text-primary">
+            <LayoutDashboard className="w-5 h-5" />
           </div>
-          <div>
-            <h1 className="text-xl font-bold text-foreground tracking-tight">DevPulse</h1>
-            <p className="text-xs text-muted-foreground font-medium">Developer Utility Suite</p>
+          <div className="flex flex-col">
+            <h1 className="text-sm font-bold text-foreground tracking-tight leading-none">DevPulse</h1>
+            <p className="text-[10px] text-muted-foreground font-medium leading-none mt-0.5">Developer Utility</p>
           </div>
         </div>
 
         {/* Search */}
-        <div className="px-4 py-4">
+        <div className="px-3 py-3">
           <div className="relative group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-foreground transition-colors" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground group-focus-within:text-foreground transition-colors" />
             <Input
               type="text"
               placeholder="Search tools..."
               value={searchTerm}
               onChange={(e) => onSearch(e.target.value)}
-              className="pl-10 bg-muted/30 border-input shadow-none"
+              className="h-9 pl-8 text-sm bg-muted/40 border-transparent focus:bg-background focus:border-input shadow-none transition-all placeholder:text-muted-foreground/70"
             />
           </div>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-3 py-2 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-800 hover:scrollbar-thumb-slate-400 dark:hover:scrollbar-thumb-slate-700">
+        <nav className="flex-1 px-2 py-2 space-y-0.5 overflow-y-auto scrollbar-thin hover:scrollbar-thumb-muted-foreground/20 scrollbar-thumb-transparent transition-colors">
           
             {searchTerm ? (
              <>
-               <div className="px-3 py-2 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-                  Search Results
+               <div className="px-2 py-1.5 text-[10px] font-medium text-muted-foreground/60 uppercase tracking-widest">
+                  Results
                </div>
                {filteredTools.length > 0 ? (
                   filteredTools.map((tool, i) => renderToolLink(tool, 'search', i))
                ) : (
-                  <div className="px-4 py-8 text-center text-slate-500 text-sm">
-                    No tools found matching "{searchTerm}"
+                  <div className="px-3 py-8 text-center text-muted-foreground text-xs">
+                    No tools found
                   </div>
                )}
              </>
           ) : (
             <>
               {favoriteTools.length > 0 && (
-                <div className="mb-4">
-                   <div className="px-3 py-2 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-2">
-                     <Star className="w-3 h-3" /> Favorites
+                <div className="mb-3">
+                   <div className="px-2 py-1.5 text-[10px] font-medium text-muted-foreground/60 uppercase tracking-widest flex items-center gap-1.5">
+                     Favorites
                    </div>
-                   {favoriteTools.map((tool, i) => renderToolLink(tool, 'fav', i))}
+                   <div className="space-y-0.5">
+                     {favoriteTools.map((tool, i) => renderToolLink(tool, 'fav', i))}
+                   </div>
                 </div>
               )}
 
               {recentTools.length > 0 && (
-                <div className="mb-4">
-                   <div className="px-3 py-2 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-2">
-                     <Clock className="w-3 h-3" /> Recent
+                <div className="mb-3">
+                   <div className="px-2 py-1.5 text-[10px] font-medium text-muted-foreground/60 uppercase tracking-widest flex items-center gap-1.5">
+                     Recent
                    </div>
-                   {recentTools.map((tool, i) => renderToolLink(tool, 'rec', i + favoriteTools.length))}
+                   <div className="space-y-0.5">
+                     {recentTools.map((tool, i) => renderToolLink(tool, 'rec', i + favoriteTools.length))}
+                   </div>
                 </div>
               )}
 
-              <div className="px-3 py-2 text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
-                All Tools
+              <div className="px-2 py-1.5 text-[10px] font-medium text-muted-foreground/60 uppercase tracking-widest">
+                Apps
               </div>
-              {tools.map((tool, i) => renderToolLink(tool, 'all', i + favoriteTools.length + recentTools.length))}
+              <div className="space-y-0.5">
+                {tools.map((tool, i) => renderToolLink(tool, 'all', i + favoriteTools.length + recentTools.length))}
+              </div>
             </>
-          )}
+          )} 
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-border bg-muted/5 backdrop-blur-xl">
-          <Card className="rounded-xl border border-border shadow-sm relative overflow-hidden group bg-background/50">
-            <CardContent className="p-4">
-                <div className="absolute top-0 right-0 w-16 h-16 bg-primary/10 rounded-full blur-xl -mr-8 -mt-8 transition-all group-hover:bg-primary/20"></div>
-                <div className="flex items-center gap-2 mb-1.5 text-primary relative z-10">
-                <Sparkles className="w-4 h-4" />
-                <span className="text-sm font-semibold">Gemini Powered</span>
-                </div>
-                <p className="text-xs text-muted-foreground leading-relaxed relative z-10">
-                AI assistant ready to help with your code.
-                </p>
-            </CardContent>
-          </Card>
+        <div className="p-2 border-t border-border bg-muted/5">
+          <div className="px-2 py-2 flex items-center gap-2 text-xs text-muted-foreground transition-colors hover:text-foreground cursor-default group">
+             <div className="bg-primary/10 p-1 rounded-md text-primary group-hover:bg-primary/20 transition-colors">
+               <Sparkles className="w-3.5 h-3.5" /> 
+             </div>
+             <span className="font-medium">Gemini Powered</span>
+             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 ml-auto animate-pulse"></div>
+          </div>
         </div>
       </aside>
     </>
