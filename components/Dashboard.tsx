@@ -1,16 +1,9 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
-import { Search, MapPin, Sparkles, Star, Clock, ArrowRight, LayoutDashboard } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { NavLink } from 'react-router-dom';
+import { Search, Sparkles, Star, Clock, ArrowRight, LayoutDashboard } from 'lucide-react';
 import { ToolID, ToolMetadata } from '../types';
-
-interface DashboardProps {
-  tools: ToolMetadata[];
-  favorites: ToolID[];
-  recents: ToolID[];
-  searchTerm: string;
-  onSearch: (term: string) => void;
-  onToggleFavorite: (id: ToolID) => void;
-}
+import { useUserPreferences } from '../context/UserPreferencesContext';
+import { TOOLS } from '../config/tools';
 
 const TIPS = [
   "Use Cmd+K to quickly open the command palette.",
@@ -20,16 +13,18 @@ const TIPS = [
   "The timezone converter helps schedule meetings globally.",
 ];
 
-const Dashboard: React.FC<DashboardProps> = ({ 
-  tools, 
-  favorites, 
-  recents, 
-  searchTerm, 
-  onSearch,
-  onToggleFavorite 
-}) => {
-  const navigate = useNavigate();
+const Dashboard: React.FC = () => {
+  const { 
+    favorites, 
+    recents, 
+    toggleFavorite, 
+    searchTerm, 
+    setSearchTerm 
+  } = useUserPreferences();
+
   const [tip] = useState(() => TIPS[Math.floor(Math.random() * TIPS.length)]);
+  
+  const tools = TOOLS;
 
   const filteredTools = useMemo(() => {
     if (!searchTerm) return tools;
@@ -40,6 +35,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   }, [tools, searchTerm]);
 
   const favoriteTools = tools.filter(t => favorites.includes(t.id));
+  
   const recentTools = recents
     .map(id => tools.find(t => t.id === id))
     .filter((t): t is ToolMetadata => !!t && !favorites.includes(t.id))
@@ -64,7 +60,7 @@ const Dashboard: React.FC<DashboardProps> = ({
             <input 
               type="text"
               value={searchTerm}
-              onChange={(e) => onSearch(e.target.value)}
+              onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search tools (e.g., json, base64, ai)..."
               className="w-full bg-transparent border-none focus:ring-0 text-foreground placeholder-muted-foreground text-lg px-4 h-12"
               autoFocus
@@ -88,7 +84,7 @@ const Dashboard: React.FC<DashboardProps> = ({
            <h2 className="text-xl font-semibold text-foreground">Search Results ({filteredTools.length})</h2>
            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
              {filteredTools.map(tool => (
-               <ToolCard key={tool.id} tool={tool} isFavorite={favorites.includes(tool.id)} onToggleFavorite={onToggleFavorite} />
+               <ToolCard key={tool.id} tool={tool} isFavorite={favorites.includes(tool.id)} onToggleFavorite={toggleFavorite} />
              ))}
            </div>
            {filteredTools.length === 0 && (
@@ -110,7 +106,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {favoriteTools.map(tool => (
-                  <ToolCard key={tool.id} tool={tool} isFavorite={true} onToggleFavorite={onToggleFavorite} />
+                  <ToolCard key={tool.id} tool={tool} isFavorite={true} onToggleFavorite={toggleFavorite} />
                 ))}
               </div>
             </section>
@@ -125,7 +121,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {recentTools.map(tool => (
-                  <ToolCard key={tool.id} tool={tool} isFavorite={favorites.includes(tool.id)} onToggleFavorite={onToggleFavorite} />
+                  <ToolCard key={tool.id} tool={tool} isFavorite={favorites.includes(tool.id)} onToggleFavorite={toggleFavorite} />
                 ))}
               </div>
             </section>
@@ -139,7 +135,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               </div>
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {tools.map(tool => (
-                  <ToolCard key={tool.id} tool={tool} isFavorite={favorites.includes(tool.id)} onToggleFavorite={onToggleFavorite} />
+                  <ToolCard key={tool.id} tool={tool} isFavorite={favorites.includes(tool.id)} onToggleFavorite={toggleFavorite} />
                 ))}
              </div>
           </section>
@@ -151,11 +147,13 @@ const Dashboard: React.FC<DashboardProps> = ({
   );
 };
 
-const ToolCard: React.FC<{ 
-  tool: ToolMetadata; 
+interface ToolCardProps {
+  tool: ToolMetadata;
   isFavorite: boolean;
   onToggleFavorite: (id: ToolID) => void;
-}> = ({ tool, isFavorite, onToggleFavorite }) => {
+}
+
+const ToolCard: React.FC<ToolCardProps> = ({ tool, isFavorite, onToggleFavorite }) => {
   return (
     <div className="group relative bg-card rounded-xl border border-border shadow-sm hover:shadow-lg hover:border-primary/50 transition-all duration-300 flex flex-col h-full overflow-hidden">
       <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
@@ -173,7 +171,7 @@ const ToolCard: React.FC<{
 
       <NavLink to={`/${tool.id}`} className="flex-1 p-6 flex flex-col">
         <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-          {React.cloneElement(tool.icon as React.ReactElement, { className: "w-6 h-6" })}
+           {React.isValidElement(tool.icon) ? React.cloneElement(tool.icon as React.ReactElement<{ className?: string }>, { className: "w-6 h-6" }) : tool.icon}
         </div>
         
         <h3 className="font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">

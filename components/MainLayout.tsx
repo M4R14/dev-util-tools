@@ -3,29 +3,25 @@ import { useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
 import CommandPalette from './CommandPalette';
-import { ToolID, ToolMetadata } from '../types';
+import { ToolID } from '../types';
 import { TOOLS } from '../config/tools';
+import { useUserPreferences } from '../context/UserPreferencesContext';
 
 interface MainLayoutProps {
   children: React.ReactNode;
-  favorites: ToolID[];
-  recents: ToolID[];
-  onToggleFavorite: (id: ToolID) => void;
-  searchTerm: string;
-  onSearch: (term: string) => void;
 }
 
-const MainLayout: React.FC<MainLayoutProps> = ({ 
-    children, 
-    favorites, 
-    recents, 
-    onToggleFavorite,
-    searchTerm,
-    onSearch
-}) => {
+const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const location = useLocation();
+  const { 
+    favorites, 
+    recents, 
+    toggleFavorite, 
+    searchTerm, 
+    setSearchTerm 
+  } = useUserPreferences();
 
   const activeToolId = location.pathname.substring(1) as ToolID;
   const activeTool = TOOLS.find(t => t.id === activeToolId);
@@ -64,7 +60,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
         searchTerm={searchTerm}
-        onSearch={onSearch}
+        onSearch={setSearchTerm}
         favorites={favorites}
         recents={recents}
       />
@@ -75,9 +71,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({
           title={activeTool?.name || 'Dashboard'} 
           onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} 
           searchTerm={searchTerm}
-          onSearch={onSearch}
+          onSearch={setSearchTerm}
           isFavorite={activeTool ? favorites.includes(activeTool.id) : false}
-          onToggleFavorite={activeTool ? () => onToggleFavorite(activeTool.id) : undefined}
+          onToggleFavorite={activeTool ? () => toggleFavorite(activeTool.id) : undefined}
           showSearch={!!activeTool} // Hide search in header on dashboard since it has its own
         />
         
