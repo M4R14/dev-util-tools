@@ -75,7 +75,10 @@ export const formatThaiDate = (input: Date | Dayjs | string) => {
       value: `วัน${THAI_DAYS[dayOfWeek]}ที่ ${day} ${THAI_MONTHS[monthIndex]} พ.ศ. ${yearBE}`,
     },
     { label: 'Long Date', value: `${day} ${THAI_MONTHS[monthIndex]} ${yearBE}` },
-    { label: 'Short Date', value: `${day} ${THAI_SHORT_MONTHS[monthIndex]} ${yearBE}` },
+    { 
+      label: 'Short Date', 
+      value: `${day} ${THAI_SHORT_MONTHS[monthIndex]} ${yearBE}`,
+    },
     {
       label: 'Short Date (2-digit year)',
       value: `${day} ${THAI_SHORT_MONTHS[monthIndex]} ${yearBE.toString().slice(-2)}`,
@@ -102,58 +105,92 @@ export const formatThaiDate = (input: Date | Dayjs | string) => {
   ];
 };
 
+interface ThaiDateFormat {
+  isValid: (input: string) => boolean;
+  convert: (input: string) => Dayjs;
+}
+
+/** Check that all parts are defined and non-empty. */
+const hasParts = (...parts: (string | undefined)[]): parts is string[] =>
+  parts.every((p) => p !== undefined && p.length > 0);
+
+/** Check if a string is a valid integer. */
+const isInt = (value: string): boolean => !isNaN(parseInt(value));
+
+/** Parse a space-separated Thai date (day month year) and convert to Dayjs. */
+const parseSpaceSeparated = (
+  input: string,
+  monthList: readonly string[],
+  yearValidator: (year: string) => boolean,
+  yearParser: (year: string) => number,
+): Dayjs | null => {
+  const [day, month, year] = input.split(' ');
+  if (!hasParts(day, month, year)) return null;
+  if (!monthList.includes(month) || !yearValidator(year)) return null;
+
+  const monthIndex = monthList.indexOf(month);
+  const adYear = yearParser(year) - 543;
+  return dayjs(`${adYear}-${(monthIndex + 1).toString().padStart(2, '0')}-${day.padStart(2, '0')}`);
+};
+
+const is2DigitYear = (year: string) => isInt(year) && year.length === 2;
+const isFullYear = (year: string) => isInt(year) && year.length > 2;
+const parse2DigitYear = (year: string) => parseInt(`25${year}`);
+const parseFullYear = (year: string) => parseInt(year);
+
+const THAI_DATE_FORMATS: ThaiDateFormat[] = [
+  // Short Date (2-digit year) — e.g. "1 ม.ค. 68"
+  {
+    isValid: (input) => parseSpaceSeparated(input, THAI_SHORT_MONTHS, is2DigitYear, parse2DigitYear)?.isValid() ?? false,
+    convert: (input) => parseSpaceSeparated(input, THAI_SHORT_MONTHS, is2DigitYear, parse2DigitYear)!,
+  },
+  // Long Date (2-digit year) — e.g. "1 มกราคม 68"
+  {
+    isValid: (input) => parseSpaceSeparated(input, THAI_MONTHS, is2DigitYear, parse2DigitYear)?.isValid() ?? false,
+    convert: (input) => parseSpaceSeparated(input, THAI_MONTHS, is2DigitYear, parse2DigitYear)!,
+  },
+  // Long Date — e.g. "1 มกราคม 2568"
+  {
+    isValid: (input) => parseSpaceSeparated(input, THAI_MONTHS, isFullYear, parseFullYear)?.isValid() ?? false,
+    convert: (input) => parseSpaceSeparated(input, THAI_MONTHS, isFullYear, parseFullYear)!,
+  },
+  // Short Date — e.g. "1 ม.ค. 2568"
+  {
+    isValid: (input) => parseSpaceSeparated(input, THAI_SHORT_MONTHS, isFullYear, parseFullYear)?.isValid() ?? false,
+    convert: (input) => parseSpaceSeparated(input, THAI_SHORT_MONTHS, isFullYear, parseFullYear)!,
+  },
+  // Numerical (Slash) — e.g. "01/01/2568"
+  {
+    isValid: (input) => {
+      const [day, month, year] = input.split('/');
+      if (!hasParts(day, month, year)) return false;
+      const d = parseInt(day), m = parseInt(month);
+      return isInt(day) && isInt(month) && isInt(year) && d > 0 && d <= 31 && m > 0 && m <= 12;
+    },
+    convert: (input) => {
+      const [day, month, year] = input.split('/');
+      const adYear = parseInt(year) - 543;
+      return dayjs(new Date(adYear, parseInt(month) - 1, parseInt(day)));
+    },
+  },
+];
+
 export const parseThaiDate = (input: string): { iso: string; formatted: string } | null => {
   const trimmed = input.trim();
   if (!trimmed) return null;
 
-  const parts = trimmed.split(/[\s/.-]+/);
-
-  // Reset check
-  let day: number | null = null;
-  let month: number | null = null;
-  let year: number | null = null;
-
-  for (const part of parts) {
-    const fullMonthIdx = THAI_MONTHS.findIndex((m) => m === part);
-    if (fullMonthIdx !== -1) {
-      month = fullMonthIdx;
-      continue;
-    }
-
-    const shortMonthIdx = THAI_SHORT_MONTHS.findIndex((m) => m === part || m === part + '.');
-    if (shortMonthIdx !== -1) {
-      month = shortMonthIdx;
-      continue;
-    }
-
-    const arabicPart = fromThaiDigits(part);
-    const num = parseInt(arabicPart);
-
-    if (!isNaN(num)) {
-      if (num > 2500 || (num > 100 && num < 2500)) {
-        // Buddhist year range heuristic
-        year = num;
-      } else if (num > 0 && num <= 31 && day === null) {
-        day = num;
-      } else if (num > 0 && num <= 12 && month === null) {
-        month = num - 1;
-      } else if (year === null) {
-        year = num; // Fallback
+  for (const format of THAI_DATE_FORMATS) {
+    if (format.isValid(trimmed)) {
+      const d = format.convert(trimmed);
+      if (d.isValid()) {
+        return {
+          iso: d.format('YYYY-MM-DD'),
+          formatted: d.format('YYYY-MM-DD'),
+        };
       }
     }
   }
 
-  if (day !== null && month !== null && year !== null) {
-    const adYear = year > 2400 ? year - 543 : year;
-    const d = dayjs(new Date(adYear, month, day));
-
-    if (d.isValid()) {
-      return {
-        iso: d.format('YYYY-MM-DD'),
-        formatted: d.format('YYYY-MM-DD'),
-      };
-    }
-  }
   return null;
 };
 
