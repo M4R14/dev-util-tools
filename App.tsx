@@ -1,5 +1,6 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { 
   Code2, 
   Binary, 
@@ -25,8 +26,9 @@ import ThaiDateConverter from './components/tools/ThaiDateConverter';
 import TimezoneConverter from './components/tools/TimezoneConverter';
 
 const App: React.FC = () => {
-  const [activeToolId, setActiveToolId] = useState<ToolID>(ToolID.JSON_FORMATTER);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const location = useLocation();
 
   const tools: ToolMetadata[] = useMemo(() => [
     { 
@@ -73,40 +75,18 @@ const App: React.FC = () => {
     },
   ], []);
 
-  const activeTool = tools.find(t => t.id === activeToolId);
-
-  const renderActiveTool = () => {
-    switch (activeToolId) {
-      case ToolID.JSON_FORMATTER: return <JSONFormatter />;
-      case ToolID.BASE64_TOOL: return <Base64Tool />;
-      case ToolID.CASE_CONVERTER: return <CaseConverter />;
-      case ToolID.PASSWORD_GEN: return <PasswordGenerator />;
-      case ToolID.TIMEZONE_CONVERTER: return <TimezoneConverter />;
-      case ToolID.THAI_DATE_CONVERTER: return <ThaiDateConverter />;
-      case ToolID.AI_ASSISTANT: return <AIAssistant />;
-      default: return <JSONFormatter />;
-    }
-  };
+  const activeToolId = location.pathname.substring(1) as ToolID;
+  const activeTool = tools.find(t => t.id === activeToolId) || tools[0];
 
   return (
     <div className="flex h-screen bg-slate-900 text-slate-200 overflow-hidden">
-      {/* Sidebar Overlay for Mobile */}
-      {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
-
-      {/* Sidebar */}
+      
       <Sidebar 
         tools={tools} 
-        activeId={activeToolId} 
-        onSelect={(id) => {
-          setActiveToolId(id);
-          setIsSidebarOpen(false);
-        }}
         isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        searchTerm={searchTerm}
+        onSearch={setSearchTerm}
       />
 
       {/* Main Content Area */}
@@ -114,23 +94,38 @@ const App: React.FC = () => {
         <Header 
           title={activeTool?.name || 'DevPulse'} 
           onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} 
+          searchTerm={searchTerm}
+          onSearch={setSearchTerm}
         />
         
-        <main className="flex-1 overflow-y-auto p-4 md:p-8">
-          <div className="max-w-5xl mx-auto animate-fadeIn">
-            <div className="mb-8">
-              <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
-                {activeTool?.icon}
-                {activeTool?.name}
-              </h1>
-              <p className="text-slate-400">{activeTool?.description}</p>
-            </div>
+        <main className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-900">
+          <div className="max-w-6xl mx-auto animate-fadeIn">
+            {activeTool && (
+                <div className="mb-8">
+                <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
+                    {activeTool.icon}
+                    {activeTool.name}
+                </h1>
+                <p className="text-slate-400">{activeTool.description}</p>
+                </div>
+            )}
             
-            <div className="bg-slate-800/50 rounded-2xl border border-slate-700 shadow-xl overflow-hidden backdrop-blur-sm">
-              {renderActiveTool()}
+            <div className="bg-slate-800/30 rounded-2xl border border-slate-700/50 shadow-xl overflow-hidden backdrop-blur-sm">
+              <Routes>
+                <Route path="/" element={<Navigate to={`/${ToolID.JSON_FORMATTER}`} replace />} />
+                <Route path={`/${ToolID.JSON_FORMATTER}`} element={<JSONFormatter />} />
+                <Route path={`/${ToolID.BASE64_TOOL}`} element={<Base64Tool />} />
+                <Route path={`/${ToolID.CASE_CONVERTER}`} element={<CaseConverter />} />
+                <Route path={`/${ToolID.PASSWORD_GEN}`} element={<PasswordGenerator />} />
+                <Route path={`/${ToolID.TIMEZONE_CONVERTER}`} element={<TimezoneConverter />} />
+                <Route path={`/${ToolID.THAI_DATE_CONVERTER}`} element={<ThaiDateConverter />} />
+                <Route path={`/${ToolID.AI_ASSISTANT}`} element={<AIAssistant />} />
+                <Route path="*" element={<Navigate to={`/${ToolID.JSON_FORMATTER}`} replace />} />
+              </Routes>
             </div>
           </div>
         </main>
+
 
         <footer className="p-4 text-center text-slate-500 text-xs border-t border-slate-800">
           DevPulse © {new Date().getFullYear()} • Privacy-first Client-side Processing
