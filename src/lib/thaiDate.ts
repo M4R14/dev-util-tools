@@ -111,7 +111,7 @@ interface ThaiDateFormat {
 }
 
 /** Check that all parts are defined and non-empty. */
-const hasParts = (...parts: (string | undefined)[]): parts is string[] =>
+const hasParts = (parts: (string | undefined)[]): parts is string[] =>
   parts.every((p) => p !== undefined && p.length > 0);
 
 /** Check if a string is a valid integer. */
@@ -125,7 +125,7 @@ const parseSpaceSeparated = (
   yearParser: (year: string) => number,
 ): Dayjs | null => {
   const [day, month, year] = input.split(' ');
-  if (!hasParts(day, month, year)) return null;
+  if (!hasParts([day, month, year])) return null;
   if (!monthList.includes(month) || !yearValidator(year)) return null;
 
   const monthIndex = monthList.indexOf(month);
@@ -163,7 +163,7 @@ const THAI_DATE_FORMATS: ThaiDateFormat[] = [
   {
     isValid: (input) => {
       const [day, month, year] = input.split('/');
-      if (!hasParts(day, month, year)) return false;
+      if (!hasParts([day, month, year])) return false;
       const d = parseInt(day), m = parseInt(month);
       return isInt(day) && isInt(month) && isInt(year) && d > 0 && d <= 31 && m > 0 && m <= 12;
     },
