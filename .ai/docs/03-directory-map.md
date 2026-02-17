@@ -16,21 +16,36 @@ src/
 │   ├── ToolPageLayout.tsx      # Tool page wrapper: icon, name, description, clickable tags
 │   ├── ErrorBoundary.tsx       # Class component error boundary with recovery UI
 │   ├── ToolLinkItem.tsx        # Sidebar NavLink item with active/selected states
-│   ├── tools/                  # One component per tool (11 files)
+│   ├── tools/                  # One component per tool (13 tools)
 │   │   ├── JSONFormatter.tsx
 │   │   ├── Base64Tool.tsx
 │   │   ├── CaseConverter.tsx
 │   │   ├── PasswordGenerator.tsx
 │   │   ├── TimezoneConverter.tsx
-│   │   ├── ThaiDateConverter.tsx
+│   │   ├── thai-date/          # Thai Date Converter (split into sub-components)
+│   │   │   ├── index.tsx       # Main composition component
+│   │   │   ├── CurrentTimeSection.tsx
+│   │   │   ├── DateConverterSection.tsx
+│   │   │   ├── DatePickerInput.tsx
+│   │   │   ├── TextParserInput.tsx
+│   │   │   └── ParserResultSection.tsx
 │   │   ├── CrontabTool.tsx
-│   │   ├── AIAssistant.tsx     # + AICodeBlock.tsx, AIMessageContent.tsx, SettingsModal.tsx
+│   │   ├── AIAssistant.tsx     # + ai/CodeBlock.tsx, MessageContent.tsx, SettingsModal.tsx
 │   │   ├── UUIDGenerator.tsx
-│   │   ├── UrlParser.tsx
-│   │   └── DiffViewer.tsx
+│   │   ├── UrlParser.tsx       # + url-parser/UrlComponentInput.tsx, etc.
+│   │   ├── DiffViewer.tsx
+│   │   ├── RegexTester.tsx
+│   │   └── XMLFormatter.tsx
+│   ├── sidebar/                # Sidebar sub-components
+│   │   ├── SidebarBrand.tsx    # Logo and app name
+│   │   ├── SidebarFooter.tsx   # Footer links (GitHub, theme toggle)
+│   │   ├── SidebarNavigation.tsx # Favorites, recents, all-tools sections
+│   │   ├── SidebarSearch.tsx   # Search input in sidebar
+│   │   └── useSidebarNavigation.ts # Keyboard nav hook for sidebar items
 │   └── ui/                     # Shared UI primitives
 │       ├── Button.tsx          # CVA variants: default/destructive/outline/secondary/ghost/link
 │       ├── Card.tsx            # Card + CardHeader + CardTitle + CardDescription + CardContent + CardFooter
+│       ├── CodeHighlight.tsx   # Syntax-highlighted code display
 │       ├── CopyButton.tsx      # Clipboard copy with toast feedback
 │       ├── Input.tsx           # Styled HTML input
 │       ├── Textarea.tsx        # Styled HTML textarea
@@ -40,6 +55,7 @@ src/
 │       └── sonner.tsx          # Sonner toast provider (theme-aware)
 │
 ├── hooks/                      # One hook per tool (business logic)
+│   ├── useAIChat.ts            # AI Assistant chat logic
 │   ├── useBase64.ts
 │   ├── useCaseConverter.ts
 │   ├── useDiffViewer.ts
@@ -50,7 +66,7 @@ src/
 │   ├── useToolSearch.ts        # MiniSearch-powered fuzzy search
 │   ├── useUrlParser.ts
 │   ├── useUUIDGenerator.ts
-│   └── useAIChat.ts            # (in hooks/ directory, used by AIAssistant)
+│   └── useXmlFormatter.ts
 │
 ├── context/
 │   ├── ThemeContext.tsx         # { theme, toggleTheme } — persists to localStorage
@@ -58,7 +74,7 @@ src/
 │   └── UserPreferencesContext.tsx # { favorites, recents, toggleFavorite, addRecent }
 │
 ├── data/
-│   └── tools.tsx               # TOOLS array (11 entries) + getToolById()
+│   └── tools.tsx               # TOOLS array (13 entries) + getToolById()
 │
 ├── lib/                        # Pure utility functions (no React)
 │   ├── utils.ts                # cn() — clsx + tailwind-merge
@@ -67,7 +83,7 @@ src/
 │   ├── passwordStrength.ts     # getPasswordStrength()
 │   ├── thaiDate.ts             # Thai date formatting/parsing (uses `dayjs`)
 │   ├── urlUtils.ts             # parseUrl, updateUrlParam
-│   └── obfuscate.ts            # obfuscate/deobfuscate (Base64 key storage)
+│   └── crypto.ts               # encrypt/decrypt (Base64 obfuscation for API key storage)
 │
 ├── services/
 │   └── gemini.ts               # askGemini(prompt, codeContext?, apiKey?) — Google Gemini API

@@ -10,6 +10,15 @@
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm run lint` | ESLint |
 | `npm run format` | Prettier |
+| `npm run format:check` | Prettier (check only) |
+
+### Deployment
+
+| Target | URL |
+|---|---|
+| **GitHub Pages** | [https://m4r14.github.io/dev-util-tools/](https://m4r14.github.io/dev-util-tools/) |
+
+Deploy is automatic on push to `main` via `.github/workflows/deploy.yml`. Vite `base` is set to `/dev-util-tools/` when `GITHUB_ACTIONS` env is detected. `BrowserRouter` uses `import.meta.env.BASE_URL` as `basename`. A `public/404.html` handles SPA routing on GitHub Pages.
 
 ### Vendor Chunks (Rollup)
 
