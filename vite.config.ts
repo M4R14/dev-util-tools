@@ -5,7 +5,9 @@ import react from '@vitejs/plugin-react';
 /// <reference types="vitest" />
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
+  const base = process.env.GITHUB_ACTIONS ? '/dev-util-tools/' : '/';
   return {
+    base,
     server: {
       port: 3000,
       host: '0.0.0.0',
