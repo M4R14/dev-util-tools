@@ -13,8 +13,10 @@ Machine-readable bridge that lets AI/browser agents run selected DevPulse tools 
 Additional machine endpoints:
 - `/ai-bridge` executes tool requests and returns result/error payload
 - `/ai-bridge/catalog` returns available tools + operations (discovery only)
+- `/ai-bridge/catalog` returns available tools + operations + examples + usage tips (discovery only)
 - `/ai-bridge/spec` returns JSON schema for request/response (contract validation)
 - `/ai-bridge/catalog.json` returns static discovery JSON (curl-friendly)
+- `/ai-bridge/catalog.json` returns static discovery JSON including semantic examples/usage tips (curl-friendly)
 - `/ai-bridge/spec.json` returns static schema JSON (curl-friendly)
 
 ## Files
@@ -53,7 +55,7 @@ Additional machine endpoints:
 `window.DevPulseAI` is available only when `/ai-bridge` page is loaded.
 
 - `window.DevPulseAI.catalog()`
-  - Returns list of tools and supported operations.
+  - Returns list of tools, supported operations, examples, and usage tips.
 - `window.DevPulseAI.run(request)`
   - Executes one request and returns deterministic response:
   - `{ ok: true, result }` style success data in `result`
@@ -127,4 +129,5 @@ window.DevPulseAI.run({
 - Responses are deterministic JSON with `{ ok, tool, operation, result?, error? }`.
 - For `mode=result-only`, rendered output is exposed at `<pre id="ai-bridge-output">...</pre>`.
 - This bridge is client-side and intended for browser-controlled agents.
+- `Run Query` UI now includes stable semantic attributes (`data-action`, `data-testid`) for browser-agent targeting.
 - Error responses include `errorDetails` with `code`, plus supported values/suggestions when possible.

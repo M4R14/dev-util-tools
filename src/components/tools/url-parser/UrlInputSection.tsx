@@ -69,6 +69,8 @@ const UrlInputSection: React.FC<UrlInputSectionProps> = ({
           variant="ghost"
           size="sm"
           onClick={onClear}
+          data-action="clear-url-input"
+          data-testid="url-clear-button"
           className="h-8 text-muted-foreground hover:text-destructive transition-colors"
         >
           <Trash2 className="w-4 h-4 mr-1.5" />
@@ -98,11 +100,17 @@ const UrlInputSection: React.FC<UrlInputSectionProps> = ({
             className="font-mono text-sm min-h-[120px] resize-y bg-background focus:ring-2 ring-primary/20 transition-all border-muted-foreground/20 pr-10"
             value={input}
             onChange={(e) => onInputChange(e.target.value)}
+            data-action="edit-url-input"
+            data-testid="url-input-textarea"
             aria-label="URL input"
           />
           {input && (
             <div className="absolute right-2 top-2 opacity-80 group-hover:opacity-100 transition-opacity">
-              <CopyButton value={input} />
+              <CopyButton
+                value={input}
+                data-action="copy-url-input"
+                data-testid="url-copy-input-button"
+              />
             </div>
           )}
         </div>
@@ -113,6 +121,8 @@ const UrlInputSection: React.FC<UrlInputSectionProps> = ({
               variant="secondary"
               size="sm"
               onClick={onEncode}
+              data-action="encode-url"
+              data-testid="url-encode-button"
               disabled={!hasInput}
               className="hover:bg-primary hover:text-primary-foreground transition-all disabled:hover:bg-secondary disabled:hover:text-secondary-foreground"
             >
@@ -123,6 +133,8 @@ const UrlInputSection: React.FC<UrlInputSectionProps> = ({
               variant="secondary"
               size="sm"
               onClick={onDecode}
+              data-action="decode-url"
+              data-testid="url-decode-button"
               disabled={!hasInput}
               className="hover:bg-primary hover:text-primary-foreground transition-all disabled:hover:bg-secondary disabled:hover:text-secondary-foreground"
             >

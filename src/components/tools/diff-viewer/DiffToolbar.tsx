@@ -43,14 +43,34 @@ const DiffToolbar: React.FC<DiffToolbarProps> = ({
   <div className="rounded-xl border border-border/60 bg-card/60 p-3 md:p-4 space-y-3">
     <div className="flex flex-wrap items-center justify-between gap-3">
       <div className="flex flex-wrap items-center gap-2">
-        <Button variant="outline" size="sm" onClick={onLoadSample}>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onLoadSample}
+          data-action="load-diff-sample"
+          data-testid="diff-load-sample-button"
+        >
           Load sample
         </Button>
-        <Button variant="outline" size="sm" onClick={onSwap} title="Swap original & modified">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onSwap}
+          data-action="swap-diff-sides"
+          data-testid="diff-swap-button"
+          title="Swap original & modified"
+        >
           <ArrowLeftRight className="w-4 h-4 mr-1.5" />
           Swap
         </Button>
-        <Button variant="outline" size="sm" onClick={onClearAll} title="Clear both sides">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onClearAll}
+          data-action="clear-diff-inputs"
+          data-testid="diff-clear-button"
+          title="Clear both sides"
+        >
           <Trash2 className="w-4 h-4 mr-1.5" />
           Clear
         </Button>
@@ -62,6 +82,8 @@ const DiffToolbar: React.FC<DiffToolbarProps> = ({
             <button
               key={mode}
               onClick={() => onViewModeChange(mode)}
+              data-action={`set-diff-view-${mode}`}
+              data-testid="diff-viewmode-button"
               className={cn(
                 'px-3 py-1.5 text-xs font-medium capitalize transition-colors',
                 viewMode === mode
@@ -78,16 +100,26 @@ const DiffToolbar: React.FC<DiffToolbarProps> = ({
           variant={showOnlyChanges ? 'default' : 'outline'}
           size="sm"
           onClick={onToggleChangesOnly}
+          data-action="toggle-diff-changes-only"
+          data-testid="diff-toggle-changes-button"
         >
           Changes only
         </Button>
 
-        <Button variant={wrapLines ? 'default' : 'outline'} size="sm" onClick={onToggleWrapLines}>
+        <Button
+          variant={wrapLines ? 'default' : 'outline'}
+          size="sm"
+          onClick={onToggleWrapLines}
+          data-action="toggle-diff-wrap-lines"
+          data-testid="diff-toggle-wrap-button"
+        >
           Wrap lines
         </Button>
 
         <CopyButton
           value={unifiedText}
+          data-action="copy-diff-unified"
+          data-testid="diff-copy-unified-button"
           disabled={!hasChanges}
           onCopy={() => toast.success('Unified diff copied')}
           title={hasChanges ? 'Copy unified diff' : 'No changes to copy'}

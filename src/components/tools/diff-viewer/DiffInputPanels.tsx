@@ -25,11 +25,20 @@ const DiffInputPanels: React.FC<DiffInputPanelsProps> = ({
   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[18rem]">
     <ToolLayout.Panel
       title={`Original · ${originalMetrics.lines}L / ${originalMetrics.chars}C`}
-      actions={<CopyButton value={original} onCopy={() => toast.success('Original text copied')} />}
+      actions={
+        <CopyButton
+          value={original}
+          data-action="copy-diff-original"
+          data-testid="diff-copy-original-button"
+          onCopy={() => toast.success('Original text copied')}
+        />
+      }
     >
       <Textarea
         value={original}
         onChange={(event) => onOriginalChange(event.target.value)}
+        data-action="edit-diff-original"
+        data-testid="diff-original-textarea"
         placeholder="Paste original text here…"
         className="w-full min-h-[16rem] h-full bg-transparent border-none focus-visible:ring-0 p-0 font-mono text-sm resize-none placeholder-muted-foreground shadow-none"
       />
@@ -37,11 +46,20 @@ const DiffInputPanels: React.FC<DiffInputPanelsProps> = ({
 
     <ToolLayout.Panel
       title={`Modified · ${modifiedMetrics.lines}L / ${modifiedMetrics.chars}C`}
-      actions={<CopyButton value={modified} onCopy={() => toast.success('Modified text copied')} />}
+      actions={
+        <CopyButton
+          value={modified}
+          data-action="copy-diff-modified"
+          data-testid="diff-copy-modified-button"
+          onCopy={() => toast.success('Modified text copied')}
+        />
+      }
     >
       <Textarea
         value={modified}
         onChange={(event) => onModifiedChange(event.target.value)}
+        data-action="edit-diff-modified"
+        data-testid="diff-modified-textarea"
         placeholder="Paste modified text here…"
         className="w-full min-h-[16rem] h-full bg-transparent border-none focus-visible:ring-0 p-0 font-mono text-sm resize-none placeholder-muted-foreground shadow-none"
       />

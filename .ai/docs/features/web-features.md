@@ -20,6 +20,7 @@ DevPulse feature documentation is split into focused files for easier maintenanc
 - PWA Offline Mode: local tools remain usable after assets are cached on first online load.
 - Background Update UX: when a new service-worker version is ready, the app shows `New version available` with a `Refresh` action.
 - App Settings Page: `/settings` centralizes `Online/Offline`, install prompt, cache size, last update, `Check for updates`, and `Clear offline cache`.
+- Machine-Readable Semantic Context: key tool and AI Bridge controls expose stable `data-action` / `data-testid` attributes for browser-agent automation.
 - Mini Release Notes (Auto): blog includes an auto-generated release note sourced from recent commits/PR references.
 
 ## Reliability Guarantees

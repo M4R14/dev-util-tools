@@ -164,6 +164,7 @@ const AIAgentBridge: React.FC = () => {
         <div className="max-w-5xl mx-auto">
           <pre
             id="ai-bridge-output"
+            data-testid="ai-bridge-output"
             className="rounded-md border border-border/80 bg-background/70 p-4 text-xs overflow-auto whitespace-pre-wrap break-words"
           >
             {responseText}

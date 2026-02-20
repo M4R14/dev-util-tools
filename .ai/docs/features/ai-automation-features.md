@@ -37,11 +37,17 @@ Static endpoints:
 
 - Deterministic, machine-readable tool execution for browser-controlled agents.
 - Discovery-first pattern through catalog and schema endpoints.
+- Catalog payload includes per-tool `examples` and `usage_tips` to reduce trial-and-error planning for agents.
 
 ### Browser API Surface
 
 - `window.DevPulseAI.catalog()`
 - `window.DevPulseAI.run(request)`
+
+### Semantic UI Targeting
+
+- AI Bridge query runner and response panels include stable `data-action` / `data-testid` attributes.
+- High-traffic local tool inputs/actions include semantic data attributes so browser agents can target controls without relying on volatile Tailwind class names.
 
 ### Supported Tool Operations (Current)
 

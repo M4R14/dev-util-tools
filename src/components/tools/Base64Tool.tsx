@@ -14,11 +14,20 @@ const Base64Tool: React.FC = () => {
         {/* String Area */}
         <ToolLayout.Panel
           title="Plain Text"
-          actions={<CopyButton value={text} onCopy={() => toast.success('Original text copied')} />}
+          actions={
+            <CopyButton
+              value={text}
+              data-action="copy-base64-plain-text"
+              data-testid="base64-copy-plain-button"
+              onCopy={() => toast.success('Original text copied')}
+            />
+          }
         >
           <Textarea
             value={text}
             onChange={(e) => handleTextChange(e.target.value)}
+            data-action="edit-base64-plain-text"
+            data-testid="base64-plain-textarea"
             placeholder="Type here..."
             className="w-full h-full bg-transparent border-none focus-visible:ring-0 p-0 font-mono text-sm resize-none placeholder-muted-foreground shadow-none"
           />
@@ -27,12 +36,21 @@ const Base64Tool: React.FC = () => {
         {/* Base64 Area */}
         <ToolLayout.Panel
           title="Base64 Output"
-          actions={<CopyButton value={base64} onCopy={() => toast.success('Base64 copied')} />}
+          actions={
+            <CopyButton
+              value={base64}
+              data-action="copy-base64-output"
+              data-testid="base64-copy-output-button"
+              onCopy={() => toast.success('Base64 copied')}
+            />
+          }
           className={error ? 'border-destructive/50 box-border' : ''}
         >
           <Textarea
             value={base64}
             onChange={(e) => handleBase64Change(e.target.value)}
+            data-action="edit-base64-encoded-text"
+            data-testid="base64-output-textarea"
             placeholder="Base64 result..."
             className="w-full h-full bg-transparent border-none focus-visible:ring-0 p-0 font-mono text-sm resize-none placeholder-muted-foreground shadow-none"
           />

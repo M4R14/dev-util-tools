@@ -39,6 +39,8 @@ const CaseConverter: React.FC = () => {
               variant="ghost"
               size="sm"
               onClick={() => setInput('')}
+              data-action="clear-case-input"
+              data-testid="case-clear-button"
               disabled={!hasInput}
               className="h-7 px-2 text-xs"
             >
@@ -47,6 +49,8 @@ const CaseConverter: React.FC = () => {
             </Button>
             <CopyButton
               value={input}
+              data-action="copy-case-input"
+              data-testid="case-copy-input-button"
               disabled={!hasInput}
               className="h-7 w-7"
             />
@@ -57,16 +61,20 @@ const CaseConverter: React.FC = () => {
           <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            data-action="edit-case-input"
+            data-testid="case-input-textarea"
             placeholder="Type or paste your text here..."
             className="h-44 min-h-[170px] bg-transparent resize-y border-none focus-visible:ring-0 shadow-none font-mono text-sm"
           />
 
           <div className="flex flex-wrap gap-2">
-            {EXAMPLE_INPUTS.map((example) => (
+            {EXAMPLE_INPUTS.map((example, exampleIndex) => (
               <button
                 key={example}
                 type="button"
                 onClick={() => setInput(example)}
+                data-action={`apply-case-example-${exampleIndex + 1}`}
+                data-testid="case-example-button"
                 className={cn(
                   'rounded-full border px-2.5 py-1 text-xs transition-colors',
                   input === example
@@ -131,6 +139,8 @@ const CaseConverter: React.FC = () => {
                 </div>
                 <CopyButton
                   value={item.value}
+                  data-action={`copy-case-output-${item.label}`}
+                  data-testid="case-copy-output-button"
                   className="h-7 w-7"
                   disabled={!item.value}
                 />

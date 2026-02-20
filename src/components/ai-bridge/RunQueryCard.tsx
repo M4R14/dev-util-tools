@@ -44,6 +44,8 @@ const RunQueryCard: React.FC<RunQueryCardProps> = ({
         <Textarea
           value={queryInput}
           onChange={(e) => onQueryInputChange(e.target.value)}
+          data-action="edit-ai-bridge-query"
+          data-testid="ai-bridge-query-textarea"
           onKeyDown={(e) => {
             if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
               e.preventDefault();
@@ -54,10 +56,16 @@ const RunQueryCard: React.FC<RunQueryCardProps> = ({
           className="min-h-[88px] font-mono text-xs"
         />
         <div className="flex items-center gap-2">
-          <Button size="sm" onClick={onRun}>
+          <Button size="sm" onClick={onRun} data-action="run-ai-bridge-query" data-testid="ai-bridge-run-button">
             Run Query
           </Button>
-          <Button size="sm" variant="ghost" onClick={onReset}>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={onReset}
+            data-action="reset-ai-bridge-query"
+            data-testid="ai-bridge-reset-button"
+          >
             Reset
           </Button>
         </div>
@@ -68,6 +76,8 @@ const RunQueryCard: React.FC<RunQueryCardProps> = ({
               size="sm"
               variant="outline"
               onClick={() => onPickTemplate(template.value)}
+              data-action={`apply-ai-bridge-template-${template.label.toLowerCase().replace(/\s+/g, '-')}`}
+              data-testid="ai-bridge-template-button"
             >
               {template.label}
             </Button>

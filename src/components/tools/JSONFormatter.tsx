@@ -45,6 +45,8 @@ const JSONFormatter: React.FC = () => {
                 variant="outline"
                 size="sm"
                 onClick={handleFormat}
+                data-action="format-json"
+                data-testid="json-format-button"
                 className="flex items-center gap-2 bg-primary/20 hover:bg-primary/40 text-primary hover:text-primary/80 border-primary/20"
               >
                 <AlignLeft className="w-3.5 h-3.5" /> Format
@@ -53,6 +55,8 @@ const JSONFormatter: React.FC = () => {
                 variant="outline"
                 size="sm"
                 onClick={handleMinify}
+                data-action="minify-json"
+                data-testid="json-minify-button"
                 className="flex items-center gap-2 bg-muted hover:bg-muted/80 text-foreground border-border"
               >
                 <Minimize2 className="w-3.5 h-3.5" /> Minify
@@ -63,6 +67,8 @@ const JSONFormatter: React.FC = () => {
                 <select
                   value={indent}
                   onChange={(event) => setIndent(Number(event.target.value))}
+                  data-action="set-json-indent"
+                  data-testid="json-indent-select"
                   className="h-8 rounded-md border border-input bg-background px-2 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
                   aria-label="JSON indentation"
                 >
@@ -81,6 +87,8 @@ const JSONFormatter: React.FC = () => {
                   variant="ghost"
                   size="icon"
                   onClick={() => setIsEditing(!isEditing)}
+                  data-action={isEditing ? 'preview-json' : 'edit-json'}
+                  data-testid="json-toggle-preview-button"
                   className="h-8 w-8 text-muted-foreground hover:text-foreground"
                   title={isEditing ? 'Preview' : 'Edit'}
                 >
@@ -96,6 +104,8 @@ const JSONFormatter: React.FC = () => {
                   setIsEditing(true);
                   toast.info('Editor cleared');
                 }}
+                data-action="clear-json"
+                data-testid="json-clear-button"
                 className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 h-8 w-8"
                 title="Clear"
               >
@@ -114,6 +124,8 @@ const JSONFormatter: React.FC = () => {
                 setInput(e.target.value);
                 if (error) setError(null);
               }}
+              data-action="edit-json-input"
+              data-testid="json-input-textarea"
               placeholder="Paste your JSON here..."
               className="w-full h-full bg-transparent border-none focus-visible:ring-0 p-0 font-mono text-sm resize-none placeholder-muted-foreground"
             />

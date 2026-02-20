@@ -38,16 +38,96 @@ export interface AIToolResponse {
 export interface AIToolCatalogItem {
   id: AIToolId;
   operations: string[];
+  examples: Array<{
+    operation: string;
+    input: unknown;
+    options?: Record<string, unknown>;
+  }>;
+  usage_tips: string[];
 }
 
 export const AI_TOOL_CATALOG: AIToolCatalogItem[] = [
-  { id: 'json-formatter', operations: ['format', 'minify', 'validate'] },
-  { id: 'xml-formatter', operations: ['format', 'minify', 'validate'] },
-  { id: 'base64-tool', operations: ['encode', 'decode'] },
-  { id: 'case-converter', operations: ['convert'] },
-  { id: 'url-parser', operations: ['parse'] },
-  { id: 'diff-viewer', operations: ['compare'] },
-  { id: 'thai-date-converter', operations: ['format', 'parse'] },
+  {
+    id: 'json-formatter',
+    operations: ['format', 'minify', 'validate'],
+    examples: [
+      { operation: 'format', input: '{"a":1,"b":{"c":2}}', options: { indent: 2 } },
+      { operation: 'validate', input: '{"name":"devpulse"}' },
+    ],
+    usage_tips: [
+      'Pass JSON text as a string in input.',
+      'Use options.indent (number) for format.',
+    ],
+  },
+  {
+    id: 'xml-formatter',
+    operations: ['format', 'minify', 'validate'],
+    examples: [
+      { operation: 'format', input: '<root><item>1</item></root>', options: { indent: 2 } },
+      { operation: 'validate', input: '<root><item>ok</item></root>' },
+    ],
+    usage_tips: [
+      'Pass raw XML text as input.',
+      'Use options.indent (number) for format when needed.',
+    ],
+  },
+  {
+    id: 'base64-tool',
+    operations: ['encode', 'decode'],
+    examples: [
+      { operation: 'encode', input: 'hello world' },
+      { operation: 'decode', input: 'aGVsbG8gd29ybGQ=' },
+    ],
+    usage_tips: [
+      'Use encode for plain text input.',
+      'Use decode only with valid Base64 strings.',
+    ],
+  },
+  {
+    id: 'case-converter',
+    operations: ['convert'],
+    examples: [{ operation: 'convert', input: 'hello world', options: { target: 'snake' } }],
+    usage_tips: [
+      'Set options.target to snake|kebab|camel|pascal.',
+      'Input can be phrase, snake_case, kebab-case, or PascalCase.',
+    ],
+  },
+  {
+    id: 'url-parser',
+    operations: ['parse'],
+    examples: [{ operation: 'parse', input: 'https://example.com/path?a=1&b=2#hash' }],
+    usage_tips: [
+      'Include protocol for strict parsing.',
+      'Result contains URL components and parsed query params.',
+    ],
+  },
+  {
+    id: 'diff-viewer',
+    operations: ['compare'],
+    examples: [
+      {
+        operation: 'compare',
+        input: { original: 'line A\nline B', modified: 'line A\nline C' },
+        options: { includeLines: true },
+      },
+    ],
+    usage_tips: [
+      'Provide input as object with original and modified strings.',
+      'Set options.includeLines=false for lightweight stats-only response.',
+    ],
+  },
+  {
+    id: 'thai-date-converter',
+    operations: ['format', 'parse'],
+    examples: [
+      { operation: 'format', input: '2026-02-21' },
+      { operation: 'parse', input: '21 ก.พ. 2569' },
+    ],
+    usage_tips: [
+      'Use format with ISO-like date strings.',
+      'Use parse with Thai date strings including Buddhist year format.',
+    ],
+  },
 ];
 
 const SUPPORTED_CASE_TARGETS = ['snake', 'kebab', 'camel', 'pascal'] as const;
