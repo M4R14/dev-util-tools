@@ -2,6 +2,9 @@ import React from 'react';
 import { AlertTriangle, RotateCcw, Home } from 'lucide-react';
 import { Button } from './ui/Button';
 
+const APP_BASE_URL = import.meta.env.BASE_URL || '/';
+const CHUNK_RETRY_KEY = 'devpulse:chunk-reload-attempted';
+
 interface ErrorBoundaryProps {
   children: React.ReactNode;
   fallbackTitle?: string;
@@ -24,15 +27,32 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('[ErrorBoundary]', error, errorInfo);
+
+    const message = error?.message || '';
+    const isChunkLoadError =
+      message.includes('Failed to fetch dynamically imported module') ||
+      message.includes('Importing a module script failed');
+
+    // GitHub Pages users may keep an old index.html that references removed chunk hashes.
+    // One hard reload usually resolves this by fetching the latest entrypoint.
+    if (isChunkLoadError) {
+      const attempted = sessionStorage.getItem(CHUNK_RETRY_KEY);
+      if (!attempted) {
+        sessionStorage.setItem(CHUNK_RETRY_KEY, '1');
+        window.location.reload();
+      }
+    }
   }
 
   private handleReset = () => {
+    sessionStorage.removeItem(CHUNK_RETRY_KEY);
     this.setState({ hasError: false, error: null });
   };
 
   private handleGoHome = () => {
+    sessionStorage.removeItem(CHUNK_RETRY_KEY);
     this.setState({ hasError: false, error: null });
-    window.location.href = '/';
+    window.location.href = APP_BASE_URL;
   };
 
   render() {
