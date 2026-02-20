@@ -18,6 +18,7 @@ enum ToolID {
   THAI_DATE_CONVERTER = 'thai-date-converter',
   TIMEZONE_CONVERTER = 'timezone-converter',
   CASE_CONVERTER = 'case-converter',
+  XML_TO_JSON = 'xml-to-json',
 
   // formatter
   JSON_FORMATTER = 'json-formatter',

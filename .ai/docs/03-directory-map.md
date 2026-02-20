@@ -31,7 +31,7 @@ src/
 │   │    ├── QuickstartCard.tsx
 │   │    ├── RunQueryCard.tsx
 │   │    └── LiveResponseCard.tsx
-│   ├── tools/                  # One component per tool (15 tools)
+│   ├── tools/                  # One component per tool (16 tools)
 │   │   ├── JSONFormatter.tsx
 │   │   ├── Base64Tool.tsx
 │   │   ├── CaseConverter.tsx
@@ -61,7 +61,8 @@ src/
 │   │   ├── UrlParser.tsx       # + url-parser/UrlComponentInput.tsx, etc.
 │   │   ├── DiffViewer.tsx
 │   │   ├── RegexTester.tsx
-│   │   └── XMLFormatter.tsx
+│   │   ├── XMLFormatter.tsx
+│   │   └── XMLToJson.tsx
 │   ├── sidebar/                # Sidebar sub-components
 │   │   ├── SidebarBrand.tsx    # Logo and app name
 │   │   ├── SidebarFooter.tsx   # Footer links (GitHub, theme toggle)
@@ -93,7 +94,8 @@ src/
 │   ├── useToolSearch.ts        # MiniSearch-powered fuzzy search
 │   ├── useUrlParser.ts
 │   ├── useUUIDGenerator.ts
-│   └── useXmlFormatter.ts
+│   ├── useXmlFormatter.ts
+│   └── useXmlToJson.ts
 │
 ├── context/
 │   ├── ThemeContext.tsx         # { theme, toggleTheme } — persists to localStorage
@@ -101,7 +103,7 @@ src/
 │   └── UserPreferencesContext.tsx # { favorites, recents, toggleFavorite, addRecent }
 │
 ├── data/
-│   ├── tools.tsx               # TOOLS array (15 entries) + getToolById()
+│   ├── tools.tsx               # TOOLS array (16 entries) + getToolById()
 │   ├── blogPosts.ts            # Markdown loader/parser for blog posts (frontmatter + bullet changes)
 │   └── aiBridge.ts             # AI Bridge endpoint specs + query templates/snippets
 │
@@ -120,6 +122,7 @@ src/
 │   ├── passwordStrength.ts     # getPasswordStrength()
 │   ├── thaiDate.ts             # Thai date formatting/parsing (uses `dayjs`)
 │   ├── urlUtils.ts             # parseUrl, updateUrlParam
+│   ├── xmlToJson.ts            # XML document to JSON conversion logic
 │   └── crypto.ts               # encrypt/decrypt (Base64 obfuscation for API key storage)
 │
 ├── services/

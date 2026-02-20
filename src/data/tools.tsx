@@ -11,6 +11,7 @@ import {
   Link2,
   FileDiff,
   FileCode2,
+  FileBraces,
   FileText,
   RotateCw,
 } from 'lucide-react';
@@ -121,6 +122,13 @@ export const TOOLS: ToolMetadata[] = [
     description: 'Prettify, minify, and validate XML data.',
     icon: FileCode2,
     tags: ['xml', 'format', 'prettify', 'minify', 'validate', 'markup'],
+  },
+  {
+    id: ToolID.XML_TO_JSON,
+    name: 'XML to JSON',
+    description: 'Convert XML documents into structured JSON output.',
+    icon: FileBraces,
+    tags: ['xml', 'json', 'convert', 'transform', 'parser', 'attributes'],
   },
 ];
 

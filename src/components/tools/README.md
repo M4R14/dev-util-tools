@@ -17,6 +17,7 @@ Some tools are static or external-link based and do not need a hook.
 |---|---|---|
 | `JSONFormatter.tsx` | `useJsonFormatter` | Format, minify, and validate JSON |
 | `XMLFormatter.tsx` | `useXmlFormatter` | Format, minify, and validate XML |
+| `XMLToJson.tsx` | `useXmlToJson` | Convert XML documents to JSON |
 | `Base64Tool.tsx` | `useBase64` | Encode/decode text |
 | `CaseConverter.tsx` | `useCaseConverter` | Case transforms (`snake`, `kebab`, `camel`, `pascal`) |
 | `PasswordGenerator.tsx` | `usePasswordGenerator` | Password generation + strength meter (`src/lib/passwordStrength.ts`) |

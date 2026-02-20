@@ -48,6 +48,12 @@ The registry below groups tools by responsibility to make discovery easier for c
   - Lib: `src/lib/urlUtils.ts`
   - Doc: [.ai doc](./tools/url-parser.md)
 
+- `xml-to-json` — `/xml-to-json`
+  - Component: `src/components/tools/XMLToJson.tsx`
+  - Hook: `src/hooks/useXmlToJson.ts`
+  - Lib: `src/lib/xmlToJson.ts`
+  - Doc: [.ai doc](./tools/xml-to-json.md)
+
 ## Generators
 
 - `uuid-generator` — `/uuid-generator`

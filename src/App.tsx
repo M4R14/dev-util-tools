@@ -29,6 +29,7 @@ const TOOL_COMPONENTS: Record<ToolID, React.LazyExoticComponent<ComponentType>> 
   [ToolID.DIFF_VIEWER]: lazy(() => import('./components/tools/DiffViewer')),
   [ToolID.REGEX_TESTER]: lazy(() => import('./components/tools/RegexTester')),
   [ToolID.XML_FORMATTER]: lazy(() => import('./components/tools/XMLFormatter')),
+  [ToolID.XML_TO_JSON]: lazy(() => import('./components/tools/XMLToJson')),
 };
 
 // Lightweight loading fallback
