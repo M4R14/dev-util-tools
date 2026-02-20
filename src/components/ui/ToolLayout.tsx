@@ -1,7 +1,7 @@
 import React from 'react';
 import { cn } from '../../lib/utils';
 import { Card, CardContent, CardHeader, CardTitle } from './Card';
-import { LucideIcon } from 'lucide-react';
+import { Check, LucideIcon } from 'lucide-react';
 
 interface ToolLayoutProps {
   children: React.ReactNode;
@@ -25,7 +25,48 @@ interface ToolPanelProps {
   className?: string;
 }
 
+const toAnchorId = (value: string) =>
+  value
+    .trim()
+    .toLowerCase()
+    .replace(/[^\p{Letter}\p{Number}\s-]/gu, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+
+const getAnchorUrl = (anchorId: string) => {
+  if (typeof window === 'undefined') {
+    return `#${anchorId}`;
+  }
+
+  return `${window.location.origin}${window.location.pathname}${window.location.search}#${anchorId}`;
+};
+
+const copyAnchorLink = async (anchorId: string) => {
+  if (typeof window === 'undefined') return;
+
+  const hash = `#${anchorId}`;
+  const url = getAnchorUrl(anchorId);
+  window.history.replaceState(null, '', hash);
+
+  try {
+    await navigator.clipboard.writeText(url);
+  } catch {
+    // no-op: keep anchor update even if clipboard is unavailable
+  }
+};
+
 const ToolLayout = ({ children, className, title, description, icon: Icon }: ToolLayoutProps) => {
+  const titleId = title ? `tool-${toAnchorId(title)}` : undefined;
+  const [copiedTitle, setCopiedTitle] = React.useState(false);
+
+  const handleCopyTitleLink = async () => {
+    if (!titleId) return;
+
+    await copyAnchorLink(titleId);
+    setCopiedTitle(true);
+    window.setTimeout(() => setCopiedTitle(false), 1200);
+  };
+
   return (
     <div
       className={cn(
@@ -42,7 +83,33 @@ const ToolLayout = ({ children, className, title, description, icon: Icon }: Too
           )}
           <div className="space-y-1">
             {title && (
-              <h1 className="text-3xl font-bold tracking-tight text-foreground">{title}</h1>
+              <h1 id={titleId} className="text-3xl font-bold tracking-tight text-foreground">
+                <button
+                  type="button"
+                  onClick={handleCopyTitleLink}
+                  className="group inline-flex items-center gap-1.5 text-left"
+                  title="Copy title link"
+                >
+                  <span
+                    className={cn(
+                      'text-primary text-2xl font-semibold transition-all',
+                      copiedTitle ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
+                    )}
+                    aria-hidden="true"
+                  >
+                    #
+                  </span>
+                  <span className="transition-colors group-hover:text-primary group-hover:underline underline-offset-4">
+                    {title}
+                  </span>
+                  {copiedTitle && (
+                    <span className="inline-flex items-center gap-1 text-xs font-medium text-primary ml-1">
+                      <Check className="w-3.5 h-3.5" />
+                      Copied
+                    </span>
+                  )}
+                </button>
+              </h1>
             )}
             {description && <p className="text-muted-foreground text-lg">{description}</p>}
           </div>
@@ -54,14 +121,50 @@ const ToolLayout = ({ children, className, title, description, icon: Icon }: Too
 };
 
 const Section = ({ title, children, actions, className }: ToolSectionProps) => {
+  const sectionId = title ? `section-${toAnchorId(title)}` : undefined;
+  const [copied, setCopied] = React.useState(false);
+
+  const handleCopyLink = async () => {
+    if (!sectionId) return;
+    await copyAnchorLink(sectionId);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1200);
+  };
+
   return (
     <div className={cn('space-y-4', className)}>
       {(title || actions) && (
         <div className="flex items-center justify-between px-1">
           {title && (
-            <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
-              {title}
-            </h3>
+            <div className="flex items-center gap-2">
+              <h3 id={sectionId} className="text-sm font-semibold uppercase tracking-wider">
+                <button
+                  type="button"
+                  onClick={handleCopyLink}
+                  className="group inline-flex items-center gap-1 rounded-md px-1.5 py-1 text-sm font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  title="Copy section link"
+                >
+                  <span
+                    className={cn(
+                      'text-primary text-base font-semibold transition-all',
+                      copied ? 'opacity-100' : 'opacity-0 group-hover:opacity-100',
+                    )}
+                    aria-hidden="true"
+                  >
+                    #
+                  </span>
+                  <span className="transition-colors group-hover:text-primary group-hover:underline underline-offset-4">
+                    {title}
+                  </span>
+                </button>
+              </h3>
+              {copied && (
+                <span className="inline-flex items-center gap-1 text-[11px] font-medium text-primary">
+                  <Check className="w-3.5 h-3.5" />
+                  Copied
+                </span>
+              )}
+            </div>
           )}
           {actions && <div className="flex items-center gap-2">{actions}</div>}
         </div>

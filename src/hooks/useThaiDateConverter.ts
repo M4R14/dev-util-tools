@@ -20,12 +20,30 @@ export const useThaiDateConverter = () => {
     return list.map((label, index) => ({ label, value: index }));
   }, [pickerMonthFormat]);
 
+  const hasAnyPickerValue = Boolean(pickerDay || pickerMonth !== '' || pickerYear);
+  const hasCompletePickerValue = Boolean(pickerDay && pickerMonth !== '' && pickerYear);
+
+  const pickerInput = useMemo(() => {
+    if (!hasCompletePickerValue) {
+      return '';
+    }
+
+    const monthIndex = Number(pickerMonth);
+    const monthLabelFromIndex = monthOptions.find((month) => month.value === monthIndex)?.label;
+    const monthLabelFromValue = monthOptions.find((month) => month.label === pickerMonth)?.label;
+    const resolvedMonthLabel = monthLabelFromIndex ?? monthLabelFromValue ?? pickerMonth;
+
+    return `${pickerDay} ${resolvedMonthLabel} ${pickerYear}`;
+  }, [hasCompletePickerValue, monthOptions, pickerDay, pickerMonth, pickerYear]);
+
   // Sync picker fields → parseInput
   useEffect(() => {
-    if (pickerDay && pickerMonth !== '' && pickerYear) {
-      setParseInput(`${pickerDay} ${pickerMonth} ${pickerYear}`);
+    if (!hasAnyPickerValue) {
+      return;
     }
-  }, [pickerDay, pickerMonth, pickerYear]);
+
+    setParseInput(pickerInput);
+  }, [hasAnyPickerValue, pickerInput]);
 
   // Derived state for formatted dates (from `date`)
   const formats = useMemo(() => {

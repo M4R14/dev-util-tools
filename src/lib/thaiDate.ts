@@ -47,6 +47,16 @@ export const THAI_DAYS = [
   'เสาร์',
 ] as const;
 
+export const THAI_SHORT_DAYS = [
+  'อา.',
+  'จ.',
+  'อ.',
+  'พ.',
+  'พฤ.',
+  'ศ.',
+  'ส.',
+] as const;
+
 const THAI_DIGITS = ['๐', '๑', '๒', '๓', '๔', '๕', '๖', '๗', '๘', '๙'] as const;
 
 
