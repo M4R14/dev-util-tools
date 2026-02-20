@@ -17,6 +17,7 @@ import {
   SkipToMainContentLink,
   useCommandPaletteActions,
   useCommandPaletteHotkey,
+  useMainLayoutRouteEffects,
   useMainLayoutState,
 } from './main-layout';
 
@@ -31,17 +32,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const mainContentRef = useRef<HTMLElement>(null);
   const { favorites, toggleFavorite } = useUserPreferences();
   const { searchTerm, setSearchTerm } = useSearch();
-  const {
-    isSidebarOpen,
-    isCommandPaletteOpen,
-    closeSidebar,
-    toggleSidebar,
-    openCommandPalette,
-    closeCommandPalette,
-    toggleCommandPalette,
-  } = useMainLayoutState();
+  const { sidebar, commandPalette } = useMainLayoutState();
   const commandActions = useCommandPaletteActions();
-  useCommandPaletteHotkey(toggleCommandPalette);
+  useCommandPaletteHotkey(commandPalette.toggle);
 
   const pageMeta = useMemo(() => resolveMainLayoutPageMeta(location.pathname), [location.pathname]);
   const activeTool = pageMeta.activeTool;
@@ -56,18 +49,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
     document.title = getMainLayoutDocumentTitle(pageMeta);
   }, [pageMeta]);
 
-  useEffect(() => {
-    closeSidebar();
-
-    const mainElement = mainContentRef.current;
-    if (!mainElement) return;
-
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    mainElement.scrollTo({
-      top: 0,
-      behavior: reduceMotion ? 'auto' : 'smooth',
-    });
-  }, [closeSidebar, pageMeta.normalizedPathname]);
+  useMainLayoutRouteEffects({
+    pathname: pageMeta.normalizedPathname,
+    mainContentRef,
+    closeSidebar: sidebar.close,
+  });
 
   return (
     <div className="relative flex h-screen overflow-hidden bg-background text-foreground transition-colors duration-200">
@@ -75,17 +61,17 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <SkipToMainContentLink targetId={MAIN_CONTENT_ID} />
 
       <CommandPalette
-        isOpen={isCommandPaletteOpen}
-        onClose={closeCommandPalette}
+        isOpen={commandPalette.isOpen}
+        onClose={commandPalette.close}
         actions={commandActions}
       />
 
-      <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+      <Sidebar isOpen={sidebar.isOpen} onClose={sidebar.close} />
 
       <div className="flex-1 flex flex-col min-w-0 bg-background/80 backdrop-blur-sm transition-colors">
         <Header
           title={pageMeta.pageTitle}
-          onToggleSidebar={toggleSidebar}
+          onToggleSidebar={sidebar.toggle}
           searchTerm={searchTerm}
           onSearch={setSearchTerm}
           isFavorite={activeTool ? favorites.includes(activeTool.id) : false}
@@ -106,9 +92,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         <MainFooter />
       </div>
 
-      {!isCommandPaletteOpen && (
-        <MobileCommandPaletteButton onOpen={openCommandPalette} />
-      )}
+      {!commandPalette.isOpen && <MobileCommandPaletteButton onOpen={commandPalette.open} />}
     </div>
   );
 };

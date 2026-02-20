@@ -29,13 +29,17 @@ export const useMainLayoutState = () => {
   }, []);
 
   return {
-    isSidebarOpen,
-    isCommandPaletteOpen,
-    openSidebar,
-    closeSidebar,
-    toggleSidebar,
-    openCommandPalette,
-    closeCommandPalette,
-    toggleCommandPalette,
+    sidebar: {
+      isOpen: isSidebarOpen,
+      open: openSidebar,
+      close: closeSidebar,
+      toggle: toggleSidebar,
+    },
+    commandPalette: {
+      isOpen: isCommandPaletteOpen,
+      open: openCommandPalette,
+      close: closeCommandPalette,
+      toggle: toggleCommandPalette,
+    },
   };
 };

@@ -17,6 +17,7 @@ src/
 │   │   ├── meta.ts
 │   │   ├── useCommandPaletteActions.ts
 │   │   ├── useCommandPaletteHotkey.ts
+│   │   ├── useMainLayoutRouteEffects.ts
 │   │   ├── useMainLayoutState.ts
 │   │   ├── MainFooter.tsx
 │   │   ├── MobileCommandPaletteButton.tsx

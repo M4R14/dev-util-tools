@@ -10,4 +10,5 @@ export {
 } from './meta';
 export { useCommandPaletteActions } from './useCommandPaletteActions';
 export { useCommandPaletteHotkey } from './useCommandPaletteHotkey';
+export { useMainLayoutRouteEffects } from './useMainLayoutRouteEffects';
 export { useMainLayoutState } from './useMainLayoutState';

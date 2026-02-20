@@ -25,6 +25,17 @@ interface SidebarSectionProps {
   className?: string;
 }
 
+type SidebarSectionKey = 'search' | 'favorites' | 'recent' | 'apps' | 'external';
+
+interface ToolSectionConfig {
+  key: SidebarSectionKey;
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  tools: ToolMetadata[];
+  contextPrefix: string;
+  className?: string;
+}
+
 const SidebarSection: React.FC<SidebarSectionProps> = ({
   title,
   count,
@@ -45,6 +56,28 @@ const SidebarSection: React.FC<SidebarSectionProps> = ({
     <div className="space-y-0.5">{children}</div>
   </section>
 );
+
+const getSectionBaseOffsets = ({
+  favoriteCount,
+  recentCount,
+  internalCount,
+}: {
+  favoriteCount: number;
+  recentCount: number;
+  internalCount: number;
+}) => ({
+  search: 0,
+  favorites: 0,
+  recent: favoriteCount,
+  apps: favoriteCount + recentCount,
+  external: favoriteCount + recentCount + internalCount,
+});
+
+const getToolIndexOffset = (
+  baseOffsets: ReturnType<typeof getSectionBaseOffsets>,
+  sectionKey: SidebarSectionKey,
+  itemIndex: number,
+) => baseOffsets[sectionKey] + itemIndex;
 
 const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
   searchTerm,
@@ -72,63 +105,102 @@ const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
   );
 
   const hasSearchTerm = searchTerm.trim().length > 0;
+  const baseOffsets = React.useMemo(
+    () =>
+      getSectionBaseOffsets({
+        favoriteCount: favoriteTools.length,
+        recentCount: recentTools.length,
+        internalCount: internalTools.length,
+      }),
+    [favoriteTools.length, internalTools.length, recentTools.length],
+  );
+
+  const sections = React.useMemo<ToolSectionConfig[]>(() => {
+    if (hasSearchTerm) {
+      return [
+        {
+          key: 'search',
+          title: 'Results',
+          icon: SearchX,
+          tools: filteredTools,
+          contextPrefix: 'search',
+          className: 'pt-1',
+        },
+      ];
+    }
+
+    const staticSections: ToolSectionConfig[] = [];
+
+    if (favoriteTools.length > 0) {
+      staticSections.push({
+        key: 'favorites',
+        title: 'Favorites',
+        icon: Star,
+        tools: favoriteTools,
+        contextPrefix: 'fav',
+        className: 'pt-1',
+      });
+    }
+
+    if (recentTools.length > 0) {
+      staticSections.push({
+        key: 'recent',
+        title: 'Recent',
+        icon: Clock3,
+        tools: recentTools,
+        contextPrefix: 'rec',
+      });
+    }
+
+    staticSections.push({
+      key: 'apps',
+      title: 'Apps',
+      icon: LayoutDashboard,
+      tools: internalTools,
+      contextPrefix: 'all',
+      className: 'pt-2 border-t border-border/60',
+    });
+
+    if (externalTools.length > 0) {
+      staticSections.push({
+        key: 'external',
+        title: 'External',
+        icon: ExternalLink,
+        tools: externalTools,
+        contextPrefix: 'ext',
+        className: 'pt-2 border-t border-border/60',
+      });
+    }
+
+    return staticSections;
+  }, [externalTools, favoriteTools, filteredTools, hasSearchTerm, internalTools, recentTools]);
 
   return (
     <nav className="flex-1 px-2 pb-2 space-y-3 overflow-y-auto scrollbar-thin hover:scrollbar-thumb-muted-foreground/20 scrollbar-thumb-transparent transition-colors">
-      {hasSearchTerm ? (
-        <SidebarSection title="Results" count={filteredTools.length} icon={SearchX} className="pt-1">
-          {filteredTools.length > 0 ? (
-            filteredTools.map((tool, i) => renderToolLink(tool, 'search', i))
-          ) : (
+      {sections.map((section) => (
+        <SidebarSection
+          key={section.key}
+          title={section.title}
+          count={section.tools.length}
+          icon={section.icon}
+          className={section.className}
+        >
+          {section.tools.length > 0 ? (
+            section.tools.map((tool, i) =>
+              renderToolLink(
+                tool,
+                section.contextPrefix,
+                getToolIndexOffset(baseOffsets, section.key, i),
+              ),
+            )
+          ) : section.key === 'search' ? (
             <div className="px-3 py-8 text-center border border-dashed border-border/70 rounded-md bg-muted/20">
               <p className="text-xs font-medium text-foreground">No tools found</p>
               <p className="mt-1 text-[11px] text-muted-foreground">Try a different keyword</p>
             </div>
-          )}
+          ) : null}
         </SidebarSection>
-      ) : (
-        <>
-          {favoriteTools.length > 0 && (
-            <SidebarSection title="Favorites" count={favoriteTools.length} icon={Star} className="pt-1">
-              {favoriteTools.map((tool, i) => renderToolLink(tool, 'fav', i))}
-            </SidebarSection>
-          )}
-
-          {recentTools.length > 0 && (
-            <SidebarSection title="Recent" count={recentTools.length} icon={Clock3}>
-              {recentTools.map((tool, i) => renderToolLink(tool, 'rec', i + favoriteTools.length))}
-            </SidebarSection>
-          )}
-
-          <SidebarSection
-            title="Apps"
-            count={internalTools.length}
-            icon={LayoutDashboard}
-            className="pt-2 border-t border-border/60"
-          >
-            {internalTools.map((tool, i) =>
-              renderToolLink(tool, 'all', i + favoriteTools.length + recentTools.length),
-            )}
-          </SidebarSection>
-
-          {externalTools.length > 0 && (
-            <SidebarSection
-              title="External"
-              count={externalTools.length}
-              icon={ExternalLink}
-              className="pt-2 border-t border-border/60"
-            >
-              {externalTools.map((tool, i) =>
-                renderToolLink(
-                  tool,
-                  'ext',
-                  i + favoriteTools.length + recentTools.length + internalTools.length,
-                ),
-              )}
-            </SidebarSection>
-          )}
-        </>
-      )}
+      ))}
     </nav>
   );
 };
