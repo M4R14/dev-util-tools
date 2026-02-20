@@ -57,6 +57,15 @@ export const normalizeQueryInput = (
     target = '/ai-bridge/catalog';
   } else if (raw === '/spec' || raw === 'spec') {
     target = '/ai-bridge/spec';
+  } else if (raw === '/catalog.json' || raw === 'catalog.json') {
+    target = '/ai-bridge/catalog.json';
+  } else if (raw === '/spec.json' || raw === 'spec.json') {
+    target = '/ai-bridge/spec.json';
+  }
+
+  const aiBridgeIndex = target.indexOf('/ai-bridge');
+  if (aiBridgeIndex > 0) {
+    target = target.slice(aiBridgeIndex);
   }
 
   if (!target.startsWith('/ai-bridge')) {

@@ -24,7 +24,9 @@ export const QUERY_EXAMPLE_SNIPPET = `/ai-bridge?tool=json-formatter&op=format&i
 /ai-bridge?tool=case-converter&op=convert&input=hello%20world&options={"target":"snake"}
 /ai-bridge?payload={"tool":"diff-viewer","operation":"compare","input":{"original":"a","modified":"b"}}
 /ai-bridge?tool=url-parser&op=parse&input=example.com&mode=result-only
-/ai-bridge?tool=json-formatter&op=format&input={"a":1}&includeCatalog=false`;
+/ai-bridge?tool=json-formatter&op=format&input={"a":1}&includeCatalog=false
+/ai-bridge/catalog.json
+/ai-bridge/spec.json`;
 
 export const QUERY_TEMPLATES = [
   {
@@ -43,6 +45,14 @@ export const QUERY_TEMPLATES = [
     label: 'Diff Compare',
     value:
       '/ai-bridge?payload={"tool":"diff-viewer","operation":"compare","input":{"original":"a","modified":"b"}}',
+  },
+  {
+    label: 'Catalog JSON',
+    value: '/ai-bridge/catalog.json',
+  },
+  {
+    label: 'Spec JSON',
+    value: '/ai-bridge/spec.json',
   },
 ] as const;
 

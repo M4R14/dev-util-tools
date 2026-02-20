@@ -50,6 +50,8 @@ export const AI_TOOL_CATALOG: AIToolCatalogItem[] = [
   { id: 'thai-date-converter', operations: ['format', 'parse'] },
 ];
 
+const SUPPORTED_CASE_TARGETS = ['snake', 'kebab', 'camel', 'pascal'] as const;
+
 export const AI_TOOL_OPERATIONS: Record<AIToolId, readonly string[]> = AI_TOOL_CATALOG.reduce(
   (acc, item) => {
     acc[item.id] = item.operations;
@@ -152,6 +154,8 @@ const assertSupportedOperation = (tool: AIToolId, operation: string) => {
   }
 };
 
+const getSupportedTools = (): AIToolId[] => AI_TOOL_CATALOG.map((item) => item.id);
+
 const encodeUnicodeToBase64 = (value: string): string => {
   const escaped = encodeURIComponent(value).replace(/%([0-9A-F]{2})/g, (_, p1: string) =>
     String.fromCharCode(parseInt(p1, 16)),
@@ -251,10 +255,15 @@ const runCaseConverter = (operation: string, input: unknown, options?: Record<st
   if (target === 'kebab') return toKebabCase(raw);
   if (target === 'camel') return toCamelCase(raw);
   if (target === 'pascal') return toPascalCase(raw);
-  throw new BridgeValidationError('Invalid options.target for case-converter.', {
-    code: 'INVALID_OPTION',
-    suggestion: 'Use options.target = "snake" | "kebab" | "camel" | "pascal"',
-  });
+  throw new BridgeValidationError(
+    `Invalid options.target "${String(
+      target,
+    )}" for case-converter. Supported targets: ${SUPPORTED_CASE_TARGETS.join(', ')}.`,
+    {
+      code: 'INVALID_OPTION',
+      suggestion: 'Use options.target = "snake" | "kebab" | "camel" | "pascal"',
+    },
+  );
 };
 
 const runUrlParser = (operation: string, input: unknown) => {
@@ -318,10 +327,14 @@ export const runAITool = (request: AIToolRequest): AIToolResponse => {
   const { tool, operation, input = '', options } = request;
   try {
     if (!AI_TOOL_CATALOG.some((item) => item.id === tool)) {
-      throw new BridgeValidationError(`Unsupported tool "${tool}".`, {
+      const supportedTools = getSupportedTools();
+      throw new BridgeValidationError(
+        `Unsupported tool "${tool}". Supported tools: ${supportedTools.join(', ')}.`,
+        {
         code: 'UNSUPPORTED_TOOL',
-        supportedTools: AI_TOOL_CATALOG.map((item) => item.id),
-      });
+        supportedTools,
+      },
+      );
     }
 
     let result: unknown;
@@ -348,9 +361,9 @@ export const runAITool = (request: AIToolRequest): AIToolResponse => {
         result = runThaiDateConverter(operation, input);
         break;
       default:
-        throw new BridgeValidationError(`Unsupported tool "${tool}".`, {
+        throw new BridgeValidationError(`Unsupported tool "${tool}". Supported tools: ${getSupportedTools().join(', ')}.`, {
           code: 'UNSUPPORTED_TOOL',
-          supportedTools: AI_TOOL_CATALOG.map((item) => item.id),
+          supportedTools: getSupportedTools(),
         });
     }
 

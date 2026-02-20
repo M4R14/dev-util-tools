@@ -89,6 +89,7 @@ The registry below groups tools by responsibility to make discovery easier for c
   - Component: `src/components/AIAgentBridge.tsx`
   - Runner lib: `src/lib/aiToolBridge.ts`
   - Extra endpoints: `/ai-bridge/catalog`, `/ai-bridge/spec`
+  - Static JSON endpoints: `/ai-bridge/catalog.json`, `/ai-bridge/spec.json`
   - Purpose: machine-readable, deterministic tool execution for browser-controlled AI agents
   - Doc: [.ai doc](./tools/ai-bridge.md)
 

@@ -53,6 +53,7 @@ const AIAgentBridge: React.FC = () => {
   const isCatalogEndpoint = location.pathname.endsWith('/catalog');
   const isSpecEndpoint = location.pathname.endsWith('/spec');
   const isExecuteEndpoint = location.pathname === '/ai-bridge';
+  const isResultOnlyExecute = isExecuteEndpoint && mode === 'result-only';
 
   useEffect(() => {
     window.DevPulseAI = {
@@ -131,6 +132,10 @@ const AIAgentBridge: React.FC = () => {
     if (!target) return;
 
     setQueryError(null);
+    if (target.endsWith('.json')) {
+      window.location.assign(target);
+      return;
+    }
     navigate(target);
   };
 
@@ -150,6 +155,21 @@ const AIAgentBridge: React.FC = () => {
     const next = nextParams.toString();
     navigate(next ? `/ai-bridge?${next}` : '/ai-bridge');
   };
+
+  if (isResultOnlyExecute) {
+    return (
+      <ToolLayout title="AI Agent Bridge">
+        <div className="max-w-5xl mx-auto">
+          <pre
+            id="ai-bridge-output"
+            className="rounded-md border border-border/80 bg-background/70 p-4 text-xs overflow-auto whitespace-pre-wrap break-words"
+          >
+            {responseText}
+          </pre>
+        </div>
+      </ToolLayout>
+    );
+  }
 
   return (
     <ToolLayout title="AI Agent Bridge">

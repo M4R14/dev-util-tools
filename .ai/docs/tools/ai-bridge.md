@@ -14,6 +14,8 @@ Additional machine endpoints:
 - `/ai-bridge` executes tool requests and returns result/error payload
 - `/ai-bridge/catalog` returns available tools + operations (discovery only)
 - `/ai-bridge/spec` returns JSON schema for request/response (contract validation)
+- `/ai-bridge/catalog.json` returns static discovery JSON (curl-friendly)
+- `/ai-bridge/spec.json` returns static schema JSON (curl-friendly)
 
 ## Files
 
@@ -27,14 +29,24 @@ Additional machine endpoints:
 - `src/data/aiBridge.ts`
 - `src/lib/aiBridgeQuery.ts`
 - `src/lib/aiToolBridge.ts`
+- `vite.config.ts` (build plugin emits static `catalog.json` / `spec.json`)
 
 ## How to Use
 
 1. Open `/ai-bridge` once to initialize browser API `window.DevPulseAI`.
 2. Discover capabilities with `window.DevPulseAI.catalog()`.
 3. Execute tool operations with `window.DevPulseAI.run(request)`.
-4. Or pass query parameters to `/ai-bridge` for one-shot execution and read JSON response from `#ai-bridge-response`.
+4. Or pass query parameters to `/ai-bridge` for one-shot execution and read JSON from the response panel (or `#ai-bridge-output` in `mode=result-only`).
 5. Use `/ai-bridge/catalog` and `/ai-bridge/spec` when you need discovery/schema only.
+6. Use `/ai-bridge/catalog.json` and `/ai-bridge/spec.json` for static-hosting machine fetch (e.g. `curl`).
+
+## Hosting Notes
+
+- On static hosting (e.g. GitHub Pages), `curl` to SPA routes like `/ai-bridge` returns HTML.
+- Use static JSON endpoints for machine-fetch:
+  - `/ai-bridge/catalog.json`
+  - `/ai-bridge/spec.json`
+- Dynamic tool execution over pure HTTP requires optional backend/serverless runtime.
 
 ## `window.DevPulseAI` API
 
@@ -103,6 +115,8 @@ window.DevPulseAI.run({
 /ai-bridge?payload={"tool":"diff-viewer","operation":"compare","input":{"original":"a","modified":"b"}}
 /ai-bridge?tool=json-formatter&op=format&input={"a":1}&includeCatalog=false
 /ai-bridge?tool=url-parser&op=parse&input=example.com&mode=result-only
+/ai-bridge/catalog.json
+/ai-bridge/spec.json
 /ai-bridge/catalog
 /ai-bridge/spec
 ```
@@ -111,5 +125,6 @@ window.DevPulseAI.run({
 
 - Encode JSON query values (`input`, `options`, `payload`) when building URLs programmatically.
 - Responses are deterministic JSON with `{ ok, tool, operation, result?, error? }`.
+- For `mode=result-only`, rendered output is exposed at `<pre id="ai-bridge-output">...</pre>`.
 - This bridge is client-side and intended for browser-controlled agents.
 - Error responses include `errorDetails` with `code`, plus supported values/suggestions when possible.

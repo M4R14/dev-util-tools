@@ -1,8 +1,48 @@
 import path from 'path';
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
+import { AI_BRIDGE_SCHEMA, AI_TOOL_CATALOG, AI_TOOL_OPERATIONS } from './src/lib/aiToolBridge';
 
 /// <reference types="vitest" />
+
+const aiBridgeStaticJsonPlugin = (): Plugin => {
+  return {
+    name: 'ai-bridge-static-json',
+    apply: 'build',
+    generateBundle() {
+      const catalogPayload = JSON.stringify(
+        {
+          endpoint: '/ai-bridge/catalog',
+          catalog: AI_TOOL_CATALOG,
+          operations: AI_TOOL_OPERATIONS,
+        },
+        null,
+        2,
+      );
+
+      const specPayload = JSON.stringify(
+        {
+          endpoint: '/ai-bridge/spec',
+          schema: AI_BRIDGE_SCHEMA,
+        },
+        null,
+        2,
+      );
+
+      this.emitFile({
+        type: 'asset',
+        fileName: 'ai-bridge/catalog.json',
+        source: `${catalogPayload}\n`,
+      });
+      this.emitFile({
+        type: 'asset',
+        fileName: 'ai-bridge/spec.json',
+        source: `${specPayload}\n`,
+      });
+    },
+  };
+};
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
   const base = process.env.GITHUB_ACTIONS ? '/dev-util-tools/' : '/';
@@ -12,7 +52,7 @@ export default defineConfig(({ mode }) => {
       port: 3000,
       host: '0.0.0.0',
     },
-    plugins: [react()],
+    plugins: [react(), aiBridgeStaticJsonPlugin()],
     test: {
       globals: true,
       environment: 'jsdom',

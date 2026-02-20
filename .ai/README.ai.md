@@ -70,6 +70,8 @@ Pre-edit checklist to avoid doc-reading misses and wrong file placement.
 - Browser endpoint: `/ai-bridge`
 - Catalog endpoint: `/ai-bridge/catalog`
 - Schema endpoint: `/ai-bridge/spec`
+- Static catalog JSON: `/ai-bridge/catalog.json`
+- Static schema JSON: `/ai-bridge/spec.json`
 - Main page component: `src/components/AIAgentBridge.tsx`
 - Runner: `src/lib/aiToolBridge.ts`
 - Browser API: `window.DevPulseAI.catalog()` and `window.DevPulseAI.run(request)`
@@ -93,6 +95,14 @@ Pre-edit checklist to avoid doc-reading misses and wrong file placement.
 - `/ai-bridge/spec`
   - Use for machine validation using JSON Schema of request/response.
   - Example: `/ai-bridge/spec`
+- `/ai-bridge/catalog.json`
+  - Use for curl/static discovery on static hosting.
+  - Example: `/ai-bridge/catalog.json`
+- `/ai-bridge/spec.json`
+  - Use for curl/static schema retrieval on static hosting.
+  - Example: `/ai-bridge/spec.json`
+
+Note: on static hosting, `curl` to SPA routes (e.g. `/ai-bridge`) returns HTML, not executed JSON.
 
 #### Query mode examples
 ```text
@@ -101,6 +111,8 @@ Pre-edit checklist to avoid doc-reading misses and wrong file placement.
 /ai-bridge?payload={"tool":"diff-viewer","operation":"compare","input":{"original":"a","modified":"b"}}
 /ai-bridge?tool=url-parser&op=parse&input=example.com&mode=result-only
 /ai-bridge?tool=json-formatter&op=format&input={"a":1}&includeCatalog=false
+/ai-bridge/catalog.json
+/ai-bridge/spec.json
 /ai-bridge/catalog
 /ai-bridge/spec
 ```

@@ -37,7 +37,7 @@ const RunQueryCard: React.FC<RunQueryCardProps> = ({
         </CardTitle>
         <CardDescription className="text-xs">
           รองรับทั้งแบบเต็ม <code>/ai-bridge?tool=...</code>, แบบ query ล้วน <code>tool=...</code>,
-          หรือ shortcut <code>catalog/spec</code>
+          shortcut <code>catalog/spec</code>, และ static JSON <code>catalog.json/spec.json</code>
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-0 space-y-3">
