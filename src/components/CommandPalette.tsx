@@ -1,14 +1,29 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Search, Command, X, ArrowRight } from 'lucide-react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Search, Command, X, ArrowRight, type LucideIcon } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToolSearch } from '../hooks/useToolSearch';
+import type { ToolMetadata } from '../types';
+
+export interface CommandPaletteAction {
+  id: string;
+  name: string;
+  description: string;
+  icon: LucideIcon;
+  keywords?: string[];
+  onSelect: () => void | Promise<void>;
+}
 
 interface CommandPaletteProps {
   isOpen: boolean;
   onClose: () => void;
+  actions?: CommandPaletteAction[];
 }
 
-const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
+type CommandPaletteItem =
+  | { type: 'action'; id: string; action: CommandPaletteAction }
+  | { type: 'tool'; id: string; tool: ToolMetadata };
+
+const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, actions = [] }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -16,6 +31,32 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
 
   const filteredTools = useToolSearch(searchTerm);
+  const filteredActions = useMemo(() => {
+    const normalized = searchTerm.trim().toLowerCase();
+    if (!normalized) return actions;
+
+    return actions.filter((action) => {
+      const haystack = [action.name, action.description, ...(action.keywords ?? [])]
+        .join(' ')
+        .toLowerCase();
+      return haystack.includes(normalized);
+    });
+  }, [actions, searchTerm]);
+  const items = useMemo<CommandPaletteItem[]>(
+    () => [
+      ...filteredActions.map((action) => ({
+        type: 'action' as const,
+        id: `action-${action.id}`,
+        action,
+      })),
+      ...filteredTools.map((tool) => ({
+        type: 'tool' as const,
+        id: `tool-${tool.id}`,
+        tool,
+      })),
+    ],
+    [filteredActions, filteredTools],
+  );
 
   useEffect(() => {
     if (isOpen) {
@@ -31,25 +72,42 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
   }, [searchTerm]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (items.length === 0) {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+      return;
+    }
+
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      setSelectedIndex((prev) => (prev + 1) % filteredTools.length);
+      setSelectedIndex((prev) => (prev + 1) % items.length);
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      setSelectedIndex((prev) => (prev - 1 + filteredTools.length) % filteredTools.length);
+      setSelectedIndex((prev) => (prev - 1 + items.length) % items.length);
     } else if (e.key === 'Enter') {
       e.preventDefault();
-      if (filteredTools[selectedIndex]) {
-        handleSelect(filteredTools[selectedIndex].id);
+      if (items[selectedIndex]) {
+        void handleSelect(items[selectedIndex]);
       }
     } else if (e.key === 'Escape') {
       onClose();
     }
   };
 
-  const handleSelect = (toolId: string) => {
-    navigate(`/${toolId}`);
+  const handleSelect = async (item: CommandPaletteItem) => {
+    if (item.type === 'tool') {
+      navigate(`/${item.tool.id}`);
+      onClose();
+      return;
+    }
+
     onClose();
+    try {
+      await item.action.onSelect();
+    } catch {
+      // no-op: action handlers are expected to surface user-facing errors
+    }
   };
 
   // Ensure selected item is scrolled into view
@@ -60,7 +118,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
         behavior: 'smooth',
       });
     }
-  }, [selectedIndex]);
+  }, [selectedIndex, items.length]);
 
   if (!isOpen) return null;
 
@@ -95,11 +153,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
             role="combobox"
             aria-expanded="true"
             aria-controls="command-palette-list"
-            aria-activedescendant={
-              filteredTools[selectedIndex]
-                ? `command-item-${filteredTools[selectedIndex].id}`
-                : undefined
-            }
+            aria-activedescendant={items[selectedIndex] ? `command-item-${items[selectedIndex].id}` : undefined}
           />
           <div className="flex items-center gap-2">
             <kbd className="hidden md:inline-flex h-6 px-2 items-center bg-muted border border-border rounded text-xs text-muted-foreground font-mono">
@@ -117,7 +171,7 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
 
         {/* Results */}
         <div className="max-h-[60vh] overflow-y-auto">
-          {filteredTools.length > 0 ? (
+          {items.length > 0 ? (
             <ul
               ref={listRef}
               className="p-2 space-y-1"
@@ -125,40 +179,48 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
               id="command-palette-list"
               aria-label="Available commands"
             >
-              {filteredTools.map((tool, index) => (
-                <li
-                  key={tool.id}
-                  role="option"
-                  id={`command-item-${tool.id}`}
-                  aria-selected={index === selectedIndex}
-                >
-                  <button
-                    onClick={() => handleSelect(tool.id)}
-                    onMouseEnter={() => setSelectedIndex(index)}
-                    tabIndex={-1}
-                    className={`w-full flex items-center gap-4 px-4 py-3 rounded-lg text-left transition-all ${
-                      index === selectedIndex
-                        ? 'bg-primary/20 text-primary border border-primary/30'
-                        : 'text-muted-foreground hover:bg-muted/50 border border-transparent'
-                    }`}
+              {items.map((item, index) => {
+                const isAction = item.type === 'action';
+                const itemId = item.id;
+                const title = isAction ? item.action.name : item.tool.name;
+                const description = isAction ? item.action.description : item.tool.description;
+                const Icon = isAction ? item.action.icon : item.tool.icon;
+
+                return (
+                  <li
+                    key={itemId}
+                    role="option"
+                    id={`command-item-${itemId}`}
+                    aria-selected={index === selectedIndex}
                   >
-                    <div
-                      className={`p-2 rounded-lg ${index === selectedIndex ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground'}`}
+                    <button
+                      onClick={() => void handleSelect(item)}
+                      onMouseEnter={() => setSelectedIndex(index)}
+                      tabIndex={-1}
+                      className={`w-full flex items-center gap-4 px-4 py-3 rounded-lg text-left transition-all ${
+                        index === selectedIndex
+                          ? 'bg-primary/20 text-primary border border-primary/30'
+                          : 'text-muted-foreground hover:bg-muted/50 border border-transparent'
+                      }`}
                     >
-                      <tool.icon className="w-5 h-5" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="font-medium text-foreground truncate flex items-center justify-between">
-                        {tool.name}
-                        {index === selectedIndex && <ArrowRight className="w-4 h-4 opacity-50" />}
+                      <div
+                        className={`p-2 rounded-lg ${index === selectedIndex ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground'}`}
+                      >
+                        <Icon className="w-5 h-5" />
                       </div>
-                      <div className="text-xs text-muted-foreground truncate">
-                        {tool.description}
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-foreground truncate flex items-center justify-between">
+                          {title}
+                          {index === selectedIndex && <ArrowRight className="w-4 h-4 opacity-50" />}
+                        </div>
+                        <div className="text-xs text-muted-foreground truncate">
+                          {description}
+                        </div>
                       </div>
-                    </div>
-                  </button>
-                </li>
-              ))}
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           ) : (
             <div className="py-12 px-4 text-center text-muted-foreground">

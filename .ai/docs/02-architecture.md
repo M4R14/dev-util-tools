@@ -6,6 +6,7 @@ App.tsx                          ← ThemeProvider > UserPreferencesProvider > S
        └─ <Route /:toolId>      ← Lazy-loaded tool component (code-split per tool)
        └─ <Route />             ← Dashboard (landing page)
        └─ <Route /blog>         ← Blog updates page (content from markdown files)
+       └─ <Route /settings>     ← App settings page (offline/PWA controls)
        └─ <Route /ai-bridge*>   ← Machine-readable AI bridge pages (`/`, `/catalog`, `/spec`)
 ```
 

@@ -20,6 +20,7 @@ Create secure, random passwords with customizable options, visibility controls, 
 - Options: Length slider (+ presets), uppercase, lowercase, numbers, symbols
 - Output: Generated password with show/hide toggle and security summary (strength, pool size, entropy)
 - Actions: Generate/Regenerate, Copy, toggle character sets
+- Shareability: Generator options sync with URL query (`?len=&u=&l=&n=&s=`) for consistent setup sharing
 
 ## UI
 - Uses `ToolLayout`, `Button`, `CopyButton`, `Slider`, `Switch`
@@ -28,6 +29,7 @@ Create secure, random passwords with customizable options, visibility controls, 
 
 ## Related
 
+- [Shareable URL State Features](../features/shareable-url-state-features.md) — Query key coverage and share behavior
 - [UI Building Blocks](../09-ui-building-blocks.md) — Component API and layout patterns
 - [Tool Registry](../04-tool-registry.md) — Tool metadata & routing
 - [Directory Map](../03-directory-map.md) — File locations

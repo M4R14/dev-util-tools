@@ -20,6 +20,7 @@ Convert XML documents into structured JSON with optional attribute preservation 
 - Input: Paste XML text
 - Output: JSON preview (syntax highlighted by `highlight.js`)
 - Actions: Convert, Copy, Clear, Include/Exclude attributes
+- Share: URL sync via query keys `input` and `attrs`
 
 ## UI
 - Uses `ToolLayout`, `Textarea`, `Switch`, `CopyButton`, `CodeHighlight`, `Button`
@@ -27,6 +28,7 @@ Convert XML documents into structured JSON with optional attribute preservation 
 
 ## Related
 
+- [Shareable URL State Features](../features/shareable-url-state-features.md) — Query key coverage and URL sync behavior
 - [UI Building Blocks](../09-ui-building-blocks.md) — Component API and layout patterns
 - [Tool Registry](../04-tool-registry.md) — Tool metadata & routing
 - [Directory Map](../03-directory-map.md) — File locations

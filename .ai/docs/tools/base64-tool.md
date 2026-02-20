@@ -19,12 +19,14 @@ Encode and decode strings/files to Base64. Supports text and file input, with in
 - Input: Textarea or file upload
 - Output: Encoded/decoded Base64 string
 - Actions: Encode, Decode, Copy, Clear
+- Share: URL sync via query keys `text` and `b64`
 
 ## UI
 - Uses `ToolLayout`, `Textarea`, `CopyButton`, `Input`, `Button`
 
 ## Related
 
+- [Shareable URL State Features](../features/shareable-url-state-features.md) — Query key coverage and URL sync behavior
 - [UI Building Blocks](../09-ui-building-blocks.md) — Component API and layout patterns
 - [Tool Registry](../04-tool-registry.md) — Tool metadata & routing
 - [Directory Map](../03-directory-map.md) — File locations

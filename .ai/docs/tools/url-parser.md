@@ -24,6 +24,7 @@ Parse, encode, and decode URLs with live validation, canonical preview, and inte
 - Input: URL string
 - Output: Canonical URL preview, parsed components, editable query params
 - Actions: Encode, Decode, Copy, Clear, Add param, Remove param
+- Shareability: Current URL input syncs with query string (`?input=...`) for deep-linking
 
 ## UI
 - Uses `ToolLayout`, `Input`, `Textarea`, `Button`, `CopyButton`, `Card`
@@ -33,6 +34,7 @@ Parse, encode, and decode URLs with live validation, canonical preview, and inte
 
 ## Related
 
+- [Shareable URL State Features](../features/shareable-url-state-features.md) — Query key coverage and share behavior
 - [UI Building Blocks](../09-ui-building-blocks.md) — Component API and layout patterns
 - [Tool Registry](../04-tool-registry.md) — Tool metadata & routing
 - [Directory Map](../03-directory-map.md) — File locations

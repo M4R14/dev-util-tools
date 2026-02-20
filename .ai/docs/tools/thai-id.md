@@ -20,6 +20,7 @@ Decode Thai national ID digits by position, validate checksum (13th digit), and 
 - Input: Thai ID value (13 digits, accepts pasted formatted values)
 - Output: Decoded sections (person type, location digits, household, person order, checksum)
 - Actions: Generate (via `generateThaiId`), Analyze, Copy formatted ID, Clear
+- Share: URL sync via query key `input`
 
 ## UI
 - Uses `ToolLayout`, `Input`, `Button`, `CopyButton`
@@ -31,6 +32,7 @@ Decode Thai national ID digits by position, validate checksum (13th digit), and 
 
 ## Related
 
+- [Shareable URL State Features](../features/shareable-url-state-features.md) — Query key coverage and URL sync behavior
 - [UI Building Blocks](../09-ui-building-blocks.md) — Component API and layout patterns
 - [Tool Registry](../04-tool-registry.md) — Tool metadata & routing
 - [Directory Map](../03-directory-map.md) — File locations

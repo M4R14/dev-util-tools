@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Star } from 'lucide-react';
 import { ToolID, ToolMetadata } from '../types';
 import { cn } from '../lib/utils';
+import FavoriteIcon from './ui/FavoriteIcon';
 
 interface ToolLinkItemProps {
   tool: ToolMetadata;
@@ -97,7 +97,7 @@ const ToolLinkItem: React.FC<ToolLinkItemProps> = ({
         aria-label={isFavorite ? `Remove ${tool.name} from favorites` : `Add ${tool.name} to favorites`}
         aria-pressed={isFavorite}
       >
-        <Star className={cn('w-3.5 h-3.5', isFavorite && 'fill-current')} />
+        <FavoriteIcon isFavorite={isFavorite} />
       </button>
     </div>
   );

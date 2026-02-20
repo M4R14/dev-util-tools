@@ -14,8 +14,10 @@ This file captures cross-tool user experience features.
 ## Command Palette
 
 - Trigger via `Cmd+K` (macOS) or `Ctrl+K` (Windows/Linux).
-- Central entry point for searching and opening tools without browsing the sidebar.
+- Central entry point for searching tools and running quick actions without browsing the sidebar.
 - Integrates with fuzzy search index from tool metadata (name, description, tags).
+- Includes app actions: `Open settings`, `Check updates`, and `Clear offline cache`.
+- Full behavior reference: `command-palette-features.md`.
 
 ## Keyboard-First Interaction
 
@@ -36,6 +38,9 @@ This file captures cross-tool user experience features.
 - Favorites are persisted in localStorage.
 - Recent tools history is persisted in localStorage.
 - Theme preference persists and syncs with app state.
+- Shareable URL state is available for all local tools (see `shareable-url-state-features.md` for keys/coverage).
+- Offline-ready local tool workflows are available after service-worker cache warmup.
+- App Settings page (`/settings`) exposes runtime connectivity status, install availability, cache diagnostics, and maintenance actions (`Check for updates`, `Clear offline cache`).
 
 ## Accessibility Baseline
 
@@ -58,6 +63,7 @@ This file captures cross-tool user experience features.
 ## Related
 
 - [Web Features](./web-features.md)
+- [Command Palette Features](./command-palette-features.md)
 - [Tool Features](./tool-features.md)
 - [UI Building Blocks](../09-ui-building-blocks.md)
 - [Architecture](../02-architecture.md)

@@ -1,5 +1,7 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
+import { buildShareableSearchParams } from '../lib/shareableUrlState';
 
 export interface UUIDOptions {
   version: 'v4';
@@ -12,17 +14,39 @@ const MIN_QUANTITY = 1;
 const MAX_QUANTITY = 100;
 
 const clampQuantity = (value: number) => Math.min(MAX_QUANTITY, Math.max(MIN_QUANTITY, value));
+const parseBoolean = (value: string | null, fallback: boolean) =>
+  value === null ? fallback : value === '1' || value === 'true';
+const parseQuantity = (value: string | null) => {
+  if (!value) return 1;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? clampQuantity(parsed) : 1;
+};
 
 export const useUUIDGenerator = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [uuids, setUuids] = useState<string[]>([]);
   const [options, setOptions] = useState<UUIDOptions>({
     version: 'v4',
-    quantity: 1,
-    hyphens: true,
-    uppercase: false,
+    quantity: parseQuantity(searchParams.get('q')),
+    hyphens: parseBoolean(searchParams.get('hy'), true),
+    uppercase: parseBoolean(searchParams.get('up'), false),
   });
+  const currentQuery = searchParams.toString();
 
   const hasSecureUUID = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function';
+
+  useEffect(() => {
+    const nextParams = buildShareableSearchParams(currentQuery, [
+      { key: 'q', value: String(options.quantity), defaultValue: '1' },
+      { key: 'hy', value: options.hyphens ? '1' : '0', defaultValue: '1' },
+      { key: 'up', value: options.uppercase ? '1' : '0', defaultValue: '0' },
+    ]);
+
+    const nextQuery = nextParams.toString();
+    if (nextQuery !== currentQuery) {
+      setSearchParams(nextParams, { replace: true });
+    }
+  }, [options.quantity, options.hyphens, options.uppercase, currentQuery, setSearchParams]);
 
   const generateUUID = useCallback(() => {
     const newUuids: string[] = [];

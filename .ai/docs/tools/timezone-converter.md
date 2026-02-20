@@ -19,6 +19,7 @@ Convert dates and times across different global timezones with instant result up
 - Input: Date/time picker, source timezone, target timezone
 - Output: Converted timestamp card with timezone abbreviation and preview
 - Actions: Set now, Swap, Copy converted result, Quick target zone buttons
+- Share: URL sync via query keys `date`, `from`, `to`
 
 ## UI
 - Uses `ToolLayout`, `Input`, `Button`, `CopyButton`
@@ -27,6 +28,7 @@ Convert dates and times across different global timezones with instant result up
 
 ## Related
 
+- [Shareable URL State Features](../features/shareable-url-state-features.md) — Query key coverage and URL sync behavior
 - [UI Building Blocks](../09-ui-building-blocks.md) — Component API and layout patterns
 - [Tool Registry](../04-tool-registry.md) — Tool metadata & routing
 - [Directory Map](../03-directory-map.md) — File locations

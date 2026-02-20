@@ -8,6 +8,10 @@ Blog content is stored as markdown files in:
 
 `src/content/blog/*.md`
 
+Auto-generated release notes are written to:
+
+`src/content/blog/auto-release-notes.md` (via `npm run release-notes:generate`)
+
 The app loads these files in `src/data/blogPosts.ts` using `import.meta.glob(..., query: '?raw')`, then parses:
 
 - frontmatter (metadata)
@@ -64,6 +68,7 @@ Render behavior:
 - Keep updates factual and concise
 - Prefer one logical change group per post
 - Use absolute dates (no “today/yesterday” wording)
+- `auto-release-notes.md` is generated from recent git commits/PR references and should not be manually edited
 
 ## Related
 

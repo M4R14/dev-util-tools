@@ -1,10 +1,23 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import xmlFormat from 'xml-formatter';
+import { useSearchParams } from 'react-router-dom';
+import { buildShareableSearchParams } from '../lib/shareableUrlState';
 
 export const useXmlFormatter = () => {
-  const [input, setInput] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [input, setInput] = useState(() => searchParams.get('input') ?? '');
   const [error, setError] = useState<string | null>(null);
   const [indentSize, setIndentSize] = useState(2);
+  const currentQuery = searchParams.toString();
+
+  useEffect(() => {
+    const nextParams = buildShareableSearchParams(currentQuery, [{ key: 'input', value: input }]);
+
+    const nextQuery = nextParams.toString();
+    if (nextQuery !== currentQuery) {
+      setSearchParams(nextParams, { replace: true });
+    }
+  }, [input, currentQuery, setSearchParams]);
 
   const format = (): boolean => {
     if (!input.trim()) return false;

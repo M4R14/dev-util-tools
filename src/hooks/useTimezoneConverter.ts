@@ -1,7 +1,9 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import { useSearchParams } from 'react-router-dom';
+import { buildShareableSearchParams } from '../lib/shareableUrlState';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -25,18 +27,26 @@ const COMMON_TIMEZONES = [
   { value: 'America/Sao_Paulo', label: 'São Paulo (Brasilia Time)', abbr: 'BRT' },
   { value: 'Pacific/Auckland', label: 'Auckland (New Zealand Time)', abbr: 'NZDT' },
 ];
+const DEFAULT_TARGET_TZ = 'UTC';
 
 export const useTimezoneConverter = () => {
-  const [date, setDate] = useState<string>(() => dayjs().format('YYYY-MM-DDTHH:mm'));
-
-  const [sourceTz, setSourceTz] = useState<string>(
-    Intl.DateTimeFormat().resolvedOptions().timeZone,
+  const [searchParams, setSearchParams] = useSearchParams();
+  const defaultDate = useMemo(() => dayjs().format('YYYY-MM-DDTHH:mm'), []);
+  const defaultSourceTz = useMemo(
+    () => Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
+    [],
   );
-  const [targetTz, setTargetTz] = useState<string>('UTC');
+  const [date, setDate] = useState<string>(() => searchParams.get('date') ?? defaultDate);
+
+  const [sourceTz, setSourceTz] = useState<string>(() => searchParams.get('from') ?? defaultSourceTz);
+  const [targetTz, setTargetTz] = useState<string>(
+    () => searchParams.get('to') ?? DEFAULT_TARGET_TZ,
+  );
   const [result, setResult] = useState<string>('');
   const [resultDatePart, setResultDatePart] = useState<string>('');
   const [resultTimePart, setResultTimePart] = useState<string>('');
   const [resultTzAbbr, setResultTzAbbr] = useState<string>('');
+  const currentQuery = searchParams.toString();
 
   const convertTime = useCallback(() => {
     try {
@@ -69,6 +79,27 @@ export const useTimezoneConverter = () => {
   useEffect(() => {
     convertTime();
   }, [convertTime]);
+
+  useEffect(() => {
+    const nextParams = buildShareableSearchParams(currentQuery, [
+      { key: 'date', value: date, defaultValue: defaultDate },
+      { key: 'from', value: sourceTz, defaultValue: defaultSourceTz },
+      { key: 'to', value: targetTz, defaultValue: DEFAULT_TARGET_TZ },
+    ]);
+
+    const nextQuery = nextParams.toString();
+    if (nextQuery !== currentQuery) {
+      setSearchParams(nextParams, { replace: true });
+    }
+  }, [
+    date,
+    sourceTz,
+    targetTz,
+    defaultDate,
+    defaultSourceTz,
+    currentQuery,
+    setSearchParams,
+  ]);
 
   const swapTimezones = () => {
     const temp = sourceTz;

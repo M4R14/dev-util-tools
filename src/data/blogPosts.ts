@@ -110,4 +110,13 @@ const parseBlogPost = (path: string, rawMarkdown: string): BlogPost => {
 
 export const BLOG_POSTS: BlogPost[] = Object.entries(MARKDOWN_POSTS)
   .map(([path, rawMarkdown]) => parseBlogPost(path, rawMarkdown))
-  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  .sort((a, b) => {
+    const dateDiff = new Date(b.date).getTime() - new Date(a.date).getTime();
+    if (dateDiff !== 0) {
+      return dateDiff;
+    }
+
+    if (a.id === 'auto-release-notes') return -1;
+    if (b.id === 'auto-release-notes') return 1;
+    return b.id.localeCompare(a.id);
+  });

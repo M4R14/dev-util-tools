@@ -1,12 +1,15 @@
 {
   "name": "devpulse---professional-developer-utility-suite",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "predev": "npm run release-notes:generate",
     "dev": "vite",
+    "prebuild": "npm run release-notes:generate",
     "build": "vite build",
     "preview": "vite preview",
+    "release-notes:generate": "node scripts/generate-release-notes.mjs",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "coverage": "vitest run --coverage",

@@ -4,15 +4,17 @@
 src/
 ├── types.ts                    # ToolID enum, ToolMetadata interface
 ├── App.tsx                     # Routes + providers + lazy loading
+├── tools.smoke.test.ts         # Module + registry smoke tests for key tool pages
 ├── main.tsx                    # ReactDOM entry point
 ├── index.css                   # Tailwind directives + CSS variables
 │
 ├── components/
-│   ├── MainLayout.tsx          # Shell: sidebar + header + cmd palette + content area
+│   ├── MainLayout.tsx          # Shell: sidebar + header + cmd palette + content area + footer
 │   ├── Sidebar.tsx             # Navigation with search, favorites, recents, all tools
 │   ├── Header.tsx              # Top bar: title, search, theme toggle, GitHub link
 │   ├── Dashboard.tsx           # Landing page: hero search + tool cards grid
 │   ├── Blog.tsx                # Product updates page (renders posts from markdown)
+│   ├── Settings.tsx            # App-level settings page (offline status, install prompt, cache/update actions)
 │   ├── blog/                   # Blog page sub-components
 │   │   └── BlogPostCard.tsx
 │   ├── dashboard/              # Dashboard sub-components
@@ -20,7 +22,7 @@ src/
 │   │   ├── DashboardToolSection.tsx
 │   │   └── ToolCard.tsx
 │   ├── CommandPalette.tsx      # Cmd+K modal with keyboard navigation
-│   ├── ToolPageLayout.tsx      # Tool page wrapper: icon, name, description, clickable tags
+│   ├── ToolPageLayout.tsx      # Tool page wrapper: icon, name, favorite + share actions, description, clickable tags
 │   ├── ErrorBoundary.tsx       # Class component error boundary with recovery UI
 │   ├── ToolLinkItem.tsx        # Sidebar NavLink item with active/selected states
 │   ├── AIAgentBridge.tsx       # AI Agent Bridge route page (orchestrates AI bridge UI + state)
@@ -77,6 +79,8 @@ src/
 │       ├── Card.tsx            # Card + CardHeader + CardTitle + CardDescription + CardContent + CardFooter
 │       ├── CodeHighlight.tsx   # Syntax-highlighted code display
 │       ├── CopyButton.tsx      # Clipboard copy with toast feedback
+│       ├── FavoriteButton.tsx  # Reusable toggle favorite icon button
+│       ├── FavoriteIcon.tsx    # Reusable star icon with active fill state
 │       ├── SnippetCard.tsx     # Reusable code snippet card (title + copy + highlight)
 │       ├── Input.tsx           # Styled HTML input
 │       ├── Textarea.tsx        # Styled HTML textarea
@@ -98,6 +102,7 @@ src/
 │   ├── useToolSearch.ts        # MiniSearch-powered fuzzy search
 │   ├── useUrlParser.ts
 │   ├── useUUIDGenerator.ts
+│   ├── usePwaSettings.ts       # Shared PWA/offline state + actions for app settings
 │   ├── useXmlFormatter.ts
 │   └── useXmlToJson.ts
 │
@@ -120,17 +125,25 @@ src/
 │       ├── 2026-02-20-ai-assisted-development.md
 │       ├── 2026-02-19-ai-assistant-updates.md
 │       ├── 2026-02-18-external-tools-addition.md
-│       └── 2026-02-17-ai-bridge-output-mode.md
+│       ├── 2026-02-17-ai-bridge-output-mode.md
+│       └── auto-release-notes.md # Auto-generated mini release notes from git history
 │
 ├── lib/                        # Pure utility functions (no React)
 │   ├── utils.ts                # cn() — clsx + tailwind-merge
 │   ├── caseUtils.ts            # toSnakeCase, toKebabCase, toCamelCase, toPascalCase
+│   ├── caseUtils.test.ts       # Unit tests for case conversion utilities
 │   ├── diffUtils.ts            # computeDiff, getDiffStats, toUnifiedDiff (uses `diff` lib)
+│   ├── diffUtils.test.ts       # Unit tests for diff utility helpers
 │   ├── aiBridgeQuery.ts        # Parse/normalize AI bridge query parameters into AIToolRequest
 │   ├── passwordStrength.ts     # getPasswordStrength()
+│   ├── passwordStrength.test.ts # Unit tests for password strength scoring
 │   ├── thaiId.ts               # Thai ID decode/validation helpers
+│   ├── thaiId.test.ts          # Unit tests for Thai ID utility helpers
 │   ├── thaiDate.ts             # Thai date formatting/parsing (uses `dayjs`)
+│   ├── shareableUrlState.ts    # Shared helper for shareable URL query sync rules
+│   ├── shareableUrlState.test.ts # Unit tests for query sync helper behavior
 │   ├── urlUtils.ts             # parseUrl, updateUrlParam
+│   ├── urlUtils.test.ts        # Unit tests for URL parsing and param helpers
 │   ├── xmlToJson.ts            # XML document to JSON conversion logic
 │   └── crypto.ts               # encrypt/decrypt (Base64 obfuscation for API key storage)
 │
@@ -139,6 +152,26 @@ src/
 │
 └── test/
     └── setup.ts                # Vitest setup: jest-dom matchers + RTL cleanup
+```
+
+Additional static assets (copied as-is at build time):
+
+```
+public/
+├── 404.html                    # GitHub Pages SPA redirect handler
+├── manifest.webmanifest        # PWA manifest metadata
+├── offline.html                # Offline fallback page
+├── sw.js                       # Service worker (offline cache + runtime caching)
+└── icons/
+    ├── icon-192.svg            # PWA icon
+    └── icon-512.svg            # PWA icon
+```
+
+Automation scripts:
+
+```
+scripts/
+└── generate-release-notes.mjs  # Builds auto-release markdown from recent commits/PR refs
 ```
 
 ---

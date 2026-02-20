@@ -11,6 +11,7 @@ import { SearchProvider } from './context/SearchContext';
 const Dashboard = lazy(() => import('./components/Dashboard'));
 const AIAgentBridge = lazy(() => import('./components/AIAgentBridge'));
 const Blog = lazy(() => import('./components/Blog'));
+const Settings = lazy(() => import('./components/Settings'));
 
 /** Map each ToolID to its lazy-loaded component. */
 const TOOL_COMPONENTS: Record<ToolID, React.LazyExoticComponent<ComponentType>> = {
@@ -70,6 +71,14 @@ const App: React.FC = () => {
                   element={
                     <ErrorBoundary>
                       <Blog />
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/settings"
+                  element={
+                    <ErrorBoundary>
+                      <Settings />
                     </ErrorBoundary>
                   }
                 />

@@ -9,11 +9,12 @@ import { CodeHighlight } from '../ui/CodeHighlight';
 import { toast } from 'sonner';
 
 const JSONFormatter: React.FC = () => {
-  const { input, setInput, error, setError, formatJSON, minifyJSON, clear } = useJsonFormatter();
+  const { input, setInput, indent, setIndent, error, setError, formatJSON, minifyJSON, clear } =
+    useJsonFormatter();
   const [isEditing, setIsEditing] = useState(true);
 
   const handleFormat = () => {
-    const result = formatJSON(2);
+    const result = formatJSON(indent);
     if (result && input.trim()) {
       toast.success('JSON Formatted');
       setIsEditing(false);
@@ -56,6 +57,22 @@ const JSONFormatter: React.FC = () => {
               >
                 <Minimize2 className="w-3.5 h-3.5" /> Minify
               </Button>
+
+              <label className="inline-flex items-center gap-2 text-xs text-muted-foreground pl-2">
+                Indent
+                <select
+                  value={indent}
+                  onChange={(event) => setIndent(Number(event.target.value))}
+                  className="h-8 rounded-md border border-input bg-background px-2 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+                  aria-label="JSON indentation"
+                >
+                  {[2, 4, 8].map((value) => (
+                    <option key={value} value={value}>
+                      {value}
+                    </option>
+                  ))}
+                </select>
+              </label>
             </div>
 
             <div className="flex gap-2">

@@ -1,13 +1,17 @@
 import { useState, useCallback, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { UrlParam, addUrlParam, parseUrl, removeUrlParam, updateUrlParam } from '../lib/urlUtils';
+import { buildShareableSearchParams } from '../lib/shareableUrlState';
 
 export { type UrlParam };
 
 export const useUrlParser = () => {
-  const [input, setInput] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [input, setInput] = useState(() => searchParams.get('input') ?? '');
   const [parsedUrl, setParsedUrl] = useState<URL | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [params, setParams] = useState<UrlParam[]>([]);
+  const currentQuery = searchParams.toString();
 
   useEffect(() => {
     const result = parseUrl(input);
@@ -15,6 +19,15 @@ export const useUrlParser = () => {
     setError(result.error);
     setParams(result.params);
   }, [input]);
+
+  useEffect(() => {
+    const nextParams = buildShareableSearchParams(currentQuery, [{ key: 'input', value: input }]);
+
+    const nextQuery = nextParams.toString();
+    if (nextQuery !== currentQuery) {
+      setSearchParams(nextParams, { replace: true });
+    }
+  }, [input, currentQuery, setSearchParams]);
 
   const getEncoded = useCallback(() => {
     try {

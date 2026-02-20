@@ -26,6 +26,7 @@ Convert Gregorian dates to Thai Buddhist Era (BE) formats. Supports text parsing
 - Input: Text or picker (day/month/year)
 - Output: All Thai date formats, ISO, and parsed details
 - Actions: Switch input mode, quick date presets (yesterday/today/tomorrow), Copy, Copy all formats, Reset
+- Share: URL sync via query keys `date`, `parse`, `pd`, `pm`, `py`, `pmf`
 
 ## UI
 - Uses `ToolLayout`, `Input`, `Button`, `CopyButton`, `Switch`, `Card`
@@ -48,6 +49,7 @@ Convert Gregorian dates to Thai Buddhist Era (BE) formats. Supports text parsing
 
 ## Related
 
+- [Shareable URL State Features](../features/shareable-url-state-features.md) — Query key coverage and URL sync behavior
 - [UI Building Blocks](../09-ui-building-blocks.md) — Component API and layout patterns
 - [Tool Registry](../04-tool-registry.md) — Tool metadata & routing
 - [Directory Map](../03-directory-map.md) — File locations

@@ -1,8 +1,21 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { toSnakeCase, toKebabCase, toCamelCase, toPascalCase } from '../lib/caseUtils';
+import { buildShareableSearchParams } from '../lib/shareableUrlState';
 
 export const useCaseConverter = () => {
-  const [input, setInput] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [input, setInput] = useState(() => searchParams.get('input') ?? '');
+  const currentQuery = searchParams.toString();
+
+  useEffect(() => {
+    const nextParams = buildShareableSearchParams(currentQuery, [{ key: 'input', value: input }]);
+
+    const nextQuery = nextParams.toString();
+    if (nextQuery !== currentQuery) {
+      setSearchParams(nextParams, { replace: true });
+    }
+  }, [input, currentQuery, setSearchParams]);
 
   const conversions = [
     { label: 'UPPERCASE', value: input.toUpperCase() },

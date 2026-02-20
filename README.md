@@ -57,7 +57,7 @@
 
 | | |
 |---|---|
-| ⌘ **Command Palette** | `Cmd+K` / `Ctrl+K` — instant fuzzy search across all tools |
+| ⌘ **Command Palette** | `Cmd+K` / `Ctrl+K` — instant fuzzy search + quick actions (`Open settings`, `Check updates`, `Clear offline cache`) |
 | ⌨️ **Keyboard-First** | Arrow keys, Enter, Escape — navigate without a mouse |
 | 🌑 **Dark Mode** | Clean UI designed for long coding sessions |
 | 🤖 **AI-Powered** | Gemini AI assistant for code review & problem-solving |
@@ -65,6 +65,8 @@
 | 🛡️ **Error Boundaries** | Per-tool isolation — one crash won't break the app |
 | 🔍 **Fuzzy Search** | MiniSearch with prefix matching, typo tolerance & tag filtering |
 | ♿ **Accessible** | ARIA labels, skip-to-content, focus management |
+| 📶 **Offline-Ready** | PWA service worker caches app shell and local tools for offline usage |
+| 📰 **Auto Release Notes** | Blog includes mini release notes generated from recent commits/PR references |
 
 ---
 
@@ -74,7 +76,7 @@
 |----------|--------|
 | `Cmd+K` / `Ctrl+K` | Open Command Palette |
 | `↑` / `↓` | Navigate results |
-| `Enter` | Select tool |
+| `Enter` | Run selected tool/action |
 | `Escape` | Close palette |
 
 ---
@@ -143,6 +145,7 @@ Or enter your key in the AI Assistant settings UI (stored in localStorage).
 | `npm run dev` | Start dev server |
 | `npm run build` | Production build |
 | `npm run preview` | Preview production build |
+| `npm run release-notes:generate` | Generate blog mini release notes from git history |
 | `npm test` | Run tests (Vitest) |
 | `npm run test:ui` | Vitest UI |
 | `npm run coverage` | Tests with coverage |

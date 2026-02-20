@@ -1,12 +1,19 @@
 import { useState, useMemo, useCallback } from 'react';
+import { useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { computeDiff, getDiffStats, toUnifiedDiff, DiffLine, DiffStats } from '../lib/diffUtils';
+import { buildShareableSearchParams } from '../lib/shareableUrlState';
 
 export type DiffViewMode = 'split' | 'unified';
+const parseViewMode = (value: string | null): DiffViewMode =>
+  value === 'unified' ? 'unified' : 'split';
 
 export const useDiffViewer = () => {
-  const [original, setOriginal] = useState('');
-  const [modified, setModified] = useState('');
-  const [viewMode, setViewMode] = useState<DiffViewMode>('split');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [original, setOriginal] = useState(() => searchParams.get('original') ?? '');
+  const [modified, setModified] = useState(() => searchParams.get('modified') ?? '');
+  const [viewMode, setViewMode] = useState<DiffViewMode>(() => parseViewMode(searchParams.get('view')));
+  const currentQuery = searchParams.toString();
 
   const diff: DiffLine[] = useMemo(() => computeDiff(original, modified), [original, modified]);
 
@@ -32,6 +39,19 @@ export const useDiffViewer = () => {
     setOriginal('');
     setModified('');
   }, []);
+
+  useEffect(() => {
+    const nextParams = buildShareableSearchParams(currentQuery, [
+      { key: 'original', value: original },
+      { key: 'modified', value: modified },
+      { key: 'view', value: viewMode, defaultValue: 'split' },
+    ]);
+
+    const nextQuery = nextParams.toString();
+    if (nextQuery !== currentQuery) {
+      setSearchParams(nextParams, { replace: true });
+    }
+  }, [original, modified, viewMode, currentQuery, setSearchParams]);
 
   return {
     original,

@@ -19,6 +19,7 @@ Create Version 4 UUIDs (GUIDs) with a UI optimized for fast batch generation wor
 - Options: Quantity (input + slider + quick presets), uppercase, hyphens
 - Output: List of UUIDs
 - Actions: Generate, Copy row, Copy all, Download, Clear
+- Shareability: Options sync with URL query (`?q=&hy=&up=`) for reproducible links
 
 ## UI
 - Uses `ToolLayout`, `Input`, `Slider`, `Switch`, `CopyButton`, `Button`, `Card`
@@ -30,6 +31,7 @@ Create Version 4 UUIDs (GUIDs) with a UI optimized for fast batch generation wor
 
 ## Related
 
+- [Shareable URL State Features](../features/shareable-url-state-features.md) — Query key coverage and share behavior
 - [UI Building Blocks](../09-ui-building-blocks.md) — Component API and layout patterns
 - [Tool Registry](../04-tool-registry.md) — Tool metadata & routing
 - [Directory Map](../03-directory-map.md) — File locations

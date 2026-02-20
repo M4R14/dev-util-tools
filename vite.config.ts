@@ -43,6 +43,35 @@ const aiBridgeStaticJsonPlugin = (): Plugin => {
   };
 };
 
+const pwaAssetManifestPlugin = (): Plugin => {
+  const staticFiles = [
+    'index.html',
+    'offline.html',
+    'manifest.webmanifest',
+    '404.html',
+    'icons/icon-192.svg',
+    'icons/icon-512.svg',
+  ];
+
+  return {
+    name: 'pwa-asset-manifest',
+    apply: 'build',
+    generateBundle(_, bundle) {
+      const bundleFiles = Object.values(bundle)
+        .map((item) => item.fileName)
+        .filter((fileName) => !fileName.endsWith('.map'));
+
+      const precacheAssets = Array.from(new Set([...staticFiles, ...bundleFiles])).sort();
+
+      this.emitFile({
+        type: 'asset',
+        fileName: 'pwa-assets.json',
+        source: `${JSON.stringify(precacheAssets, null, 2)}\n`,
+      });
+    },
+  };
+};
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
   const base = process.env.GITHUB_ACTIONS ? '/dev-util-tools/' : '/';
@@ -52,11 +81,10 @@ export default defineConfig(({ mode }) => {
       port: 3000,
       host: '0.0.0.0',
     },
-    plugins: [react(), aiBridgeStaticJsonPlugin()],
+    plugins: [react(), aiBridgeStaticJsonPlugin(), pwaAssetManifestPlugin()],
     test: {
       globals: true,
-      environment: 'jsdom',
-      setupFiles: './src/test/setup.ts',
+      environment: 'node',
     },
     define: {
       'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),

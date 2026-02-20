@@ -60,6 +60,17 @@ If code behavior or structure changes, update matching docs in the same change:
 2. `.ai/docs/04-tool-registry.md` for tool mapping changes.
 3. `.ai/docs/tools/<tool>.md` for tool behavior/UI/action changes.
 4. `.ai/README.ai.md` when workflow, entry points, or capabilities change.
+5. `.ai/docs/features/tool-features.md` when user-facing tool capabilities change.
+6. `.ai/docs/features/shareable-url-state-features.md` when query-key coverage/URL-state behavior changes.
+
+## Shareable URL State Standard
+
+When a tool uses query-string state syncing:
+
+1. Reuse `src/lib/shareableUrlState.ts` (`buildShareableSearchParams`) instead of re-implementing `URLSearchParams` sync logic in each hook.
+2. Keep query defaults explicit via `defaultValue` so URLs stay clean and deterministic.
+3. Update `.ai/docs/features/shareable-url-state-features.md` and affected tool docs with exact query keys.
+4. If helper behavior changes, add/update tests in `src/lib/shareableUrlState.test.ts`.
 
 ## Validation Gate
 
@@ -73,6 +84,7 @@ Recommended:
 
 ```bash
 npm run lint
+npm test -- --run
 ```
 
 For doc-only changes, lint/typecheck is optional.

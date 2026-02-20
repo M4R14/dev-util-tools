@@ -9,12 +9,22 @@ This file summarizes build, performance, deployment, and quality capabilities.
 - Dev server via Vite (`npm run dev`).
 - Production build with route-based code splitting (`npm run build`).
 - Production preview (`npm run preview`).
+- Auto release-note generation from git log via `npm run release-notes:generate` (runs in `predev` and `prebuild`).
 
 ## Performance Characteristics
 
 - Lazy-loaded tool routes in `src/App.tsx`.
 - Vendor split strategy for React, Radix, and shared UI dependencies.
 - Tool pages shipped as separate chunks for faster first load.
+
+## PWA & Offline Runtime
+
+- Production builds register a service worker (`public/sw.js`) from `src/main.tsx`.
+- Precache asset list is generated at build time (`pwa-assets.json`) from emitted bundle files.
+- Navigation requests use app-shell fallback (`index.html`) and offline fallback page (`offline.html`).
+- Local tools can continue running offline after the app has been loaded and cached.
+- If a new service-worker version is installed in the background, the app shows an update toast with `Refresh`; clicking it sends `SKIP_WAITING` and reloads on `controllerchange`.
+- Settings page controls can trigger manual `registration.update()` checks and clear offline caches (`devpulse-static-*`) for recovery/debug workflows.
 
 ## Quality Workflow
 

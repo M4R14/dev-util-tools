@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { ArrowRight, Star } from 'lucide-react';
 import { ToolID, ToolMetadata } from '../../types';
+import FavoriteIcon from '../ui/FavoriteIcon';
 
 interface ToolCardProps {
   tool: ToolMetadata;
@@ -31,7 +32,7 @@ const ToolCard: React.FC<ToolCardProps> = React.memo(({ tool, isFavorite, onTogg
           }
           aria-pressed={isFavorite}
         >
-          <Star className={`w-3.5 h-3.5 ${isFavorite ? 'fill-current' : ''}`} aria-hidden="true" />
+           <FavoriteIcon className={`w-3.5 h-3.5`} isFavorite={isFavorite} />
         </button>
       </div>
 

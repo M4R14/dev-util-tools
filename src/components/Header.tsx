@@ -1,8 +1,9 @@
 import React from 'react';
-import { Menu, Search, Star, Sun, Moon, X, Newspaper } from 'lucide-react';
+import { Menu, Search, Sun, Moon, X, Newspaper, Settings2 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { Button } from './ui/Button';
+import FavoriteButton from './ui/FavoriteButton';
 import { Input } from './ui/Input';
 import { cn } from '../lib/utils';
 
@@ -43,20 +44,7 @@ const Header: React.FC<HeaderProps> = ({
         <h2 className="flex items-center gap-2 min-w-0 text-base md:text-xl font-semibold text-foreground">
           <span className="truncate">{title}</span>
           {onToggleFavorite && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={onToggleFavorite}
-              className={`rounded-full ${isFavorite ? 'text-amber-400 hover:text-amber-500' : 'text-muted-foreground/30 hover:text-muted-foreground'}`}
-              title={isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
-              aria-label={isFavorite ? 'Remove from Favorites' : 'Add to Favorites'}
-              aria-pressed={isFavorite}
-            >
-              <Star
-                className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`}
-                aria-hidden="true"
-              />
-            </Button>
+            <FavoriteButton isFavorite={!!isFavorite} onToggle={onToggleFavorite} />
           )}
         </h2>
       </div>
@@ -104,6 +92,22 @@ const Header: React.FC<HeaderProps> = ({
         >
           <Newspaper className="w-3.5 h-3.5" />
           <span className="hidden md:inline">Blog</span>
+        </NavLink>
+
+        <NavLink
+          to="/settings"
+          className={({ isActive }) =>
+            cn(
+              'inline-flex items-center gap-1.5 rounded-md px-2 py-1.5 text-xs font-medium border transition-colors h-8',
+              isActive
+                ? 'bg-primary/10 text-primary border-primary/20'
+                : 'text-muted-foreground border-transparent hover:text-foreground hover:bg-muted',
+            )
+          }
+          aria-label="Open app settings"
+        >
+          <Settings2 className="w-3.5 h-3.5" />
+          <span className="hidden md:inline">Settings</span>
         </NavLink>
 
         <Button

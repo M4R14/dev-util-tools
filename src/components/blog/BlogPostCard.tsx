@@ -64,10 +64,17 @@ const BlogPostCard: React.FC<BlogPostCardProps> = ({ post }) => {
       </div>
 
       <div className="mt-3">
-        <span className={cn('inline-flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-semibold', meta.className)}>
-          <Icon className="w-3.5 h-3.5" />
-          {meta.label}
-        </span>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className={cn('inline-flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-semibold', meta.className)}>
+            <Icon className="w-3.5 h-3.5" />
+            {meta.label}
+          </span>
+          {post.id === 'auto-release-notes' && (
+            <span className="inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-2 py-1 text-xs font-semibold text-primary">
+              Auto
+            </span>
+          )}
+        </div>
       </div>
 
       <div

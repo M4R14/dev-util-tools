@@ -1,11 +1,32 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { convertXmlToJson } from '../lib/xmlToJson';
+import { buildShareableSearchParams } from '../lib/shareableUrlState';
+
+const parseBoolean = (value: string | null, fallback: boolean) =>
+  value === null ? fallback : value === '1' || value === 'true';
 
 export const useXmlToJson = () => {
-  const [xmlInput, setXmlInput] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [xmlInput, setXmlInput] = useState(() => searchParams.get('input') ?? '');
   const [jsonOutput, setJsonOutput] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const [includeAttributes, setIncludeAttributes] = useState(true);
+  const [includeAttributes, setIncludeAttributes] = useState(() =>
+    parseBoolean(searchParams.get('attrs'), true),
+  );
+  const currentQuery = searchParams.toString();
+
+  useEffect(() => {
+    const nextParams = buildShareableSearchParams(currentQuery, [
+      { key: 'input', value: xmlInput },
+      { key: 'attrs', value: includeAttributes ? '1' : '0', defaultValue: '1' },
+    ]);
+
+    const nextQuery = nextParams.toString();
+    if (nextQuery !== currentQuery) {
+      setSearchParams(nextParams, { replace: true });
+    }
+  }, [xmlInput, includeAttributes, currentQuery, setSearchParams]);
 
   const convert = useCallback((): boolean => {
     if (!xmlInput.trim()) {
