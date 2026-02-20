@@ -9,7 +9,7 @@
 | **Lib** | `diffUtils.ts` (diff lib) |
 
 ## Description
-Compare two texts side-by-side and view differences. Supports unified and split view, copy, and stats.
+Compare two texts side-by-side and view differences. Supports unified/split view, change filtering, line wrapping toggle, copy, and inline stats.
 
 ## Files
 - `src/components/tools/DiffViewer.tsx`
@@ -18,11 +18,13 @@ Compare two texts side-by-side and view differences. Supports unified and split 
 
 ## Usage Pattern
 - Input: Two textareas (A, B)
-- Output: Highlighted diff (side-by-side or inline)
-- Actions: Copy, Clear, Toggle view
+- Output: Highlighted diff (split or unified) with optional "changes only" filtering
+- Actions: Load sample, Swap, Clear, Toggle view, Toggle line wrap, Copy unified diff
 
 ## UI
-- Uses `ToolLayout`, `Textarea`, `CopyButton`, `Button`, `Card`
+- Uses `ToolLayout`, `Textarea`, `CopyButton`, `Button`
+- Input panels show line/character metrics
+- Toolbar includes quick controls and diff change summary
 
 ## Related
 

@@ -9,7 +9,7 @@
 | **Lib** | `passwordStrength.ts` |
 
 ## Description
-Create secure, random passwords with customizable options and strength meter.
+Create secure, random passwords with customizable options, visibility controls, and a strength/entropy summary.
 
 ## Files
 - `src/components/tools/PasswordGenerator.tsx`
@@ -17,13 +17,14 @@ Create secure, random passwords with customizable options and strength meter.
 - `src/lib/passwordStrength.ts`
 
 ## Usage Pattern
-- Options: Length, uppercase, lowercase, numbers, symbols
-- Output: Generated password and strength indicator (label, color, percent, message)
-- Actions: Generate, Copy
+- Options: Length slider (+ presets), uppercase, lowercase, numbers, symbols
+- Output: Generated password with show/hide toggle and security summary (strength, pool size, entropy)
+- Actions: Generate/Regenerate, Copy, toggle character sets
 
 ## UI
-- Uses `ToolLayout`, `Card`, `Button`, `CopyButton`
-- Inputs are rendered as custom controls (`input[type=range]` + clickable option cards)
+- Uses `ToolLayout`, `Button`, `CopyButton`, `Slider`, `Switch`
+- Settings are keyboard-accessible (`Switch`) and prevent disabling all character sets
+- Includes quick guidance panel for security best practices
 
 ## Related
 
