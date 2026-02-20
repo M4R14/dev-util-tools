@@ -38,7 +38,7 @@ src/
 │   │   │   ├── TextParserInput.tsx
 │   │   │   └── ParserResultSection.tsx
 │   │   ├── CrontabTool.tsx
-│   │   ├── AIAssistant.tsx     # + ai/CodeBlock.tsx, MessageContent.tsx, SettingsModal.tsx
+│   │   ├── AIAssistant.tsx     # + ai/* sub-components (Header, Panel, Composer, MessageContent, SettingsModal)
 │   │   ├── UUIDGenerator.tsx
 │   │   ├── UrlParser.tsx       # + url-parser/UrlComponentInput.tsx, etc.
 │   │   ├── DiffViewer.tsx

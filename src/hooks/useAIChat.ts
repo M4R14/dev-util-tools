@@ -4,6 +4,9 @@ import { encrypt, decrypt } from '../lib/crypto';
 import { toast } from 'sonner';
 
 const STORAGE_KEY = 'devpulse_secure_config';
+const API_KEY_MISSING_ERROR = 'Please configure your Gemini API Key in settings.';
+const DEFAULT_SERVICE_ERROR = 'Failed to communicate with AI service';
+const EMPTY_RESPONSE_TEXT = 'No response returned.';
 
 export interface Message {
   id: string;
@@ -11,6 +14,37 @@ export interface Message {
   content: string;
   timestamp: number;
 }
+
+const createMessage = (role: Message['role'], content: string): Message => {
+  const timestamp = Date.now();
+  const id =
+    typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function'
+      ? crypto.randomUUID()
+      : `${timestamp}-${Math.random().toString(36).slice(2, 8)}`;
+
+  return {
+    id,
+    role,
+    content,
+    timestamp,
+  };
+};
+
+const getErrorMessage = (err: unknown): string =>
+  err instanceof Error ? err.message : DEFAULT_SERVICE_ERROR;
+
+const loadApiKey = (): string => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? decrypt(saved) : '';
+  } catch {
+    return '';
+  }
+};
+
+const persistApiKey = (apiKey: string): void => {
+  localStorage.setItem(STORAGE_KEY, encrypt(apiKey));
+};
 
 export const useAIChat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -22,16 +56,17 @@ export const useAIChat = () => {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const [apiKey, setApiKey] = useState(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? decrypt(saved) : '';
-  });
+  const [apiKey, setApiKey] = useState(loadApiKey);
   const [tempKey, setTempKey] = useState('');
   const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
+
+  const appendMessage = useCallback((message: Message) => {
+    setMessages((prev) => [...prev, message]);
+  }, []);
 
   const openSettings = useCallback(() => {
     setTempKey(apiKey);
@@ -44,7 +79,7 @@ export const useAIChat = () => {
 
   const handleSaveSettings = useCallback(() => {
     setApiKey(tempKey);
-    localStorage.setItem(STORAGE_KEY, encrypt(tempKey));
+    persistApiKey(tempKey);
     setShowSettings(false);
     toast.success('API configuration saved successfully');
   }, [tempKey]);
@@ -56,42 +91,29 @@ export const useAIChat = () => {
   }, []);
 
   const handleAsk = useCallback(async () => {
-    if (!prompt.trim()) return;
+    const promptToSend = prompt;
+    if (!promptToSend.trim()) return;
 
-    const userMsg: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: prompt,
-      timestamp: Date.now(),
-    };
-
-    setMessages((prev) => [...prev, userMsg]);
+    appendMessage(createMessage('user', promptToSend));
     setPrompt('');
     setLoading(true);
     setError(null);
     setIsContextOpen(false);
 
     try {
-      if (!apiKey) throw new Error('Please configure your Gemini API Key in settings.');
+      if (!apiKey) throw new Error(API_KEY_MISSING_ERROR);
 
-      const result = await askGemini(userMsg.content, codeContext, apiKey);
+      const result = await askGemini(promptToSend, codeContext, apiKey);
 
-      const aiMsg: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'ai',
-        content: typeof result === 'string' ? result : 'No response returned.',
-        timestamp: Date.now(),
-      };
-
-      setMessages((prev) => [...prev, aiMsg]);
+      appendMessage(createMessage('ai', typeof result === 'string' ? result : EMPTY_RESPONSE_TEXT));
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to communicate with AI service';
+      const message = getErrorMessage(err);
       setError(message);
       toast.error(message);
     } finally {
       setLoading(false);
     }
-  }, [prompt, apiKey, codeContext]);
+  }, [prompt, appendMessage, apiKey, codeContext]);
 
   return {
     messages,

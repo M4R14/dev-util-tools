@@ -13,6 +13,11 @@ Analyze code snippets and get intelligent suggestions via Gemini AI. Supports ch
 
 ## Files
 - `src/components/tools/AIAssistant.tsx`
+- `src/components/tools/ai/AssistantHeader.tsx`
+- `src/components/tools/ai/EmptyState.tsx`
+- `src/components/tools/ai/ChatMessage.tsx`
+- `src/components/tools/ai/ChatPanel.tsx`
+- `src/components/tools/ai/Composer.tsx`
 - `src/components/tools/ai/CodeBlock.tsx`
 - `src/components/tools/ai/MessageContent.tsx`
 - `src/components/tools/ai/SettingsModal.tsx`
