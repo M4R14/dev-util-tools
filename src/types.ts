@@ -3,6 +3,7 @@ export enum ToolID {
   AI_ASSISTANT = 'ai-assistant',
   CRONTAB = 'crontab-guru',
   WORD_COUNTER = 'word-counter',
+  WHEEL_RANDOM = 'wheel-random',
   URL_PARSER = 'url-parser',
   DIFF_VIEWER = 'diff-viewer',
   REGEX_TESTER = 'regex-tester',

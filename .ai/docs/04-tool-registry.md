@@ -81,6 +81,10 @@ The registry below groups tools by responsibility to make discovery easier for c
   - Component: `src/components/tools/WordCounterTool.tsx`
   - Doc: [.ai doc](./tools/word-counter.md)
 
+- `wheel-random` — `/wheel-random`
+  - Component: `src/components/tools/WheelRandomTool.tsx`
+  - Doc: [.ai doc](./tools/wheel-random.md)
+
 ## AI
 
 - `ai-assistant` — `/ai-assistant`

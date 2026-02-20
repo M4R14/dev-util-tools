@@ -12,6 +12,7 @@ import {
   FileDiff,
   FileCode2,
   FileText,
+  RotateCw,
 } from 'lucide-react';
 import { ToolID, ToolMetadata } from '../types';
 
@@ -85,6 +86,13 @@ export const TOOLS: ToolMetadata[] = [
     description: 'Count words, characters, and readability metrics (opens wordcounter.net).',
     icon: FileText,
     tags: ['word', 'counter', 'text', 'writing', 'seo', 'external tool'],
+  },
+  {
+    id: ToolID.WHEEL_RANDOM,
+    name: 'Wheel Random',
+    description: 'Spin a random decision wheel for names, tasks, and giveaways.',
+    icon: RotateCw,
+    tags: ['wheel', 'random', 'picker', 'spin', 'decision', 'external tool'],
   },
   {
     id: ToolID.DIFF_VIEWER,

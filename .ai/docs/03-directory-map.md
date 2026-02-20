@@ -24,7 +24,7 @@ src/
 │   │    ├── QuickstartCard.tsx
 │   │    ├── RunQueryCard.tsx
 │   │    └── LiveResponseCard.tsx
-│   ├── tools/                  # One component per tool (14 tools)
+│   ├── tools/                  # One component per tool (15 tools)
 │   │   ├── JSONFormatter.tsx
 │   │   ├── Base64Tool.tsx
 │   │   ├── CaseConverter.tsx
@@ -39,6 +39,7 @@ src/
 │   │   │   └── ParserResultSection.tsx
 │   │   ├── CrontabTool.tsx
 │   │   ├── WordCounterTool.tsx
+│   │   ├── WheelRandomTool.tsx
 │   │   ├── AIAssistant.tsx     # AI Smart Assistant page composition
 │   │   ├── ai/                 # AI Smart Assistant sub-components
 │   │   │   ├── AssistantHeader.tsx
@@ -93,7 +94,7 @@ src/
 │   └── UserPreferencesContext.tsx # { favorites, recents, toggleFavorite, addRecent }
 │
 ├── data/
-│   ├── tools.tsx               # TOOLS array (14 entries) + getToolById()
+│   ├── tools.tsx               # TOOLS array (15 entries) + getToolById()
 │   └── aiBridge.ts             # AI Bridge endpoint specs + query templates/snippets
 │
 ├── lib/                        # Pure utility functions (no React)

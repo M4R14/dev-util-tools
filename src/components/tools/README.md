@@ -28,6 +28,7 @@ Some tools are static or external-link based and do not need a hook.
 | `RegexTester.tsx` | _(none)_ | Cheatsheet + external link to `regex101.com` |
 | `CrontabTool.tsx` | _(none)_ | Cheatsheet + external link to `crontab.guru` |
 | `WordCounterTool.tsx` | _(none)_ | External link helper for `wordcounter.net` |
+| `WheelRandomTool.tsx` | _(none)_ | External link helper for `wheelrandom.com` |
 | `AIAssistant.tsx` | `useAIChat` + `askGemini` service | AI chat UI composed from `tools/ai/*` subcomponents |
 
 ## Shared UI
