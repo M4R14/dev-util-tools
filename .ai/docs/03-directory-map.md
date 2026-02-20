@@ -124,10 +124,13 @@ src/
 │   │   └── XMLToJson.tsx
 │   ├── sidebar/                # Sidebar sub-components
 │   │   ├── SidebarBrand.tsx    # Logo and app name
+│   │   ├── SidebarEmptyState.tsx # Empty result message for sidebar search
 │   │   ├── SidebarFooter.tsx   # Footer links (GitHub, theme toggle)
 │   │   ├── SidebarNavigation.tsx # Favorites, recents, apps, external sections
 │   │   ├── SidebarSearch.tsx   # Search input in sidebar
+│   │   ├── navigationLayout.ts # Sidebar section index-offset helpers
 │   │   ├── useSidebarNavigation.ts # Keyboard nav hook for sidebar items
+│   │   ├── useSidebarSections.ts # Sidebar section config builder hook
 │   │   └── index.ts            # Barrel exports for sidebar module
 │   └── ui/                     # Shared UI primitives
 │       ├── Button.tsx          # CVA variants: default/destructive/outline/secondary/ghost/link
