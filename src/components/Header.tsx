@@ -1,8 +1,10 @@
 import React from 'react';
-import { Menu, Search, Star, Sun, Moon, X } from 'lucide-react';
+import { Menu, Search, Star, Sun, Moon, X, Newspaper } from 'lucide-react';
+import { NavLink } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
+import { cn } from '../lib/utils';
 
 interface HeaderProps {
   title: string;
@@ -85,6 +87,22 @@ const Header: React.FC<HeaderProps> = ({
       </div>
 
       <div className="flex items-center gap-2">
+        <NavLink
+          to="/blog"
+          className={({ isActive }) =>
+            cn(
+              'inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium border transition-colors',
+              isActive
+                ? 'bg-primary/10 text-primary border-primary/20'
+                : 'text-muted-foreground border-transparent hover:text-foreground hover:bg-muted',
+            )
+          }
+          aria-label="Open blog updates"
+        >
+          <Newspaper className="w-4 h-4" />
+          <span className="hidden sm:inline">Blog</span>
+        </NavLink>
+
         <Button
           variant="ghost"
           size="icon"

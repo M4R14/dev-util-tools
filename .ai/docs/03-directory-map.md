@@ -12,6 +12,9 @@ src/
 │   ├── Sidebar.tsx             # Navigation with search, favorites, recents, all tools
 │   ├── Header.tsx              # Top bar: title, search, theme toggle, GitHub link
 │   ├── Dashboard.tsx           # Landing page: hero search + tool cards grid
+│   ├── Blog.tsx                # Product updates page (renders posts from markdown)
+│   ├── blog/                   # Blog page sub-components
+│   │   └── BlogPostCard.tsx
 │   ├── dashboard/              # Dashboard sub-components
 │   │   ├── DashboardHero.tsx
 │   │   ├── DashboardToolSection.tsx
@@ -99,7 +102,15 @@ src/
 │
 ├── data/
 │   ├── tools.tsx               # TOOLS array (15 entries) + getToolById()
+│   ├── blogPosts.ts            # Markdown loader/parser for blog posts (frontmatter + bullet changes)
 │   └── aiBridge.ts             # AI Bridge endpoint specs + query templates/snippets
+│
+├── content/
+│   └── blog/                   # Blog source files in markdown
+│       ├── 2026-02-20-navigation-refresh.md
+│       ├── 2026-02-19-ai-assistant-updates.md
+│       ├── 2026-02-18-external-tools-addition.md
+│       └── 2026-02-17-ai-bridge-output-mode.md
 │
 ├── lib/                        # Pure utility functions (no React)
 │   ├── utils.ts                # cn() — clsx + tailwind-merge
@@ -125,3 +136,4 @@ src/
 - [Architecture](02-architecture.md) — Component tree & key patterns
 - [Tool Registry](04-tool-registry.md) — ToolID → Route → Component → Hook → Lib
 - [Adding a New Tool](05-adding-new-tool.md) — Which files to touch
+- [Blog Updates](11-blog-updates.md) — How markdown blog posts are structured

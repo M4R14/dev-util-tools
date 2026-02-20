@@ -5,6 +5,7 @@ App.tsx                          ← ThemeProvider > UserPreferencesProvider > S
   └─ MainLayout.tsx              ← Sidebar + Header + CommandPalette + ErrorBoundary + ToolPageLayout
        └─ <Route /:toolId>      ← Lazy-loaded tool component (code-split per tool)
        └─ <Route />             ← Dashboard (landing page)
+       └─ <Route /blog>         ← Blog updates page (content from markdown files)
        └─ <Route /ai-bridge*>   ← Machine-readable AI bridge pages (`/`, `/catalog`, `/spec`)
 ```
 
@@ -21,6 +22,7 @@ App.tsx                          ← ThemeProvider > UserPreferencesProvider > S
 | **Tool sub-components** | Complex tools split into folders: `thai-date/` (6 files), `ai/` (8 files), `url-parser/` (4 files) |
 | **AI automation bridge** | `/ai-bridge` executes requests, `/ai-bridge/catalog` exposes capability discovery, `/ai-bridge/spec` serves JSON schema |
 | **Static machine fetch** | Build emits `/ai-bridge/catalog.json` and `/ai-bridge/spec.json` for curl/static-host retrieval |
+| **Markdown content pipeline** | `src/data/blogPosts.ts` loads `src/content/blog/*.md` via `import.meta.glob(..., query: '?raw')`, parses frontmatter + list items, then renders in `Blog.tsx` |
 | **Search** | MiniSearch index with fuzzy matching, prefix search, field boosting (name 3× > tags 2× > description 1×) |
 | **Persistence** | Favorites & recents stored in `localStorage`; theme in `localStorage` + system preference |
 
@@ -30,5 +32,6 @@ App.tsx                          ← ThemeProvider > UserPreferencesProvider > S
 
 - [Project Overview](01-project-overview.md) — Framework & tech stack summary
 - [Directory Map](03-directory-map.md) — Full file tree with annotations
+- [Blog Updates](11-blog-updates.md) — Blog content format and contributor flow
 - [Types & Interfaces](06-types-and-interfaces.md) — Core type definitions
 - [Tool Registry](04-tool-registry.md) — All tools & their mappings

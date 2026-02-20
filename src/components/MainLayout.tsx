@@ -23,14 +23,21 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
   const activeToolId = location.pathname.substring(1) as ToolID;
   const activeTool = TOOLS.find((t) => t.id === activeToolId);
+  const isBlogPage = location.pathname === '/blog';
+  const isAIBridgePage = location.pathname.startsWith('/ai-bridge');
+  const pageTitle = activeTool?.name || (isBlogPage ? 'Blog' : isAIBridgePage ? 'AI Bridge' : 'Dashboard');
 
   useEffect(() => {
     if (activeTool) {
       document.title = `${activeTool.name} - DevPulse`;
+    } else if (isBlogPage) {
+      document.title = 'Blog - DevPulse';
+    } else if (isAIBridgePage) {
+      document.title = 'AI Bridge - DevPulse';
     } else {
       document.title = 'DevPulse - Developer Utilities';
     }
-  }, [activeTool]);
+  }, [activeTool, isBlogPage, isAIBridgePage]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -64,7 +71,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 bg-white dark:bg-slate-900 transition-colors">
         <Header
-          title={activeTool?.name || 'Dashboard'}
+          title={pageTitle}
           onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
           searchTerm={searchTerm}
           onSearch={setSearchTerm}
@@ -76,7 +83,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         <main
           id="main-content"
           className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50 dark:bg-slate-900/50 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700"
-          aria-label={activeTool?.name || 'Dashboard'}
+          aria-label={pageTitle}
         >
           <div className="max-w-7xl mx-auto animate-fadeIn min-h-full">
             {activeTool ? <ToolPageLayout tool={activeTool}>{children}</ToolPageLayout> : children}
