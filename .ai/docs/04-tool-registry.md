@@ -91,6 +91,10 @@ The registry below groups tools by responsibility to make discovery easier for c
   - Component: `src/components/tools/WheelRandomTool.tsx`
   - Doc: [.ai doc](./tools/wheel-random.md)
 
+- `dummy-image` — `/dummy-image`
+  - Component: `src/components/tools/DummyImageTool.tsx`
+  - Doc: [.ai doc](./tools/dummy-image.md)
+
 ## AI
 
 - `ai-assistant` — `/ai-assistant`

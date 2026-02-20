@@ -6,6 +6,7 @@ enum ToolID {
   BASE64_TOOL = 'base64-tool',
   AI_ASSISTANT = 'ai-assistant',
   CRONTAB = 'crontab-guru',
+  DUMMY_IMAGE = 'dummy-image',
   URL_PARSER = 'url-parser',
   DIFF_VIEWER = 'diff-viewer',
   REGEX_TESTER = 'regex-tester',

@@ -30,6 +30,7 @@ Some tools are static or external-link based and do not need a hook.
 | `CrontabTool.tsx` | _(none)_ | Cheatsheet + external link to `crontab.guru` |
 | `WordCounterTool.tsx` | _(none)_ | External link helper for `wordcounter.net` |
 | `WheelRandomTool.tsx` | _(none)_ | External link helper for `wheelrandom.com` |
+| `DummyImageTool.tsx` | _(none)_ | External link helper for `dummyimage.com` |
 | `AIAssistant.tsx` | `useAIChat` + `askGemini` service | AI chat UI composed from `tools/ai/*` subcomponents |
 
 ## Shared UI

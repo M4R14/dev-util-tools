@@ -9,6 +9,7 @@ import {
   Clock,
   Fingerprint,
   Link2,
+  Image as ImageIcon,
   FileDiff,
   FileCode2,
   FileBraces,
@@ -94,6 +95,13 @@ export const TOOLS: ToolMetadata[] = [
     description: 'Spin a random decision wheel for names, tasks, and giveaways.',
     icon: RotateCw,
     tags: ['wheel', 'random', 'picker', 'spin', 'decision', 'external tool'],
+  },
+  {
+    id: ToolID.DUMMY_IMAGE,
+    name: 'Dummy Image',
+    description: 'Generate placeholder images instantly (opens dummyimage.com).',
+    icon: ImageIcon,
+    tags: ['dummy image', 'placeholder', 'image', 'mockup', 'design', 'external tool'],
   },
   {
     id: ToolID.DIFF_VIEWER,
