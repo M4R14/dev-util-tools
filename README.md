@@ -90,6 +90,8 @@ src/
 │   │   ├── thai-date/      #   └ sub-components (6 files)
 │   │   ├── ai/             #   └ sub-components
 │   │   ├── diff-viewer/    #   └ sub-components
+│   │   ├── password-generator/ # └ sub-components
+│   │   ├── uuid-generator/ #   └ sub-components
 │   │   └── url-parser/     #   └ sub-components
 │   ├── ui/                 # Shared primitives (Button, Card, Input…)
 │   ├── sidebar/            # Sidebar sub-components

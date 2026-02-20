@@ -13,6 +13,7 @@ Create Version 4 UUIDs (GUIDs) with a UI optimized for fast batch generation wor
 
 ## Files
 - `src/components/tools/UUIDGenerator.tsx`
+- `src/components/tools/uuid-generator/*`
 - `src/hooks/useUUIDGenerator.ts`
 
 ## Usage Pattern

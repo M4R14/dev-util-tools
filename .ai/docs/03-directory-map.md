@@ -49,7 +49,14 @@ src/
 │   │   ├── JSONFormatter.tsx
 │   │   ├── Base64Tool.tsx
 │   │   ├── CaseConverter.tsx
-│   │   ├── PasswordGenerator.tsx
+│   │   ├── PasswordGenerator.tsx # Main Password Generator composition
+│   │   ├── password-generator/   # Password Generator sub-components and local helpers
+│   │   │   ├── PasswordOutputPanel.tsx
+│   │   │   ├── PasswordOptionsPanel.tsx
+│   │   │   ├── PasswordGuidancePanel.tsx
+│   │   │   ├── constants.ts
+│   │   │   ├── types.ts
+│   │   │   └── utils.ts
 │   │   ├── TimezoneConverter.tsx
 │   │   ├── ThaiIdTool.tsx
 │   │   ├── thai-date/          # Thai Date Converter (split into sub-components)
@@ -74,7 +81,13 @@ src/
 │   │   │   ├── CodeBlock.tsx
 │   │   │   ├── MessageContent.tsx
 │   │   │   └── SettingsModal.tsx
-│   │   ├── UUIDGenerator.tsx
+│   │   ├── UUIDGenerator.tsx    # Main UUID Generator composition
+│   │   ├── uuid-generator/      # UUID Generator sub-components and local helpers
+│   │   │   ├── UUIDOptionsPanel.tsx
+│   │   │   ├── UUIDResultsHeader.tsx
+│   │   │   ├── UUIDResultsList.tsx
+│   │   │   ├── constants.ts
+│   │   │   └── utils.ts
 │   │   ├── UrlParser.tsx       # + url-parser/UrlComponentInput.tsx, etc.
 │   │   ├── DiffViewer.tsx      # Main Diff Viewer composition
 │   │   ├── diff-viewer/        # Diff Viewer sub-components and local helpers
