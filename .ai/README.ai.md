@@ -79,6 +79,17 @@ Build commands, env vars, and coding conventions.
   - `diff-viewer`: `compare`
   - `thai-date-converter`: `format`, `parse`
 
+#### Endpoint usage
+- `/ai-bridge`
+  - Use for executing tool requests and getting result/error.
+  - Example: `/ai-bridge?tool=json-formatter&op=format&input={"a":1}`
+- `/ai-bridge/catalog`
+  - Use for discovery: list available tools and operations before planning calls.
+  - Example: `/ai-bridge/catalog`
+- `/ai-bridge/spec`
+  - Use for machine validation using JSON Schema of request/response.
+  - Example: `/ai-bridge/spec`
+
 #### Query mode examples
 ```text
 /ai-bridge?tool=json-formatter&op=format&input={"a":1}

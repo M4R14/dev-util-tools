@@ -154,6 +154,38 @@ const AIAgentBridge: React.FC = () => {
           <code>/ai-bridge/spec</code>. Query options: <code>mode=result-only</code>,{' '}
           <code>includeCatalog=false</code>.
         </p>
+        <ul className="text-xs text-muted-foreground list-disc pl-5 space-y-1">
+          <li>
+            <code>/ai-bridge</code>: execute tool requests and return runtime result/error.
+          </li>
+          <li>
+            <code>/ai-bridge/catalog</code>: return only available tools and supported operations
+            (discovery endpoint).
+          </li>
+          <li>
+            <code>/ai-bridge/spec</code>: return JSON Schema for request/response contracts
+            (machine validation endpoint).
+          </li>
+        </ul>
+        <section className="rounded-xl border border-border bg-muted/20 p-4 space-y-2">
+          <h3 className="text-sm font-semibold">Endpoint Usage</h3>
+          <pre className="text-xs overflow-auto">
+{`1) /ai-bridge
+Use for real execution of a tool request.
+Example:
+/ai-bridge?tool=json-formatter&op=format&input={"a":1}
+
+2) /ai-bridge/catalog
+Use for discovery (which tools/operations exist) before running anything.
+Example:
+/ai-bridge/catalog
+
+3) /ai-bridge/spec
+Use for machine validation of request/response structure via JSON Schema.
+Example:
+/ai-bridge/spec`}
+          </pre>
+        </section>
         <div className="grid gap-4 md:grid-cols-2">
           <section className="rounded-xl border border-border bg-muted/20 p-4 space-y-2">
             <h3 className="text-sm font-semibold">Quickstart</h3>

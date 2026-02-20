@@ -11,8 +11,9 @@
 Machine-readable bridge that lets AI/browser agents run selected DevPulse tools without manual UI interaction.
 
 Additional machine endpoints:
-- `/ai-bridge/catalog` for tool/operation discovery only
-- `/ai-bridge/spec` for JSON schema (request/response)
+- `/ai-bridge` executes tool requests and returns result/error payload
+- `/ai-bridge/catalog` returns available tools + operations (discovery only)
+- `/ai-bridge/spec` returns JSON schema for request/response (contract validation)
 
 ## How to Use
 
