@@ -1,66 +1,36 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import { Command, RefreshCw, Settings2, Trash2 } from 'lucide-react';
-import { toast } from 'sonner';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
-import CommandPalette, { type CommandPaletteAction } from './CommandPalette';
+import CommandPalette from './CommandPalette';
 import ToolPageLayout from './ToolPageLayout';
-import { Button } from './ui/Button';
-import { ToolID } from '../types';
-import { TOOLS } from '../data/tools';
 import { useUserPreferences } from '../context/UserPreferencesContext';
 import { useSearch } from '../context/SearchContext';
 import { Toaster } from './ui/sonner';
+import MainFooter from './main-layout/MainFooter';
+import MobileCommandPaletteButton from './main-layout/MobileCommandPaletteButton';
+import { resolveMainLayoutPageMeta, getMainLayoutDocumentTitle } from './main-layout/meta';
+import { useCommandPaletteActions } from './main-layout/useCommandPaletteActions';
 
 interface MainLayoutProps {
   children: React.ReactNode;
 }
 
-const SW_UPDATE_TOAST_ID = 'sw-update-available';
-const PWA_CACHE_PREFIX = 'devpulse-static-';
-
 const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
   const mainContentRef = useRef<HTMLElement>(null);
   const { favorites, toggleFavorite } = useUserPreferences();
   const { searchTerm, setSearchTerm } = useSearch();
+  const commandActions = useCommandPaletteActions();
 
-  const normalizedPathname = location.pathname.replace(/\/+$/, '') || '/';
-  const activeToolId = normalizedPathname.split('/')[1] as ToolID;
-  const activeTool = TOOLS.find((t) => t.id === activeToolId);
-  const isBlogPage = normalizedPathname === '/blog';
-  const isSettingsPage = normalizedPathname === '/settings';
-  const isAIBridgePage = normalizedPathname.startsWith('/ai-bridge');
-  const pageTitle =
-    activeTool?.name ||
-    (isBlogPage ? 'Blog' : isSettingsPage ? 'Settings' : isAIBridgePage ? 'AI Bridge' : 'Dashboard');
-  const pageDescription =
-    activeTool?.description ||
-    (isBlogPage
-      ? 'Product updates, release notes, and workflow tips.'
-      : isSettingsPage
-        ? 'Manage app-level preferences, offline cache, and update checks.'
-      : isAIBridgePage
-        ? 'Machine-friendly tool execution and schema reference.'
-        : 'Explore tools, favorites, and recently used workflows.');
+  const pageMeta = useMemo(() => resolveMainLayoutPageMeta(location.pathname), [location.pathname]);
+  const activeTool = pageMeta.activeTool;
 
   useEffect(() => {
-    if (activeTool) {
-      document.title = `${activeTool.name} - DevPulse`;
-    } else if (isBlogPage) {
-      document.title = 'Blog - DevPulse';
-    } else if (isSettingsPage) {
-      document.title = 'Settings - DevPulse';
-    } else if (isAIBridgePage) {
-      document.title = 'AI Bridge - DevPulse';
-    } else {
-      document.title = 'DevPulse - Developer Utilities';
-    }
-  }, [activeTool, isBlogPage, isSettingsPage, isAIBridgePage]);
+    document.title = getMainLayoutDocumentTitle(pageMeta);
+  }, [pageMeta]);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -85,99 +55,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       top: 0,
       behavior: reduceMotion ? 'auto' : 'smooth',
     });
-  }, [normalizedPathname]);
-
-  const promptServiceWorkerUpdate = useCallback((registration: ServiceWorkerRegistration) => {
-    if (!registration.waiting) {
-      return;
-    }
-
-    toast.info('New version available', {
-      id: SW_UPDATE_TOAST_ID,
-      description: 'Refresh to update the app.',
-      duration: Infinity,
-      action: {
-        label: 'Refresh',
-        onClick: () => {
-          registration.waiting?.postMessage({ type: 'SKIP_WAITING' });
-        },
-      },
-    });
-  }, []);
-
-  const handleCheckForUpdates = useCallback(async () => {
-    if (!('serviceWorker' in navigator)) {
-      toast.error('Service worker is not available');
-      return;
-    }
-
-    try {
-      const scope = import.meta.env.BASE_URL;
-      const registration =
-        (await navigator.serviceWorker.getRegistration(scope)) ??
-        (await navigator.serviceWorker.getRegistration());
-
-      if (!registration) {
-        toast.info('Service worker is not ready yet');
-        return;
-      }
-
-      await registration.update();
-      if (registration.waiting) {
-        promptServiceWorkerUpdate(registration);
-      } else {
-        toast.success('You are on the latest version');
-      }
-    } catch {
-      toast.error('Failed to check for updates');
-    }
-  }, [promptServiceWorkerUpdate]);
-
-  const handleClearOfflineCache = useCallback(async () => {
-    if (!('caches' in window)) {
-      toast.error('Cache API is not available');
-      return;
-    }
-
-    try {
-      const cacheKeys = await caches.keys();
-      const targetCaches = cacheKeys.filter((key) => key.startsWith(PWA_CACHE_PREFIX));
-      await Promise.all(targetCaches.map((key) => caches.delete(key)));
-      toast.success('Offline cache cleared');
-    } catch {
-      toast.error('Failed to clear offline cache');
-    }
-  }, []);
-
-  const commandActions = useMemo<CommandPaletteAction[]>(
-    () => [
-      {
-        id: 'open-settings',
-        name: 'Open settings',
-        description: 'Go to app settings page.',
-        icon: Settings2,
-        keywords: ['settings', 'preferences', 'config', 'pwa'],
-        onSelect: () => navigate('/settings'),
-      },
-      {
-        id: 'check-updates',
-        name: 'Check updates',
-        description: 'Check for a newer app version.',
-        icon: RefreshCw,
-        keywords: ['update', 'service worker', 'refresh'],
-        onSelect: handleCheckForUpdates,
-      },
-      {
-        id: 'clear-offline-cache',
-        name: 'Clear offline cache',
-        description: 'Delete cached offline app assets.',
-        icon: Trash2,
-        keywords: ['cache', 'offline', 'pwa', 'storage'],
-        onSelect: handleClearOfflineCache,
-      },
-    ],
-    [navigate, handleCheckForUpdates, handleClearOfflineCache],
-  );
+  }, [pageMeta.normalizedPathname]);
 
   return (
     <div className="relative flex h-screen overflow-hidden bg-background text-foreground transition-colors duration-200">
@@ -204,7 +82,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
       <div className="flex-1 flex flex-col min-w-0 bg-background/80 backdrop-blur-sm transition-colors">
         <Header
-          title={pageTitle}
+          title={pageMeta.pageTitle}
           onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
           searchTerm={searchTerm}
           onSearch={setSearchTerm}
@@ -218,8 +96,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
           ref={mainContentRef}
           tabIndex={-1}
           className="flex-1 overflow-y-auto px-4 py-5 pb-20 md:px-8 md:py-8 lg:px-10 bg-gradient-to-b from-muted/35 via-background to-background scrollbar-thin scrollbar-thumb-border/70 dark:scrollbar-thumb-border/50 focus-visible:outline-none"
-          aria-label={pageTitle}
-          aria-description={pageDescription}
+          aria-label={pageMeta.pageTitle}
+          aria-description={pageMeta.pageDescription}
         >
           <div className="max-w-7xl mx-auto min-h-full animate-in fade-in duration-300">
             {activeTool ? <ToolPageLayout tool={activeTool}>{children}</ToolPageLayout> : children}
@@ -227,41 +105,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
         </main>
 
         <Toaster />
-        <footer className="px-4 py-3 text-muted-foreground text-xs border-t border-border/60 bg-background/80 backdrop-blur-sm">
-          <div className="mx-auto flex max-w-full flex-col gap-2 md:flex-row md:items-center md:justify-between">
-            <p className="text-center md:text-left">
-              <span className="font-medium text-foreground/80">DevPulse</span> ©{' '}
-              {new Date().getFullYear()} • Privacy-first client-side processing
-            </p>
-
-            <NavLink
-              to="/settings"
-              className={({ isActive }) =>
-                `inline-flex items-center justify-center rounded-full border px-3 py-1 text-[11px] font-medium transition-colors ${
-                  isActive
-                    ? 'border-primary/30 bg-primary/10 text-primary'
-                    : 'border-border/70 text-muted-foreground hover:bg-muted/30 hover:text-foreground'
-                }`
-              }
-            >
-              App Settings
-            </NavLink>
-          </div>
-        </footer>
+        <MainFooter />
       </div>
 
       {!isCommandPaletteOpen && (
-        <div className="fixed bottom-4 right-4 z-40 md:hidden">
-          <Button
-            type="button"
-            onClick={() => setIsCommandPaletteOpen(true)}
-            className="h-10 rounded-full border border-primary/25 bg-background/90 px-4 shadow-lg backdrop-blur-md"
-            aria-label="Open command palette"
-          >
-            <Command className="w-4 h-4 mr-2" aria-hidden="true" />
-            <span className="text-xs font-semibold">Quick Search</span>
-          </Button>
-        </div>
+        <MobileCommandPaletteButton onOpen={() => setIsCommandPaletteOpen(true)} />
       )}
     </div>
   );

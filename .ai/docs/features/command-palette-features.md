@@ -53,7 +53,7 @@ Action search uses case-insensitive text matching over:
 
 - UI + selection orchestration: `src/components/CommandPalette.tsx`
 - Sub-components + local helpers: `src/components/command-palette/*`
-- Action wiring (settings/update/cache): `src/components/MainLayout.tsx`
+- Action wiring (settings/update/cache): `src/components/main-layout/useCommandPaletteActions.ts`
 - Tool metadata search index: `src/hooks/useToolSearch.ts` + `src/data/tools.tsx`
 
 ## Related

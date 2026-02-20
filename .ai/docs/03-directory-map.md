@@ -10,6 +10,11 @@ src/
 │
 ├── components/
 │   ├── MainLayout.tsx          # Shell: sidebar + header + cmd palette + content area + footer
+│   ├── main-layout/            # Main layout sub-modules (page meta, command actions, shell fragments)
+│   │   ├── meta.ts
+│   │   ├── useCommandPaletteActions.ts
+│   │   ├── MainFooter.tsx
+│   │   └── MobileCommandPaletteButton.tsx
 │   ├── Sidebar.tsx             # Navigation with search, favorites, recents, all tools
 │   ├── Header.tsx              # Top bar: title, search, theme toggle, GitHub link
 │   ├── Dashboard.tsx           # Landing page: hero search + tool cards grid
