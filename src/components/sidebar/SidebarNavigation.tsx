@@ -13,6 +13,7 @@ interface SidebarNavigationProps {
   externalTools: ToolMetadata[];
   selectedIndex: number;
   favorites: ToolID[];
+  onToggleFavorite: (id: ToolID) => void;
   onClose: () => void;
 }
 
@@ -54,6 +55,7 @@ const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
   externalTools,
   selectedIndex,
   favorites,
+  onToggleFavorite,
   onClose,
 }) => {
   const renderToolLink = (tool: ToolMetadata, contextPrefix: string, indexOffset: number) => (
@@ -64,7 +66,8 @@ const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
       selectedIndex={selectedIndex}
       onClose={onClose}
       searchTerm={searchTerm}
-      favorites={favorites}
+      isFavorite={favorites.includes(tool.id)}
+      onToggleFavorite={onToggleFavorite}
     />
   );
 

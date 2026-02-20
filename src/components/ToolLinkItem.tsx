@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import { Star } from 'lucide-react';
 import { ToolID, ToolMetadata } from '../types';
 import { cn } from '../lib/utils';
@@ -10,7 +10,8 @@ interface ToolLinkItemProps {
   selectedIndex: number;
   onClose: () => void;
   searchTerm: string;
-  favorites: ToolID[];
+  isFavorite: boolean;
+  onToggleFavorite: (id: ToolID) => void;
 }
 
 const ToolLinkItem: React.FC<ToolLinkItemProps> = ({
@@ -19,10 +20,13 @@ const ToolLinkItem: React.FC<ToolLinkItemProps> = ({
   selectedIndex,
   onClose,
   searchTerm,
-  favorites,
+  isFavorite,
+  onToggleFavorite,
 }) => {
   const isSelected = selectedIndex === indexOffset;
   const linkRef = React.useRef<HTMLAnchorElement>(null);
+  const location = useLocation();
+  const isActive = location.pathname === `/${tool.id}`;
 
   useEffect(() => {
     if (isSelected && linkRef.current) {
@@ -31,24 +35,22 @@ const ToolLinkItem: React.FC<ToolLinkItemProps> = ({
   }, [isSelected]);
 
   return (
-    <NavLink
-      ref={linkRef}
-      to={`/${tool.id}`}
-      onClick={() => {
-        if (window.innerWidth < 768) onClose();
-      }}
-      className={({ isActive }) =>
-        cn(
-          'w-full flex items-center gap-2 px-2 py-1.5 rounded-md transition-all duration-200 group border border-transparent text-sm',
+    <div className="relative group">
+      <NavLink
+        ref={linkRef}
+        to={`/${tool.id}`}
+        onClick={() => {
+          if (window.innerWidth < 768) onClose();
+        }}
+        className={cn(
+          'w-full flex items-center gap-2 px-2 py-1.5 pr-8 rounded-md transition-all duration-200 border border-transparent text-sm',
           isActive
             ? 'bg-primary/10 text-primary border-primary/20 font-medium'
             : isSelected
               ? 'bg-accent text-accent-foreground border-border'
               : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground',
-        )
-      }
-    >
-      {({ isActive }) => (
+        )}
+      >
         <>
           <span
             className={cn(
@@ -63,12 +65,7 @@ const ToolLinkItem: React.FC<ToolLinkItemProps> = ({
             <tool.icon className="w-4 h-4" />
           </span>
           <div className="text-left flex-1 min-w-0">
-            <div className="truncate flex items-center gap-1.5">
-              {tool.name}
-              {favorites.includes(tool.id) && (
-                <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
-              )}
-            </div>
+            <div className="truncate">{tool.name}</div>
             {searchTerm && (
               <div className="text-[10px] text-muted-foreground truncate">{tool.description}</div>
             )}
@@ -79,11 +76,30 @@ const ToolLinkItem: React.FC<ToolLinkItemProps> = ({
                 'w-1 h-1 rounded-full ml-auto',
                 isActive ? 'bg-primary' : 'bg-muted-foreground/30',
               )}
-            ></div>
+            />
           )}
         </>
-      )}
-    </NavLink>
+      </NavLink>
+
+      <button
+        type="button"
+        onClick={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          onToggleFavorite(tool.id);
+        }}
+        className={cn(
+          'absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded text-muted-foreground hover:text-amber-500 hover:bg-muted transition-all',
+          isFavorite
+            ? 'opacity-100 text-amber-500'
+            : 'opacity-0 group-hover:opacity-100 group-focus-within:opacity-100',
+        )}
+        aria-label={isFavorite ? `Remove ${tool.name} from favorites` : `Add ${tool.name} to favorites`}
+        aria-pressed={isFavorite}
+      >
+        <Star className={cn('w-3.5 h-3.5', isFavorite && 'fill-current')} />
+      </button>
+    </div>
   );
 };
 

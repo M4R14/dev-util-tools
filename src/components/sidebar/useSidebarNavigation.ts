@@ -10,7 +10,7 @@ const LIMIT_RECENTS = 3;
 const EXTERNAL_TOOL_TAG = 'external tool';
 
 export const useSidebarNavigation = (onClose: () => void) => {
-  const { favorites, recents } = useUserPreferences();
+  const { favorites, recents, toggleFavorite } = useUserPreferences();
   const { searchTerm, setSearchTerm } = useSearch();
   const filteredTools = useToolSearch(searchTerm);
   const navigate = useNavigate();
@@ -109,6 +109,7 @@ export const useSidebarNavigation = (onClose: () => void) => {
     recentTools,
     selectedIndex,
     favorites,
+    toggleFavorite,
     renderToolLink,
     tools: TOOLS,
     internalTools,
