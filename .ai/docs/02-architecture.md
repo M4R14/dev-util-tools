@@ -5,6 +5,7 @@ App.tsx                          ← ThemeProvider > UserPreferencesProvider > S
   └─ MainLayout.tsx              ← Sidebar + Header + CommandPalette + ErrorBoundary + ToolPageLayout
        └─ <Route /:toolId>      ← Lazy-loaded tool component (code-split per tool)
        └─ <Route />             ← Dashboard (landing page)
+       └─ <Route /ai-bridge>    ← Machine-readable AI bridge endpoint page
 ```
 
 ## Key Patterns
@@ -18,6 +19,7 @@ App.tsx                          ← ThemeProvider > UserPreferencesProvider > S
 | **Compound components** | `ToolLayout` has `.Section` and `.Panel` sub-components |
 | **Sidebar decomposition** | `Sidebar.tsx` composed from `sidebar/` sub-components: Brand, Footer, Navigation, Search + `useSidebarNavigation` hook |
 | **Tool sub-components** | Complex tools split into folders: `thai-date/` (6 files), `ai/` (3 files), `url-parser/` (4 files) |
+| **AI automation bridge** | `/ai-bridge` route exposes query-driven execution and `window.DevPulseAI` for browser agents |
 | **Search** | MiniSearch index with fuzzy matching, prefix search, field boosting (name 3× > tags 2× > description 1×) |
 | **Persistence** | Favorites & recents stored in `localStorage`; theme in `localStorage` + system preference |
 
