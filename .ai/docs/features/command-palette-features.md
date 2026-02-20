@@ -41,6 +41,8 @@ Action search uses case-insensitive text matching over:
 - `ArrowDown` / `ArrowUp`: move active selection
 - `Enter`: execute selected action or open selected tool route
 - `Escape`: close palette
+- Global hotkey ignores repeated keydown events and IME composition events to prevent accidental rapid toggles.
+- Global hotkey does not trigger while focus is in editable targets (`input`, `textarea`, or contenteditable nodes).
 
 ## UX & Accessibility Notes
 
@@ -54,6 +56,7 @@ Action search uses case-insensitive text matching over:
 - UI + selection orchestration: `src/components/CommandPalette.tsx`
 - Sub-components + local helpers: `src/components/command-palette/*`
 - Action wiring (settings/update/cache): `src/components/main-layout/useCommandPaletteActions.ts`
+- Global hotkey handler: `src/components/main-layout/useCommandPaletteHotkey.ts`
 - Tool metadata search index: `src/hooks/useToolSearch.ts` + `src/data/tools.tsx`
 
 ## Related

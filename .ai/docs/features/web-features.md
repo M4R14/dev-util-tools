@@ -15,11 +15,18 @@ DevPulse feature documentation is split into focused files for easier maintenanc
 
 - Command Palette: instant tool search + quick actions via `Cmd+K` / `Ctrl+K` (`Open settings`, `Check updates`, `Clear offline cache`).
 - Keyboard-First: arrow keys, `Enter`, and `Escape` are first-class navigation actions.
+- Keyboard Safety: global and sidebar keyboard handlers guard against repeat/composition and non-target typing contexts.
 - Dark Mode: theme toggle with persisted preference across sessions.
 - PWA Offline Mode: local tools remain usable after assets are cached on first online load.
 - Background Update UX: when a new service-worker version is ready, the app shows `New version available` with a `Refresh` action.
 - App Settings Page: `/settings` centralizes `Online/Offline`, install prompt, cache size, last update, `Check for updates`, and `Clear offline cache`.
 - Mini Release Notes (Auto): blog includes an auto-generated release note sourced from recent commits/PR references.
+
+## Reliability Guarantees
+
+- Sidebar keyboard selection is resilient when visible result count is zero.
+- Sidebar section index offsets are computed from actual rendered section order.
+- Route change effects reset shell state predictably (close sidebar + scroll-to-top with reduced-motion support).
 
 ## Shareable URL State
 
@@ -50,6 +57,16 @@ Coverage and query-key details are documented in [Shareable URL State Features](
 - Tool IDs: `src/types.ts`
 - Route wiring: `src/App.tsx`
 - Tool map docs: `.ai/docs/04-tool-registry.md`
+
+## Behavior Source Map
+
+| Concern | File |
+|---|---|
+| Sidebar keyboard handling and selection lifecycle | `src/components/sidebar/useSidebarNavigation.ts` |
+| Sidebar section ordering and index offsets | `src/components/sidebar/useSidebarSections.ts` |
+| Sidebar section/view rendering | `src/components/sidebar/SidebarNavigation.tsx` |
+| Global command-palette hotkey lifecycle | `src/components/main-layout/useCommandPaletteHotkey.ts` |
+| Route-close + scroll reset effects | `src/components/main-layout/useMainLayoutRouteEffects.ts` |
 
 ## Related
 

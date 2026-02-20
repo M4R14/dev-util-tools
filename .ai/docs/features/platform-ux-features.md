@@ -26,6 +26,15 @@ This file captures cross-tool user experience features.
 - `Enter` executes highlighted action or opens highlighted tool route.
 - `Escape` closes active overlay.
 - Supports low-mouse workflows for faster tool switching during development.
+- Sidebar keyboard navigation only responds to navigation keys (`ArrowDown`, `ArrowUp`, `Enter`) and ignores modified combos (`Ctrl`, `Cmd`, `Alt`).
+- Sidebar keyboard navigation ignores typing targets except the sidebar search input (`data-sidebar-search-input="true"`).
+- Sidebar `Enter` selection ignores repeated keydown events to avoid duplicate route navigation.
+
+## Reliability Guarantees
+
+- Sidebar keyboard selection remains stable when there are zero visible tools (no modulo-by-zero behavior).
+- Sidebar index offsets are derived from rendered sections in a deterministic sequence.
+- Route transition effects always close sidebar and reset main scroll position with motion preference support.
 
 ## Dark Mode
 

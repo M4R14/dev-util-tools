@@ -11,6 +11,7 @@ const LIMIT_RECENTS = 3;
 const EXTERNAL_TOOL_TAG = 'external tool';
 const SEARCH_INPUT_ATTR = 'data-sidebar-search-input';
 const TOOL_BY_ID = new Map(TOOLS.map((tool) => [tool.id, tool]));
+const SIDEBAR_NAV_KEYS = new Set(['ArrowDown', 'ArrowUp', 'Enter']);
 
 const isExternalTool = (tool: ToolMetadata) => tool.tags?.includes(EXTERNAL_TOOL_TAG) ?? false;
 
@@ -44,6 +45,14 @@ const useSidebarKeyboardNavigation = ({
     const hasVisibleTools = totalVisibleTools > 0;
 
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (!SIDEBAR_NAV_KEYS.has(event.key)) {
+        return;
+      }
+
+      if (event.metaKey || event.ctrlKey || event.altKey) {
+        return;
+      }
+
       if (isTypingTarget(event.target) && !isSidebarSearchInput(event.target)) {
         return;
       }
@@ -67,6 +76,10 @@ const useSidebarKeyboardNavigation = ({
       }
 
       if (event.key !== 'Enter' || selectedIndex < 0) {
+        return;
+      }
+
+      if (event.repeat) {
         return;
       }
 

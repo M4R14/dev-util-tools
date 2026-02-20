@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 const isEditableTarget = (target: EventTarget | null) => {
   if (!(target instanceof HTMLElement)) {
@@ -13,9 +13,15 @@ const isEditableTarget = (target: EventTarget | null) => {
 };
 
 export const useCommandPaletteHotkey = (onToggle: () => void) => {
+  const onToggleRef = useRef(onToggle);
+
+  useEffect(() => {
+    onToggleRef.current = onToggle;
+  }, [onToggle]);
+
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.defaultPrevented || event.repeat) {
+      if (event.defaultPrevented || event.repeat || event.isComposing) {
         return;
       }
 
@@ -28,10 +34,10 @@ export const useCommandPaletteHotkey = (onToggle: () => void) => {
       }
 
       event.preventDefault();
-      onToggle();
+      onToggleRef.current();
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onToggle]);
+  }, []);
 };
