@@ -1,4 +1,16 @@
+import type { ComponentType } from 'react';
+import type { ToolMetadata } from '../../types';
+
 export type SidebarSectionKey = 'search' | 'favorites' | 'recent' | 'apps' | 'external';
+
+export interface SidebarToolSection {
+  key: SidebarSectionKey;
+  title: string;
+  icon: ComponentType<{ className?: string }>;
+  tools: ToolMetadata[];
+  contextPrefix: string;
+  className?: string;
+}
 
 export const getSectionBaseOffsets = ({
   favoriteCount,
