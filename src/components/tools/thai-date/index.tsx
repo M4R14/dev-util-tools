@@ -74,16 +74,9 @@ const ThaiDateConverter: React.FC = () => {
               {/* Input mode */}
               {parserMode === 'picker' ? (
                 <DatePickerInput
-                  pickerDay={pickerDay}
-                  setPickerDay={setPickerDay}
-                  pickerMonth={pickerMonth}
-                  setPickerMonth={setPickerMonth}
-                  pickerYear={pickerYear}
-                  setPickerYear={setPickerYear}
-                  pickerMonthFormat={pickerMonthFormat}
-                  setPickerMonthFormat={setPickerMonthFormat}
                   monthOptions={monthOptions}
                   onClear={clearPicker}
+                  onChange={handleTextChange}
                 />
               ) : (
                 <TextParserInput

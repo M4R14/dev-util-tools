@@ -3,29 +3,54 @@ import dayjs from 'dayjs';
 import { Input } from '../../ui/Input';
 import { cn } from '../../../lib/utils';
 import { type ParserMonthFormat } from '../../../hooks/useThaiDateConverter';
+import { BUDDHIST_YEAR_OFFSET } from '../../../lib/thaiDate';
 
 interface DatePickerInputProps {
-  pickerDay: string;
-  setPickerDay: (v: string) => void;
-  pickerMonth: string;
-  setPickerMonth: (v: string) => void;
-  pickerYear: string;
-  setPickerYear: (v: string) => void;
-  pickerMonthFormat: ParserMonthFormat;
-  setPickerMonthFormat: (v: ParserMonthFormat) => void;
   monthOptions: { label: string; value: number }[];
   onClear: () => void;
+  onChange: (value: string  ) => void;
 }
 
+
+
 const DatePickerInput: React.FC<DatePickerInputProps> = ({
-  pickerDay, setPickerDay,
-  pickerMonth, setPickerMonth,
-  pickerYear, setPickerYear,
-  pickerMonthFormat, setPickerMonthFormat,
   monthOptions,
   onClear,
+  onChange
 }) => {
-  const hasValue = pickerDay || pickerMonth || pickerYear;
+  const currentDate = dayjs()
+  const [ hasValue, setHasValue ] = React.useState(currentDate.date() !== 0)
+  const [ pickerDay, setPickerDay ] = React.useState(currentDate.date())
+  const [ pickerMonth, setPickerMonth ] = React.useState<string>(monthOptions[0].value.toString())
+  const [ pickerYear, setPickerYear ] = React.useState(currentDate.year() + BUDDHIST_YEAR_OFFSET)
+  const [ pickerMonthFormat, setPickerMonthFormat ] = React.useState<ParserMonthFormat>('short');
+
+  const handleChange = (action: 'day' | 'month' | 'year' | 'clear', value?: number | string) => {
+    console.log(action, value)
+    switch (action) {
+      case 'day':
+        setPickerDay(value as number)
+        break;
+      case 'month':
+        setPickerMonth(value as string)
+        break;
+      case 'year':
+        setPickerYear(value as number);
+        setHasValue(false);
+        break;
+      case 'clear':
+        onClear();
+        setPickerDay(0);
+        setPickerMonth('');
+        setPickerYear(0);
+        setHasValue(false);
+        break;
+    }
+
+    // to date string
+    const dateTxt = `${pickerDay} ${pickerMonth} ${pickerYear}`;
+    onChange(dateTxt);
+  };
 
   return (
     <div className="space-y-3 bg-muted/30 p-4 rounded-xl border border-border/50">
@@ -36,28 +61,23 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
         <div className="flex items-center gap-1.5">
           {hasValue && (
             <button
-              onClick={onClear}
+              onClick={() => handleChange('clear')}
               className="text-xs text-muted-foreground hover:text-foreground px-2 py-1 rounded-md hover:bg-muted transition-colors"
-            >
-              ล้าง
+            > ล้าง
             </button>
           )}
           <div className="flex items-center gap-0.5 bg-background rounded-lg border border-border p-0.5">
             {(['short', 'long'] as ParserMonthFormat[]).map((fmt) => (
               <button
                 key={fmt}
-                onClick={() => {
-                  setPickerMonthFormat(fmt);
-                  setPickerMonth('');
-                }}
+                onClick={() => setPickerMonthFormat(fmt)}
                 className={cn(
                   'text-xs px-2.5 py-1 rounded-md transition-colors',
                   pickerMonthFormat === fmt
                     ? 'bg-primary text-primary-foreground shadow-sm'
                     : 'text-muted-foreground hover:text-foreground',
                 )}
-              >
-                {fmt === 'short' ? 'ย่อ' : 'เต็ม'}
+              > {fmt === 'short' ? 'ย่อ' : 'เต็ม'}
               </button>
             ))}
           </div>
@@ -75,7 +95,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
             min={1}
             max={31}
             value={pickerDay}
-            onChange={(e) => setPickerDay(e.target.value)}
+            onChange={(e) => handleChange('day', e.target.value)}
             placeholder="1"
             className="h-10 text-center bg-background tabular-nums"
           />
@@ -88,7 +108,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
           </label>
           <select
             value={pickerMonth}
-            onChange={(e) => setPickerMonth(e.target.value)}
+            onChange={(e) => handleChange('month', e.target.value)}
             className={cn(
               'flex h-10 w-full rounded-md border border-input bg-background px-2 py-1 text-sm shadow-sm transition-colors cursor-pointer',
               'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
@@ -114,7 +134,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
           <Input
             type="number"
             value={pickerYear}
-            onChange={(e) => setPickerYear(e.target.value)}
+            onChange={(e) => handleChange('year', e.target.value)}
             placeholder={String(dayjs().year() + 543)}
             className="h-10 text-center bg-background tabular-nums"
           />

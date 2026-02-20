@@ -9,6 +9,7 @@ import { SearchProvider } from './context/SearchContext';
 
 // Lazy-loaded tool pages — each becomes its own chunk
 const Dashboard = lazy(() => import('./components/Dashboard'));
+const AIAgentBridge = lazy(() => import('./components/AIAgentBridge'));
 
 /** Map each ToolID to its lazy-loaded component. */
 const TOOL_COMPONENTS: Record<ToolID, React.LazyExoticComponent<ComponentType>> = {
@@ -58,6 +59,14 @@ const App: React.FC = () => {
                 ))}
 
                 <Route path="/" element={<Dashboard />} />
+                <Route
+                  path="/ai-bridge"
+                  element={
+                    <ErrorBoundary>
+                      <AIAgentBridge />
+                    </ErrorBoundary>
+                  }
+                />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>
