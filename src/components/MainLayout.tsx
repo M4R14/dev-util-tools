@@ -52,11 +52,16 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   }, []);
 
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-200 overflow-hidden transition-colors duration-200">
+    <div className="relative flex h-screen overflow-hidden bg-background text-foreground transition-colors duration-200">
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute top-0 left-1/3 h-80 w-80 rounded-full bg-primary/8 blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 h-72 w-72 rounded-full bg-blue-500/10 blur-3xl dark:bg-blue-400/10" />
+      </div>
+
       {/* Skip to content link for keyboard users */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:z-[200] focus:top-4 focus:left-4 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:shadow-lg"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-[200] focus:top-4 focus:left-4 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:shadow-lg focus:ring-2 focus:ring-primary/40"
       >
         Skip to main content
       </a>
@@ -69,7 +74,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 bg-white dark:bg-slate-900 transition-colors">
+      <div className="flex-1 flex flex-col min-w-0 bg-background/80 backdrop-blur-sm transition-colors">
         <Header
           title={pageTitle}
           onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -82,17 +87,17 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
         <main
           id="main-content"
-          className="flex-1 overflow-y-auto p-4 md:p-8 bg-slate-50 dark:bg-slate-900/50 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-700"
+          className="flex-1 overflow-y-auto px-4 py-5 md:px-8 md:py-8 lg:px-10 bg-gradient-to-b from-muted/35 via-background to-background scrollbar-thin scrollbar-thumb-border/70 dark:scrollbar-thumb-border/50"
           aria-label={pageTitle}
         >
-          <div className="max-w-7xl mx-auto animate-fadeIn min-h-full">
+          <div className="max-w-7xl mx-auto min-h-full animate-in fade-in duration-300">
             {activeTool ? <ToolPageLayout tool={activeTool}>{children}</ToolPageLayout> : children}
           </div>
         </main>
 
         <Toaster />
-        <footer className="p-4 text-center text-slate-500 dark:text-slate-600 text-xs border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
-          DevPulse © {new Date().getFullYear()} • Privacy-first Client-side Processing
+        <footer className="px-4 py-3 text-center text-muted-foreground text-xs border-t border-border/60 bg-background/80 backdrop-blur-sm">
+          <span className="font-medium text-foreground/80">DevPulse</span> © {new Date().getFullYear()} • Privacy-first client-side processing
         </footer>
       </div>
     </div>
