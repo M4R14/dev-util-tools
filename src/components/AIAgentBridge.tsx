@@ -1,7 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import ToolLayout from './ui/ToolLayout';
-import { AI_TOOL_CATALOG, AIToolRequest, AIToolResponse, runAITool } from '../lib/aiToolBridge';
+import {
+  AI_BRIDGE_SCHEMA,
+  AI_TOOL_CATALOG,
+  AI_TOOL_OPERATIONS,
+  AIToolRequest,
+  AIToolResponse,
+  runAITool,
+} from '../lib/aiToolBridge';
 
 interface AIBridgeWindow {
   catalog: () => typeof AI_TOOL_CATALOG;
@@ -50,6 +57,7 @@ const parseQueryRequest = (params: URLSearchParams): AIToolRequest | null => {
 
 const AIAgentBridge: React.FC = () => {
   const [params] = useSearchParams();
+  const location = useLocation();
   const [response, setResponse] = useState<AIToolResponse | null>(null);
 
   useEffect(() => {
@@ -64,28 +72,74 @@ const AIAgentBridge: React.FC = () => {
   }, []);
 
   const request = useMemo(() => parseQueryRequest(params), [params]);
+  const mode = params.get('mode') === 'result-only' ? 'result-only' : 'full';
+  const includeCatalog = params.get('includeCatalog') !== 'false';
+  const isCatalogEndpoint = location.pathname.endsWith('/catalog');
+  const isSpecEndpoint = location.pathname.endsWith('/spec');
 
   useEffect(() => {
+    if (isCatalogEndpoint || isSpecEndpoint) {
+      setResponse(null);
+      return;
+    }
     if (!request) {
       setResponse(null);
       return;
     }
     setResponse(runAITool(request));
-  }, [request]);
+  }, [isCatalogEndpoint, isSpecEndpoint, request]);
 
   const responseText = useMemo(
-    () =>
-      JSON.stringify(
+    () => {
+      if (isCatalogEndpoint) {
+        return JSON.stringify(
+          {
+            endpoint: '/ai-bridge/catalog',
+            catalog: AI_TOOL_CATALOG,
+            operations: AI_TOOL_OPERATIONS,
+          },
+          null,
+          2,
+        );
+      }
+
+      if (isSpecEndpoint) {
+        return JSON.stringify(
+          {
+            endpoint: '/ai-bridge/spec',
+            schema: AI_BRIDGE_SCHEMA,
+          },
+          null,
+          2,
+        );
+      }
+
+      if (mode === 'result-only') {
+        return JSON.stringify(
+          response?.ok
+            ? { ok: true, result: response.result }
+            : {
+                ok: false,
+                error: response?.error ?? 'No request provided',
+                errorDetails: response?.errorDetails,
+              },
+          null,
+          2,
+        );
+      }
+
+      return JSON.stringify(
         {
           endpoint: '/ai-bridge',
           request,
           response,
-          catalog: AI_TOOL_CATALOG,
+          ...(includeCatalog ? { catalog: AI_TOOL_CATALOG } : {}),
         },
         null,
         2,
-      ),
-    [request, response],
+      );
+    },
+    [includeCatalog, isCatalogEndpoint, isSpecEndpoint, mode, request, response],
   );
 
   return (
@@ -94,6 +148,11 @@ const AIAgentBridge: React.FC = () => {
         <p className="text-sm text-muted-foreground">
           Machine-readable bridge for AI/browser agents via query params and{' '}
           <code>window.DevPulseAI.run()</code>.
+        </p>
+        <p className="text-xs text-muted-foreground">
+          Endpoints: <code>/ai-bridge</code>, <code>/ai-bridge/catalog</code>,{' '}
+          <code>/ai-bridge/spec</code>. Query options: <code>mode=result-only</code>,{' '}
+          <code>includeCatalog=false</code>.
         </p>
         <div className="grid gap-4 md:grid-cols-2">
           <section className="rounded-xl border border-border bg-muted/20 p-4 space-y-2">

@@ -26,6 +26,13 @@ export interface AIToolResponse {
   operation: string;
   result?: unknown;
   error?: string;
+  errorDetails?: {
+    code: string;
+    message: string;
+    supportedOperations?: string[];
+    supportedTools?: AIToolId[];
+    suggestion?: string;
+  };
 }
 
 export interface AIToolCatalogItem {
@@ -42,6 +49,108 @@ export const AI_TOOL_CATALOG: AIToolCatalogItem[] = [
   { id: 'diff-viewer', operations: ['compare'] },
   { id: 'thai-date-converter', operations: ['format', 'parse'] },
 ];
+
+export const AI_TOOL_OPERATIONS: Record<AIToolId, readonly string[]> = AI_TOOL_CATALOG.reduce(
+  (acc, item) => {
+    acc[item.id] = item.operations;
+    return acc;
+  },
+  {} as Record<AIToolId, readonly string[]>,
+);
+
+export const AI_BRIDGE_SCHEMA = {
+  request: {
+    $schema: 'https://json-schema.org/draft/2020-12/schema',
+    title: 'AIToolRequest',
+    type: 'object',
+    required: ['tool', 'operation'],
+    properties: {
+      tool: { type: 'string', enum: AI_TOOL_CATALOG.map((item) => item.id) },
+      operation: { type: 'string' },
+      input: {},
+      options: { type: 'object', additionalProperties: true },
+    },
+    additionalProperties: false,
+  },
+  response: {
+    $schema: 'https://json-schema.org/draft/2020-12/schema',
+    title: 'AIToolResponse',
+    type: 'object',
+    required: ['ok', 'tool', 'operation'],
+    properties: {
+      ok: { type: 'boolean' },
+      tool: { type: 'string', enum: AI_TOOL_CATALOG.map((item) => item.id) },
+      operation: { type: 'string' },
+      result: {},
+      error: { type: 'string' },
+      errorDetails: {
+        type: 'object',
+        properties: {
+          code: { type: 'string' },
+          message: { type: 'string' },
+          supportedOperations: { type: 'array', items: { type: 'string' } },
+          supportedTools: {
+            type: 'array',
+            items: { type: 'string', enum: AI_TOOL_CATALOG.map((item) => item.id) },
+          },
+          suggestion: { type: 'string' },
+        },
+        additionalProperties: false,
+      },
+    },
+    additionalProperties: false,
+  },
+} as const;
+
+class BridgeValidationError extends Error {
+  code: string;
+  supportedOperations?: string[];
+  supportedTools?: AIToolId[];
+  suggestion?: string;
+
+  constructor(
+    message: string,
+    details: {
+      code: string;
+      supportedOperations?: string[];
+      supportedTools?: AIToolId[];
+      suggestion?: string;
+    },
+  ) {
+    super(message);
+    this.name = 'BridgeValidationError';
+    this.code = details.code;
+    this.supportedOperations = details.supportedOperations;
+    this.supportedTools = details.supportedTools;
+    this.suggestion = details.suggestion;
+  }
+}
+
+const getOperationSuggestion = (operation: string, supportedOperations: readonly string[]) => {
+  const lower = operation.toLowerCase();
+  return (
+    supportedOperations.find((op) => op.startsWith(lower)) ||
+    supportedOperations.find((op) => op.includes(lower)) ||
+    supportedOperations[0]
+  );
+};
+
+const assertSupportedOperation = (tool: AIToolId, operation: string) => {
+  const supported = AI_TOOL_OPERATIONS[tool];
+  if (!supported.includes(operation)) {
+    const suggestion = getOperationSuggestion(operation, supported);
+    throw new BridgeValidationError(
+      `Unsupported operation "${operation}" for "${tool}". Supported operations: ${supported.join(
+        ', ',
+      )}.`,
+      {
+        code: 'UNSUPPORTED_OPERATION',
+        supportedOperations: [...supported],
+        suggestion,
+      },
+    );
+  }
+};
 
 const encodeUnicodeToBase64 = (value: string): string => {
   const escaped = encodeURIComponent(value).replace(/%([0-9A-F]{2})/g, (_, p1: string) =>
@@ -74,6 +183,7 @@ const asObject = (input: unknown, fieldName: string): Record<string, unknown> =>
 };
 
 const runJsonFormatter = (operation: string, input: unknown, options?: Record<string, unknown>) => {
+  assertSupportedOperation('json-formatter', operation);
   const raw = asString(input, 'input');
   const parsed = JSON.parse(raw);
 
@@ -91,6 +201,7 @@ const runJsonFormatter = (operation: string, input: unknown, options?: Record<st
 };
 
 const runXmlFormatter = (operation: string, input: unknown, options?: Record<string, unknown>) => {
+  assertSupportedOperation('xml-formatter', operation);
   const raw = asString(input, 'input');
   const indent = typeof options?.indent === 'number' ? options.indent : 2;
 
@@ -121,6 +232,7 @@ const runXmlFormatter = (operation: string, input: unknown, options?: Record<str
 };
 
 const runBase64Tool = (operation: string, input: unknown) => {
+  assertSupportedOperation('base64-tool', operation);
   const raw = asString(input, 'input');
   if (operation === 'encode') return encodeUnicodeToBase64(raw);
   if (operation === 'decode') return decodeUnicodeFromBase64(raw);
@@ -128,6 +240,7 @@ const runBase64Tool = (operation: string, input: unknown) => {
 };
 
 const runCaseConverter = (operation: string, input: unknown, options?: Record<string, unknown>) => {
+  assertSupportedOperation('case-converter', operation);
   if (operation !== 'convert') {
     throw new Error(`Unsupported operation "${operation}" for case-converter`);
   }
@@ -138,10 +251,14 @@ const runCaseConverter = (operation: string, input: unknown, options?: Record<st
   if (target === 'kebab') return toKebabCase(raw);
   if (target === 'camel') return toCamelCase(raw);
   if (target === 'pascal') return toPascalCase(raw);
-  throw new Error('options.target must be one of: snake, kebab, camel, pascal');
+  throw new BridgeValidationError('Invalid options.target for case-converter.', {
+    code: 'INVALID_OPTION',
+    suggestion: 'Use options.target = "snake" | "kebab" | "camel" | "pascal"',
+  });
 };
 
 const runUrlParser = (operation: string, input: unknown) => {
+  assertSupportedOperation('url-parser', operation);
   if (operation !== 'parse') {
     throw new Error(`Unsupported operation "${operation}" for url-parser`);
   }
@@ -168,6 +285,7 @@ const runUrlParser = (operation: string, input: unknown) => {
 };
 
 const runDiffViewer = (operation: string, input: unknown, options?: Record<string, unknown>) => {
+  assertSupportedOperation('diff-viewer', operation);
   if (operation !== 'compare') {
     throw new Error(`Unsupported operation "${operation}" for diff-viewer`);
   }
@@ -183,6 +301,7 @@ const runDiffViewer = (operation: string, input: unknown, options?: Record<strin
 };
 
 const runThaiDateConverter = (operation: string, input: unknown) => {
+  assertSupportedOperation('thai-date-converter', operation);
   const raw = asString(input, 'input');
   if (operation === 'format') {
     return formatThaiDate(raw);
@@ -198,6 +317,13 @@ const runThaiDateConverter = (operation: string, input: unknown) => {
 export const runAITool = (request: AIToolRequest): AIToolResponse => {
   const { tool, operation, input = '', options } = request;
   try {
+    if (!AI_TOOL_CATALOG.some((item) => item.id === tool)) {
+      throw new BridgeValidationError(`Unsupported tool "${tool}".`, {
+        code: 'UNSUPPORTED_TOOL',
+        supportedTools: AI_TOOL_CATALOG.map((item) => item.id),
+      });
+    }
+
     let result: unknown;
     switch (tool) {
       case 'json-formatter':
@@ -222,16 +348,39 @@ export const runAITool = (request: AIToolRequest): AIToolResponse => {
         result = runThaiDateConverter(operation, input);
         break;
       default:
-        throw new Error(`Unsupported tool "${tool}"`);
+        throw new BridgeValidationError(`Unsupported tool "${tool}".`, {
+          code: 'UNSUPPORTED_TOOL',
+          supportedTools: AI_TOOL_CATALOG.map((item) => item.id),
+        });
     }
 
     return { ok: true, tool, operation, result };
   } catch (error) {
+    if (error instanceof BridgeValidationError) {
+      return {
+        ok: false,
+        tool,
+        operation,
+        error: error.message,
+        errorDetails: {
+          code: error.code,
+          message: error.message,
+          supportedOperations: error.supportedOperations,
+          supportedTools: error.supportedTools,
+          suggestion: error.suggestion,
+        },
+      };
+    }
+
     return {
       ok: false,
       tool,
       operation,
       error: error instanceof Error ? error.message : 'Unknown error',
+      errorDetails: {
+        code: 'EXECUTION_ERROR',
+        message: error instanceof Error ? error.message : 'Unknown error',
+      },
     };
   }
 };

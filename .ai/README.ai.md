@@ -65,6 +65,8 @@ Build commands, env vars, and coding conventions.
 
 ### AI Agent automation (new)
 - Browser endpoint: `/ai-bridge`
+- Catalog endpoint: `/ai-bridge/catalog`
+- Schema endpoint: `/ai-bridge/spec`
 - Runner: `src/lib/aiToolBridge.ts`
 - Browser API: `window.DevPulseAI.catalog()` and `window.DevPulseAI.run(request)`
 - Full guide: `.ai/docs/tools/ai-bridge.md`
@@ -82,6 +84,10 @@ Build commands, env vars, and coding conventions.
 /ai-bridge?tool=json-formatter&op=format&input={"a":1}
 /ai-bridge?tool=case-converter&op=convert&input=hello%20world&options={"target":"snake"}
 /ai-bridge?payload={"tool":"diff-viewer","operation":"compare","input":{"original":"a","modified":"b"}}
+/ai-bridge?tool=url-parser&op=parse&input=example.com&mode=result-only
+/ai-bridge?tool=json-formatter&op=format&input={"a":1}&includeCatalog=false
+/ai-bridge/catalog
+/ai-bridge/spec
 ```
 
 #### Browser API quickstart

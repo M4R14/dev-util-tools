@@ -67,6 +67,22 @@ const App: React.FC = () => {
                     </ErrorBoundary>
                   }
                 />
+                <Route
+                  path="/ai-bridge/catalog"
+                  element={
+                    <ErrorBoundary>
+                      <AIAgentBridge />
+                    </ErrorBoundary>
+                  }
+                />
+                <Route
+                  path="/ai-bridge/spec"
+                  element={
+                    <ErrorBoundary>
+                      <AIAgentBridge />
+                    </ErrorBoundary>
+                  }
+                />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>
