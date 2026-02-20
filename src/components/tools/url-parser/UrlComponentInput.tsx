@@ -21,22 +21,22 @@ const UrlComponentInput: React.FC<UrlComponentInputProps> = ({
       {icon}
       {label}
     </label>
-    <div className="flex gap-2 group relative">
+    <div className="group relative">
       {multiline ? (
         <Textarea
           readOnly
           value={value}
-          className="font-mono text-xs bg-muted/30 focus:bg-background min-h-[38px] h-auto border-primary/20 resize-none py-2 pr-9"
-          rows={1}
+          className="font-mono text-xs bg-muted/30 focus:bg-background min-h-[38px] h-auto border-primary/20 resize-none py-2 pr-10"
+          rows={Math.min(4, Math.max(1, value.split('\n').length))}
         />
       ) : (
         <Input
           readOnly
           value={value}
-          className="font-mono text-xs bg-muted/30 focus:bg-background h-9 border-primary/20 pr-9"
+          className="font-mono text-xs bg-muted/30 focus:bg-background h-9 border-primary/20 pr-10"
         />
       )}
-      <div className="absolute right-1 top-1 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="absolute right-1 top-1 opacity-75 group-hover:opacity-100 transition-opacity">
         <CopyButton value={value} className="h-7 w-7" />
       </div>
     </div>

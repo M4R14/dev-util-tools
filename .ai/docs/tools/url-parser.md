@@ -9,7 +9,7 @@
 | **Lib** | `urlUtils.ts` |
 
 ## Description
-Parse, encode, and decode URLs. Supports query param editing and live preview.
+Parse, encode, and decode URLs with live validation, canonical preview, and interactive query param management.
 
 ## Files
 - `src/components/tools/UrlParser.tsx`
@@ -22,11 +22,14 @@ Parse, encode, and decode URLs. Supports query param editing and live preview.
 
 ## Usage Pattern
 - Input: URL string
-- Output: Parsed components, editable query params
-- Actions: Encode, Decode, Copy, Clear
+- Output: Canonical URL preview, parsed components, editable query params
+- Actions: Encode, Decode, Copy, Clear, Add param, Remove param
 
 ## UI
-- Uses `ToolLayout`, `Input`, `Button`, `CopyButton`, `Card`
+- Uses `ToolLayout`, `Input`, `Textarea`, `Button`, `CopyButton`, `Card`
+- Input panel shows URL status (`idle`/`valid`/`invalid`) and quick metadata (host, param count)
+- Parsed components panel includes security badge and canonical URL field
+- Query params panel supports add/remove rows and query-string copy
 
 ## Related
 

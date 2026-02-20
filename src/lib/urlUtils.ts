@@ -28,6 +28,21 @@ export const parseUrl = (input: string): { parsed: URL | null; error: string | n
   }
 };
 
+const buildUrlWithParams = (parsedUrl: URL, nextParams: UrlParam[]): string => {
+  const searchParams = new URLSearchParams();
+
+  nextParams.forEach((param) => {
+    if (param.key) {
+      searchParams.append(param.key, param.value);
+    }
+  });
+
+  const nextUrl = new URL(parsedUrl.toString());
+  nextUrl.search = searchParams.toString();
+
+  return nextUrl.toString();
+};
+
 export const updateUrlParam = (
   parsedUrl: URL | null,
   currentParams: UrlParam[],
@@ -37,18 +52,34 @@ export const updateUrlParam = (
 ): string | null => {
   if (!parsedUrl) return null;
 
-  // Create new params array
   const nextParams = [...currentParams];
   nextParams[index] = { key: newKey, value: newValue };
 
-  // Update URL search string
-  const newSearchParams = new URLSearchParams();
-  nextParams.forEach((p) => {
-    if (p.key) newSearchParams.append(p.key, p.value);
-  });
+  return buildUrlWithParams(parsedUrl, nextParams);
+};
 
-  const newUrl = new URL(parsedUrl.toString());
-  newUrl.search = newSearchParams.toString();
+export const addUrlParam = (
+  parsedUrl: URL | null,
+  currentParams: UrlParam[],
+  newKey: string,
+  newValue: string
+): string | null => {
+  if (!parsedUrl) return null;
 
-  return newUrl.toString();
+  const nextParams = [...currentParams, { key: newKey, value: newValue }];
+
+  return buildUrlWithParams(parsedUrl, nextParams);
+};
+
+export const removeUrlParam = (
+  parsedUrl: URL | null,
+  currentParams: UrlParam[],
+  index: number
+): string | null => {
+  if (!parsedUrl) return null;
+  if (index < 0 || index >= currentParams.length) return null;
+
+  const nextParams = currentParams.filter((_, paramIndex) => paramIndex !== index);
+
+  return buildUrlWithParams(parsedUrl, nextParams);
 };

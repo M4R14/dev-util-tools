@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { UrlParam, parseUrl, updateUrlParam } from '../lib/urlUtils';
+import { UrlParam, addUrlParam, parseUrl, removeUrlParam, updateUrlParam } from '../lib/urlUtils';
 
 export { type UrlParam };
 
@@ -44,6 +44,32 @@ export const useUrlParser = () => {
     [parsedUrl, params],
   );
 
+  const addParam = useCallback(() => {
+    const existingKeys = new Set(params.map((param) => param.key));
+    let keyIndex = params.length + 1;
+    let nextKey = `param${keyIndex}`;
+
+    while (existingKeys.has(nextKey)) {
+      keyIndex += 1;
+      nextKey = `param${keyIndex}`;
+    }
+
+    const newUrl = addUrlParam(parsedUrl, params, nextKey, '');
+    if (newUrl) {
+      setInput(newUrl);
+    }
+  }, [parsedUrl, params]);
+
+  const removeParam = useCallback(
+    (index: number) => {
+      const newUrl = removeUrlParam(parsedUrl, params, index);
+      if (newUrl) {
+        setInput(newUrl);
+      }
+    },
+    [parsedUrl, params],
+  );
+
   return {
     input,
     setInput,
@@ -53,5 +79,7 @@ export const useUrlParser = () => {
     getEncoded,
     decodeUrl,
     updateParam,
+    addParam,
+    removeParam,
   };
 };
