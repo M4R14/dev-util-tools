@@ -9,19 +9,24 @@
 | **Lib** | — |
 
 ## Description
-Create Version 4 UUIDs (GUIDs). Supports batch generation, copy, and download.
+Create Version 4 UUIDs (GUIDs) with a UI optimized for fast batch generation workflows.
 
 ## Files
 - `src/components/tools/UUIDGenerator.tsx`
 - `src/hooks/useUUIDGenerator.ts`
 
 ## Usage Pattern
-- Options: Quantity, uppercase, hyphens, etc.
+- Options: Quantity (input + slider + quick presets), uppercase, hyphens
 - Output: List of UUIDs
-- Actions: Generate, Copy, Download, Clear
+- Actions: Generate, Copy row, Copy all, Download, Clear
 
 ## UI
 - Uses `ToolLayout`, `Input`, `Slider`, `Switch`, `CopyButton`, `Button`, `Card`
+- UI/UX highlights:
+  - Quick quantity presets (`1`, `5`, `10`, `25`, `50`, `100`)
+  - Format preview block that updates with casing/hyphen options
+  - Result header status badges (item count + secure `crypto.randomUUID` availability)
+  - Mobile-friendly per-row copy action visibility
 
 ## Related
 

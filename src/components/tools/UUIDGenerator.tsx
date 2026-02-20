@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Fingerprint, Settings2, RefreshCw, Copy, Trash2, Download } from 'lucide-react';
+import { Fingerprint, Settings2, RefreshCw, Copy, Trash2, Download, ShieldCheck, TriangleAlert } from 'lucide-react';
 import ToolLayout from '../ui/ToolLayout';
 import { Button } from '../ui/Button';
 import { Card, CardContent } from '../ui/Card';
@@ -10,7 +10,26 @@ import { CopyButton } from '../ui/CopyButton';
 import { useUUIDGenerator } from '../../hooks/useUUIDGenerator';
 
 const UUIDGenerator: React.FC = () => {
-  const { uuids, options, setOptions, generateUUID, clear, copyAll, download } = useUUIDGenerator();
+  const {
+    uuids,
+    options,
+    setOptions,
+    setQuantity,
+    hasSecureUUID,
+    generateUUID,
+    clear,
+    copyAll,
+    download,
+    minQuantity,
+    maxQuantity,
+  } = useUUIDGenerator();
+
+  const quickQuantityPresets = [1, 5, 10, 25, 50, 100];
+  const formattedPreview = options.uppercase
+    ? (options.hyphens ? 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx' : 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx').toUpperCase()
+    : options.hyphens
+      ? 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
+      : 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
 
   const initialized = useRef(false);
   useEffect(() => {
@@ -43,12 +62,12 @@ const UUIDGenerator: React.FC = () => {
                   <div className="relative">
                     <Input
                       type="number"
-                      min={1}
-                      max={100}
+                      min={minQuantity}
+                      max={maxQuantity}
                       value={options.quantity}
                       onChange={(e) => {
-                        const val = parseInt(e.target.value) || 1;
-                        handleChange('quantity', Math.min(100, Math.max(1, val)));
+                        const val = parseInt(e.target.value, 10) || minQuantity;
+                        setQuantity(val);
                       }}
                       className="w-20 h-8 text-right pr-2 font-mono"
                     />
@@ -56,16 +75,35 @@ const UUIDGenerator: React.FC = () => {
                 </div>
                 <Slider
                   value={[options.quantity]}
-                  min={1}
-                  max={50}
+                  min={minQuantity}
+                  max={maxQuantity}
                   step={1}
-                  onValueChange={(vals) => handleChange('quantity', vals[0])}
+                  onValueChange={(vals) => setQuantity(vals[0])}
                   className="py-2"
                 />
                 <div className="flex justify-between text-xs text-muted-foreground px-1">
-                  <span>1</span>
-                  <span>25</span>
-                  <span>50</span>
+                  <span>{minQuantity}</span>
+                  <span>{Math.floor(maxQuantity / 2)}</span>
+                  <span>{maxQuantity}</span>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                  Quick Presets
+                </p>
+                <div className="grid grid-cols-3 gap-2">
+                  {quickQuantityPresets.map((preset) => (
+                    <Button
+                      key={preset}
+                      variant={options.quantity === preset ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => setQuantity(preset)}
+                      className="font-mono text-xs"
+                    >
+                      {preset}
+                    </Button>
+                  ))}
                 </div>
               </div>
 
@@ -101,6 +139,11 @@ const UUIDGenerator: React.FC = () => {
                   />
                 </div>
               </div>
+
+              <div className="rounded-lg border border-border/70 bg-muted/20 p-3">
+                <p className="text-xs uppercase tracking-wide text-muted-foreground">Format Preview</p>
+                <p className="mt-1 font-mono text-xs break-all text-foreground/90">{formattedPreview}</p>
+              </div>
             </div>
 
             <div className="pt-2">
@@ -125,7 +168,31 @@ const UUIDGenerator: React.FC = () => {
               </div>
               <div>
                 <h3 className="font-semibold text-lg">Generated UUIDs</h3>
-                <p className="text-xs text-muted-foreground">Standard RFC 4122 Version 4</p>
+                <div className="flex flex-wrap items-center gap-2 mt-0.5">
+                  <p className="text-xs text-muted-foreground">Standard RFC 4122 Version 4</p>
+                  <span className="inline-flex items-center rounded-full border border-border px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+                    {uuids.length} items
+                  </span>
+                  <span
+                    className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                      hasSecureUUID
+                        ? 'border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
+                        : 'border border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300'
+                    }`}
+                  >
+                    {hasSecureUUID ? (
+                      <>
+                        <ShieldCheck className="h-3 w-3" />
+                        Secure randomUUID
+                      </>
+                    ) : (
+                      <>
+                        <TriangleAlert className="h-3 w-3" />
+                        Fallback random
+                      </>
+                    )}
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -167,7 +234,7 @@ const UUIDGenerator: React.FC = () => {
                       </span>
                       <CopyButton
                         value={uuid}
-                        className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity focus:opacity-100"
+                        className="h-8 w-8 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity focus:opacity-100"
                       />
                     </div>
                   ))}

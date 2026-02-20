@@ -8,6 +8,11 @@ export interface UUIDOptions {
   uppercase: boolean;
 }
 
+const MIN_QUANTITY = 1;
+const MAX_QUANTITY = 100;
+
+const clampQuantity = (value: number) => Math.min(MAX_QUANTITY, Math.max(MIN_QUANTITY, value));
+
 export const useUUIDGenerator = () => {
   const [uuids, setUuids] = useState<string[]>([]);
   const [options, setOptions] = useState<UUIDOptions>({
@@ -17,13 +22,15 @@ export const useUUIDGenerator = () => {
     uppercase: false,
   });
 
+  const hasSecureUUID = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function';
+
   const generateUUID = useCallback(() => {
     const newUuids: string[] = [];
 
     for (let i = 0; i < options.quantity; i++) {
       let uuid: string;
 
-      if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      if (hasSecureUUID) {
         uuid = crypto.randomUUID();
       } else {
         // Fallback
@@ -46,7 +53,11 @@ export const useUUIDGenerator = () => {
     }
 
     setUuids(newUuids);
-  }, [options]);
+  }, [hasSecureUUID, options]);
+
+  const setQuantity = useCallback((quantity: number) => {
+    setOptions((prev) => ({ ...prev, quantity: clampQuantity(quantity) }));
+  }, []);
 
   const clear = useCallback(() => {
     setUuids([]);
@@ -77,9 +88,13 @@ export const useUUIDGenerator = () => {
     uuids,
     options,
     setOptions,
+    setQuantity,
+    hasSecureUUID,
     generateUUID,
     clear,
     copyAll,
     download,
+    minQuantity: MIN_QUANTITY,
+    maxQuantity: MAX_QUANTITY,
   };
 };
