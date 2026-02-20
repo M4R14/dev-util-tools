@@ -11,8 +11,8 @@ Blog content is stored as markdown files in:
 The app loads these files in `src/data/blogPosts.ts` using `import.meta.glob(..., query: '?raw')`, then parses:
 
 - frontmatter (metadata)
-- body paragraphs as narrative content
-- body bullet list (`- `) as change items (optional)
+- full markdown body to HTML via `marked`
+- summary text (from frontmatter `summary` or fallback first paragraph) + summary HTML
 
 ## Required Frontmatter
 
@@ -54,9 +54,9 @@ Paragraph content here...
 
 Render behavior:
 
-- Paragraph blocks are shown as post content.
-- Bullet lines (`- `) are shown in the changes list.
-- Inline emphasis `*text*` is supported in summary/content/changes.
+- The markdown body is rendered directly from HTML output generated in `src/data/blogPosts.ts`.
+- Inline markdown like emphasis (`*text*`), strong text, inline code, and links is supported.
+- List markdown (`- item`, `1. item`) stays in the body and is rendered as normal HTML lists.
 
 ## Conventions
 

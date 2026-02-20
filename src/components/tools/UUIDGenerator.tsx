@@ -44,7 +44,7 @@ const UUIDGenerator: React.FC = () => {
   };
 
   return (
-    <ToolLayout className="max-w-5xl mx-auto">
+    <ToolLayout className="max-w-full mx-auto">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         {/* Options Panel */}
         <Card className="lg:col-span-1 shadow-md border-border/60">

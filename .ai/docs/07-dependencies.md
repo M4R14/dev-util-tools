@@ -14,6 +14,7 @@
 | `dayjs` | Date/time manipulation (+ utc & timezone plugins) |
 | `diff` | Line-based text diffing (Myers algorithm) |
 | `minisearch` | Fuzzy full-text search index |
+| `marked` | Markdown parsing for blog post rendering |
 | `xml-formatter` | XML prettify/minify |
 | `@google/genai` | Google Gemini AI API client |
 

@@ -108,12 +108,16 @@ src/
 │
 ├── data/
 │   ├── tools.tsx               # TOOLS array (18 entries) + getToolById()
-│   ├── blogPosts.ts            # Markdown loader/parser for blog posts (frontmatter + bullet changes)
+│   ├── blogPosts.ts            # Markdown loader/parser for blog posts (frontmatter + markdown-to-HTML)
 │   └── aiBridge.ts             # AI Bridge endpoint specs + query templates/snippets
 │
 ├── content/
 │   └── blog/                   # Blog source files in markdown
+│       ├── 2026-02-20-project-overview.md
+│       ├── 2026-02-20-blog-markdown-html-styling.md
 │       ├── 2026-02-20-navigation-refresh.md
+│       ├── 2026-02-20-thai-date-ui-refresh.md
+│       ├── 2026-02-20-ai-assisted-development.md
 │       ├── 2026-02-19-ai-assistant-updates.md
 │       ├── 2026-02-18-external-tools-addition.md
 │       └── 2026-02-17-ai-bridge-output-mode.md

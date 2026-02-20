@@ -22,7 +22,7 @@ App.tsx                          ← ThemeProvider > UserPreferencesProvider > S
 | **Tool sub-components** | Complex tools split into folders: `thai-date/` (6 files), `ai/` (8 files), `url-parser/` (4 files) |
 | **AI automation bridge** | `/ai-bridge` executes requests, `/ai-bridge/catalog` exposes capability discovery, `/ai-bridge/spec` serves JSON schema |
 | **Static machine fetch** | Build emits `/ai-bridge/catalog.json` and `/ai-bridge/spec.json` for curl/static-host retrieval |
-| **Markdown content pipeline** | `src/data/blogPosts.ts` loads `src/content/blog/*.md` via `import.meta.glob(..., query: '?raw')`, parses frontmatter + list items, then renders in `Blog.tsx` |
+| **Markdown content pipeline** | `src/data/blogPosts.ts` loads `src/content/blog/*.md` via `import.meta.glob(..., query: '?raw')`, parses frontmatter + markdown-to-HTML (`marked`), then renders in `Blog.tsx` |
 | **Search** | MiniSearch index with fuzzy matching, prefix search, field boosting (name 3× > tags 2× > description 1×) |
 | **Persistence** | Favorites & recents stored in `localStorage`; theme in `localStorage` + system preference |
 

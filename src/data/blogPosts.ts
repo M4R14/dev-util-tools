@@ -1,3 +1,5 @@
+import { marked } from 'marked';
+
 export type BlogCategory = 'release' | 'improvement' | 'fix';
 
 export interface BlogPost {
@@ -6,8 +8,9 @@ export interface BlogPost {
   date: string;
   category: BlogCategory;
   summary: string;
+  summaryHtml: string;
   content: string;
-  changes: string[];
+  contentHtml: string;
 }
 
 type ParsedFrontmatter = Record<string, string>;
@@ -45,17 +48,6 @@ const parseFrontmatter = (raw: string): { frontmatter: ParsedFrontmatter; body: 
   return { frontmatter, body: body.trim() };
 };
 
-const extractChanges = (body: string): string[] => {
-  const changes = body
-    .split('\n')
-    .map((line) => line.trim())
-    .filter((line) => line.startsWith('- '))
-    .map((line) => line.replace(/^- /, '').trim())
-    .filter(Boolean);
-
-  return changes;
-};
-
 const extractSummary = (frontmatterSummary: string | undefined, body: string): string => {
   if (frontmatterSummary) return frontmatterSummary;
 
@@ -67,13 +59,18 @@ const extractSummary = (frontmatterSummary: string | undefined, body: string): s
   return firstParagraph ?? 'No summary provided.';
 };
 
-const extractNarrativeContent = (body: string): string => {
-  const narrativeParagraphs = body
-    .split('\n\n')
-    .map((chunk) => chunk.trim())
-    .filter((chunk) => chunk && !chunk.startsWith('- '));
+const parseInlineMarkdown = (input: string): string => {
+  if (!input.trim()) return '';
 
-  return narrativeParagraphs.join('\n\n');
+  const parsed = marked.parseInline(input, { gfm: true, breaks: true });
+  return typeof parsed === 'string' ? parsed : '';
+};
+
+const parseBlockMarkdown = (input: string): string => {
+  if (!input.trim()) return '';
+
+  const parsed = marked.parse(input, { gfm: true, breaks: true });
+  return typeof parsed === 'string' ? parsed : '';
 };
 
 const toBlogCategory = (value: string | undefined): BlogCategory => {
@@ -95,8 +92,9 @@ const parseBlogPost = (path: string, rawMarkdown: string): BlogPost => {
   const date = frontmatter.date?.trim() || '1970-01-01';
   const category = toBlogCategory(frontmatter.category?.trim());
   const summary = extractSummary(frontmatter.summary?.trim(), body);
-  const content = extractNarrativeContent(body);
-  const changes = extractChanges(body);
+  const summaryHtml = parseInlineMarkdown(summary);
+  const content = body;
+  const contentHtml = parseBlockMarkdown(content);
 
   return {
     id,
@@ -104,8 +102,9 @@ const parseBlogPost = (path: string, rawMarkdown: string): BlogPost => {
     date,
     category,
     summary,
+    summaryHtml,
     content,
-    changes,
+    contentHtml,
   };
 };
 
