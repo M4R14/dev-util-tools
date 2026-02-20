@@ -11,6 +11,7 @@ import {
   Link2,
   FileDiff,
   FileCode2,
+  FileText,
 } from 'lucide-react';
 import { ToolID, ToolMetadata } from '../types';
 
@@ -77,6 +78,13 @@ export const TOOLS: ToolMetadata[] = [
     description: 'The quick and simple editor for cron schedule expressions.',
     icon: Clock,
     tags: ['cron', 'crontab', 'schedule', 'job', 'timer', 'external tool'],
+  },
+  {
+    id: ToolID.WORD_COUNTER,
+    name: 'Word Counter',
+    description: 'Count words, characters, and readability metrics (opens wordcounter.net).',
+    icon: FileText,
+    tags: ['word', 'counter', 'text', 'writing', 'seo', 'external tool'],
   },
   {
     id: ToolID.DIFF_VIEWER,

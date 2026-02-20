@@ -77,6 +77,10 @@ The registry below groups tools by responsibility to make discovery easier for c
   - Component: `src/components/tools/CrontabTool.tsx`
   - Doc: [.ai doc](./tools/crontab-guru.md)
 
+- `word-counter` — `/word-counter`
+  - Component: `src/components/tools/WordCounterTool.tsx`
+  - Doc: [.ai doc](./tools/word-counter.md)
+
 ## AI
 
 - `ai-assistant` — `/ai-assistant`

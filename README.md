@@ -1,6 +1,6 @@
 # ⚡ DevPulse — Developer Utility Suite
 
-> **13 developer tools + AI assistant** in a single, fast, keyboard-driven web app.
+> **14 developer tools + AI assistant** in a single, fast, keyboard-driven web app.
 
 <p align="center">
   <a href="https://m4r14.github.io/dev-util-tools/">
@@ -10,7 +10,7 @@
 
 ---
 
-## 🛠️ Tools (13)
+## 🛠️ Tools (14)
 
 | #  | Tool | Description |
 |----|------|-------------|
@@ -26,7 +26,8 @@
 | 10 | 🔗 **URL Parser** | Parse, encode, and decode URLs |
 | 11 | 📊 **Diff Viewer** | Side-by-side text comparison |
 | 12 | 🔍 **Regex Tester** | Live regex matching & debugging |
-| 13 | 📄 **XML Formatter** | Prettify and minify XML data |
+| 13 | 📚 **Word Counter** | Quick access to wordcounter.net for writing metrics |
+| 14 | 📄 **XML Formatter** | Prettify and minify XML data |
 
 ---
 
@@ -79,7 +80,7 @@
 ```
 src/
 ├── components/
-│   ├── tools/              # 13 tool components
+│   ├── tools/              # 14 tool components
 │   │   ├── thai-date/      #   └ sub-components (6 files)
 │   │   ├── ai/             #   └ sub-components
 │   │   └── url-parser/     #   └ sub-components

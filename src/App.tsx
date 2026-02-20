@@ -21,6 +21,7 @@ const TOOL_COMPONENTS: Record<ToolID, React.LazyExoticComponent<ComponentType>> 
   [ToolID.THAI_DATE_CONVERTER]: lazy(() => import('./components/tools/thai-date')),
   [ToolID.TIMEZONE_CONVERTER]: lazy(() => import('./components/tools/TimezoneConverter')),
   [ToolID.CRONTAB]: lazy(() => import('./components/tools/CrontabTool')),
+  [ToolID.WORD_COUNTER]: lazy(() => import('./components/tools/WordCounterTool')),
   [ToolID.UUID_GENERATOR]: lazy(() => import('./components/tools/UUIDGenerator')),
   [ToolID.URL_PARSER]: lazy(() => import('./components/tools/UrlParser')),
   [ToolID.DIFF_VIEWER]: lazy(() => import('./components/tools/DiffViewer')),

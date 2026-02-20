@@ -2,6 +2,7 @@ export enum ToolID {
   BASE64_TOOL = 'base64-tool',
   AI_ASSISTANT = 'ai-assistant',
   CRONTAB = 'crontab-guru',
+  WORD_COUNTER = 'word-counter',
   URL_PARSER = 'url-parser',
   DIFF_VIEWER = 'diff-viewer',
   REGEX_TESTER = 'regex-tester',
