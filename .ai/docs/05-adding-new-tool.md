@@ -96,7 +96,7 @@ tools/
     └── utils.ts            # (optional) local helpers
 ```
 
-Examples: `thai-date/` (6 files), `ai/` (3 files), `url-parser/` (4 files).
+Examples: `thai-date/` (6 files), `ai/` (8 files), `url-parser/` (4 files).
 
 ---
 

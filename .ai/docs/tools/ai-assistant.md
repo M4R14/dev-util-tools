@@ -27,7 +27,7 @@ Analyze code snippets and get intelligent suggestions via Gemini AI. Supports ch
 ## Usage Pattern
 - Input: Chat prompt, code snippets
 - Output: AI-generated responses, code blocks
-- Actions: Send, Copy, Settings (API key)
+- Actions: Send, Clear chat, Settings (API key), Copy code blocks
 
 ## UI
 - Uses `ToolLayout`, `Input`, `Button`, `CopyButton`, `Card`

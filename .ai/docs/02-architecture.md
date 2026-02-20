@@ -18,7 +18,7 @@ App.tsx                          ← ThemeProvider > UserPreferencesProvider > S
 | **Pure utilities** | Reusable logic extracted to `src/lib/*.ts` (no React dependencies) |
 | **Compound components** | `ToolLayout` has `.Section` and `.Panel` sub-components |
 | **Sidebar decomposition** | `Sidebar.tsx` composed from `sidebar/` sub-components: Brand, Footer, Navigation, Search + `useSidebarNavigation` hook |
-| **Tool sub-components** | Complex tools split into folders: `thai-date/` (6 files), `ai/` (3 files), `url-parser/` (4 files) |
+| **Tool sub-components** | Complex tools split into folders: `thai-date/` (6 files), `ai/` (8 files), `url-parser/` (4 files) |
 | **AI automation bridge** | `/ai-bridge` executes requests, `/ai-bridge/catalog` exposes capability discovery, `/ai-bridge/spec` serves JSON schema |
 | **Search** | MiniSearch index with fuzzy matching, prefix search, field boosting (name 3× > tags 2× > description 1×) |
 | **Persistence** | Favorites & recents stored in `localStorage`; theme in `localStorage` + system preference |

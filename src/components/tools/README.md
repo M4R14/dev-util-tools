@@ -1,33 +1,40 @@
 # Developer Tools Components
 
-This directory contains the individual tool components used in the DevUtil application.
+This directory contains all user-facing tool pages rendered by routes in `src/App.tsx`.
 
 ## Architecture
 
-The tools have been refactored to follow a **Hook-View** pattern (Separation of Concerns):
+Most tools follow a Hook-View split:
 
-1.  **Logic**: All business logic, state management, and side effects are extracted into custom hooks located in `src/hooks/`.
-2.  **UI**: The components in this directory strictly handle the presentation layer using shared UI components.
+1. Logic/state in `src/hooks/*`
+2. Rendering in `src/components/tools/*`
+
+Some tools are static or external-link based and do not need a hook.
 
 ## Available Tools
 
-| Tool Component          | Context/Hook           | Description                                                     |
-| ----------------------- | ---------------------- | --------------------------------------------------------------- |
-| `JSONFormatter.tsx`     | `useJsonFormatter`     | Formats, validates, and minifies JSON data.                     |
-| `Base64Tool.tsx`        | `useBase64`            | Encodes and decodes Base64 strings.                             |
-| `CaseConverter.tsx`     | `useCaseConverter`     | Converts text casing (camelCase, snake_case, PascalCase, etc.). |
-| `PasswordGenerator.tsx` | `usePasswordGenerator` | Generates secure passwords with customizable criteria.          |
-| `ThaiDateConverter.tsx` | `useThaiDateConverter` | Converts between Thai/Buddhist dates and ISO formats.           |
-| `TimezoneConverter.tsx` | _(Pending Refactor)_   | Converts dates/times across different timezones.                |
-| `CrontabTool.tsx`       | -                      | Link to Crontab.guru for managing cron expressions.             |
-| `AIAssistant.tsx`       | `askGemini` (Service)  | AI-powered coding assistant using Google Gemini.                |
-| `UUIDGenerator.tsx`     | `useUUIDGenerator`     | Generates Version 4 UUIDs.                                      |
-| `UrlParser.tsx`         | `useUrlParser`         | Parses, encodes, and decodes URLs.                              |
+| Tool Component | Hook / Service | Notes |
+|---|---|---|
+| `JSONFormatter.tsx` | `useJsonFormatter` | Format, minify, and validate JSON |
+| `XMLFormatter.tsx` | `useXmlFormatter` | Format, minify, and validate XML |
+| `Base64Tool.tsx` | `useBase64` | Encode/decode text |
+| `CaseConverter.tsx` | `useCaseConverter` | Case transforms (`snake`, `kebab`, `camel`, `pascal`) |
+| `PasswordGenerator.tsx` | `usePasswordGenerator` | Password generation + strength meter (`src/lib/passwordStrength.ts`) |
+| `UUIDGenerator.tsx` | `useUUIDGenerator` | Batch UUID generation with copy/download |
+| `TimezoneConverter.tsx` | `useTimezoneConverter` | Convert datetime between source/target timezones |
+| `thai-date/index.tsx` | `useThaiDateConverter` | Thai date formatting/parsing with subcomponents |
+| `UrlParser.tsx` | `useUrlParser` | URL parse/update/encode with `url-parser/` subcomponents |
+| `DiffViewer.tsx` | `useDiffViewer` | Text diff and unified output |
+| `RegexTester.tsx` | _(none)_ | Cheatsheet + external link to `regex101.com` |
+| `CrontabTool.tsx` | _(none)_ | Cheatsheet + external link to `crontab.guru` |
+| `AIAssistant.tsx` | `useAIChat` + `askGemini` service | AI chat UI composed from `tools/ai/*` subcomponents |
 
-## Shared UI Components
+## Shared UI
 
-Tools utilize shared components from `components/ui/` for consistency:
+Common primitives from `src/components/ui`:
 
-- **`ToolLayout`**: Standardizes the layout structure (Header, Sections, Panels).
-- **`CopyButton`**: Provides uniform copy-to-clipboard functionality with toast notifications.
-- **`Card`**: Shadcn UI based card component for grouping content.
+- `ToolLayout`
+- `Card`
+- `Button`
+- `Input` / `Textarea`
+- `CopyButton`

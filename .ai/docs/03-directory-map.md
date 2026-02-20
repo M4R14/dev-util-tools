@@ -38,7 +38,16 @@ src/
 │   │   │   ├── TextParserInput.tsx
 │   │   │   └── ParserResultSection.tsx
 │   │   ├── CrontabTool.tsx
-│   │   ├── AIAssistant.tsx     # + ai/* sub-components (Header, Panel, Composer, MessageContent, SettingsModal)
+│   │   ├── AIAssistant.tsx     # AI Smart Assistant page composition
+│   │   ├── ai/                 # AI Smart Assistant sub-components
+│   │   │   ├── AssistantHeader.tsx
+│   │   │   ├── EmptyState.tsx
+│   │   │   ├── ChatMessage.tsx
+│   │   │   ├── ChatPanel.tsx
+│   │   │   ├── Composer.tsx
+│   │   │   ├── CodeBlock.tsx
+│   │   │   ├── MessageContent.tsx
+│   │   │   └── SettingsModal.tsx
 │   │   ├── UUIDGenerator.tsx
 │   │   ├── UrlParser.tsx       # + url-parser/UrlComponentInput.tsx, etc.
 │   │   ├── DiffViewer.tsx

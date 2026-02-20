@@ -18,11 +18,12 @@ Create secure, random passwords with customizable options and strength meter.
 
 ## Usage Pattern
 - Options: Length, uppercase, lowercase, numbers, symbols
-- Output: Generated password(s), strength indicator
-- Actions: Generate, Copy, Clear
+- Output: Generated password and strength indicator (label, color, percent, message)
+- Actions: Generate, Copy
 
 ## UI
-- Uses `ToolLayout`, `Input`, `Slider`, `Switch`, `CopyButton`, `Button`
+- Uses `ToolLayout`, `Card`, `Button`, `CopyButton`
+- Inputs are rendered as custom controls (`input[type=range]` + clickable option cards)
 
 ## Related
 

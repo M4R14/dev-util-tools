@@ -15,6 +15,19 @@ Additional machine endpoints:
 - `/ai-bridge/catalog` returns available tools + operations (discovery only)
 - `/ai-bridge/spec` returns JSON schema for request/response (contract validation)
 
+## Files
+
+- `src/components/AIAgentBridge.tsx`
+- `src/components/ai-bridge/BridgeHeroCard.tsx`
+- `src/components/ai-bridge/EndpointNavigatorCard.tsx`
+- `src/components/ai-bridge/ExecutionModesCard.tsx`
+- `src/components/ai-bridge/QuickstartCard.tsx`
+- `src/components/ai-bridge/RunQueryCard.tsx`
+- `src/components/ai-bridge/LiveResponseCard.tsx`
+- `src/data/aiBridge.ts`
+- `src/lib/aiBridgeQuery.ts`
+- `src/lib/aiToolBridge.ts`
+
 ## How to Use
 
 1. Open `/ai-bridge` once to initialize browser API `window.DevPulseAI`.
