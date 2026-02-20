@@ -1,89 +1,29 @@
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import {
+  calculatePwaCacheSizeBytes,
+  clearPwaCaches,
+  getPwaCacheKeysByPrefix,
+} from './pwa-settings/cache';
+import { PWA_CACHE_PREFIX, PWA_LAST_UPDATED_STORAGE_KEY } from './pwa-settings/constants';
+import {
+  getOnlineStatus,
+  getStandaloneStatus,
+  getStoredLastUpdatedAt,
+  setStoredLastUpdatedAt,
+} from './pwa-settings/environment';
+export { formatPwaBytes, formatPwaLastUpdated } from './pwa-settings/formatters';
+import {
+  getServiceWorkerRegistration,
+  promptServiceWorkerUpdate,
+} from './pwa-settings/serviceWorker';
+import type {
+  BeforeInstallPromptEvent,
+  ServiceWorkerMessagePayload,
+  UsePwaSettingsOptions,
+} from './pwa-settings/types';
 
-interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{
-    outcome: 'accepted' | 'dismissed';
-    platform: string;
-  }>;
-}
-
-interface ServiceWorkerMessagePayload {
-  type?: string;
-  timestamp?: number;
-}
-
-export interface UsePwaSettingsOptions {
-  loadCacheStatsOnMount?: boolean;
-}
-
-const SW_UPDATE_TOAST_ID = 'sw-update-available';
-const PWA_CACHE_PREFIX = 'devpulse-static-';
-const PWA_LAST_UPDATED_STORAGE_KEY = 'devpulse-last-updated-at';
-
-const getOnlineStatus = () => (typeof navigator !== 'undefined' ? navigator.onLine : true);
-
-const getStandaloneStatus = () => {
-  if (typeof window === 'undefined') {
-    return false;
-  }
-
-  const isStandaloneByMedia = window.matchMedia?.('(display-mode: standalone)').matches ?? false;
-  const nav = window.navigator as Navigator & { standalone?: boolean };
-  return isStandaloneByMedia || nav.standalone === true;
-};
-
-const getStoredLastUpdatedAt = () => {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-
-  const raw = window.localStorage.getItem(PWA_LAST_UPDATED_STORAGE_KEY);
-  if (!raw) {
-    return null;
-  }
-
-  const parsed = Number(raw);
-  return Number.isFinite(parsed) ? parsed : null;
-};
-
-const promptServiceWorkerUpdate = (registration: ServiceWorkerRegistration) => {
-  if (!registration.waiting) {
-    return;
-  }
-
-  toast.info('New version available', {
-    id: SW_UPDATE_TOAST_ID,
-    description: 'Refresh to update the app.',
-    duration: Infinity,
-    action: {
-      label: 'Refresh',
-      onClick: () => {
-        registration.waiting?.postMessage({ type: 'SKIP_WAITING' });
-      },
-    },
-  });
-};
-
-export const formatPwaBytes = (bytes: number | null) => {
-  if (bytes === null) return 'Unavailable';
-  if (bytes === 0) return '0 B';
-
-  const units = ['B', 'KB', 'MB', 'GB'];
-  let value = bytes;
-  let unitIndex = 0;
-
-  while (value >= 1024 && unitIndex < units.length - 1) {
-    value /= 1024;
-    unitIndex += 1;
-  }
-
-  return `${value.toFixed(value >= 10 || unitIndex === 0 ? 0 : 1)} ${units[unitIndex]}`;
-};
-
-export const formatPwaLastUpdated = (timestamp: number | null) =>
-  timestamp ? new Date(timestamp).toLocaleString() : 'Not recorded';
+export type { UsePwaSettingsOptions } from './pwa-settings/types';
 
 export const usePwaSettings = (options: UsePwaSettingsOptions = {}) => {
   const { loadCacheStatsOnMount = false } = options;
@@ -135,7 +75,7 @@ export const usePwaSettings = (options: UsePwaSettingsOptions = {}) => {
   useEffect(() => {
     const handleServiceWorkerMessage = (event: MessageEvent<ServiceWorkerMessagePayload>) => {
       if (event.data?.type === 'SW_ACTIVATED' && typeof event.data.timestamp === 'number') {
-        localStorage.setItem(PWA_LAST_UPDATED_STORAGE_KEY, String(event.data.timestamp));
+        setStoredLastUpdatedAt(event.data.timestamp);
         setLastUpdatedAt(event.data.timestamp);
       }
     };
@@ -170,30 +110,8 @@ export const usePwaSettings = (options: UsePwaSettingsOptions = {}) => {
 
     setIsLoadingCacheStats(true);
     try {
-      const cacheKeys = await caches.keys();
-      const targetCaches = cacheKeys.filter((key) => key.startsWith(PWA_CACHE_PREFIX));
-      let totalBytes = 0;
-
-      for (const cacheKey of targetCaches) {
-        const cache = await caches.open(cacheKey);
-        const requests = await cache.keys();
-
-        for (const request of requests) {
-          const response = await cache.match(request);
-          if (!response) continue;
-
-          const contentLength = response.headers.get('content-length');
-          const parsedContentLength = contentLength ? Number(contentLength) : NaN;
-          if (Number.isFinite(parsedContentLength) && parsedContentLength > 0) {
-            totalBytes += parsedContentLength;
-            continue;
-          }
-
-          const blob = await response.clone().blob();
-          totalBytes += blob.size;
-        }
-      }
-
+      const targetCaches = await getPwaCacheKeysByPrefix(PWA_CACHE_PREFIX);
+      const totalBytes = await calculatePwaCacheSizeBytes(targetCaches);
       setCacheSizeBytes(totalBytes);
     } catch {
       setCacheSizeBytes(null);
@@ -210,10 +128,7 @@ export const usePwaSettings = (options: UsePwaSettingsOptions = {}) => {
 
     setIsCheckingUpdates(true);
     try {
-      const scope = import.meta.env.BASE_URL;
-      const registration =
-        (await navigator.serviceWorker.getRegistration(scope)) ??
-        (await navigator.serviceWorker.getRegistration());
+      const registration = await getServiceWorkerRegistration(import.meta.env.BASE_URL);
 
       if (!registration) {
         toast.info('Service worker is not ready yet');
@@ -241,9 +156,8 @@ export const usePwaSettings = (options: UsePwaSettingsOptions = {}) => {
 
     setIsClearingCache(true);
     try {
-      const cacheKeys = await caches.keys();
-      const targetCaches = cacheKeys.filter((key) => key.startsWith(PWA_CACHE_PREFIX));
-      await Promise.all(targetCaches.map((key) => caches.delete(key)));
+      const targetCaches = await getPwaCacheKeysByPrefix(PWA_CACHE_PREFIX);
+      await clearPwaCaches(targetCaches);
       toast.success('Offline cache cleared');
       await refreshCacheStats();
     } catch {

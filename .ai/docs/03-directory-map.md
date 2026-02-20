@@ -109,7 +109,14 @@ src/
 │   ├── useToolSearch.ts        # MiniSearch-powered fuzzy search
 │   ├── useUrlParser.ts
 │   ├── useUUIDGenerator.ts
-│   ├── usePwaSettings.ts       # Shared PWA/offline state + actions for app settings
+│   ├── usePwaSettings.ts       # Shared PWA/offline hook entry (exports hook + format helpers)
+│   ├── pwa-settings/           # Internal modules used by usePwaSettings
+│   │   ├── cache.ts
+│   │   ├── constants.ts
+│   │   ├── environment.ts
+│   │   ├── formatters.ts
+│   │   ├── serviceWorker.ts
+│   │   └── types.ts
 │   ├── useXmlFormatter.ts
 │   └── useXmlToJson.ts
 │
