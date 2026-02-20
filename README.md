@@ -1,6 +1,6 @@
 # ⚡ DevPulse — Developer Utility Suite
 
-> **17 developer tools + AI assistant** in a single, fast, keyboard-driven web app.
+> **18 developer tools + AI assistant** in a single, fast, keyboard-driven web app.
 
 <p align="center">
   <a href="https://m4r14.github.io/dev-util-tools/">
@@ -10,7 +10,7 @@
 
 ---
 
-## 🛠️ Tools (17)
+## 🛠️ Tools (18)
 
 | #  | Tool | Description |
 |----|------|-------------|
@@ -20,17 +20,18 @@
 | 4  | 🔐 **Password Generator** | Secure random passwords with strength meter |
 | 5  | 🌍 **Timezone Converter** | Convert dates/times across global timezones |
 | 6  | 📅 **Thai Date Converter** | Gregorian ↔ Thai Buddhist Era (พ.ศ.) formats |
-| 7  | ⏰ **Crontab Guru** | Generate and explain cron schedule expressions |
-| 8  | ✨ **AI Smart Assistant** | Code analysis & suggestions via Gemini AI |
-| 9  | 🆔 **UUID Generator** | Version 4 UUIDs (GUIDs) |
-| 10 | 🔗 **URL Parser** | Parse, encode, and decode URLs |
-| 11 | 📊 **Diff Viewer** | Side-by-side text comparison |
-| 12 | 🔍 **Regex Tester** | Live regex matching & debugging |
-| 13 | 📚 **Word Counter** | Quick access to wordcounter.net for writing metrics |
-| 14 | 🎡 **Wheel Random** | Spin a random wheel for names, tasks, and giveaways |
-| 15 | 🖼️ **Dummy Image** | Generate placeholder images via dummyimage.com |
-| 16 | 📄 **XML Formatter** | Prettify and minify XML data |
-| 17 | 🔁 **XML to JSON** | Convert XML documents into structured JSON |
+| 7  | 🪪 **Thai ID Decoder** | Decode Thai citizen ID digits and verify checksum |
+| 8  | ⏰ **Crontab Guru** | Generate and explain cron schedule expressions |
+| 9  | ✨ **AI Smart Assistant** | Code analysis & suggestions via Gemini AI |
+| 10 | 🆔 **UUID Generator** | Version 4 UUIDs (GUIDs) |
+| 11 | 🔗 **URL Parser** | Parse, encode, and decode URLs |
+| 12 | 📊 **Diff Viewer** | Side-by-side text comparison |
+| 13 | 🔍 **Regex Tester** | Live regex matching & debugging |
+| 14 | 📚 **Word Counter** | Quick access to wordcounter.net for writing metrics |
+| 15 | 🎡 **Wheel Random** | Spin a random wheel for names, tasks, and giveaways |
+| 16 | 🖼️ **Dummy Image** | Generate placeholder images via dummyimage.com |
+| 17 | 📄 **XML Formatter** | Prettify and minify XML data |
+| 18 | 🔁 **XML to JSON** | Convert XML documents into structured JSON |
 
 ---
 
@@ -83,7 +84,7 @@
 ```
 src/
 ├── components/
-│   ├── tools/              # 17 tool components
+│   ├── tools/              # 18 tool components
 │   │   ├── thai-date/      #   └ sub-components (6 files)
 │   │   ├── ai/             #   └ sub-components
 │   │   └── url-parser/     #   └ sub-components

@@ -20,6 +20,7 @@ const TOOL_COMPONENTS: Record<ToolID, React.LazyExoticComponent<ComponentType>> 
   [ToolID.PASSWORD_GEN]: lazy(() => import('./components/tools/PasswordGenerator')),
   [ToolID.AI_ASSISTANT]: lazy(() => import('./components/tools/AIAssistant')),
   [ToolID.THAI_DATE_CONVERTER]: lazy(() => import('./components/tools/thai-date')),
+  [ToolID.THAI_ID]: lazy(() => import('./components/tools/ThaiIdTool')),
   [ToolID.TIMEZONE_CONVERTER]: lazy(() => import('./components/tools/TimezoneConverter')),
   [ToolID.CRONTAB]: lazy(() => import('./components/tools/CrontabTool')),
   [ToolID.WORD_COUNTER]: lazy(() => import('./components/tools/WordCounterTool')),

@@ -1,6 +1,6 @@
 # Project Overview
 
-**DevPulse** is a single-page React application providing 17 developer utility tools, an integrated Gemini AI assistant, AI Bridge endpoints, and a markdown-driven Blog updates page. It runs entirely client-side (no backend) except for the optional Gemini API calls.
+**DevPulse** is a single-page React application providing 18 developer utility tools, an integrated Gemini AI assistant, AI Bridge endpoints, and a markdown-driven Blog updates page. It runs entirely client-side (no backend) except for the optional Gemini API calls.
 
 **Live:** [https://m4r14.github.io/dev-util-tools/](https://m4r14.github.io/dev-util-tools/)
 

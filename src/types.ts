@@ -10,6 +10,7 @@ export enum ToolID {
 
   // converter
   THAI_DATE_CONVERTER = 'thai-date-converter',
+  THAI_ID = 'thai-id',
   TIMEZONE_CONVERTER = 'timezone-converter',
   CASE_CONVERTER = 'case-converter',
   XML_TO_JSON = 'xml-to-json',

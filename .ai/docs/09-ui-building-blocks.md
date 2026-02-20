@@ -17,7 +17,8 @@ cn('px-4 py-2', isActive && 'bg-primary', className);
 
 ## `ToolLayout` — Tool Page Wrapper
 
-Compound component that provides the standard tool page structure with optional header (icon + title + description).
+Compound component that provides the standard tool page structure with optional header (icon + title + description).  
+Tool titles/section titles support copyable anchor links (`#...`) for deep-linking.
 
 ```ts
 import ToolLayout from '../ui/ToolLayout';
@@ -43,6 +44,8 @@ Wraps content inside a `Card`. Used for logical groupings (Input, Output, etc.)
 | `actions?` | `ReactNode` | Buttons/controls aligned right |
 | `children` | `ReactNode` | Content (rendered inside `CardContent` with `p-0`) |
 | `className?` | `string` | Additional classes |
+
+When `title` is provided, ToolLayout generates a section anchor id and the heading can copy a deep link.
 
 ### `ToolLayout.Panel` — Card Panel
 
@@ -216,6 +219,36 @@ import { CopyButton } from '../ui/CopyButton';
 
 ---
 
+## `SnippetCard` — Reusable Snippet Block
+
+Reusable card for code snippets with title, description, syntax-highlighted content, and built-in copy.
+
+```ts
+import SnippetCard from '../ui/SnippetCard';
+```
+
+### Props
+
+| Prop | Type | Description |
+|---|---|---|
+| `icon` | `ReactNode` | Leading icon in the header |
+| `title` | `string` | Snippet title |
+| `description` | `string` | Supporting description text |
+| `code` | `string` | Code content |
+| `language` | `'json' \| 'xml' \| 'javascript' \| 'bash' \| 'plaintext'` | Highlight language |
+
+```tsx
+<SnippetCard
+  icon={<Code2 className="w-4 h-4" />}
+  title="JSON Format"
+  description="Request payload example"
+  code='{"tool":"json-formatter","operation":"format"}'
+  language="json"
+/>
+```
+
+---
+
 ## `Switch` — Toggle
 
 Radix UI toggle switch. Accepts all Radix `Switch.Root` props.
@@ -261,7 +294,7 @@ import { Slider } from '../ui/Slider';
 
 ## `CodeHighlight` — Syntax Highlighting
 
-Syntax-highlighted code display using `highlight.js`. Supports `json` and `xml` languages only.
+Syntax-highlighted code display using `highlight.js`.
 
 ```ts
 import { CodeHighlight } from '../ui/CodeHighlight';
@@ -272,19 +305,21 @@ import { CodeHighlight } from '../ui/CodeHighlight';
 | Prop | Type | Description |
 |---|---|---|
 | `code` | `string` | Code string to highlight |
-| `language` | `'json' \| 'xml'` | Syntax language |
+| `language` | `'json' \| 'xml' \| 'javascript' \| 'bash' \| 'plaintext'` | Syntax language |
 | `className?` | `string` | Additional classes |
 
 ```tsx
 <CodeHighlight code={formattedJson} language="json" />
 <CodeHighlight code={formattedXml} language="xml" className="max-h-96" />
+<CodeHighlight code={script} language="bash" />
 ```
 
 ---
 
 ## `Toaster` — Toast Provider
 
-Theme-aware toast notification provider (wraps `sonner`). Already mounted in `main.tsx` — just call `toast()` anywhere.
+Theme-aware toast notification provider (wraps `sonner`).  
+Provider component: `src/components/ui/sonner.tsx` (mounted in `main.tsx`) — call `toast()` from any component.
 
 ```ts
 import { toast } from 'sonner';

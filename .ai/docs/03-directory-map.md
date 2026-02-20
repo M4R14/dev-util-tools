@@ -31,12 +31,13 @@ src/
 │   │    ├── QuickstartCard.tsx
 │   │    ├── RunQueryCard.tsx
 │   │    └── LiveResponseCard.tsx
-│   ├── tools/                  # One component per tool (17 tools)
+│   ├── tools/                  # One component per tool (18 tools)
 │   │   ├── JSONFormatter.tsx
 │   │   ├── Base64Tool.tsx
 │   │   ├── CaseConverter.tsx
 │   │   ├── PasswordGenerator.tsx
 │   │   ├── TimezoneConverter.tsx
+│   │   ├── ThaiIdTool.tsx
 │   │   ├── thai-date/          # Thai Date Converter (split into sub-components)
 │   │   │   ├── index.tsx       # Main composition component
 │   │   │   ├── CurrentTimeSection.tsx
@@ -90,6 +91,7 @@ src/
 │   ├── useDiffViewer.ts
 │   ├── useJsonFormatter.ts
 │   ├── usePasswordGenerator.ts
+│   ├── useThaiId.ts
 │   ├── useThaiDateConverter.ts
 │   ├── useTimezoneConverter.ts
 │   ├── useToolSearch.ts        # MiniSearch-powered fuzzy search
@@ -104,7 +106,7 @@ src/
 │   └── UserPreferencesContext.tsx # { favorites, recents, toggleFavorite, addRecent }
 │
 ├── data/
-│   ├── tools.tsx               # TOOLS array (17 entries) + getToolById()
+│   ├── tools.tsx               # TOOLS array (18 entries) + getToolById()
 │   ├── blogPosts.ts            # Markdown loader/parser for blog posts (frontmatter + bullet changes)
 │   └── aiBridge.ts             # AI Bridge endpoint specs + query templates/snippets
 │
@@ -121,6 +123,7 @@ src/
 │   ├── diffUtils.ts            # computeDiff, getDiffStats, toUnifiedDiff (uses `diff` lib)
 │   ├── aiBridgeQuery.ts        # Parse/normalize AI bridge query parameters into AIToolRequest
 │   ├── passwordStrength.ts     # getPasswordStrength()
+│   ├── thaiId.ts               # Thai ID decode/validation helpers
 │   ├── thaiDate.ts             # Thai date formatting/parsing (uses `dayjs`)
 │   ├── urlUtils.ts             # parseUrl, updateUrlParam
 │   ├── xmlToJson.ts            # XML document to JSON conversion logic

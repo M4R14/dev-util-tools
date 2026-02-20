@@ -42,6 +42,12 @@ The registry below groups tools by responsibility to make discovery easier for c
   - Lib: `src/lib/thaiDate.ts` (dayjs)
   - Doc: [.ai doc](./tools/thai-date-converter.md)
 
+- `thai-id` — `/thai-id`
+  - Component: `src/components/tools/ThaiIdTool.tsx`
+  - Hook: `src/hooks/useThaiId.ts`
+  - Lib: `src/lib/thaiId.ts`
+  - Doc: [.ai doc](./tools/thai-id.md)
+
 - `url-parser` — `/url-parser`
   - Component: `src/components/tools/UrlParser.tsx` (+ `url-parser/` subcomponents)
   - Hook: `src/hooks/useUrlParser.ts`

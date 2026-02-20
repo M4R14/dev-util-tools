@@ -5,6 +5,7 @@ import {
   Lock,
   Sparkles,
   CalendarDays,
+  IdCard,
   Globe,
   Clock,
   Fingerprint,
@@ -74,6 +75,13 @@ export const TOOLS: ToolMetadata[] = [
     description: 'Convert dates to various Thai formats (BE 25xx).',
     icon: CalendarDays,
     tags: ['thai', 'date', 'buddhist', 'calendar', 'convert', 'พ.ศ.'],
+  },
+  {
+    id: ToolID.THAI_ID,
+    name: 'Thai ID Decoder',
+    description: 'Decode Thai national ID digits and validate checksum correctness.',
+    icon: IdCard,
+    tags: ['thai id', 'id card', 'decode', 'checksum', 'validator', 'บัตรประชาชน'],
   },
   {
     id: ToolID.CRONTAB,

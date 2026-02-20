@@ -24,6 +24,7 @@ Some tools are static or external-link based and do not need a hook.
 | `UUIDGenerator.tsx` | `useUUIDGenerator` | Batch UUID generation with copy/download |
 | `TimezoneConverter.tsx` | `useTimezoneConverter` | Convert datetime between source/target timezones |
 | `thai-date/index.tsx` | `useThaiDateConverter` | Thai date formatting/parsing with subcomponents |
+| `ThaiIdTool.tsx` | `useThaiId` | Decode Thai ID digits and validate checksum |
 | `UrlParser.tsx` | `useUrlParser` | URL parse/update/encode with `url-parser/` subcomponents |
 | `DiffViewer.tsx` | `useDiffViewer` | Text diff and unified output |
 | `RegexTester.tsx` | _(none)_ | Cheatsheet + external link to `regex101.com` |

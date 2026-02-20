@@ -3,7 +3,7 @@
 > Purpose: make any AI coding agent productive in this repository within 1-2 minutes.
 > Last updated: 2026-02-20
 
-DevPulse is a React 19 + TypeScript + Vite single-page app with 17 developer tools and one Gemini-based assistant tool.
+DevPulse is a React 19 + TypeScript + Vite single-page app with 18 developer tools and one Gemini-based assistant tool.
 
 ## Start Here (Read Order)
 
