@@ -11,8 +11,12 @@ src/
 ├── components/
 │   ├── MainLayout.tsx          # Shell: sidebar + header + cmd palette + content area + footer
 │   ├── main-layout/            # Main layout sub-modules (page meta, command actions, shell fragments)
+│   │   ├── BackgroundDecor.tsx
+│   │   ├── MainContentWrapper.tsx
+│   │   ├── SkipToMainContentLink.tsx
 │   │   ├── meta.ts
 │   │   ├── useCommandPaletteActions.ts
+│   │   ├── useCommandPaletteHotkey.ts
 │   │   ├── MainFooter.tsx
 │   │   ├── MobileCommandPaletteButton.tsx
 │   │   └── index.ts            # Barrel exports for main-layout module
