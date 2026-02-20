@@ -14,7 +14,9 @@ export const useMainLayoutRouteEffects = ({
 }: UseMainLayoutRouteEffectsOptions) => {
   useEffect(() => {
     closeSidebar();
+  }, [closeSidebar, pathname]);
 
+  useEffect(() => {
     const mainElement = mainContentRef.current;
     if (!mainElement) return;
 
@@ -23,5 +25,5 @@ export const useMainLayoutRouteEffects = ({
       top: 0,
       behavior: reduceMotion ? 'auto' : 'smooth',
     });
-  }, [closeSidebar, mainContentRef, pathname]);
+  }, [mainContentRef, pathname]);
 };

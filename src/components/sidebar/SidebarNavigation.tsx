@@ -3,7 +3,6 @@ import type { ToolID, ToolMetadata } from '../../types';
 import ToolLinkItem from '../ToolLinkItem';
 import { cn } from '../../lib/utils';
 import SidebarEmptyState from './SidebarEmptyState';
-import { getSectionBaseOffsets, getToolIndexOffset } from './navigationLayout';
 import { useSidebarSections } from './useSidebarSections';
 
 interface SidebarNavigationProps {
@@ -62,30 +61,7 @@ const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
 }) => {
   const favoriteSet = React.useMemo(() => new Set(favorites), [favorites]);
 
-  const renderToolLink = (tool: ToolMetadata, contextPrefix: string, indexOffset: number) => (
-    <ToolLinkItem
-      key={`${contextPrefix}-${tool.id}`}
-      tool={tool}
-      indexOffset={indexOffset}
-      selectedIndex={selectedIndex}
-      onClose={onClose}
-      searchTerm={searchTerm}
-      isFavorite={favoriteSet.has(tool.id)}
-      onToggleFavorite={onToggleFavorite}
-    />
-  );
-
   const hasSearchTerm = searchTerm.trim().length > 0;
-  const baseOffsets = React.useMemo(
-    () =>
-      getSectionBaseOffsets({
-        favoriteCount: favoriteTools.length,
-        recentCount: recentTools.length,
-        internalCount: internalTools.length,
-      }),
-    [favoriteTools.length, internalTools.length, recentTools.length],
-  );
-
   const sections = useSidebarSections({
     hasSearchTerm,
     filteredTools,
@@ -105,14 +81,19 @@ const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
           icon={section.icon}
           className={section.className}
         >
-          {section.tools.length > 0 ? (
-            section.tools.map((tool, i) =>
-              renderToolLink(
-                tool,
-                section.contextPrefix,
-                getToolIndexOffset(baseOffsets, section.key, i),
-              ),
-            )
+          {section.items.length > 0 ? (
+            section.items.map(({ tool, indexOffset }) => (
+              <ToolLinkItem
+                key={`${section.contextPrefix}-${tool.id}`}
+                tool={tool}
+                indexOffset={indexOffset}
+                selectedIndex={selectedIndex}
+                onClose={onClose}
+                searchTerm={searchTerm}
+                isFavorite={favoriteSet.has(tool.id)}
+                onToggleFavorite={onToggleFavorite}
+              />
+            ))
           ) : section.key === 'search' ? (
             <SidebarEmptyState />
           ) : null}

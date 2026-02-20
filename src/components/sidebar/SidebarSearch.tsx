@@ -16,6 +16,7 @@ const SidebarSearch: React.FC<SidebarSearchProps> = ({ searchTerm, onSearch }) =
       />
       <Input
         type="text"
+        data-sidebar-search-input="true"
         placeholder="Search tools..."
         value={searchTerm}
         onChange={(e) => onSearch(e.target.value)}

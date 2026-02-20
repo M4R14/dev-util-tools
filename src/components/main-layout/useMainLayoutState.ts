@@ -1,45 +1,34 @@
 import { useCallback, useState } from 'react';
 
-export const useMainLayoutState = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+const useBooleanState = (initialValue = false) => {
+  const [isOpen, setIsOpen] = useState(initialValue);
 
-  const openSidebar = useCallback(() => {
-    setIsSidebarOpen(true);
+  const open = useCallback(() => {
+    setIsOpen(true);
   }, []);
 
-  const closeSidebar = useCallback(() => {
-    setIsSidebarOpen(false);
+  const close = useCallback(() => {
+    setIsOpen(false);
   }, []);
 
-  const toggleSidebar = useCallback(() => {
-    setIsSidebarOpen((previous) => !previous);
-  }, []);
-
-  const openCommandPalette = useCallback(() => {
-    setIsCommandPaletteOpen(true);
-  }, []);
-
-  const closeCommandPalette = useCallback(() => {
-    setIsCommandPaletteOpen(false);
-  }, []);
-
-  const toggleCommandPalette = useCallback(() => {
-    setIsCommandPaletteOpen((previous) => !previous);
+  const toggle = useCallback(() => {
+    setIsOpen((previous) => !previous);
   }, []);
 
   return {
-    sidebar: {
-      isOpen: isSidebarOpen,
-      open: openSidebar,
-      close: closeSidebar,
-      toggle: toggleSidebar,
-    },
-    commandPalette: {
-      isOpen: isCommandPaletteOpen,
-      open: openCommandPalette,
-      close: closeCommandPalette,
-      toggle: toggleCommandPalette,
-    },
+    isOpen,
+    open,
+    close,
+    toggle,
+  };
+};
+
+export const useMainLayoutState = () => {
+  const sidebar = useBooleanState();
+  const commandPalette = useBooleanState();
+
+  return {
+    sidebar,
+    commandPalette,
   };
 };

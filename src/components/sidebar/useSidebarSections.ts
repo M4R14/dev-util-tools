@@ -17,7 +17,7 @@ type StaticSidebarSectionKey = Exclude<SidebarSectionKey, 'search'>;
 const PRIMARY_SECTION_CLASS = 'pt-1';
 const DIVIDER_SECTION_CLASS = 'pt-2 border-t border-border/60';
 
-type SidebarSectionMeta = Omit<SidebarToolSection, 'key' | 'tools'>;
+type SidebarSectionMeta = Omit<SidebarToolSection, 'key' | 'tools' | 'items'>;
 
 const SIDEBAR_SECTION_META: Record<SidebarSectionKey, SidebarSectionMeta> = {
   search: {
@@ -59,12 +59,23 @@ export const buildSidebarSections = ({
   internalTools,
   externalTools,
 }: UseSidebarSectionsOptions): SidebarToolSection[] => {
+  let runningOffset = 0;
+  const toSectionItems = (tools: ToolMetadata[]) => {
+    const items = tools.map((tool, itemIndex) => ({
+      tool,
+      indexOffset: runningOffset + itemIndex,
+    }));
+    runningOffset += tools.length;
+    return items;
+  };
+
   if (hasSearchTerm) {
     return [
       {
         key: 'search',
         ...SIDEBAR_SECTION_META.search,
         tools: filteredTools,
+        items: toSectionItems(filteredTools),
       },
     ];
   }
@@ -86,6 +97,7 @@ export const buildSidebarSections = ({
       key: config.key,
       ...SIDEBAR_SECTION_META[config.key],
       tools: config.tools,
+      items: toSectionItems(config.tools),
     }));
 };
 

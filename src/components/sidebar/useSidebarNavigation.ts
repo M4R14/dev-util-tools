@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ToolMetadata } from '../../types';
 import { TOOLS } from '../../data/tools';
@@ -8,6 +9,83 @@ import { useToolSearch } from '../../hooks/useToolSearch';
 
 const LIMIT_RECENTS = 3;
 const EXTERNAL_TOOL_TAG = 'external tool';
+const SEARCH_INPUT_ATTR = 'data-sidebar-search-input';
+const TOOL_BY_ID = new Map(TOOLS.map((tool) => [tool.id, tool]));
+
+const isExternalTool = (tool: ToolMetadata) => tool.tags?.includes(EXTERNAL_TOOL_TAG) ?? false;
+
+const isSidebarSearchInput = (target: EventTarget | null) => {
+  if (!(target instanceof HTMLInputElement)) {
+    return false;
+  }
+  return target.getAttribute(SEARCH_INPUT_ATTR) === 'true';
+};
+
+const isTypingTarget = (target: EventTarget | null) =>
+  target instanceof HTMLInputElement ||
+  target instanceof HTMLTextAreaElement ||
+  (target instanceof HTMLElement && target.isContentEditable);
+
+const useSidebarKeyboardNavigation = ({
+  visibleTools,
+  selectedIndex,
+  setSelectedIndex,
+  navigate,
+  onClose,
+}: {
+  visibleTools: ToolMetadata[];
+  selectedIndex: number;
+  setSelectedIndex: Dispatch<SetStateAction<number>>;
+  navigate: ReturnType<typeof useNavigate>;
+  onClose: () => void;
+}) => {
+  useEffect(() => {
+    const totalVisibleTools = visibleTools.length;
+    const hasVisibleTools = totalVisibleTools > 0;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (isTypingTarget(event.target) && !isSidebarSearchInput(event.target)) {
+        return;
+      }
+
+      if (event.key === 'ArrowDown') {
+        if (!hasVisibleTools) {
+          return;
+        }
+        event.preventDefault();
+        setSelectedIndex((previous) => (previous + 1) % totalVisibleTools);
+        return;
+      }
+
+      if (event.key === 'ArrowUp') {
+        if (!hasVisibleTools) {
+          return;
+        }
+        event.preventDefault();
+        setSelectedIndex((previous) => (previous - 1 + totalVisibleTools) % totalVisibleTools);
+        return;
+      }
+
+      if (event.key !== 'Enter' || selectedIndex < 0) {
+        return;
+      }
+
+      event.preventDefault();
+      const selectedTool = visibleTools[selectedIndex];
+      if (!selectedTool) {
+        return;
+      }
+
+      navigate(`/${selectedTool.id}`);
+      if (window.innerWidth < 768) {
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [navigate, onClose, selectedIndex, setSelectedIndex, visibleTools]);
+};
 
 export const useSidebarNavigation = (onClose: () => void) => {
   const { favorites, recents, toggleFavorite } = useUserPreferences();
@@ -15,91 +93,48 @@ export const useSidebarNavigation = (onClose: () => void) => {
   const filteredTools = useToolSearch(searchTerm);
   const navigate = useNavigate();
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const hasSearchTerm = searchTerm.trim().length > 0;
+  const favoriteToolIds = useMemo(() => new Set(favorites), [favorites]);
 
-  const favoriteTools = useMemo(
-    () => TOOLS.filter((t) => favorites.includes(t.id)),
-    [favorites],
-  );
+  const favoriteTools = useMemo(() => TOOLS.filter((tool) => favoriteToolIds.has(tool.id)), [favoriteToolIds]);
 
   const recentTools = useMemo(
     () =>
       recents
-        .map((id) => TOOLS.find((t) => t.id === id))
-        .filter((t): t is ToolMetadata => !!t && !favorites.includes(t.id))
+        .map((id) => TOOL_BY_ID.get(id))
+        .filter((tool): tool is ToolMetadata => !!tool && !favoriteToolIds.has(tool.id))
         .slice(0, LIMIT_RECENTS),
-    [recents, favorites],
+    [recents, favoriteToolIds],
   );
 
-  const isExternalTool = useCallback(
-    (tool: ToolMetadata) => tool.tags?.includes(EXTERNAL_TOOL_TAG) ?? false,
-    [],
-  );
-
-  const internalTools = useMemo(() => TOOLS.filter((tool) => !isExternalTool(tool)), [isExternalTool]);
-  const externalTools = useMemo(() => TOOLS.filter((tool) => isExternalTool(tool)), [isExternalTool]);
-
+  const internalTools = useMemo(() => TOOLS.filter((tool) => !isExternalTool(tool)), []);
+  const externalTools = useMemo(() => TOOLS.filter((tool) => isExternalTool(tool)), []);
   const groupedTools = useMemo(() => [...internalTools, ...externalTools], [internalTools, externalTools]);
 
-  const visibleTools = useMemo(() => {
-    if (searchTerm) {
+  const visibleTools = useMemo<ToolMetadata[]>(() => {
+    if (hasSearchTerm) {
       return filteredTools;
     }
 
     return [
-      ...favoriteTools.map((t) => ({ ...t, _virtualId: `fav-${t.id}` })),
-      ...recentTools.map((t) => ({ ...t, _virtualId: `rec-${t.id}` })),
-      ...groupedTools.map((t) => ({ ...t, _virtualId: `all-${t.id}` })),
+      ...favoriteTools,
+      ...recentTools,
+      ...groupedTools,
     ];
-  }, [searchTerm, favoriteTools, recentTools, filteredTools, groupedTools]);
+  }, [filteredTools, favoriteTools, groupedTools, hasSearchTerm, recentTools]);
 
   // Reset selection when search changes
   useEffect(() => {
     setSelectedIndex(-1);
   }, [searchTerm]);
 
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const isInput =
-        e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement;
-      const isSearchInput =
-        e.target instanceof HTMLInputElement &&
-        e.target.type === 'text' &&
-        e.target.placeholder.includes('Search');
-
-      if (isInput && !isSearchInput) return;
-
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        setSelectedIndex((prev) => (prev + 1) % visibleTools.length);
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        setSelectedIndex((prev) => (prev - 1 + visibleTools.length) % visibleTools.length);
-      } else if (e.key === 'Enter' && selectedIndex >= 0) {
-        e.preventDefault();
-        const tool = visibleTools[selectedIndex];
-        if (tool) {
-          navigate(`/${tool.id}`);
-          if (window.innerWidth < 768) onClose();
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [visibleTools, selectedIndex, navigate, onClose]);
-
-  const renderToolLink = useCallback(
-    (tool: ToolMetadata, contextPrefix: string, indexOffset: number) => ({
-      tool,
-      contextPrefix,
-      indexOffset,
-      selectedIndex,
-      searchTerm,
-      favorites,
-    }),
-    [selectedIndex, searchTerm, favorites],
-  );
+  useSidebarKeyboardNavigation({
+    visibleTools,
+    selectedIndex,
+    setSelectedIndex,
+    navigate,
+    onClose,
+  });
 
   return {
     searchTerm,
@@ -110,8 +145,6 @@ export const useSidebarNavigation = (onClose: () => void) => {
     selectedIndex,
     favorites,
     toggleFavorite,
-    renderToolLink,
-    tools: TOOLS,
     internalTools,
     externalTools,
   };

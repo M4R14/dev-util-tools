@@ -15,7 +15,7 @@ const isEditableTarget = (target: EventTarget | null) => {
 export const useCommandPaletteHotkey = (onToggle: () => void) => {
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.defaultPrevented) {
+      if (event.defaultPrevented || event.repeat) {
         return;
       }
 
