@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { CalendarClock, Newspaper, Timer } from 'lucide-react';
 import { BLOG_POSTS } from '../data/blogPosts';
-import BlogPostCard from './blog/BlogPostCard';
+import { BlogPostCard } from './blog/index';
 
 const Blog: React.FC = () => {
   const latestPostDate = useMemo(() => {

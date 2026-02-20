@@ -3,10 +3,7 @@ import { BookOpenText, ShieldAlert, ShieldCheck } from 'lucide-react';
 import ToolLayout from '../ui/ToolLayout';
 import { Card } from '../ui/Card';
 import { useAIChat } from '../../hooks/useAIChat';
-import SettingsModal from './ai/SettingsModal';
-import AssistantHeader from './ai/AssistantHeader';
-import ChatPanel from './ai/ChatPanel';
-import Composer from './ai/Composer';
+import { AssistantHeader, ChatPanel, Composer, SettingsModal } from './ai';
 
 const AIAssistant: React.FC = () => {
   const {

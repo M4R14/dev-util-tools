@@ -14,18 +14,21 @@ src/
 │   │   ├── meta.ts
 │   │   ├── useCommandPaletteActions.ts
 │   │   ├── MainFooter.tsx
-│   │   └── MobileCommandPaletteButton.tsx
+│   │   ├── MobileCommandPaletteButton.tsx
+│   │   └── index.ts            # Barrel exports for main-layout module
 │   ├── Sidebar.tsx             # Navigation with search, favorites, recents, all tools
 │   ├── Header.tsx              # Top bar: title, search, theme toggle, GitHub link
 │   ├── Dashboard.tsx           # Landing page: hero search + tool cards grid
 │   ├── Blog.tsx                # Product updates page (renders posts from markdown)
 │   ├── Settings.tsx            # App-level settings page (offline status, install prompt, cache/update actions)
 │   ├── blog/                   # Blog page sub-components
-│   │   └── BlogPostCard.tsx
+│   │   ├── BlogPostCard.tsx
+│   │   └── index.ts            # Barrel exports for blog module
 │   ├── dashboard/              # Dashboard sub-components
 │   │   ├── DashboardHero.tsx
 │   │   ├── DashboardToolSection.tsx
-│   │   └── ToolCard.tsx
+│   │   ├── ToolCard.tsx
+│   │   └── index.ts            # Barrel exports for dashboard module
 │   ├── CommandPalette.tsx      # Cmd+K modal container (state + keyboard orchestration)
 │   ├── command-palette/        # Command palette sub-components + local models/helpers
 │   │   ├── CommandPaletteList.tsx
@@ -33,7 +36,8 @@ src/
 │   │   ├── CommandPaletteEmptyState.tsx
 │   │   ├── CommandPaletteFooter.tsx
 │   │   ├── items.ts
-│   │   └── types.ts
+│   │   ├── types.ts
+│   │   └── index.ts            # Barrel exports for command palette module
 │   ├── ToolPageLayout.tsx      # Tool page wrapper: icon, name, favorite + share actions, description, clickable tags
 │   ├── ErrorBoundary.tsx       # Class component error boundary with recovery UI
 │   ├── ToolLinkItem.tsx        # Sidebar NavLink item with active/selected states
@@ -44,7 +48,8 @@ src/
 │   │    ├── ExecutionModesCard.tsx
 │   │    ├── QuickstartCard.tsx
 │   │    ├── RunQueryCard.tsx
-│   │    └── LiveResponseCard.tsx
+│   │    ├── LiveResponseCard.tsx
+│   │    └── index.ts           # Barrel exports for ai-bridge module
 │   ├── tools/                  # One component per tool (18 tools)
 │   │   ├── JSONFormatter.tsx
 │   │   ├── Base64Tool.tsx
@@ -56,7 +61,8 @@ src/
 │   │   │   ├── PasswordGuidancePanel.tsx
 │   │   │   ├── constants.ts
 │   │   │   ├── types.ts
-│   │   │   └── utils.ts
+│   │   │   ├── utils.ts
+│   │   │   └── index.ts        # Barrel exports for password-generator module
 │   │   ├── TimezoneConverter.tsx
 │   │   ├── ThaiIdTool.tsx
 │   │   ├── thai-date/          # Thai Date Converter (split into sub-components)
@@ -80,15 +86,23 @@ src/
 │   │   │   ├── Composer.tsx
 │   │   │   ├── CodeBlock.tsx
 │   │   │   ├── MessageContent.tsx
-│   │   │   └── SettingsModal.tsx
+│   │   │   ├── SettingsModal.tsx
+│   │   │   └── index.ts        # Barrel exports for AI assistant module
 │   │   ├── UUIDGenerator.tsx    # Main UUID Generator composition
 │   │   ├── uuid-generator/      # UUID Generator sub-components and local helpers
 │   │   │   ├── UUIDOptionsPanel.tsx
 │   │   │   ├── UUIDResultsHeader.tsx
 │   │   │   ├── UUIDResultsList.tsx
 │   │   │   ├── constants.ts
-│   │   │   └── utils.ts
-│   │   ├── UrlParser.tsx       # + url-parser/UrlComponentInput.tsx, etc.
+│   │   │   ├── utils.ts
+│   │   │   └── index.ts        # Barrel exports for uuid-generator module
+│   │   ├── UrlParser.tsx
+│   │   ├── url-parser/         # URL parser sub-components
+│   │   │   ├── UrlComponentInput.tsx
+│   │   │   ├── UrlComponents.tsx
+│   │   │   ├── UrlInputSection.tsx
+│   │   │   ├── UrlQueryParams.tsx
+│   │   │   └── index.ts        # Barrel exports for url-parser module
 │   │   ├── DiffViewer.tsx      # Main Diff Viewer composition
 │   │   ├── diff-viewer/        # Diff Viewer sub-components and local helpers
 │   │   │   ├── DiffInputPanels.tsx
@@ -97,7 +111,8 @@ src/
 │   │   │   ├── DiffLineRows.tsx
 │   │   │   ├── constants.ts
 │   │   │   ├── utils.ts
-│   │   │   └── types.ts
+│   │   │   ├── types.ts
+│   │   │   └── index.ts        # Barrel exports for diff-viewer module
 │   │   ├── RegexTester.tsx
 │   │   ├── XMLFormatter.tsx
 │   │   └── XMLToJson.tsx
@@ -106,7 +121,8 @@ src/
 │   │   ├── SidebarFooter.tsx   # Footer links (GitHub, theme toggle)
 │   │   ├── SidebarNavigation.tsx # Favorites, recents, apps, external sections
 │   │   ├── SidebarSearch.tsx   # Search input in sidebar
-│   │   └── useSidebarNavigation.ts # Keyboard nav hook for sidebar items
+│   │   ├── useSidebarNavigation.ts # Keyboard nav hook for sidebar items
+│   │   └── index.ts            # Barrel exports for sidebar module
 │   └── ui/                     # Shared UI primitives
 │       ├── Button.tsx          # CVA variants: default/destructive/outline/secondary/ghost/link
 │       ├── Card.tsx            # Card + CardHeader + CardTitle + CardDescription + CardContent + CardFooter
@@ -143,7 +159,8 @@ src/
 │   │   ├── events.ts
 │   │   ├── formatters.ts
 │   │   ├── serviceWorker.ts
-│   │   └── types.ts
+│   │   ├── types.ts
+│   │   └── index.ts            # Barrel exports for pwa-settings module
 │   ├── useXmlFormatter.ts
 │   └── useXmlToJson.ts
 │

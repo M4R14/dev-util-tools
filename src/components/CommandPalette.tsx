@@ -2,17 +2,18 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Search, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToolSearch } from '../hooks/useToolSearch';
-import CommandPaletteEmptyState from './command-palette/CommandPaletteEmptyState';
-import CommandPaletteFooter from './command-palette/CommandPaletteFooter';
-import CommandPaletteList from './command-palette/CommandPaletteList';
-import { buildCommandPaletteItems, filterCommandPaletteActions } from './command-palette/items';
 import {
+  buildCommandPaletteItems,
+  CommandPaletteEmptyState,
+  CommandPaletteFooter,
+  CommandPaletteList,
+  filterCommandPaletteActions,
   getCommandPaletteOptionId,
   type CommandPaletteItem,
   type CommandPaletteProps,
-} from './command-palette/types';
+} from './command-palette';
 
-export type { CommandPaletteAction } from './command-palette/types';
+export type { CommandPaletteAction } from './command-palette';
 
 const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, actions = [] }) => {
   const [searchTerm, setSearchTerm] = useState('');

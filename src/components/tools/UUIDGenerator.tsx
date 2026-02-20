@@ -1,11 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import ToolLayout from '../ui/ToolLayout';
 import { useUUIDGenerator } from '../../hooks/useUUIDGenerator';
-import { QUICK_QUANTITY_PRESETS } from './uuid-generator/constants';
-import UUIDOptionsPanel from './uuid-generator/UUIDOptionsPanel';
-import UUIDResultsHeader from './uuid-generator/UUIDResultsHeader';
-import UUIDResultsList from './uuid-generator/UUIDResultsList';
-import { getUUIDFormatPreview } from './uuid-generator/utils';
+import {
+  getUUIDFormatPreview,
+  QUICK_QUANTITY_PRESETS,
+  UUIDOptionsPanel,
+  UUIDResultsHeader,
+  UUIDResultsList,
+} from './uuid-generator';
 
 const UUIDGenerator: React.FC = () => {
   const {

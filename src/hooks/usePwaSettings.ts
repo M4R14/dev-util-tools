@@ -3,28 +3,22 @@ import { toast } from 'sonner';
 import {
   calculatePwaCacheSizeBytes,
   clearPwaCaches,
-  getPwaCacheKeysByPrefix,
-} from './pwa-settings/cache';
-import { PWA_CACHE_PREFIX } from './pwa-settings/constants';
-import {
   getOnlineStatus,
+  getPwaCacheKeysByPrefix,
+  getServiceWorkerRegistration,
   getStandaloneStatus,
   getStoredLastUpdatedAt,
-} from './pwa-settings/environment';
-import {
+  PWA_CACHE_PREFIX,
+  promptServiceWorkerUpdate,
   attachInstallPromptListeners,
   attachLastUpdatedStorageListener,
   attachOnlineStatusListeners,
   attachServiceWorkerMessageListener,
-} from './pwa-settings/events';
-export { formatPwaBytes, formatPwaLastUpdated } from './pwa-settings/formatters';
-import {
-  getServiceWorkerRegistration,
-  promptServiceWorkerUpdate,
-} from './pwa-settings/serviceWorker';
-import type { BeforeInstallPromptEvent, UsePwaSettingsOptions } from './pwa-settings/types';
+} from './pwa-settings';
+export { formatPwaBytes, formatPwaLastUpdated } from './pwa-settings';
+import type { BeforeInstallPromptEvent, UsePwaSettingsOptions } from './pwa-settings';
 
-export type { UsePwaSettingsOptions } from './pwa-settings/types';
+export type { UsePwaSettingsOptions } from './pwa-settings';
 
 export const usePwaSettings = (options: UsePwaSettingsOptions = {}) => {
   const { loadCacheStatsOnMount = false } = options;

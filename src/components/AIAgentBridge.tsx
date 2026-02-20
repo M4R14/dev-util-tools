@@ -19,12 +19,14 @@ import {
   type BridgeEndpointPath,
 } from '../data/aiBridge';
 import { normalizeQueryInput, parseQueryRequest } from '../lib/aiBridgeQuery';
-import BridgeHeroCard from './ai-bridge/BridgeHeroCard';
-import EndpointNavigatorCard from './ai-bridge/EndpointNavigatorCard';
-import ExecutionModesCard from './ai-bridge/ExecutionModesCard';
-import LiveResponseCard from './ai-bridge/LiveResponseCard';
-import QuickstartCard from './ai-bridge/QuickstartCard';
-import RunQueryCard from './ai-bridge/RunQueryCard';
+import {
+  BridgeHeroCard,
+  EndpointNavigatorCard,
+  ExecutionModesCard,
+  LiveResponseCard,
+  QuickstartCard,
+  RunQueryCard,
+} from './ai-bridge';
 
 interface AIBridgeWindow {
   catalog: () => typeof AI_TOOL_CATALOG;

@@ -10,11 +10,13 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { cn } from '../lib/utils';
-import { useSidebarNavigation } from './sidebar/useSidebarNavigation';
-import SidebarBrand from './sidebar/SidebarBrand';
-import SidebarSearch from './sidebar/SidebarSearch';
-import SidebarNavigation from './sidebar/SidebarNavigation';
-import SidebarFooter from './sidebar/SidebarFooter';
+import {
+  SidebarBrand,
+  SidebarFooter,
+  SidebarNavigation,
+  SidebarSearch,
+  useSidebarNavigation,
+} from './sidebar';
 
 interface SidebarProps {
   isOpen: boolean;

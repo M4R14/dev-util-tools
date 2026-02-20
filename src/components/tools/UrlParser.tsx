@@ -4,9 +4,7 @@ import ToolLayout from '../ui/ToolLayout';
 import { CopyButton } from '../ui/CopyButton';
 import { useUrlParser } from '../../hooks/useUrlParser';
 import { toast } from 'sonner';
-import UrlInputSection from './url-parser/UrlInputSection';
-import UrlComponents from './url-parser/UrlComponents';
-import UrlQueryParams from './url-parser/UrlQueryParams';
+import { UrlComponents, UrlInputSection, UrlQueryParams } from './url-parser';
 
 const UrlParser: React.FC = () => {
   const { input, setInput, parsedUrl, error, params, getEncoded, decodeUrl, updateParam, addParam, removeParam } =

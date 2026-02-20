@@ -7,10 +7,13 @@ import ToolPageLayout from './ToolPageLayout';
 import { useUserPreferences } from '../context/UserPreferencesContext';
 import { useSearch } from '../context/SearchContext';
 import { Toaster } from './ui/sonner';
-import MainFooter from './main-layout/MainFooter';
-import MobileCommandPaletteButton from './main-layout/MobileCommandPaletteButton';
-import { resolveMainLayoutPageMeta, getMainLayoutDocumentTitle } from './main-layout/meta';
-import { useCommandPaletteActions } from './main-layout/useCommandPaletteActions';
+import {
+  getMainLayoutDocumentTitle,
+  MainFooter,
+  MobileCommandPaletteButton,
+  resolveMainLayoutPageMeta,
+  useCommandPaletteActions,
+} from './main-layout';
 
 interface MainLayoutProps {
   children: React.ReactNode;

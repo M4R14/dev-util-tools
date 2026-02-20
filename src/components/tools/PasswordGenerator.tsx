@@ -3,16 +3,16 @@ import { toast } from 'sonner';
 import ToolLayout from '../ui/ToolLayout';
 import { usePasswordGenerator } from '../../hooks/usePasswordGenerator';
 import { getPasswordStrength } from '../../lib/passwordStrength';
-import PasswordGuidancePanel from './password-generator/PasswordGuidancePanel';
-import PasswordOptionsPanel from './password-generator/PasswordOptionsPanel';
-import PasswordOutputPanel from './password-generator/PasswordOutputPanel';
-import type { CharsetKey } from './password-generator/types';
 import {
   buildCharsetOptions,
   getActiveCharsetSetCount,
   getCharacterPoolSize,
   getEntropyBits,
-} from './password-generator/utils';
+  PasswordGuidancePanel,
+  PasswordOptionsPanel,
+  PasswordOutputPanel,
+  type CharsetKey,
+} from './password-generator';
 
 const PasswordGenerator: React.FC = () => {
   const {

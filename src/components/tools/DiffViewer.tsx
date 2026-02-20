@@ -2,11 +2,15 @@ import React from 'react';
 import { toast } from 'sonner';
 import ToolLayout from '../ui/ToolLayout';
 import { useDiffViewer } from '../../hooks/useDiffViewer';
-import { SAMPLE_MODIFIED, SAMPLE_ORIGINAL } from './diff-viewer/constants';
-import DiffInputPanels from './diff-viewer/DiffInputPanels';
-import DiffOutputPanel from './diff-viewer/DiffOutputPanel';
-import DiffToolbar from './diff-viewer/DiffToolbar';
-import { buildSplitRows, getTextMetrics } from './diff-viewer/utils';
+import {
+  buildSplitRows,
+  DiffInputPanels,
+  DiffOutputPanel,
+  DiffToolbar,
+  getTextMetrics,
+  SAMPLE_MODIFIED,
+  SAMPLE_ORIGINAL,
+} from './diff-viewer';
 
 /* ──────────────── Main Component ──────────────── */
 
