@@ -5,7 +5,11 @@ import { useUserPreferences } from '../context/UserPreferencesContext';
 import { useSearch } from '../context/SearchContext';
 import { useToolSearch } from '../hooks/useToolSearch';
 import { TOOLS } from '../data/tools';
-import { DashboardHero, DashboardToolSection, type DashboardHeroStat } from './dashboard';
+import {
+  DashboardHero,
+  DashboardToolSection,
+  type DashboardHeroStat,
+} from './dashboard/index';
 
 const TIPS = [
   'Use Cmd+K to quickly open the command palette.',

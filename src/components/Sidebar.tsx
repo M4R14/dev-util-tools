@@ -16,7 +16,7 @@ import {
   SidebarNavigation,
   SidebarSearch,
   useSidebarNavigation,
-} from './sidebar';
+} from './sidebar/index';
 
 interface SidebarProps {
   isOpen: boolean;
