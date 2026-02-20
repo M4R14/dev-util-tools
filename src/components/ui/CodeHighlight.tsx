@@ -1,16 +1,20 @@
 import React, { useEffect, useRef } from 'react';
 import hljs from 'highlight.js/lib/core';
+import bash from 'highlight.js/lib/languages/bash';
+import javascript from 'highlight.js/lib/languages/javascript';
 import json from 'highlight.js/lib/languages/json';
 import xml from 'highlight.js/lib/languages/xml';
 import { cn } from '../../lib/utils';
 
 // Register only the languages we need
+hljs.registerLanguage('bash', bash);
+hljs.registerLanguage('javascript', javascript);
 hljs.registerLanguage('json', json);
 hljs.registerLanguage('xml', xml);
 
 interface CodeHighlightProps {
   code: string;
-  language: 'json' | 'xml';
+  language: 'json' | 'xml' | 'javascript' | 'bash' | 'plaintext';
   className?: string;
 }
 
