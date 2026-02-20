@@ -5,6 +5,8 @@
 
 import dayjs, { Dayjs } from 'dayjs';
 
+export const BUDDHIST_YEAR_OFFSET = 543
+
 export const THAI_MONTHS = [
   'มกราคม',
   'กุมภาพันธ์',
