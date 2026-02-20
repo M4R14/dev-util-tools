@@ -89,6 +89,7 @@ src/
 │   ├── tools/              # 18 tool components
 │   │   ├── thai-date/      #   └ sub-components (6 files)
 │   │   ├── ai/             #   └ sub-components
+│   │   ├── diff-viewer/    #   └ sub-components
 │   │   └── url-parser/     #   └ sub-components
 │   ├── ui/                 # Shared primitives (Button, Card, Input…)
 │   ├── sidebar/            # Sidebar sub-components

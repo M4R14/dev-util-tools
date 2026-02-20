@@ -13,6 +13,7 @@ Compare two texts side-by-side and view differences. Supports unified/split view
 
 ## Files
 - `src/components/tools/DiffViewer.tsx`
+- `src/components/tools/diff-viewer/*`
 - `src/hooks/useDiffViewer.ts`
 - `src/lib/diffUtils.ts`
 

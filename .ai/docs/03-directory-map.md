@@ -76,7 +76,15 @@ src/
 │   │   │   └── SettingsModal.tsx
 │   │   ├── UUIDGenerator.tsx
 │   │   ├── UrlParser.tsx       # + url-parser/UrlComponentInput.tsx, etc.
-│   │   ├── DiffViewer.tsx
+│   │   ├── DiffViewer.tsx      # Main Diff Viewer composition
+│   │   ├── diff-viewer/        # Diff Viewer sub-components and local helpers
+│   │   │   ├── DiffInputPanels.tsx
+│   │   │   ├── DiffToolbar.tsx
+│   │   │   ├── DiffOutputPanel.tsx
+│   │   │   ├── DiffLineRows.tsx
+│   │   │   ├── constants.ts
+│   │   │   ├── utils.ts
+│   │   │   └── types.ts
 │   │   ├── RegexTester.tsx
 │   │   ├── XMLFormatter.tsx
 │   │   └── XMLToJson.tsx
