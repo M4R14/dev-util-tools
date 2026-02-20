@@ -1,5 +1,5 @@
 import React from 'react';
-import { Loader2, Sparkles, Trash2 } from 'lucide-react';
+import { AlertTriangle, Loader2, Sparkles } from 'lucide-react';
 import type { Message } from '../../../hooks/useAIChat';
 import EmptyState from './EmptyState';
 import ChatMessage from './ChatMessage';
@@ -10,6 +10,7 @@ interface ChatPanelProps {
   error: string | null;
   hasApiKey: boolean;
   onOpenSettings: () => void;
+  onUsePrompt: (value: string) => void;
   messagesEndRef: React.MutableRefObject<HTMLDivElement | null>;
 }
 
@@ -19,10 +20,16 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
   error,
   hasApiKey,
   onOpenSettings,
+  onUsePrompt,
   messagesEndRef,
 }) => (
-  <div className="flex-1 overflow-y-auto p-4 space-y-6 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent">
-    {messages.length === 0 && <EmptyState hasApiKey={hasApiKey} onOpenSettings={onOpenSettings} />}
+  <div
+    className="flex-1 overflow-y-auto p-5 space-y-6 scrollbar-thin scrollbar-thumb-border scrollbar-track-transparent"
+    aria-live="polite"
+  >
+    {messages.length === 0 && (
+      <EmptyState hasApiKey={hasApiKey} onOpenSettings={onOpenSettings} onUsePrompt={onUsePrompt} />
+    )}
 
     {messages.map((message) => (
       <ChatMessage key={message.id} message={message} />
@@ -40,9 +47,9 @@ const ChatPanel: React.FC<ChatPanelProps> = ({
     )}
 
     {error && (
-      <div className="flex justify-center my-4">
+      <div className="flex justify-center my-4" role="alert">
         <div className="bg-destructive/10 border border-destructive/20 px-4 py-2 rounded-xl text-destructive text-sm flex items-center gap-2">
-          <Trash2 className="w-4 h-4" /> {error}
+          <AlertTriangle className="w-4 h-4" /> {error}
         </div>
       </div>
     )}

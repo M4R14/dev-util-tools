@@ -12,6 +12,10 @@ src/
 │   ├── Sidebar.tsx             # Navigation with search, favorites, recents, all tools
 │   ├── Header.tsx              # Top bar: title, search, theme toggle, GitHub link
 │   ├── Dashboard.tsx           # Landing page: hero search + tool cards grid
+│   ├── dashboard/              # Dashboard sub-components
+│   │   ├── DashboardHero.tsx
+│   │   ├── DashboardToolSection.tsx
+│   │   └── ToolCard.tsx
 │   ├── CommandPalette.tsx      # Cmd+K modal with keyboard navigation
 │   ├── ToolPageLayout.tsx      # Tool page wrapper: icon, name, description, clickable tags
 │   ├── ErrorBoundary.tsx       # Class component error boundary with recovery UI
