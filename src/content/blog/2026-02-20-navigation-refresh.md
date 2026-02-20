@@ -1,11 +1,13 @@
 ---
 id: 2026-02-20-navigation-refresh
-title: Navigation and Sidebar Refresh
+title: Daily Update: UX Refresh and Blog Rollout
 date: 2026-02-20
 category: improvement
-summary: Refined sidebar navigation, faster access to favorites, and cleaner dashboard hierarchy for daily workflows.
+summary: Rolled out major UX/UI improvements across dashboard, sidebar, and AI Assistant, plus a new Blog page powered by markdown content.
 ---
 
-- Improved sidebar navigation hierarchy with clearer sections.
-- Added inline favorite toggle directly inside sidebar nav items.
-- Refined dashboard section readability and search result presentation.
+- Refined dashboard UX with clearer section hierarchy, improved search state, and more readable tool cards.
+- Improved sidebar navigation and added inline favorite toggles directly in nav items.
+- Upgraded AI Assistant experience with stronger status indicators, quick prompts, and better composer behavior.
+- Launched a new Blog updates page and moved Blog access to the header navigation.
+- Switched blog content source to markdown files (`src/content/blog/*.md`) with frontmatter parsing.

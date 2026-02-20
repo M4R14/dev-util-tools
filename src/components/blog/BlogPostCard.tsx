@@ -25,6 +25,16 @@ const CATEGORY_META = {
   },
 } as const;
 
+const renderInlineEmphasis = (text: string): React.ReactNode[] => {
+  return text.split(/(\*[^*]+\*)/g).map((part, index) => {
+    if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
+      return <em key={`${part}-${index}`}>{part.slice(1, -1)}</em>;
+    }
+
+    return <React.Fragment key={`${part}-${index}`}>{part}</React.Fragment>;
+  });
+};
+
 const BlogPostCard: React.FC<BlogPostCardProps> = ({ post }) => {
   const meta = CATEGORY_META[post.category];
   const Icon = meta.icon;
@@ -48,16 +58,30 @@ const BlogPostCard: React.FC<BlogPostCardProps> = ({ post }) => {
         </span>
       </div>
 
-      <p className="mt-4 text-sm text-muted-foreground leading-relaxed">{post.summary}</p>
+      <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
+        {renderInlineEmphasis(post.summary)}
+      </p>
 
-      <ul className="mt-4 space-y-1.5">
-        {post.changes.map((change) => (
-          <li key={change} className="text-sm text-foreground/90 flex gap-2">
-            <span className="text-primary mt-1">•</span>
-            <span>{change}</span>
-          </li>
-        ))}
-      </ul>
+      {post.content && (
+        <div className="mt-4 space-y-3">
+          {post.content.split('\n\n').map((paragraph) => (
+            <p key={paragraph} className="text-sm text-foreground/90 leading-relaxed">
+              {renderInlineEmphasis(paragraph)}
+            </p>
+          ))}
+        </div>
+      )}
+
+      {post.changes.length > 0 && (
+        <ul className="mt-4 space-y-1.5">
+          {post.changes.map((change) => (
+            <li key={change} className="text-sm text-foreground/90 flex gap-2">
+              <span className="text-primary mt-1">•</span>
+              <span>{renderInlineEmphasis(change)}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </article>
   );
 };

@@ -6,6 +6,7 @@ export interface BlogPost {
   date: string;
   category: BlogCategory;
   summary: string;
+  content: string;
   changes: string[];
 }
 
@@ -66,6 +67,15 @@ const extractSummary = (frontmatterSummary: string | undefined, body: string): s
   return firstParagraph ?? 'No summary provided.';
 };
 
+const extractNarrativeContent = (body: string): string => {
+  const narrativeParagraphs = body
+    .split('\n\n')
+    .map((chunk) => chunk.trim())
+    .filter((chunk) => chunk && !chunk.startsWith('- '));
+
+  return narrativeParagraphs.join('\n\n');
+};
+
 const toBlogCategory = (value: string | undefined): BlogCategory => {
   if (value && BLOG_CATEGORY_SET.has(value as BlogCategory)) {
     return value as BlogCategory;
@@ -85,6 +95,7 @@ const parseBlogPost = (path: string, rawMarkdown: string): BlogPost => {
   const date = frontmatter.date?.trim() || '1970-01-01';
   const category = toBlogCategory(frontmatter.category?.trim());
   const summary = extractSummary(frontmatter.summary?.trim(), body);
+  const content = extractNarrativeContent(body);
   const changes = extractChanges(body);
 
   return {
@@ -93,6 +104,7 @@ const parseBlogPost = (path: string, rawMarkdown: string): BlogPost => {
     date,
     category,
     summary,
+    content,
     changes,
   };
 };
