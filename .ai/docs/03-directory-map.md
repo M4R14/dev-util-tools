@@ -114,6 +114,7 @@ src/
 │   │   ├── cache.ts
 │   │   ├── constants.ts
 │   │   ├── environment.ts
+│   │   ├── events.ts
 │   │   ├── formatters.ts
 │   │   ├── serviceWorker.ts
 │   │   └── types.ts

@@ -5,23 +5,24 @@ import {
   clearPwaCaches,
   getPwaCacheKeysByPrefix,
 } from './pwa-settings/cache';
-import { PWA_CACHE_PREFIX, PWA_LAST_UPDATED_STORAGE_KEY } from './pwa-settings/constants';
+import { PWA_CACHE_PREFIX } from './pwa-settings/constants';
 import {
   getOnlineStatus,
   getStandaloneStatus,
   getStoredLastUpdatedAt,
-  setStoredLastUpdatedAt,
 } from './pwa-settings/environment';
+import {
+  attachInstallPromptListeners,
+  attachLastUpdatedStorageListener,
+  attachOnlineStatusListeners,
+  attachServiceWorkerMessageListener,
+} from './pwa-settings/events';
 export { formatPwaBytes, formatPwaLastUpdated } from './pwa-settings/formatters';
 import {
   getServiceWorkerRegistration,
   promptServiceWorkerUpdate,
 } from './pwa-settings/serviceWorker';
-import type {
-  BeforeInstallPromptEvent,
-  ServiceWorkerMessagePayload,
-  UsePwaSettingsOptions,
-} from './pwa-settings/types';
+import type { BeforeInstallPromptEvent, UsePwaSettingsOptions } from './pwa-settings/types';
 
 export type { UsePwaSettingsOptions } from './pwa-settings/types';
 
@@ -38,69 +39,18 @@ export const usePwaSettings = (options: UsePwaSettingsOptions = {}) => {
   const [isClearingCache, setIsClearingCache] = useState(false);
   const [lastUpdatedAt, setLastUpdatedAt] = useState<number | null>(getStoredLastUpdatedAt);
 
-  useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, []);
+  useEffect(() => attachOnlineStatusListeners(setIsOnline), []);
 
   useEffect(() => {
-    const handleBeforeInstallPrompt = (event: Event) => {
-      const installEvent = event as BeforeInstallPromptEvent;
-      installEvent.preventDefault();
-      setInstallPromptEvent(installEvent);
-    };
-
-    const handleAppInstalled = () => {
-      setInstallPromptEvent(null);
-      setIsInstalled(true);
-      toast.success('App installed');
-    };
-
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-    window.addEventListener('appinstalled', handleAppInstalled);
-
-    return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-      window.removeEventListener('appinstalled', handleAppInstalled);
-    };
+    return attachInstallPromptListeners({
+      setInstallPromptEvent,
+      setIsInstalled,
+    });
   }, []);
 
-  useEffect(() => {
-    const handleServiceWorkerMessage = (event: MessageEvent<ServiceWorkerMessagePayload>) => {
-      if (event.data?.type === 'SW_ACTIVATED' && typeof event.data.timestamp === 'number') {
-        setStoredLastUpdatedAt(event.data.timestamp);
-        setLastUpdatedAt(event.data.timestamp);
-      }
-    };
+  useEffect(() => attachServiceWorkerMessageListener(setLastUpdatedAt), []);
 
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
-    }
-
-    return () => {
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.removeEventListener('message', handleServiceWorkerMessage);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    const handleStorage = (event: StorageEvent) => {
-      if (event.key === PWA_LAST_UPDATED_STORAGE_KEY) {
-        setLastUpdatedAt(getStoredLastUpdatedAt());
-      }
-    };
-
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
-  }, []);
+  useEffect(() => attachLastUpdatedStorageListener(setLastUpdatedAt), []);
 
   const refreshCacheStats = useCallback(async () => {
     if (!('caches' in window)) {
