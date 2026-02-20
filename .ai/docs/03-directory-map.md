@@ -42,6 +42,7 @@ src/
 │   │   │   ├── index.tsx       # Main composition component
 │   │   │   ├── CurrentTimeSection.tsx
 │   │   │   ├── DateConverterSection.tsx
+│   │   │   ├── DateFormatCard.tsx
 │   │   │   ├── DatePickerInput.tsx
 │   │   │   ├── TextParserInput.tsx
 │   │   │   └── ParserResultSection.tsx

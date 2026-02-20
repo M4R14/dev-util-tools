@@ -2,11 +2,12 @@ import React from 'react';
 import { ArrowRightLeft, Info } from 'lucide-react';
 import { CopyButton } from '../../ui/CopyButton';
 import { cn } from '../../../lib/utils';
+import DateFormatCard, { type DateFormatItem } from './DateFormatCard';
 
 interface ParserResultSectionProps {
   parseInput: string;
   parseResult: { iso: string; formatted: string } | null;
-  parsedFormats: { label: string; value: string }[];
+  parsedFormats: DateFormatItem[];
 }
 
 const ParserResultSection: React.FC<ParserResultSectionProps> = ({
@@ -62,29 +63,26 @@ const ParserResultSection: React.FC<ParserResultSectionProps> = ({
           </div>
 
           {/* All Thai formats from parsed date */}
-          <div className="grid grid-cols-1 gap-2">
-            {parsedFormats.map((fmt, i) => (
-              <div
-                key={i}
-                className="group flex items-center justify-between gap-2 px-3 py-2 rounded-lg border border-border/50 hover:border-primary/20 bg-card hover:bg-accent/30 transition-all"
-              >
-                <div className="min-w-0">
-                  <div className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
-                    {fmt.label}
-                  </div>
-                  <div className="font-mono text-sm text-card-foreground truncate">
-                    {fmt.value}
-                  </div>
-                </div>
-                <div className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
-                  <CopyButton
-                    value={fmt.value}
-                    className="h-6 w-6"
-                    iconClassName="w-3 h-3"
-                  />
-                </div>
-              </div>
-            ))}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between rounded-md border border-border/60 bg-muted/15 px-2 py-1">
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                Parsed Formats
+              </p>
+              <span className="inline-flex items-center rounded-full border border-border bg-background px-1.5 py-0.5 text-[10px] font-medium text-muted-foreground">
+                {parsedFormats.length}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
+              {parsedFormats.map((fmt, i) => (
+                <DateFormatCard
+                  key={`${fmt.label}-${i}`}
+                  item={fmt}
+                  index={i}
+                  variant="compact"
+                />
+              ))}
+            </div>
           </div>
         </div>
       ) : (
