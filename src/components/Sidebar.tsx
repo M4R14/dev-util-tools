@@ -20,7 +20,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
     recentTools,
     selectedIndex,
     favorites,
-    tools,
+    internalTools,
+    externalTools,
   } = useSidebarNavigation(onClose);
 
   return (
@@ -50,7 +51,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           filteredTools={filteredTools}
           favoriteTools={favoriteTools}
           recentTools={recentTools}
-          tools={tools}
+          internalTools={internalTools}
+          externalTools={externalTools}
           selectedIndex={selectedIndex}
           favorites={favorites}
           onClose={onClose}

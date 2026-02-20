@@ -106,7 +106,7 @@ export const TOOLS: ToolMetadata[] = [
     name: 'Regex Tester',
     description: 'Create, test, debug and explain Regular Expressions (redirects to regex101.com).',
     icon: Code2, // Fallback icon
-    tags: ['regex', 'regexp', 'regular expression', 'match', 'replace', 'find'],
+    tags: ['regex', 'regexp', 'regular expression', 'match', 'replace', 'find', 'external tool'],
   },
   {
     id: ToolID.AI_ASSISTANT,

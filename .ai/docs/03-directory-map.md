@@ -58,7 +58,7 @@ src/
 │   ├── sidebar/                # Sidebar sub-components
 │   │   ├── SidebarBrand.tsx    # Logo and app name
 │   │   ├── SidebarFooter.tsx   # Footer links (GitHub, theme toggle)
-│   │   ├── SidebarNavigation.tsx # Favorites, recents, all-tools sections
+│   │   ├── SidebarNavigation.tsx # Favorites, recents, apps, external sections
 │   │   ├── SidebarSearch.tsx   # Search input in sidebar
 │   │   └── useSidebarNavigation.ts # Keyboard nav hook for sidebar items
 │   └── ui/                     # Shared UI primitives

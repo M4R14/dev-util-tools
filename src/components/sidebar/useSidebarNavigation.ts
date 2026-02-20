@@ -1,12 +1,13 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ToolMetadata, ToolID } from '../../types';
+import { ToolMetadata } from '../../types';
 import { TOOLS } from '../../data/tools';
 import { useUserPreferences } from '../../context/UserPreferencesContext';
 import { useSearch } from '../../context/SearchContext';
 import { useToolSearch } from '../../hooks/useToolSearch';
 
 const LIMIT_RECENTS = 3;
+const EXTERNAL_TOOL_TAG = 'external tool';
 
 export const useSidebarNavigation = (onClose: () => void) => {
   const { favorites, recents } = useUserPreferences();
@@ -29,6 +30,16 @@ export const useSidebarNavigation = (onClose: () => void) => {
     [recents, favorites],
   );
 
+  const isExternalTool = useCallback(
+    (tool: ToolMetadata) => tool.tags?.includes(EXTERNAL_TOOL_TAG) ?? false,
+    [],
+  );
+
+  const internalTools = useMemo(() => TOOLS.filter((tool) => !isExternalTool(tool)), [isExternalTool]);
+  const externalTools = useMemo(() => TOOLS.filter((tool) => isExternalTool(tool)), [isExternalTool]);
+
+  const groupedTools = useMemo(() => [...internalTools, ...externalTools], [internalTools, externalTools]);
+
   const visibleTools = useMemo(() => {
     if (searchTerm) {
       return filteredTools;
@@ -37,9 +48,9 @@ export const useSidebarNavigation = (onClose: () => void) => {
     return [
       ...favoriteTools.map((t) => ({ ...t, _virtualId: `fav-${t.id}` })),
       ...recentTools.map((t) => ({ ...t, _virtualId: `rec-${t.id}` })),
-      ...TOOLS.map((t) => ({ ...t, _virtualId: `all-${t.id}` })),
+      ...groupedTools.map((t) => ({ ...t, _virtualId: `all-${t.id}` })),
     ];
-  }, [searchTerm, favoriteTools, recentTools, filteredTools]);
+  }, [searchTerm, favoriteTools, recentTools, filteredTools, groupedTools]);
 
   // Reset selection when search changes
   useEffect(() => {
@@ -100,6 +111,8 @@ export const useSidebarNavigation = (onClose: () => void) => {
     favorites,
     renderToolLink,
     tools: TOOLS,
+    internalTools,
+    externalTools,
   };
 };
 

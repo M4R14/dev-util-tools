@@ -7,7 +7,8 @@ interface SidebarNavigationProps {
   filteredTools: ToolMetadata[];
   favoriteTools: ToolMetadata[];
   recentTools: ToolMetadata[];
-  tools: ToolMetadata[];
+  internalTools: ToolMetadata[];
+  externalTools: ToolMetadata[];
   selectedIndex: number;
   favorites: ToolID[];
   onClose: () => void;
@@ -18,7 +19,8 @@ const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
   filteredTools,
   favoriteTools,
   recentTools,
-  tools,
+  internalTools,
+  externalTools,
   selectedIndex,
   favorites,
   onClose,
@@ -80,10 +82,27 @@ const SidebarNavigation: React.FC<SidebarNavigationProps> = ({
             Apps
           </div>
           <div className="space-y-0.5">
-            {tools.map((tool, i) =>
+            {internalTools.map((tool, i) =>
               renderToolLink(tool, 'all', i + favoriteTools.length + recentTools.length),
             )}
           </div>
+
+          {externalTools.length > 0 && (
+            <div className="mt-3">
+              <div className="px-2 py-1.5 text-[10px] font-medium text-muted-foreground/60 uppercase tracking-widest">
+                External
+              </div>
+              <div className="space-y-0.5">
+                {externalTools.map((tool, i) =>
+                  renderToolLink(
+                    tool,
+                    'ext',
+                    i + favoriteTools.length + recentTools.length + internalTools.length,
+                  ),
+                )}
+              </div>
+            </div>
+          )}
         </>
       )}
     </nav>
