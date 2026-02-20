@@ -92,6 +92,7 @@ src/
 │   │   └── url-parser/     #   └ sub-components
 │   ├── ui/                 # Shared primitives (Button, Card, Input…)
 │   ├── sidebar/            # Sidebar sub-components
+│   ├── command-palette/    # Command palette sub-components + helpers
 │   ├── Dashboard.tsx       # Landing page — tool grid
 │   ├── MainLayout.tsx      # Top-level layout
 │   ├── CommandPalette.tsx  # ⌘K search modal

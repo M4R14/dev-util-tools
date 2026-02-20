@@ -23,7 +23,7 @@ This file captures cross-tool user experience features.
 
 - `Cmd+K` / `Ctrl+K` opens command palette.
 - Arrow keys navigate results.
-- `Enter` selects highlighted route.
+- `Enter` executes highlighted action or opens highlighted tool route.
 - `Escape` closes active overlay.
 - Supports low-mouse workflows for faster tool switching during development.
 

@@ -51,7 +51,8 @@ Action search uses case-insensitive text matching over:
 
 ## Source of Truth
 
-- UI + selection logic: `src/components/CommandPalette.tsx`
+- UI + selection orchestration: `src/components/CommandPalette.tsx`
+- Sub-components + local helpers: `src/components/command-palette/*`
 - Action wiring (settings/update/cache): `src/components/MainLayout.tsx`
 - Tool metadata search index: `src/hooks/useToolSearch.ts` + `src/data/tools.tsx`
 

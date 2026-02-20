@@ -21,7 +21,14 @@ src/
 │   │   ├── DashboardHero.tsx
 │   │   ├── DashboardToolSection.tsx
 │   │   └── ToolCard.tsx
-│   ├── CommandPalette.tsx      # Cmd+K modal with keyboard navigation
+│   ├── CommandPalette.tsx      # Cmd+K modal container (state + keyboard orchestration)
+│   ├── command-palette/        # Command palette sub-components + local models/helpers
+│   │   ├── CommandPaletteList.tsx
+│   │   ├── CommandPaletteOption.tsx
+│   │   ├── CommandPaletteEmptyState.tsx
+│   │   ├── CommandPaletteFooter.tsx
+│   │   ├── items.ts
+│   │   └── types.ts
 │   ├── ToolPageLayout.tsx      # Tool page wrapper: icon, name, favorite + share actions, description, clickable tags
 │   ├── ErrorBoundary.tsx       # Class component error boundary with recovery UI
 │   ├── ToolLinkItem.tsx        # Sidebar NavLink item with active/selected states

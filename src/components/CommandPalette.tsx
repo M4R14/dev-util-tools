@@ -1,27 +1,18 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Search, Command, X, ArrowRight, type LucideIcon } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useToolSearch } from '../hooks/useToolSearch';
-import type { ToolMetadata } from '../types';
+import CommandPaletteEmptyState from './command-palette/CommandPaletteEmptyState';
+import CommandPaletteFooter from './command-palette/CommandPaletteFooter';
+import CommandPaletteList from './command-palette/CommandPaletteList';
+import { buildCommandPaletteItems, filterCommandPaletteActions } from './command-palette/items';
+import {
+  getCommandPaletteOptionId,
+  type CommandPaletteItem,
+  type CommandPaletteProps,
+} from './command-palette/types';
 
-export interface CommandPaletteAction {
-  id: string;
-  name: string;
-  description: string;
-  icon: LucideIcon;
-  keywords?: string[];
-  onSelect: () => void | Promise<void>;
-}
-
-interface CommandPaletteProps {
-  isOpen: boolean;
-  onClose: () => void;
-  actions?: CommandPaletteAction[];
-}
-
-type CommandPaletteItem =
-  | { type: 'action'; id: string; action: CommandPaletteAction }
-  | { type: 'tool'; id: string; tool: ToolMetadata };
+export type { CommandPaletteAction } from './command-palette/types';
 
 const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, actions = [] }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -31,30 +22,12 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, action
   const navigate = useNavigate();
 
   const filteredTools = useToolSearch(searchTerm);
-  const filteredActions = useMemo(() => {
-    const normalized = searchTerm.trim().toLowerCase();
-    if (!normalized) return actions;
-
-    return actions.filter((action) => {
-      const haystack = [action.name, action.description, ...(action.keywords ?? [])]
-        .join(' ')
-        .toLowerCase();
-      return haystack.includes(normalized);
-    });
-  }, [actions, searchTerm]);
-  const items = useMemo<CommandPaletteItem[]>(
-    () => [
-      ...filteredActions.map((action) => ({
-        type: 'action' as const,
-        id: `action-${action.id}`,
-        action,
-      })),
-      ...filteredTools.map((tool) => ({
-        type: 'tool' as const,
-        id: `tool-${tool.id}`,
-        tool,
-      })),
-    ],
+  const filteredActions = useMemo(
+    () => filterCommandPaletteActions(actions, searchTerm),
+    [actions, searchTerm],
+  );
+  const items = useMemo(
+    () => buildCommandPaletteItems(filteredActions, filteredTools),
     [filteredActions, filteredTools],
   );
 
@@ -153,7 +126,9 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, action
             role="combobox"
             aria-expanded="true"
             aria-controls="command-palette-list"
-            aria-activedescendant={items[selectedIndex] ? `command-item-${items[selectedIndex].id}` : undefined}
+            aria-activedescendant={
+              items[selectedIndex] ? getCommandPaletteOptionId(items[selectedIndex].id) : undefined
+            }
           />
           <div className="flex items-center gap-2">
             <kbd className="hidden md:inline-flex h-6 px-2 items-center bg-muted border border-border rounded text-xs text-muted-foreground font-mono">
@@ -172,89 +147,19 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, action
         {/* Results */}
         <div className="max-h-[60vh] overflow-y-auto">
           {items.length > 0 ? (
-            <ul
-              ref={listRef}
-              className="p-2 space-y-1"
-              role="listbox"
-              id="command-palette-list"
-              aria-label="Available commands"
-            >
-              {items.map((item, index) => {
-                const isAction = item.type === 'action';
-                const itemId = item.id;
-                const title = isAction ? item.action.name : item.tool.name;
-                const description = isAction ? item.action.description : item.tool.description;
-                const Icon = isAction ? item.action.icon : item.tool.icon;
-
-                return (
-                  <li
-                    key={itemId}
-                    role="option"
-                    id={`command-item-${itemId}`}
-                    aria-selected={index === selectedIndex}
-                  >
-                    <button
-                      onClick={() => void handleSelect(item)}
-                      onMouseEnter={() => setSelectedIndex(index)}
-                      tabIndex={-1}
-                      className={`w-full flex items-center gap-4 px-4 py-3 rounded-lg text-left transition-all ${
-                        index === selectedIndex
-                          ? 'bg-primary/20 text-primary border border-primary/30'
-                          : 'text-muted-foreground hover:bg-muted/50 border border-transparent'
-                      }`}
-                    >
-                      <div
-                        className={`p-2 rounded-lg ${index === selectedIndex ? 'bg-primary/20 text-primary' : 'bg-muted text-muted-foreground'}`}
-                      >
-                        <Icon className="w-5 h-5" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium text-foreground truncate flex items-center justify-between">
-                          {title}
-                          {index === selectedIndex && <ArrowRight className="w-4 h-4 opacity-50" />}
-                        </div>
-                        <div className="text-xs text-muted-foreground truncate">
-                          {description}
-                        </div>
-                      </div>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
+            <CommandPaletteList
+              items={items}
+              selectedIndex={selectedIndex}
+              listRef={listRef}
+              onHoverItem={setSelectedIndex}
+              onSelectItem={(item) => void handleSelect(item)}
+            />
           ) : (
-            <div className="py-12 px-4 text-center text-muted-foreground">
-              <Command className="w-12 h-12 mx-auto mb-4 opacity-20" />
-              <p>
-                No commands found matching &ldquo;
-                <span className="text-foreground">{searchTerm}</span>
-                &rdquo;
-              </p>
-            </div>
+            <CommandPaletteEmptyState searchTerm={searchTerm} />
           )}
         </div>
 
-        {/* Footer */}
-        <div className="px-4 py-3 bg-muted/50 border-t border-border/50 text-xs text-muted-foreground flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1.5">
-              <kbd className="bg-muted border border-border rounded px-1.5 py-0.5 font-mono text-[10px]">
-                ↑
-              </kbd>
-              <kbd className="bg-muted border border-border rounded px-1.5 py-0.5 font-mono text-[10px]">
-                ↓
-              </kbd>
-              to navigate
-            </span>
-            <span className="flex items-center gap-1.5">
-              <kbd className="bg-muted border border-border rounded px-1.5 py-0.5 font-mono text-[10px]">
-                ↵
-              </kbd>
-              to select
-            </span>
-          </div>
-          <span>DevPulse Command Palette</span>
-        </div>
+        <CommandPaletteFooter />
       </div>
     </div>
   );
