@@ -10,3 +10,4 @@ export {
 } from './meta';
 export { useCommandPaletteActions } from './useCommandPaletteActions';
 export { useCommandPaletteHotkey } from './useCommandPaletteHotkey';
+export { useMainLayoutState } from './useMainLayoutState';

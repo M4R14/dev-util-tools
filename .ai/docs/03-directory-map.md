@@ -17,6 +17,7 @@ src/
 │   │   ├── meta.ts
 │   │   ├── useCommandPaletteActions.ts
 │   │   ├── useCommandPaletteHotkey.ts
+│   │   ├── useMainLayoutState.ts
 │   │   ├── MainFooter.tsx
 │   │   ├── MobileCommandPaletteButton.tsx
 │   │   └── index.ts            # Barrel exports for main-layout module
