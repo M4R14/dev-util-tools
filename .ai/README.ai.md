@@ -17,6 +17,8 @@ How routing, lazy loading, and state flow work.
 Source of truth for Tool ID -> Route -> Component -> Hook -> Lib.
 5. `.ai/docs/08-build-env-conventions.md`  
 Build commands, env vars, and coding conventions.
+6. `.ai/docs/10-doc-reading-checklist.md`  
+Pre-edit checklist to avoid doc-reading misses and wrong file placement.
 
 ## Fast Project Facts
 
@@ -32,12 +34,13 @@ Build commands, env vars, and coding conventions.
 
 1. Clarify scope from user request.
 2. Map affected tool(s) via `.ai/docs/04-tool-registry.md`.
-3. Edit smallest surface area possible (prefer hook/lib first, then component).
-4. Validate with:
+3. Run `.ai/docs/10-doc-reading-checklist.md` before first edit.
+4. Edit smallest surface area possible (prefer hook/lib first, then component).
+5. Validate with:
    - `npm run typecheck`
    - `npm run lint`
    - `npm test` (if tests are relevant)
-5. Summarize changed files and behavior impact.
+6. Summarize changed files and behavior impact.
 
 ## Task Playbooks
 
@@ -67,6 +70,7 @@ Build commands, env vars, and coding conventions.
 - Browser endpoint: `/ai-bridge`
 - Catalog endpoint: `/ai-bridge/catalog`
 - Schema endpoint: `/ai-bridge/spec`
+- Main page component: `src/components/AIAgentBridge.tsx`
 - Runner: `src/lib/aiToolBridge.ts`
 - Browser API: `window.DevPulseAI.catalog()` and `window.DevPulseAI.run(request)`
 - Full guide: `.ai/docs/tools/ai-bridge.md`
@@ -134,4 +138,5 @@ window.DevPulseAI.run({
 | 07 | `.ai/docs/07-dependencies.md` | Checking package purpose/impact |
 | 08 | `.ai/docs/08-build-env-conventions.md` | Commands, env, naming conventions |
 | 09 | `.ai/docs/09-ui-building-blocks.md` | Building UI with existing primitives |
-| 10 | `.ai/docs/tools/*.md` | Working on a specific tool |
+| 10 | `.ai/docs/10-doc-reading-checklist.md` | Preventing doc-read misses before edits |
+| 11 | `.ai/docs/tools/*.md` | Working on a specific tool |

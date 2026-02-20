@@ -16,6 +16,14 @@ src/
 │   ├── ToolPageLayout.tsx      # Tool page wrapper: icon, name, description, clickable tags
 │   ├── ErrorBoundary.tsx       # Class component error boundary with recovery UI
 │   ├── ToolLinkItem.tsx        # Sidebar NavLink item with active/selected states
+│   ├── AIAgentBridge.tsx       # AI Agent Bridge route page (orchestrates AI bridge UI + state)
+│   ├── ai-bridge/              # AI Agent Bridge module files
+│   │    ├── BridgeHeroCard.tsx
+│   │    ├── EndpointNavigatorCard.tsx
+│   │    ├── ExecutionModesCard.tsx
+│   │    ├── QuickstartCard.tsx
+│   │    ├── RunQueryCard.tsx
+│   │    └── LiveResponseCard.tsx
 │   ├── tools/                  # One component per tool (13 tools)
 │   │   ├── JSONFormatter.tsx
 │   │   ├── Base64Tool.tsx
@@ -47,6 +55,7 @@ src/
 │       ├── Card.tsx            # Card + CardHeader + CardTitle + CardDescription + CardContent + CardFooter
 │       ├── CodeHighlight.tsx   # Syntax-highlighted code display
 │       ├── CopyButton.tsx      # Clipboard copy with toast feedback
+│       ├── SnippetCard.tsx     # Reusable code snippet card (title + copy + highlight)
 │       ├── Input.tsx           # Styled HTML input
 │       ├── Textarea.tsx        # Styled HTML textarea
 │       ├── Slider.tsx          # Radix UI Slider wrapper
@@ -74,12 +83,14 @@ src/
 │   └── UserPreferencesContext.tsx # { favorites, recents, toggleFavorite, addRecent }
 │
 ├── data/
-│   └── tools.tsx               # TOOLS array (13 entries) + getToolById()
+│   ├── tools.tsx               # TOOLS array (13 entries) + getToolById()
+│   └── aiBridge.ts             # AI Bridge endpoint specs + query templates/snippets
 │
 ├── lib/                        # Pure utility functions (no React)
 │   ├── utils.ts                # cn() — clsx + tailwind-merge
 │   ├── caseUtils.ts            # toSnakeCase, toKebabCase, toCamelCase, toPascalCase
 │   ├── diffUtils.ts            # computeDiff, getDiffStats, toUnifiedDiff (uses `diff` lib)
+│   ├── aiBridgeQuery.ts        # Parse/normalize AI bridge query parameters into AIToolRequest
 │   ├── passwordStrength.ts     # getPasswordStrength()
 │   ├── thaiDate.ts             # Thai date formatting/parsing (uses `dayjs`)
 │   ├── urlUtils.ts             # parseUrl, updateUrlParam
