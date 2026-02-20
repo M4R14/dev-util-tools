@@ -1,6 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
+import { BookOpen, Braces, Compass, TerminalSquare, Workflow } from 'lucide-react';
 import ToolLayout from './ui/ToolLayout';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/Card';
+import { CopyButton } from './ui/CopyButton';
+import { cn } from '../lib/utils';
 import {
   AI_BRIDGE_SCHEMA,
   AI_TOOL_CATALOG,
@@ -14,6 +18,58 @@ interface AIBridgeWindow {
   catalog: () => typeof AI_TOOL_CATALOG;
   run: (request: AIToolRequest) => AIToolResponse;
 }
+
+const REQUEST_SHAPE_SNIPPET = `{
+  tool: 'json-formatter' | 'xml-formatter' | 'base64-tool' | 'case-converter' | 'url-parser' | 'diff-viewer' | 'thai-date-converter',
+  operation: string,
+  input?: unknown,
+  options?: Record<string, unknown>
+}`;
+
+const WINDOW_API_SNIPPET = `// Important: open /ai-bridge first so window.DevPulseAI is initialized.
+const catalog = window.DevPulseAI.catalog();
+
+const response = window.DevPulseAI.run({
+  tool: 'url-parser',
+  operation: 'parse',
+  input: 'https://example.com/path?a=1'
+});
+
+if (response.ok) {
+  console.log(response.result);
+} else {
+  console.error(response.error, response.errorDetails);
+}`;
+
+const QUERY_EXAMPLE_SNIPPET = `/ai-bridge?tool=json-formatter&op=format&input={"a":1}
+/ai-bridge?tool=case-converter&op=convert&input=hello%20world&options={"target":"snake"}
+/ai-bridge?payload={"tool":"diff-viewer","operation":"compare","input":{"original":"a","modified":"b"}}
+/ai-bridge?tool=url-parser&op=parse&input=example.com&mode=result-only
+/ai-bridge?tool=json-formatter&op=format&input={"a":1}&includeCatalog=false`;
+
+const ENDPOINT_SPECS = [
+  {
+    path: '/ai-bridge',
+    title: 'Execution Endpoint',
+    summary: 'Run a tool request and return runtime result/error.',
+    usage: 'Use when agent needs real execution output.',
+    example: '/ai-bridge?tool=json-formatter&op=format&input={"a":1}',
+  },
+  {
+    path: '/ai-bridge/catalog',
+    title: 'Discovery Endpoint',
+    summary: 'Return available tools and supported operations only.',
+    usage: 'Use before planning calls to avoid invalid tool/operation.',
+    example: '/ai-bridge/catalog',
+  },
+  {
+    path: '/ai-bridge/spec',
+    title: 'Schema Endpoint',
+    summary: 'Return JSON Schema for request/response contracts.',
+    usage: 'Use for machine validation and contract-aware prompting.',
+    example: '/ai-bridge/spec',
+  },
+] as const;
 
 declare global {
   interface Window {
@@ -144,91 +200,147 @@ const AIAgentBridge: React.FC = () => {
 
   return (
     <ToolLayout title="AI Agent Bridge">
-      <div className="max-w-5xl mx-auto space-y-4">
-        <p className="text-sm text-muted-foreground">
-          Machine-readable bridge for AI/browser agents via query params and{' '}
-          <code>window.DevPulseAI.run()</code>.
-        </p>
-        <p className="text-xs text-muted-foreground">
-          Endpoints: <code>/ai-bridge</code>, <code>/ai-bridge/catalog</code>,{' '}
-          <code>/ai-bridge/spec</code>. Query options: <code>mode=result-only</code>,{' '}
-          <code>includeCatalog=false</code>.
-        </p>
-        <ul className="text-xs text-muted-foreground list-disc pl-5 space-y-1">
-          <li>
-            <code>/ai-bridge</code>: execute tool requests and return runtime result/error.
-          </li>
-          <li>
-            <code>/ai-bridge/catalog</code>: return only available tools and supported operations
-            (discovery endpoint).
-          </li>
-          <li>
-            <code>/ai-bridge/spec</code>: return JSON Schema for request/response contracts
-            (machine validation endpoint).
-          </li>
-        </ul>
-        <section className="rounded-xl border border-border bg-muted/20 p-4 space-y-2">
-          <h3 className="text-sm font-semibold">Endpoint Usage</h3>
-          <pre className="text-xs overflow-auto">
-{`1) /ai-bridge
-Use for real execution of a tool request.
-Example:
-/ai-bridge?tool=json-formatter&op=format&input={"a":1}
+      <div className="max-w-6xl mx-auto space-y-5">
+        <Card className="border-primary/20 bg-gradient-to-br from-primary/10 via-background to-background">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Workflow className="h-4 w-4 text-primary" />
+              AI Agent Bridge
+            </CardTitle>
+            <CardDescription>
+              Bridge สำหรับ AI/browser agents โดยรองรับ query execution, capability discovery และ
+              schema validation ในหน้าเดียว
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-0 text-xs text-muted-foreground">
+            Query options: <code>mode=result-only</code>, <code>includeCatalog=false</code>
+          </CardContent>
+        </Card>
 
-2) /ai-bridge/catalog
-Use for discovery (which tools/operations exist) before running anything.
-Example:
-/ai-bridge/catalog
-
-3) /ai-bridge/spec
-Use for machine validation of request/response structure via JSON Schema.
-Example:
-/ai-bridge/spec`}
-          </pre>
-        </section>
-        <div className="grid gap-4 md:grid-cols-2">
-          <section className="rounded-xl border border-border bg-muted/20 p-4 space-y-2">
-            <h3 className="text-sm font-semibold">Quickstart</h3>
-            <ol className="text-xs text-muted-foreground space-y-1 list-decimal pl-4">
-              <li>Open this page at <code>/ai-bridge</code>.</li>
-              <li>Read available tools with <code>window.DevPulseAI.catalog()</code>.</li>
-              <li>Run tool operations with <code>window.DevPulseAI.run(request)</code>.</li>
-            </ol>
-          </section>
-          <section className="rounded-xl border border-border bg-muted/20 p-4 space-y-2">
-            <h3 className="text-sm font-semibold">Request Shape</h3>
-            <pre className="text-xs overflow-auto">
-{`{
-  tool: 'json-formatter' | 'xml-formatter' | 'base64-tool' | 'case-converter' | 'url-parser' | 'diff-viewer' | 'thai-date-converter',
-  operation: string,
-  input?: unknown,
-  options?: Record<string, unknown>
-}`}
-            </pre>
-          </section>
+        <div className="grid gap-4 md:grid-cols-3">
+          {ENDPOINT_SPECS.map((item) => {
+            const isActive = location.pathname === item.path;
+            return (
+              <Card
+                key={item.path}
+                className={cn(isActive ? 'border-primary/40 bg-primary/5' : 'bg-muted/20')}
+              >
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm">{item.title}</CardTitle>
+                  <CardDescription className="text-xs">
+                    <code>{item.path}</code>
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="pt-0 space-y-2 text-xs text-muted-foreground">
+                  <p>{item.summary}</p>
+                  <p>{item.usage}</p>
+                  <div className="rounded-md border border-border/80 bg-background/60 p-2">
+                    <div className="font-medium text-foreground mb-1">Example</div>
+                    <code className="break-all">{item.example}</code>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
-        <section className="rounded-xl border border-border bg-muted/20 p-4 space-y-2">
-          <h3 className="text-sm font-semibold">Examples</h3>
-          <pre className="text-xs overflow-auto">
-{`// Browser API
-window.DevPulseAI.run({
-  tool: 'json-formatter',
-  operation: 'format',
-  input: '{"a":1,"b":2}',
-  options: { indent: 2 }
-});
 
-// Query mode
-/ai-bridge?tool=case-converter&op=convert&input=hello%20world&options={"target":"snake"}
-/ai-bridge?payload={"tool":"diff-viewer","operation":"compare","input":{"original":"a","modified":"b"}}`}
-          </pre>
-        </section>
-        <pre
-          id="ai-bridge-response"
-          className="rounded-xl border border-border bg-muted/30 p-4 text-xs overflow-auto"
-        >
-          {responseText}
-        </pre>
+        <div className="grid gap-4 lg:grid-cols-2">
+          <Card className="bg-muted/20">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-sm flex items-center gap-2">
+                <Compass className="h-4 w-4 text-primary" />
+                Quickstart
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="pt-0">
+              <ol className="text-xs text-muted-foreground space-y-1 list-decimal pl-4">
+                <li>เปิดหน้า <code>/ai-bridge</code> เพื่อ initialize `window.DevPulseAI`</li>
+                <li>เรียก <code>window.DevPulseAI.catalog()</code> เพื่อดู tool/operation</li>
+                <li>ส่ง request ด้วย <code>window.DevPulseAI.run(request)</code></li>
+              </ol>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-muted/20">
+            <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0">
+              <div>
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <Braces className="h-4 w-4 text-primary" />
+                  Request Shape
+                </CardTitle>
+                <CardDescription className="text-xs">โครงสร้าง input มาตรฐาน</CardDescription>
+              </div>
+              <CopyButton value={REQUEST_SHAPE_SNIPPET} />
+            </CardHeader>
+            <CardContent className="pt-0">
+              <pre className="text-xs overflow-auto rounded-md border border-border/80 bg-background/70 p-3">
+                {REQUEST_SHAPE_SNIPPET}
+              </pre>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid gap-4 lg:grid-cols-2">
+          <Card className="bg-muted/20">
+            <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0">
+              <div>
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <TerminalSquare className="h-4 w-4 text-primary" />
+                  window.DevPulseAI
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Browser API สำหรับ agent orchestration
+                </CardDescription>
+              </div>
+              <CopyButton value={WINDOW_API_SNIPPET} />
+            </CardHeader>
+            <CardContent className="pt-0">
+              <pre className="text-xs overflow-auto rounded-md border border-border/80 bg-background/70 p-3">
+                {WINDOW_API_SNIPPET}
+              </pre>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-muted/20">
+            <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0">
+              <div>
+                <CardTitle className="text-sm flex items-center gap-2">
+                  <BookOpen className="h-4 w-4 text-primary" />
+                  Query Examples
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  ตัวอย่าง URL สำหรับ automation/script
+                </CardDescription>
+              </div>
+              <CopyButton value={QUERY_EXAMPLE_SNIPPET} />
+            </CardHeader>
+            <CardContent className="pt-0">
+              <pre className="text-xs overflow-auto rounded-md border border-border/80 bg-background/70 p-3">
+                {QUERY_EXAMPLE_SNIPPET}
+              </pre>
+            </CardContent>
+          </Card>
+        </div>
+
+        <Card className="bg-muted/20">
+          <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0">
+            <div>
+              <CardTitle className="text-sm">Live Response</CardTitle>
+              <CardDescription className="text-xs">
+                JSON output ตาม endpoint/query ปัจจุบัน
+              </CardDescription>
+            </div>
+            <CopyButton value={responseText} />
+          </CardHeader>
+          <CardContent className="pt-0">
+            <pre
+              id="ai-bridge-response"
+              className="rounded-md border border-border/80 bg-background/70 p-3 text-xs overflow-auto"
+            >
+              {responseText}
+            </pre>
+          </CardContent>
+        </Card>
       </div>
     </ToolLayout>
   );

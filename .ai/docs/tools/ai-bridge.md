@@ -23,6 +23,36 @@ Additional machine endpoints:
 4. Or pass query parameters to `/ai-bridge` for one-shot execution and read JSON response from `#ai-bridge-response`.
 5. Use `/ai-bridge/catalog` and `/ai-bridge/spec` when you need discovery/schema only.
 
+## `window.DevPulseAI` API
+
+`window.DevPulseAI` is available only when `/ai-bridge` page is loaded.
+
+- `window.DevPulseAI.catalog()`
+  - Returns list of tools and supported operations.
+- `window.DevPulseAI.run(request)`
+  - Executes one request and returns deterministic response:
+  - `{ ok: true, result }` style success data in `result`
+  - `{ ok: false, error, errorDetails }` on failure
+
+Example:
+
+```js
+const catalog = window.DevPulseAI.catalog();
+
+const response = window.DevPulseAI.run({
+  tool: 'json-formatter',
+  operation: 'format',
+  input: '{"name":"devpulse","ok":true}',
+  options: { indent: 2 }
+});
+
+if (response.ok) {
+  console.log(response.result);
+} else {
+  console.error(response.error, response.errorDetails);
+}
+```
+
 ## Request Shape
 
 ```ts
