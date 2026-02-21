@@ -1,11 +1,12 @@
+import { AI_BRIDGE_REQUEST_REQUIRED_FIELDS, AI_BRIDGE_SCHEMA_TITLES } from './contracts';
 import { AI_TOOL_CATALOG } from './catalog';
 
 export const AI_BRIDGE_SCHEMA = {
   request: {
     $schema: 'https://json-schema.org/draft/2020-12/schema',
-    title: 'AIToolRequest',
+    title: AI_BRIDGE_SCHEMA_TITLES.request,
     type: 'object',
-    required: ['tool', 'operation'],
+    required: [...AI_BRIDGE_REQUEST_REQUIRED_FIELDS],
     properties: {
       tool: { type: 'string', enum: AI_TOOL_CATALOG.map((item) => item.id) },
       operation: { type: 'string' },
@@ -16,7 +17,7 @@ export const AI_BRIDGE_SCHEMA = {
   },
   response: {
     $schema: 'https://json-schema.org/draft/2020-12/schema',
-    title: 'AIToolResponse',
+    title: AI_BRIDGE_SCHEMA_TITLES.response,
     type: 'object',
     required: ['ok', 'tool', 'operation'],
     properties: {

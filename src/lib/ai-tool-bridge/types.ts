@@ -14,26 +14,45 @@ export interface AIToolRequest {
   options?: Record<string, unknown>;
 }
 
+export interface NormalizedAIToolRequest {
+  tool: AIToolId;
+  operation: string;
+  input: unknown;
+  options?: Record<string, unknown>;
+}
+
+export type ToolErrorCode =
+  | 'UNSUPPORTED_TOOL'
+  | 'UNSUPPORTED_OPERATION'
+  | 'INVALID_OPTION'
+  | 'INVALID_INPUT'
+  | 'INVALID_REQUEST'
+  | 'EXECUTION_ERROR';
+
+export interface ProblemDetail {
+  type: string;
+  title: string;
+  status: number;
+  detail: string;
+}
+
+export interface ToolErrorDetails {
+  code: ToolErrorCode;
+  message: string;
+  supportedOperations?: string[];
+  supportedTools?: AIToolId[];
+  didYouMean?: string;
+  hints?: string[];
+}
+
 export interface AIToolResponse {
   ok: boolean;
   tool: AIToolId;
   operation: string;
   result?: unknown;
   error?: string;
-  problem?: {
-    type: string;
-    title: string;
-    status: number;
-    detail: string;
-  };
-  errorDetails?: {
-    code: string;
-    message: string;
-    supportedOperations?: string[];
-    supportedTools?: AIToolId[];
-    didYouMean?: string;
-    hints?: string[];
-  };
+  problem?: ProblemDetail;
+  errorDetails?: ToolErrorDetails;
 }
 
 export interface AIToolCatalogItem {
@@ -53,3 +72,18 @@ export interface AIToolSnapshot {
   storageNamespace: string;
   state: Record<string, Record<string, unknown>>;
 }
+
+export interface ToolExecutionContext {
+  tool: AIToolId;
+  operation: string;
+  supportedOperations: readonly string[];
+}
+
+export type ToolHandlerResult = unknown;
+
+export type ToolRunner = (
+  operation: string,
+  input: unknown,
+  context: ToolExecutionContext,
+  options?: Record<string, unknown>,
+) => ToolHandlerResult;

@@ -1,10 +1,16 @@
+import { AI_BRIDGE_STORAGE_NAMESPACE } from './contracts';
+import {
+  isToolSnapshotStorageKey,
+  parseSnapshotStoredValue,
+  splitToolSnapshotStorageKey,
+} from './snapshotPolicy';
 import type { AIToolSnapshot } from './types';
 
 export const getAIToolSnapshot = (): AIToolSnapshot => {
   if (typeof window === 'undefined' || typeof window.localStorage === 'undefined') {
     return {
       capturedAt: new Date().toISOString(),
-      storageNamespace: 'devpulse',
+      storageNamespace: AI_BRIDGE_STORAGE_NAMESPACE,
       state: {},
     };
   }
@@ -13,12 +19,12 @@ export const getAIToolSnapshot = (): AIToolSnapshot => {
 
   for (let i = 0; i < window.localStorage.length; i += 1) {
     const key = window.localStorage.key(i);
-    if (!key || !key.startsWith('devpulse:')) {
+    if (!key || !isToolSnapshotStorageKey(key)) {
       continue;
     }
 
-    const [namespace, toolId, field] = key.split(':');
-    if (!namespace || !toolId || !field || toolId === 'settings') {
+    const { namespace, toolId, field } = splitToolSnapshotStorageKey(key);
+    if (!namespace || !toolId || !field) {
       continue;
     }
 
@@ -27,13 +33,7 @@ export const getAIToolSnapshot = (): AIToolSnapshot => {
       continue;
     }
 
-    let value: unknown = raw;
-    try {
-      const parsed = JSON.parse(raw) as { value?: unknown };
-      value = typeof parsed === 'object' && parsed !== null && 'value' in parsed ? parsed.value : parsed;
-    } catch {
-      value = raw;
-    }
+    const value = parseSnapshotStoredValue(raw);
 
     state[toolId] = state[toolId] ?? {};
     state[toolId][field] = value;
@@ -41,7 +41,7 @@ export const getAIToolSnapshot = (): AIToolSnapshot => {
 
   return {
     capturedAt: new Date().toISOString(),
-    storageNamespace: 'devpulse',
+    storageNamespace: AI_BRIDGE_STORAGE_NAMESPACE,
     state,
   };
 };

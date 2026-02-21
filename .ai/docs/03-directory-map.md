@@ -207,10 +207,34 @@ src/
 │   │   ├── index.ts
 │   │   ├── types.ts
 │   │   ├── catalog.ts
+│   │   ├── contracts.ts
 │   │   ├── schema.ts
 │   │   ├── errors.ts
+│   │   ├── validators.ts
+│   │   ├── registry.ts
+│   │   ├── errorTaxonomy.ts
+│   │   ├── errorResponse.ts
+│   │   ├── snapshotPolicy.ts
+│   │   ├── snapshot.ts
 │   │   ├── runners.ts
-│   │   └── snapshot.ts
+│   │   ├── runners.test.ts
+│   │   ├── core/
+│   │   │   └── index.ts
+│   │   ├── policy/
+│   │   │   └── index.ts
+│   │   ├── handlers/
+│   │   │   ├── index.ts
+│   │   │   ├── types.ts
+│   │   │   ├── jsonFormatter.ts
+│   │   │   ├── xmlFormatter.ts
+│   │   │   ├── base64Tool.ts
+│   │   │   ├── caseConverter.ts
+│   │   │   ├── urlParser.ts
+│   │   │   ├── diffViewer.ts
+│   │   │   └── thaiDateConverter.ts
+│   │   └── transforms/
+│   │       ├── index.ts
+│   │       └── base64.ts
 │   ├── passwordStrength.ts     # getPasswordStrength()
 │   ├── passwordStrength.test.ts # Unit tests for password strength scoring
 │   ├── thaiId.ts               # Thai ID decode/validation helpers

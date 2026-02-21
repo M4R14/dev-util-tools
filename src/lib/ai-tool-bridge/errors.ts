@@ -1,7 +1,7 @@
-import type { AIToolId } from './types';
+import type { AIToolId, ToolErrorCode } from './types';
 
 export class BridgeValidationError extends Error {
-  code: string;
+  code: ToolErrorCode;
   supportedOperations?: string[];
   supportedTools?: AIToolId[];
   didYouMean?: string;
@@ -11,7 +11,7 @@ export class BridgeValidationError extends Error {
   constructor(
     message: string,
     details: {
-      code: string;
+      code: ToolErrorCode;
       supportedOperations?: string[];
       supportedTools?: AIToolId[];
       didYouMean?: string;

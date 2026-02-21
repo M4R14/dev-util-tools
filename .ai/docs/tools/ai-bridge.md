@@ -7,17 +7,29 @@
 | **Component** | `AIAgentBridge.tsx` |
 | **Runner** | `src/lib/aiToolBridge.ts` |
 
-## Description
-Machine-readable bridge that lets AI/browser agents run selected DevPulse tools without manual UI interaction.
+## Overview
 
-Additional machine endpoints:
-- `/ai-bridge` executes tool requests and returns result/error payload
-- `/ai-bridge/catalog` returns tools + operations + description + usage tips + examples (discovery)
-- `/ai-bridge/spec` returns JSON schema for request/response (contract validation)
-- `/ai-bridge/catalog.json` returns static discovery JSON (curl-friendly)
-- `/ai-bridge/spec.json` returns static schema JSON (curl-friendly)
+Machine-readable bridge that allows AI/browser agents to execute selected DevPulse tools without manual UI interaction.
 
-## Files
+## Endpoints
+
+| Endpoint | Purpose |
+|---|---|
+| `/ai-bridge` | Execute tool requests and return result/error payload |
+| `/ai-bridge/catalog` | Discovery endpoint: tools + operations + description + usage tips + examples |
+| `/ai-bridge/spec` | JSON schema endpoint for request/response validation |
+| `/ai-bridge/catalog.json` | Static discovery JSON (curl-friendly) |
+| `/ai-bridge/spec.json` | Static schema JSON (curl-friendly) |
+
+## Hosting Notes
+
+- On static hosting (for example GitHub Pages), `curl` to SPA routes like `/ai-bridge` returns HTML.
+- For machine fetch on static hosting, use:
+  - `/ai-bridge/catalog.json`
+  - `/ai-bridge/spec.json`
+- Pure HTTP dynamic execution requires an optional backend/serverless runtime.
+
+## Main Files
 
 - `src/components/AIAgentBridge.tsx`
 - `src/components/ai-bridge/BridgeHeroCard.tsx`
@@ -29,42 +41,44 @@ Additional machine endpoints:
 - `src/data/aiBridge.ts`
 - `src/lib/aiBridgeQuery.ts`
 - `src/lib/aiToolBridge.ts` (public facade export)
-- `src/lib/ai-tool-bridge/*` (internal modules: catalog, schema, errors, runners, snapshot, types)
-- `vite.config.ts` (build plugin emits static `catalog.json` / `spec.json`)
+- `src/lib/ai-tool-bridge/*` (internal modules)
+- `vite.config.ts` (emits static `catalog.json` / `spec.json`)
 
-## How to Use
+## Quick Usage
 
-1. Open `/ai-bridge` once to initialize browser API `window.DevPulseAI`.
+1. Open `/ai-bridge` once to initialize `window.DevPulseAI`.
 2. Discover capabilities with `window.DevPulseAI.catalog()`.
-3. Execute tool operations with `window.DevPulseAI.run(request)`.
-4. Or pass query parameters to `/ai-bridge` for one-shot execution and read JSON from the response panel (or `#ai-bridge-output` in `mode=result-only`).
-5. Use `/ai-bridge/catalog` and `/ai-bridge/spec` when you need discovery/schema only.
-6. Use `/ai-bridge/catalog.json` and `/ai-bridge/spec.json` for static-hosting machine fetch (e.g. `curl`).
+3. Execute with `window.DevPulseAI.run(request)`.
+4. For one-shot execution, pass query params to `/ai-bridge` and read response JSON.
+5. For discovery/schema only, use `/ai-bridge/catalog` and `/ai-bridge/spec`.
 
-## Hosting Notes
+## Browser API
 
-- On static hosting (e.g. GitHub Pages), `curl` to SPA routes like `/ai-bridge` returns HTML.
-- Use static JSON endpoints for machine-fetch:
-  - `/ai-bridge/catalog.json`
-  - `/ai-bridge/spec.json`
-- Dynamic tool execution over pure HTTP requires optional backend/serverless runtime.
-
-## `window.DevPulseAI` API
-
-`window.DevPulseAI` is available only when `/ai-bridge` page is loaded.
+`window.DevPulseAI` is available only when `/ai-bridge` is loaded.
 
 - `window.DevPulseAI.catalog()`
-  - Returns list of tools, supported operations, examples, and usage tips.
+  - Returns tools, operations, examples, and usage tips.
 - `window.DevPulseAI.run(request)`
-  - Executes one request and returns deterministic response:
-  - `{ ok: true, result }` style success data in `result`
-  - `{ ok: false, error, errorDetails }` on failure
+  - Executes one request.
+  - Success: `{ ok: true, result }`
+  - Failure: `{ ok: false, error, errorDetails, problem }`
 - `window.DevPulseAI.runBatch(requests[])`
-  - Executes multiple requests sequentially and returns response array.
+  - Executes requests sequentially and returns a response array.
 - `window.DevPulseAI.getSnapshot()`
-  - Returns persisted `devpulse:*` tool input state snapshot for resume/hand-off flows.
+  - Returns persisted `devpulse:*` tool input snapshot for resume/handoff flows.
 
-Example:
+## Request Shape
+
+```ts
+{
+  tool: 'json-formatter' | 'xml-formatter' | 'base64-tool' | 'case-converter' | 'url-parser' | 'diff-viewer' | 'thai-date-converter',
+  operation: string,
+  input?: unknown,
+  options?: Record<string, unknown>
+}
+```
+
+## Examples
 
 ```js
 const catalog = window.DevPulseAI.catalog();
@@ -83,28 +97,6 @@ if (response.ok) {
 }
 ```
 
-## Request Shape
-
-```ts
-{
-  tool: 'json-formatter' | 'xml-formatter' | 'base64-tool' | 'case-converter' | 'url-parser' | 'diff-viewer' | 'thai-date-converter',
-  operation: string,
-  input?: unknown,
-  options?: Record<string, unknown>
-}
-```
-
-## Examples
-
-```js
-window.DevPulseAI.run({
-  tool: 'json-formatter',
-  operation: 'format',
-  input: '{"a":1,"b":2}',
-  options: { indent: 2 }
-});
-```
-
 ```js
 window.DevPulseAI.run({
   tool: 'case-converter',
@@ -120,18 +112,57 @@ window.DevPulseAI.run({
 /ai-bridge?payload={"tool":"diff-viewer","operation":"compare","input":{"original":"a","modified":"b"}}
 /ai-bridge?tool=json-formatter&op=format&input={"a":1}&includeCatalog=false
 /ai-bridge?tool=url-parser&op=parse&input=example.com&mode=result-only
-/ai-bridge/catalog.json
-/ai-bridge/spec.json
 /ai-bridge/catalog
 /ai-bridge/spec
+/ai-bridge/catalog.json
+/ai-bridge/spec.json
 ```
 
-## Notes
+## Response Notes
 
-- Encode JSON query values (`input`, `options`, `payload`) when building URLs programmatically.
 - Responses are deterministic JSON with `{ ok, tool, operation, result?, error? }`.
-- Failure responses include RFC7807-style `problem` and `errorDetails.hints[]`.
-- For `mode=result-only`, rendered output is exposed at `<pre id="ai-bridge-output">...</pre>`.
-- This bridge is client-side and intended for browser-controlled agents.
-- `Run Query` UI now includes stable semantic attributes (`data-action`, `data-testid`) for browser-agent targeting.
-- Error responses include `errorDetails` with `code`, plus supported values/suggestions when possible.
+- Failures include RFC7807-style `problem` and `errorDetails.hints[]`.
+- `mode=result-only` renders output at `<pre id="ai-bridge-output">...</pre>`.
+- `Run Query` UI includes stable semantic attributes (`data-action`, `data-testid`) for browser agents.
+
+## Internal Execution Flow
+
+1. Normalize request (`normalizeToolRequest`)
+2. Validate shape (`assertToolRequestShape`)
+3. Resolve runner (`resolveToolRunner`) and build execution context (`buildToolExecutionContext`)
+4. Execute handler
+5. Convert errors to API envelope (`toValidationErrorResponse` / `toExecutionErrorResponse`)
+
+## Internal Module Responsibilities
+
+| File/Module | Responsibility |
+|---|---|
+| `src/lib/ai-tool-bridge/contracts.ts` | Shared runtime/schema constants (required fields, defaults, storage namespace) |
+| `src/lib/ai-tool-bridge/schema.ts` | JSON schema generated from shared contracts + catalog enum |
+| `src/lib/ai-tool-bridge/validators.ts` | Request/option/input validation + request normalization |
+| `src/lib/ai-tool-bridge/registry.ts` | Tool runner registry, execution context builder, registry diagnostics |
+| `src/lib/ai-tool-bridge/handlers/*` | Tool-specific execution logic |
+| `src/lib/ai-tool-bridge/errorTaxonomy.ts` | Stable error code -> problem metadata mapping |
+| `src/lib/ai-tool-bridge/errorResponse.ts` | Convert thrown errors to API response envelope |
+| `src/lib/ai-tool-bridge/snapshotPolicy.ts` | Snapshot key/filter/parse policy |
+| `src/lib/ai-tool-bridge/snapshot.ts` | Collect persisted tool snapshot using snapshot policy |
+| `src/lib/ai-tool-bridge/index.ts` | Public exports + sub-level barrels (`BridgeCore`, `BridgePolicy`) |
+
+## Change-Safe Checklist
+
+Use this checklist before/after changes under `src/lib/ai-tool-bridge/*`:
+
+1. If adding/removing a tool, update `catalog.ts` and `registry.ts` in the same commit.
+2. Run registry diagnostics to keep catalog and runners aligned:
+   - `getToolRegistryDiagnostics()`
+   - `assertToolRegistryConsistency()`
+3. Keep validators and handlers in sync:
+   - New operation -> update allowed values in `validators.ts` and matching handler logic.
+4. Keep error contract stable:
+   - Use `errorTaxonomy.ts` and `errorResponse.ts` for new error codes/classes.
+5. If request/response shape changes, update `contracts.ts` and `schema.ts` together.
+6. If persistence/snapshot behavior changes, update both `snapshotPolicy.ts` and `snapshot.ts`.
+7. Add/update table-driven tests in `runners.test.ts` for success and invalid paths.
+8. Run validation:
+   - `npm run typecheck`
+   - `npm run lint`
