@@ -37,12 +37,14 @@ Static endpoints:
 
 - Deterministic, machine-readable tool execution for browser-controlled agents.
 - Discovery-first pattern through catalog and schema endpoints.
-- Catalog payload includes per-tool `examples` and `usage_tips` to reduce trial-and-error planning for agents.
+- Catalog payload includes per-tool `description`, `usageTips`, and `examples` to reduce trial-and-error planning for agents.
 
 ### Browser API Surface
 
 - `window.DevPulseAI.catalog()`
 - `window.DevPulseAI.run(request)`
+- `window.DevPulseAI.runBatch(requests[])`
+- `window.DevPulseAI.getSnapshot()`
 
 ### Semantic UI Targeting
 

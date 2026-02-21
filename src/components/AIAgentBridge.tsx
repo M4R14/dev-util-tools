@@ -4,12 +4,14 @@ import { BookOpen, Braces, TerminalSquare } from 'lucide-react';
 import ToolLayout from './ui/ToolLayout';
 import SnippetCard from './ui/SnippetCard';
 import {
+  getAIToolSnapshot,
   AI_BRIDGE_SCHEMA,
   AI_TOOL_CATALOG,
   AI_TOOL_OPERATIONS,
   AIToolRequest,
   AIToolResponse,
   runAITool,
+  runAIToolBatch,
 } from '../lib/aiToolBridge';
 import {
   QUERY_EXAMPLE_SNIPPET,
@@ -31,6 +33,8 @@ import {
 interface AIBridgeWindow {
   catalog: () => typeof AI_TOOL_CATALOG;
   run: (request: AIToolRequest) => AIToolResponse;
+  runBatch: (requests: AIToolRequest[]) => AIToolResponse[];
+  getSnapshot: () => ReturnType<typeof getAIToolSnapshot>;
 }
 
 declare global {
@@ -61,6 +65,8 @@ const AIAgentBridge: React.FC = () => {
     window.DevPulseAI = {
       catalog: () => AI_TOOL_CATALOG,
       run: (toolRequest: AIToolRequest) => runAITool(toolRequest),
+      runBatch: (toolRequests: AIToolRequest[]) => runAIToolBatch(toolRequests),
+      getSnapshot: () => getAIToolSnapshot(),
     };
     return () => {
       delete window.DevPulseAI;

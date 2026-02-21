@@ -202,6 +202,15 @@ src/
 │   ├── diffUtils.ts            # computeDiff, getDiffStats, toUnifiedDiff (uses `diff` lib)
 │   ├── diffUtils.test.ts       # Unit tests for diff utility helpers
 │   ├── aiBridgeQuery.ts        # Parse/normalize AI bridge query parameters into AIToolRequest
+│   ├── aiToolBridge.ts         # Public facade for AI bridge exports (backward-compatible import path)
+│   ├── ai-tool-bridge/         # Internal AI bridge modules (catalog/schema/runners/snapshot/types)
+│   │   ├── index.ts
+│   │   ├── types.ts
+│   │   ├── catalog.ts
+│   │   ├── schema.ts
+│   │   ├── errors.ts
+│   │   ├── runners.ts
+│   │   └── snapshot.ts
 │   ├── passwordStrength.ts     # getPasswordStrength()
 │   ├── passwordStrength.test.ts # Unit tests for password strength scoring
 │   ├── thaiId.ts               # Thai ID decode/validation helpers

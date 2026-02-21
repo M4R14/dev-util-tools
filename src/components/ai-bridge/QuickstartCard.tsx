@@ -18,6 +18,10 @@ const QuickstartCard: React.FC = () => {
           </li>
           <li>เรียก <code>window.DevPulseAI.catalog()</code> เพื่อดูความสามารถ</li>
           <li>ส่ง query หรือใช้ <code>window.DevPulseAI.run(request)</code></li>
+          <li>
+            ใช้ <code>window.DevPulseAI.runBatch(requests)</code> และ{' '}
+            <code>window.DevPulseAI.getSnapshot()</code> สำหรับงาน automation ต่อเนื่อง
+          </li>
         </ol>
       </CardContent>
     </Card>
