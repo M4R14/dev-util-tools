@@ -201,7 +201,8 @@ src/
 │   ├── caseUtils.test.ts       # Unit tests for case conversion utilities
 │   ├── diffUtils.ts            # computeDiff, getDiffStats, toUnifiedDiff (uses `diff` lib)
 │   ├── diffUtils.test.ts       # Unit tests for diff utility helpers
-│   ├── aiBridgeQuery.ts        # Parse/normalize AI bridge query parameters into AIToolRequest
+│   ├── aiBridgeQuery.ts        # Parse/normalize AI bridge query parameters into AIToolRequest (zod-validated)
+│   ├── aiBridgeQuery.test.ts   # Unit tests for AI bridge query parsing/normalization
 │   ├── aiToolBridge.ts         # Public facade for AI bridge exports (backward-compatible import path)
 │   ├── ai-tool-bridge/         # Internal AI bridge modules (catalog/schema/runners/snapshot/types)
 │   │   ├── index.ts
@@ -235,17 +236,19 @@ src/
 │   │   └── transforms/
 │   │       ├── index.ts
 │   │       └── base64.ts
-│   ├── passwordStrength.ts     # getPasswordStrength()
+│   ├── passwordStrength.ts     # getPasswordStrength() (zod-validated options)
 │   ├── passwordStrength.test.ts # Unit tests for password strength scoring
-│   ├── thaiId.ts               # Thai ID decode/validation helpers
+│   ├── thaiId.ts               # Thai ID decode/validation helpers (zod-validated IDs)
 │   ├── thaiId.test.ts          # Unit tests for Thai ID utility helpers
-│   ├── thaiDate.ts             # Thai date formatting/parsing (uses `dayjs`)
+│   ├── thaiDate.ts             # Thai date formatting/parsing (uses `dayjs`, zod-validated parse input)
+│   ├── thaiDate.test.ts        # Unit tests for Thai date utilities
 │   ├── shareableUrlState.ts    # Shared helper for shareable URL query sync rules
 │   ├── shareableUrlState.test.ts # Unit tests for query sync helper behavior
-│   ├── urlUtils.ts             # parseUrl, updateUrlParam
+│   ├── urlUtils.ts             # parseUrl, updateUrlParam (zod-validated param mutations)
 │   ├── urlUtils.test.ts        # Unit tests for URL parsing and param helpers
-│   ├── xmlToJson.ts            # XML document to JSON conversion logic
-│   └── crypto.ts               # encrypt/decrypt (Base64 obfuscation for API key storage)
+│   ├── xmlToJson.ts            # XML document to JSON conversion logic (zod-validated options/input)
+│   ├── crypto.ts               # encrypt/decrypt (Base64 obfuscation for API key storage, zod input guard)
+│   └── crypto.test.ts          # Unit tests for crypto helper behavior
 │
 ├── services/
 │   └── gemini.ts               # askGemini(prompt, codeContext?, apiKey?) — Google Gemini API

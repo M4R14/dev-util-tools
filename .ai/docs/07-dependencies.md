@@ -16,6 +16,7 @@
 | `minisearch` | Fuzzy full-text search index |
 | `marked` | Markdown parsing for blog post rendering |
 | `xml-formatter` | XML prettify/minify |
+| `zod` | Runtime schema validation for tool/lib inputs and query payloads |
 | `@google/genai` | Google Gemini AI API client |
 
 ---

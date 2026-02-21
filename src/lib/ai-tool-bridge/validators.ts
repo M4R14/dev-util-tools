@@ -1,6 +1,10 @@
 import { AI_BRIDGE_DEFAULT_INPUT, AI_BRIDGE_REQUEST_REQUIRED_FIELDS } from './contracts';
 import { BridgeValidationError, getOperationSuggestion } from './errors';
 import type { AIToolId, AIToolRequest, NormalizedAIToolRequest } from './types';
+import { z } from 'zod';
+
+const nonEmptyStringSchema = z.string().trim().min(1);
+const plainObjectSchema = z.record(z.string(), z.unknown());
 
 export const assertSupportedOperation = (
   tool: AIToolId,
@@ -25,23 +29,27 @@ export const assertSupportedOperation = (
 };
 
 export const asString = (input: unknown, fieldName: string): string => {
-  if (typeof input !== 'string') {
+  const parsed = z.string().safeParse(input);
+  if (!parsed.success) {
     throw new BridgeValidationError(`${fieldName} must be a string`, {
       code: 'INVALID_INPUT',
       hints: ['Ensure input value is a JSON string literal.'],
     });
   }
-  return input;
+
+  return parsed.data;
 };
 
 export const asObject = (input: unknown, fieldName: string): Record<string, unknown> => {
-  if (!input || typeof input !== 'object' || Array.isArray(input)) {
+  const parsed = plainObjectSchema.safeParse(input);
+  if (!parsed.success) {
     throw new BridgeValidationError(`${fieldName} must be an object`, {
       code: 'INVALID_INPUT',
       hints: ['Ensure input value is a JSON object.'],
     });
   }
-  return input as Record<string, unknown>;
+
+  return parsed.data;
 };
 
 export const assertRequiredFields = (
@@ -49,7 +57,8 @@ export const assertRequiredFields = (
   fieldName: string,
   hints?: string[],
 ) => {
-  if (!value || !value.trim()) {
+  const parsed = nonEmptyStringSchema.safeParse(value);
+  if (!parsed.success) {
     throw new BridgeValidationError(`${fieldName} is required`, {
       code: 'INVALID_REQUEST',
       hints: hints ?? [`Provide "${fieldName}" in request payload.`],
@@ -62,12 +71,19 @@ export const assertOptionType = (
   expectedType: 'string' | 'number' | 'boolean' | 'object',
   optionName: string,
 ) => {
-  const isObject = expectedType === 'object';
-  const isValid = isObject
-    ? typeof value === 'object' && value !== null && !Array.isArray(value)
-    : typeof value === expectedType;
+  if (value === undefined) {
+    return;
+  }
 
-  if (value !== undefined && !isValid) {
+  const schemaMap = {
+    string: z.string(),
+    number: z.number(),
+    boolean: z.boolean(),
+    object: plainObjectSchema,
+  } as const;
+  const schema = schemaMap[expectedType];
+
+  if (!schema.safeParse(value).success) {
     throw new BridgeValidationError(`options.${optionName} must be ${expectedType}`, {
       code: 'INVALID_OPTION',
       hints: [`Use options.${optionName} as ${expectedType}.`],
@@ -76,6 +92,33 @@ export const assertOptionType = (
 };
 
 export const assertToolRequestShape = (request: AIToolRequest) => {
+  const shapeSchema = z.object({
+    tool: nonEmptyStringSchema,
+    operation: nonEmptyStringSchema,
+  });
+  const parsed = shapeSchema.safeParse(request);
+  if (!parsed.success) {
+    parsed.error.issues.forEach((issue) => {
+      const field = String(issue.path[0] ?? 'request');
+      if (field === 'tool') {
+        throw new BridgeValidationError('tool is required', {
+          code: 'INVALID_REQUEST',
+          hints: ['Provide a supported tool id.'],
+        });
+      }
+      if (field === 'operation') {
+        throw new BridgeValidationError('operation is required', {
+          code: 'INVALID_REQUEST',
+          hints: ['Provide operation for selected tool.'],
+        });
+      }
+    });
+    throw new BridgeValidationError('Invalid request payload', {
+      code: 'INVALID_REQUEST',
+      hints: ['Ensure required request fields are provided.'],
+    });
+  }
+
   AI_BRIDGE_REQUEST_REQUIRED_FIELDS.forEach((field) => {
     const value = request[field];
     if (field === 'tool') {
@@ -95,7 +138,7 @@ export const assertToolRequestShape = (request: AIToolRequest) => {
 
 export const normalizeToolRequest = (request: AIToolRequest): NormalizedAIToolRequest => ({
   tool: request.tool,
-  operation: request.operation.trim(),
+  operation: z.string().parse(request.operation).trim(),
   input: request.input ?? AI_BRIDGE_DEFAULT_INPUT,
   options: request.options,
 });

@@ -4,6 +4,7 @@
  */
 
 import dayjs, { Dayjs } from 'dayjs';
+import { z } from 'zod';
 
 export const BUDDHIST_YEAR_OFFSET = 543
 
@@ -58,6 +59,8 @@ export const THAI_SHORT_DAYS = [
 ] as const;
 
 const THAI_DIGITS = ['๐', '๑', '๒', '๓', '๔', '๕', '๖', '๗', '๘', '๙'] as const;
+const integerStringSchema = z.string().regex(/^\d+$/);
+const thaiDateInputSchema = z.string();
 
 
 /** Convert Arabic numerals to Thai digits. */
@@ -127,7 +130,7 @@ const hasParts = (parts: (string | undefined)[]): parts is string[] =>
   parts.every((p) => p !== undefined && p.length > 0);
 
 /** Check if a string is a valid integer. */
-const isInt = (value: string): boolean => !isNaN(parseInt(value));
+const isInt = (value: string): boolean => integerStringSchema.safeParse(value).success;
 
 /** Parse a space-separated Thai date (day month year) and convert to Dayjs. */
 const parseSpaceSeparated = (
@@ -188,7 +191,12 @@ const THAI_DATE_FORMATS: ThaiDateFormat[] = [
 ];
 
 export const parseThaiDate = (input: string): { iso: string; formatted: string } | null => {
-  const trimmed = input.trim();
+  const parsed = thaiDateInputSchema.safeParse(input);
+  if (!parsed.success) {
+    return null;
+  }
+
+  const trimmed = parsed.data.trim();
   if (!trimmed) return null;
 
   for (const format of THAI_DATE_FORMATS) {
@@ -205,4 +213,3 @@ export const parseThaiDate = (input: string): { iso: string; formatted: string }
 
   return null;
 };
-

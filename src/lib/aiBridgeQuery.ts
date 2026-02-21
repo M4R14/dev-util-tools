@@ -1,9 +1,24 @@
 import type { AIToolRequest } from './aiToolBridge';
+import { z } from 'zod';
+
+const aiToolRequestSchema = z.object({
+  tool: z.string().min(1),
+  operation: z.string().min(1),
+  input: z.unknown().optional(),
+  options: z.record(z.string(), z.unknown()).optional(),
+});
+
+const queryOptionsSchema = z.record(z.string(), z.unknown());
+const nonEmptyStringSchema = z.string().min(1);
 
 export const parsePayloadParam = (payloadParam: string | null): AIToolRequest | null => {
   if (!payloadParam) return null;
   try {
-    return JSON.parse(payloadParam) as AIToolRequest;
+    const parsed = aiToolRequestSchema.safeParse(JSON.parse(payloadParam));
+    if (!parsed.success) {
+      return null;
+    }
+    return parsed.data as AIToolRequest;
   } catch {
     return null;
   }
@@ -15,16 +30,18 @@ export const parseQueryRequest = (params: URLSearchParams): AIToolRequest | null
 
   const tool = params.get('tool');
   const operation = params.get('op');
-  if (!tool || !operation) return null;
+  if (!nonEmptyStringSchema.safeParse(tool).success || !nonEmptyStringSchema.safeParse(operation).success) {
+    return null;
+  }
 
   const input = params.get('input') ?? '';
   const optionsRaw = params.get('options');
   let options: Record<string, unknown> | undefined;
   if (optionsRaw) {
     try {
-      const parsed = JSON.parse(optionsRaw) as unknown;
-      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-        options = parsed as Record<string, unknown>;
+      const parsed = queryOptionsSchema.safeParse(JSON.parse(optionsRaw));
+      if (parsed.success) {
+        options = parsed.data;
       }
     } catch {
       options = undefined;

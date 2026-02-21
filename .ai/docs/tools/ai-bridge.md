@@ -129,9 +129,10 @@ window.DevPulseAI.run({
 
 1. Normalize request (`normalizeToolRequest`)
 2. Validate shape (`assertToolRequestShape`)
-3. Resolve runner (`resolveToolRunner`) and build execution context (`buildToolExecutionContext`)
-4. Execute handler
-5. Convert errors to API envelope (`toValidationErrorResponse` / `toExecutionErrorResponse`)
+3. Parse query payload (`parsePayloadParam` / `parseQueryRequest`) with zod guards when request comes from URL
+4. Resolve runner (`resolveToolRunner`) and build execution context (`buildToolExecutionContext`)
+5. Execute handler
+6. Convert errors to API envelope (`toValidationErrorResponse` / `toExecutionErrorResponse`)
 
 ## Internal Module Responsibilities
 
@@ -139,7 +140,8 @@ window.DevPulseAI.run({
 |---|---|
 | `src/lib/ai-tool-bridge/contracts.ts` | Shared runtime/schema constants (required fields, defaults, storage namespace) |
 | `src/lib/ai-tool-bridge/schema.ts` | JSON schema generated from shared contracts + catalog enum |
-| `src/lib/ai-tool-bridge/validators.ts` | Request/option/input validation + request normalization |
+| `src/lib/ai-tool-bridge/validators.ts` | Request/option/input validation + request normalization (zod-backed) |
+| `src/lib/aiBridgeQuery.ts` | Query-string to request parser + URL query normalization (zod-guarded parsing) |
 | `src/lib/ai-tool-bridge/registry.ts` | Tool runner registry, execution context builder, registry diagnostics |
 | `src/lib/ai-tool-bridge/handlers/*` | Tool-specific execution logic |
 | `src/lib/ai-tool-bridge/errorTaxonomy.ts` | Stable error code -> problem metadata mapping |

@@ -3,6 +3,8 @@
  * Extracted from PasswordGenerator for reusability and testability.
  */
 
+import { z } from 'zod';
+
 export interface PasswordStrength {
   label: 'Weak' | 'Medium' | 'Strong';
   color: string;
@@ -19,8 +21,17 @@ export interface PasswordOptions {
   includeSymbols: boolean;
 }
 
+const passwordOptionsSchema = z.object({
+  length: z.number().int().nonnegative(),
+  includeUpper: z.boolean(),
+  includeLower: z.boolean(),
+  includeNumbers: z.boolean(),
+  includeSymbols: z.boolean(),
+});
+
 export const getPasswordStrength = (options: PasswordOptions): PasswordStrength => {
-  const { length, includeUpper, includeLower, includeNumbers, includeSymbols } = options;
+  const { length, includeUpper, includeLower, includeNumbers, includeSymbols } =
+    passwordOptionsSchema.parse(options);
 
   const activeOptions = [includeUpper, includeLower, includeNumbers, includeSymbols].filter(
     Boolean,

@@ -29,6 +29,7 @@ Pre-edit checklist to avoid doc-reading misses and wrong file placement.
 - App settings page: `/settings` (online/offline status, install prompt, cache/update controls)
 - Tool metadata registry: `src/data/tools.tsx`
 - Shared types: `src/types.ts`
+- Runtime validation: `zod` (used in AI bridge + selected `src/lib/*` utilities)
 - AI service: `src/services/gemini.ts`
 - Blog auto release notes: generated from git history by `npm run release-notes:generate`
 - Important env var: `GEMINI_API_KEY` (optional)

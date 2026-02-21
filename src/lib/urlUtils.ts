@@ -1,7 +1,17 @@
+import { z } from 'zod';
+
 export interface UrlParam {
   key: string;
   value: string;
 }
+
+const urlParamSchema = z.object({
+  key: z.string(),
+  value: z.string(),
+});
+
+const urlParamsSchema = z.array(urlParamSchema);
+const nonNegativeIntSchema = z.number().int().nonnegative();
 
 export const parseUrl = (input: string): { parsed: URL | null; error: string | null; params: UrlParam[] } => {
   if (!input) {
@@ -51,8 +61,13 @@ export const updateUrlParam = (
   newValue: string
 ): string | null => {
   if (!parsedUrl) return null;
+  if (!nonNegativeIntSchema.safeParse(index).success) return null;
+  if (!z.string().safeParse(newKey).success || !z.string().safeParse(newValue).success) return null;
 
-  const nextParams = [...currentParams];
+  const parsedParams = urlParamsSchema.safeParse(currentParams);
+  if (!parsedParams.success) return null;
+
+  const nextParams = [...parsedParams.data];
   nextParams[index] = { key: newKey, value: newValue };
 
   return buildUrlWithParams(parsedUrl, nextParams);
@@ -65,8 +80,12 @@ export const addUrlParam = (
   newValue: string
 ): string | null => {
   if (!parsedUrl) return null;
+  if (!z.string().safeParse(newKey).success || !z.string().safeParse(newValue).success) return null;
 
-  const nextParams = [...currentParams, { key: newKey, value: newValue }];
+  const parsedParams = urlParamsSchema.safeParse(currentParams);
+  if (!parsedParams.success) return null;
+
+  const nextParams = [...parsedParams.data, { key: newKey, value: newValue }];
 
   return buildUrlWithParams(parsedUrl, nextParams);
 };
@@ -77,9 +96,13 @@ export const removeUrlParam = (
   index: number
 ): string | null => {
   if (!parsedUrl) return null;
-  if (index < 0 || index >= currentParams.length) return null;
+  if (!nonNegativeIntSchema.safeParse(index).success) return null;
 
-  const nextParams = currentParams.filter((_, paramIndex) => paramIndex !== index);
+  const parsedParams = urlParamsSchema.safeParse(currentParams);
+  if (!parsedParams.success) return null;
+  if (index < 0 || index >= parsedParams.data.length) return null;
+
+  const nextParams = parsedParams.data.filter((_, paramIndex) => paramIndex !== index);
 
   return buildUrlWithParams(parsedUrl, nextParams);
 };

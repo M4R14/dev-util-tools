@@ -1,4 +1,5 @@
 import { convertXML } from 'simple-xml-to-json';
+import { z } from 'zod';
 
 export type XmlToJsonValue = string | number | boolean | null | XmlToJsonRecord | XmlToJsonValue[];
 
@@ -19,6 +20,17 @@ const DEFAULT_OPTIONS: Required<XmlToJsonOptions> = {
   attributesKey: '@attributes',
   textKey: '#text',
 };
+
+const xmlInputSchema = z.string();
+const xmlToJsonOptionsSchema = z
+  .object({
+    includeAttributes: z.boolean().optional(),
+    trimText: z.boolean().optional(),
+    attributesKey: z.string().min(1).optional(),
+    textKey: z.string().min(1).optional(),
+  })
+  .strict();
+const plainRecordSchema = z.object({}).catchall(z.unknown());
 
 const normalizeText = (value: string, trimText: boolean): string => {
   return trimText ? value.trim() : value;
@@ -41,11 +53,16 @@ const addChildValue = (target: XmlToJsonRecord, key: string, value: XmlToJsonVal
 };
 
 const toRecord = (value: unknown): Record<string, unknown> | null => {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+  if (Array.isArray(value)) {
     return null;
   }
 
-  return value as Record<string, unknown>;
+  const parsed = plainRecordSchema.safeParse(value);
+  if (!parsed.success) {
+    return null;
+  }
+
+  return parsed.data;
 };
 
 const normalizeSimpleXmlNode = (
@@ -110,7 +127,17 @@ const validateXml = (xml: string) => {
 };
 
 export const convertXmlToJson = (xml: string, options: XmlToJsonOptions = {}): XmlToJsonRecord => {
-  const mergedOptions = { ...DEFAULT_OPTIONS, ...options };
+  const parsedXml = xmlInputSchema.safeParse(xml);
+  if (!parsedXml.success) {
+    throw new Error('XML input must be a string');
+  }
+
+  const parsedOptions = xmlToJsonOptionsSchema.safeParse(options);
+  if (!parsedOptions.success) {
+    throw new Error('Invalid XML to JSON options');
+  }
+
+  const mergedOptions = { ...DEFAULT_OPTIONS, ...parsedOptions.data };
   validateXml(xml);
 
   const rawJson = convertXML(xml) as Record<string, unknown>;

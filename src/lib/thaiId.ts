@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 export interface ThaiIdAnalysis {
   sanitized: string;
   formatted: string;
@@ -28,6 +30,8 @@ export interface GenerateThaiIdOptions {
 const THAI_ID_LENGTH = 13;
 const THAI_ID_BODY_LENGTH = 12;
 const THAI_ID_GROUPS = [1, 4, 5, 2, 1] as const;
+const thaiIdBodySchema = z.string().regex(/^\d{12}$/);
+const thaiIdSchema = z.string().regex(/^\d{13}$/);
 
 const PERSON_TYPE_MAP: Record<string, string> = {
   '1': 'คนที่มีสัญชาติไทยและแจ้งเกิดในเวลากำหนด',
@@ -74,8 +78,6 @@ export const THAI_ID_STRUCTURE: ThaiIdStructureItem[] = [
   },
 ];
 
-const isDigitsOnly = (value: string) => /^\d+$/.test(value);
-
 export const sanitizeThaiIdInput = (value: string): string => value.replace(/\D/g, '');
 
 export const formatThaiId = (value: string): string => {
@@ -97,7 +99,7 @@ export const formatThaiId = (value: string): string => {
 };
 
 export const calculateThaiIdChecksum = (firstTwelveDigits: string): number => {
-  if (firstTwelveDigits.length !== THAI_ID_BODY_LENGTH || !isDigitsOnly(firstTwelveDigits)) {
+  if (!thaiIdBodySchema.safeParse(firstTwelveDigits).success) {
     throw new Error('Thai ID checksum requires exactly 12 digits');
   }
 
@@ -129,7 +131,7 @@ export const analyzeThaiId = (input: string): ThaiIdAnalysis => {
     throw new Error('Please enter a Thai ID number');
   }
 
-  if (sanitized.length !== THAI_ID_LENGTH || !isDigitsOnly(sanitized)) {
+  if (!thaiIdSchema.safeParse(sanitized).success) {
     throw new Error('Thai ID must contain exactly 13 digits');
   }
 
