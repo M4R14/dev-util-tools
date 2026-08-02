@@ -5,10 +5,24 @@ import { Button } from '../ui/Button';
 import { CopyButton } from '../ui/CopyButton';
 import { SendToToolButton } from '../ui/SendToToolButton';
 import { useTestDataGenerator } from '../../hooks/tools/useTestDataGenerator';
+import { cn } from '../../lib/utils';
 
 const TestDataGenerator: React.FC = () => {
-  const { rows, fields, regenerate, regenerateField, addRow, removeRow, asTsv, asJson } =
-    useTestDataGenerator();
+  const {
+    rows,
+    fields,
+    allFields,
+    selectedSet,
+    toggleField,
+    selectAll,
+    allSelected,
+    regenerate,
+    regenerateField,
+    addRow,
+    removeRow,
+    asTsv,
+    asJson,
+  } = useTestDataGenerator();
 
   return (
     <ToolLayout>
@@ -21,18 +35,62 @@ const TestDataGenerator: React.FC = () => {
           <Plus className="mr-2 h-4 w-4" aria-hidden="true" />
           Add row
         </Button>
+
         <div className="ml-auto flex items-center gap-2">
           <SendToToolButton value={asJson} valueName="test data" />
-          <CopyButton value={asJson} successMessage="JSON copied" />
-          <Button
-            variant="outline"
-            size="sm"
-            asChild={false}
-            onClick={() => void 0}
-            className="hidden"
+          {/*
+            Both copy buttons say what they copy. A bare icon beside a JSON blob and another beside
+            a TSV blob left the reader to work out which was which.
+          */}
+          <CopyButton value={asJson} label="JSON" successMessage="Copied as JSON" />
+          <CopyButton
+            value={asTsv}
+            label="TSV"
+            successMessage="Copied as TSV — paste into a spreadsheet"
           />
         </div>
       </div>
+
+      {/*
+        Field selection, persisted. Someone testing a signup form wants a name, an email and a
+        phone number — not eight rows to read past on every regenerate.
+      */}
+      <fieldset className="mb-4 rounded-xl border border-border/70 px-4 py-3">
+        <legend className="px-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+          Fields
+        </legend>
+        <div className="flex flex-wrap items-center gap-1.5">
+          {allFields.map((field) => {
+            const checked = selectedSet.has(field.id);
+
+            return (
+              <button
+                key={field.id}
+                type="button"
+                onClick={() => toggleField(field.id)}
+                aria-pressed={checked}
+                className={cn(
+                  'rounded-full border px-2.5 py-1 text-xs font-medium transition-colors',
+                  checked
+                    ? 'border-primary/20 bg-primary/10 text-primary'
+                    : 'border-border bg-background/60 text-muted-foreground hover:text-foreground',
+                )}
+              >
+                {field.label}
+              </button>
+            );
+          })}
+          {!allSelected && (
+            <button
+              type="button"
+              onClick={selectAll}
+              className="ml-1 text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
+            >
+              Select all
+            </button>
+          )}
+        </div>
+      </fieldset>
 
       {rows.map((row, index) => (
         <ToolLayout.Panel
@@ -84,16 +142,19 @@ const TestDataGenerator: React.FC = () => {
         </ToolLayout.Panel>
       ))}
 
-      <ToolLayout.Section
-        title="Export"
-        actions={
-          <CopyButton value={asTsv} successMessage="TSV copied — paste into a spreadsheet" />
-        }
-      >
-        <pre className="max-h-48 overflow-auto rounded-lg border border-border/60 bg-muted/30 p-3 font-mono text-xs">
+      {/*
+        The TSV preview used to sit open, 66px tall, with 43% of its width scrolled out of sight —
+        unreadable, and never meant to be read. It is behind a toggle now; the copy button above is
+        the way it is actually used.
+      */}
+      <details className="rounded-xl border border-border/70 px-4 py-3">
+        <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground">
+          Preview TSV
+        </summary>
+        <pre className="mt-2 max-h-48 overflow-auto rounded-lg border border-border/60 bg-muted/30 p-3 font-mono text-xs">
           {asTsv}
         </pre>
-      </ToolLayout.Section>
+      </details>
 
       <p className="mt-4 inline-flex items-start gap-2 text-xs text-muted-foreground">
         <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" aria-hidden="true" />

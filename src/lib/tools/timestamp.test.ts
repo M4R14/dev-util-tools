@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { describeTimestamp, nowTimestamps, parseTimestamp } from './timestamp';
+import {
+  browserTimeZone,
+  describeTimestamp,
+  localMatchesBangkok,
+  nowTimestamps,
+  parseTimestamp,
+  summarizeTimestamp,
+} from './timestamp';
 
 // 2025-01-01T00:00:00Z
 const SECONDS = 1735689600;
@@ -70,14 +77,30 @@ describe('parseTimestamp', () => {
   });
 });
 
-describe('describeTimestamp', () => {
-  it('shows Bangkok seven hours ahead of UTC', () => {
-    const views = describeTimestamp(parseTimestamp(String(SECONDS)));
-    const utc = views.find((v) => v.label === 'UTC')?.value;
-    const bangkok = views.find((v) => v.label === 'Bangkok (UTC+7)')?.value;
+describe('summarizeTimestamp', () => {
+  it('leads with Bangkok time and how long ago it was', () => {
+    const summary = summarizeTimestamp(parseTimestamp(String(SECONDS)));
 
-    expect(utc).toBe('2025-01-01 00:00:00 UTC');
-    expect(bangkok).toBe('2025-01-01 07:00:00');
+    expect(summary.bangkok).toBe('2025-01-01 07:00:00');
+    expect(summary.relative).toMatch(/ago|in /);
+  });
+
+  it('reports the browser zone so the UI can explain what it dropped', () => {
+    const summary = summarizeTimestamp(parseTimestamp(String(SECONDS)));
+
+    expect(summary.localTimeZone).toBeTruthy();
+    expect(summary.localMatchesBangkok).toBe(localMatchesBangkok(new Date(MILLISECONDS)));
+  });
+});
+
+describe('describeTimestamp', () => {
+  it('shows UTC seven hours behind the Bangkok summary', () => {
+    const parsed = parseTimestamp(String(SECONDS));
+
+    expect(describeTimestamp(parsed).find((v) => v.label === 'UTC')?.value).toBe(
+      '2025-01-01 00:00:00 UTC',
+    );
+    expect(summarizeTimestamp(parsed).bangkok).toBe('2025-01-01 07:00:00');
   });
 
   it('includes both epoch units so either can be copied', () => {
@@ -91,6 +114,29 @@ describe('describeTimestamp', () => {
     const views = describeTimestamp(parseTimestamp(String(SECONDS)));
 
     expect(views.find((v) => v.label === 'ISO 8601')?.value).toBe('2025-01-01T00:00:00.000Z');
+  });
+
+  it('drops Local when it would repeat Bangkok', () => {
+    // This suite runs in Asia/Bangkok, so the two are the same moment written twice.
+    const parsed = parseTimestamp(String(SECONDS));
+    const hasLocal = describeTimestamp(parsed).some((v) => v.label === 'Local');
+
+    expect(hasLocal).toBe(!localMatchesBangkok(parsed.date));
+  });
+
+  it('marks only the values another tool can consume', () => {
+    const views = describeTimestamp(parseTimestamp(String(SECONDS)));
+    const pipeable = views.filter((v) => v.pipeable).map((v) => v.label);
+
+    // A human-readable rendering is not something another tool can take.
+    expect(pipeable).toEqual(['ISO 8601', 'Epoch seconds', 'Epoch milliseconds']);
+    expect(views.find((v) => v.label === 'UTC')?.pipeable).toBeUndefined();
+  });
+});
+
+describe('browserTimeZone', () => {
+  it('returns an IANA zone name', () => {
+    expect(browserTimeZone()).toMatch(/^[A-Za-z]+\/[A-Za-z_+-]+$|^UTC$|^unknown$/);
   });
 });
 

@@ -87,24 +87,71 @@ export const parseTimestamp = (input: string): ParsedTimestamp => {
 export interface TimestampView {
   label: string;
   value: string;
+  /**
+   * Whether another tool can do anything with this value. An epoch number or an ISO string can be
+   * handed on; "2 years ago" and "2025-01-01 00:00:00 UTC" cannot, and offering to send them put
+   * seven identical buttons on screen where two were meaningful.
+   */
+  pipeable?: boolean;
 }
 
+export const browserTimeZone = (): string => {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'unknown';
+  } catch {
+    return 'unknown';
+  }
+};
+
 /**
- * The three answers someone reading a log needs at once: the moment in UTC (what the server
- * logged), in Bangkok (what the user experienced), and relative (how long ago).
+ * True when the reader's own clock already shows Bangkok time — which, for this app's audience, is
+ * most of the time. Listing "Bangkok" and "Local" as separate rows then says the same thing twice.
+ */
+export const localMatchesBangkok = (date: Date): boolean =>
+  dayjs(date).format('YYYY-MM-DD HH:mm:ss') ===
+  dayjs(date).tz(BANGKOK_TIMEZONE).format('YYYY-MM-DD HH:mm:ss');
+
+export interface TimestampSummary {
+  /** The answer someone reading a Thai server log is after. */
+  bangkok: string;
+  relative: string;
+  localTimeZone: string;
+  localMatchesBangkok: boolean;
+}
+
+export const summarizeTimestamp = (parsed: ParsedTimestamp): TimestampSummary => {
+  const d = dayjs(parsed.date);
+
+  return {
+    bangkok: d.tz(BANGKOK_TIMEZONE).format('YYYY-MM-DD HH:mm:ss'),
+    relative: d.fromNow(),
+    localTimeZone: browserTimeZone(),
+    localMatchesBangkok: localMatchesBangkok(parsed.date),
+  };
+};
+
+/**
+ * The supporting detail behind the summary. `Local` is dropped when it would repeat Bangkok; the
+ * UI says which zone the browser is in instead, so the omission is stated rather than silent.
  */
 export const describeTimestamp = (parsed: ParsedTimestamp): TimestampView[] => {
   const d = dayjs(parsed.date);
 
-  return [
+  const views: TimestampView[] = [
     { label: 'UTC', value: d.utc().format('YYYY-MM-DD HH:mm:ss') + ' UTC' },
-    { label: 'Bangkok (UTC+7)', value: d.tz(BANGKOK_TIMEZONE).format('YYYY-MM-DD HH:mm:ss') },
-    { label: 'Local', value: d.format('YYYY-MM-DD HH:mm:ss Z') },
-    { label: 'ISO 8601', value: d.toISOString() },
-    { label: 'Relative', value: d.fromNow() },
-    { label: 'Epoch seconds', value: String(parsed.epochSeconds) },
-    { label: 'Epoch milliseconds', value: String(parsed.epochMilliseconds) },
   ];
+
+  if (!localMatchesBangkok(parsed.date)) {
+    views.push({ label: 'Local', value: d.format('YYYY-MM-DD HH:mm:ss Z') });
+  }
+
+  views.push(
+    { label: 'ISO 8601', value: d.toISOString(), pipeable: true },
+    { label: 'Epoch seconds', value: String(parsed.epochSeconds), pipeable: true },
+    { label: 'Epoch milliseconds', value: String(parsed.epochMilliseconds), pipeable: true },
+  );
+
+  return views;
 };
 
 export const nowTimestamps = () => {

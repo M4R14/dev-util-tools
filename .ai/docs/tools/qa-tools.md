@@ -83,8 +83,16 @@ The unit is detected from **digit count**, not magnitude: ≤11 digits is second
 milliseconds, 15+ is microseconds. Guessing by magnitude reads a millisecond value as a date in the
 year 56000 — the classic log-reading mistake.
 
-Shows UTC, Bangkok, local, ISO 8601, relative, and both epoch units at once, because reading a log
-usually needs the server time and the user's time together.
+**Bangkok time is the answer, so it is stated once at the size of an answer** — a single large
+reading with the relative time beside it — and the other formats sit below it. Every reading used
+to be a row of the same weight, so the one people came for carried no more emphasis than the ISO
+string next to it.
+
+`Local` is dropped when it would repeat Bangkok, which for this app'''s audience is most of the
+time. The summary says which zone the browser is in, so the omission is stated rather than silent.
+
+`Send to` appears only on the machine-readable rows (ISO, both epoch units). Offering to send
+"2 years ago" to another tool put seven identical buttons on screen where three are meaningful.
 
 Values beyond the JavaScript Date range (±8.64e15 ms, reachable only at 19+ digits) are rejected
 with a named error.
@@ -127,6 +135,14 @@ not be hand-edited.
 
 **These are fictitious but valid by construction, so a value can collide with a real one by
 chance.** The UI says so; keep it there.
+
+**Fields are selectable and the choice is remembered** (`test-data-fields` in localStorage).
+Someone testing a signup form wants a name, an email and a phone number, not eight rows to read
+past on every regenerate. Removing the last field is refused — a tool that generates nothing with
+no explanation is worse than one that keeps a single row.
+
+Both export buttons name their format. The TSV preview is behind a toggle: it sat open at 66px
+with 43% of its width scrolled out of sight, unreadable and never meant to be read.
 
 Not on the AI bridge: output is random, so a bridge call would not be reproducible.
 

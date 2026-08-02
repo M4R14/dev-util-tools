@@ -15,8 +15,17 @@ const UNIT_LABEL: Record<string, string> = {
 };
 
 const TimestampConverter: React.FC = () => {
-  const { input, setInput, views, detectedUnit, error, useNowSeconds, useNowMilliseconds, clear } =
-    useTimestampConverter();
+  const {
+    input,
+    setInput,
+    views,
+    summary,
+    detectedUnit,
+    error,
+    useNowSeconds,
+    useNowMilliseconds,
+    clear,
+  } = useTimestampConverter();
 
   return (
     <ToolLayout>
@@ -53,33 +62,68 @@ const TimestampConverter: React.FC = () => {
         </div>
       </ToolLayout.Panel>
 
-      <ToolLayout.Section title="Interpretations" className="mt-6">
-        {error ? (
-          <p className="text-sm font-medium text-destructive" role="alert">
-            {error}
-          </p>
-        ) : views.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            Paste the number from a log line. The unit is detected from its length — 10 digits is
-            seconds, 13 is milliseconds, 16 is microseconds.
-          </p>
-        ) : (
-          <dl className="divide-y divide-border/50">
-            {views.map((view) => (
-              <div key={view.label} className="flex flex-wrap items-center gap-x-3 py-2">
-                <dt className="w-44 shrink-0 text-sm text-muted-foreground">{view.label}</dt>
-                <dd className="min-w-0 flex-1 break-all font-mono text-sm text-foreground">
-                  {view.value}
-                </dd>
-                <div className="flex shrink-0 items-center">
-                  <SendToToolButton value={view.value} valueName={view.label} />
-                  <CopyButton value={view.value} successMessage={`${view.label} copied`} />
+      {error ? (
+        <p className="mt-4 text-sm font-medium text-destructive" role="alert">
+          {error}
+        </p>
+      ) : summary ? (
+        <>
+          {/*
+            One answer, stated once, at the size of an answer. Every reading used to be a row of
+            the same weight, so the Bangkok time — the thing someone reading a Thai server log is
+            actually after — carried no more emphasis than the ISO string beside it.
+          */}
+          <section className="mt-6 rounded-xl border border-primary/20 bg-primary/5 px-5 py-4">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-primary">
+              Bangkok · UTC+7
+            </p>
+            <p className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <span
+                className="font-mono text-2xl font-semibold text-foreground"
+                data-testid="timestamp-bangkok"
+              >
+                {summary.bangkok}
+              </span>
+              <span className="text-sm text-muted-foreground">{summary.relative}</span>
+              <CopyButton
+                value={summary.bangkok}
+                successMessage="Bangkok time copied"
+                className="ml-auto"
+              />
+            </p>
+            <p className="mt-1 text-[11px] text-muted-foreground">
+              {summary.localMatchesBangkok
+                ? `Your browser is in ${summary.localTimeZone}, so local time is the same.`
+                : `Your browser is in ${summary.localTimeZone} — see Local below.`}
+            </p>
+          </section>
+
+          <ToolLayout.Section title="Other formats" className="mt-6">
+            <dl className="divide-y divide-border/50">
+              {views.map((view) => (
+                <div key={view.label} className="flex flex-wrap items-center gap-x-3 py-2">
+                  <dt className="w-44 shrink-0 text-sm text-muted-foreground">{view.label}</dt>
+                  <dd className="min-w-0 flex-1 break-all font-mono text-sm text-foreground">
+                    {view.value}
+                  </dd>
+                  <div className="flex shrink-0 items-center">
+                    {/* Only the machine-readable forms are worth handing to another tool. */}
+                    {view.pipeable && (
+                      <SendToToolButton value={view.value} valueName={view.label} />
+                    )}
+                    <CopyButton value={view.value} successMessage={`${view.label} copied`} />
+                  </div>
                 </div>
-              </div>
-            ))}
-          </dl>
-        )}
-      </ToolLayout.Section>
+              ))}
+            </dl>
+          </ToolLayout.Section>
+        </>
+      ) : (
+        <p className="mt-4 text-sm text-muted-foreground">
+          Paste the number from a log line. The unit is detected from its length — 10 digits is
+          seconds, 13 is milliseconds, 16 is microseconds.
+        </p>
+      )}
     </ToolLayout>
   );
 };
