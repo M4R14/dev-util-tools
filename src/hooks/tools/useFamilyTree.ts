@@ -4,8 +4,10 @@ import {
   appendMember,
   createMember,
   linkSpouse as linkSpouseInList,
+  moveMember as moveInList,
   removeMember as removeFromList,
   reparentMember as reparentInList,
+  sortChildrenByBirth,
   updateMember as updateInList,
 } from '../../lib/tools/familyTree/members';
 import { buildHierarchy, countGenerations } from '../../lib/tools/familyTree/hierarchy';
@@ -145,6 +147,17 @@ export const useFamilyTree = () => {
     });
   }, []);
 
+  /** Nudges someone past the sibling beside them, so birth order can be corrected. */
+  const moveMember = useCallback((id: string, direction: -1 | 1) => {
+    setMembers((previous) => moveInList(previous, id, direction));
+  }, []);
+
+  /** Reorders one person's children oldest first. Offered, never automatic — see members.ts. */
+  const sortChildren = useCallback((parentId: string | null) => {
+    setMembers((previous) => sortChildrenByBirth(previous, parentId));
+    toast.success('Sorted by birth year');
+  }, []);
+
   /**
    * Replaces the whole tree, keeping the old one within reach.
    *
@@ -205,6 +218,8 @@ export const useFamilyTree = () => {
     removeMember,
     reparentMember,
     linkSpouse,
+    moveMember,
+    sortChildren,
     clearAll,
     importJson,
     downloadJson,

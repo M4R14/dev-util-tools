@@ -21,6 +21,8 @@ const FamilyTree: React.FC = () => {
     removeMember,
     reparentMember,
     linkSpouse,
+    moveMember,
+    sortChildren,
     clearAll,
     importJson,
     downloadJson,
@@ -178,6 +180,8 @@ const FamilyTree: React.FC = () => {
               }}
               onAddChild={addChildFromDiagram}
               onAddPartner={(id) => createAndSelect({ name: '', spouseId: id })}
+              onMove={moveMember}
+              onSortChildren={sortChildren}
               focusNewId={focusNewId}
             />
 

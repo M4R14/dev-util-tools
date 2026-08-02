@@ -4,8 +4,10 @@ import {
   ancestorIdsOf,
   createMember,
   linkSpouse,
+  moveMember,
   removeMember,
   reparentMember,
+  sortChildrenByBirth,
   updateMember,
 } from './members';
 import { buildHierarchy } from './hierarchy';
@@ -23,6 +25,8 @@ const member = (
   spouseId: null,
   gender: 'unknown',
   relationship: '',
+  birth: '',
+  death: '',
   note: '',
   ...overrides,
 });
@@ -155,6 +159,109 @@ describe('reparentMember', () => {
     const result = reparentMember(family(), 'me', 'ghost');
 
     expect(result.ok).toBe(false);
+  });
+});
+
+describe('moveMember', () => {
+  it('swaps a member with the sibling before them', () => {
+    const after = moveMember(family(), 'sister', -1);
+    const dadsChildren = after.filter((entry) => entry.parentId === 'dad').map((e) => e.id);
+
+    expect(dadsChildren).toEqual(['sister', 'me']);
+  });
+
+  it('swaps a member with the sibling after them', () => {
+    const after = moveMember(family(), 'me', 1);
+
+    expect(after.filter((e) => e.parentId === 'dad').map((e) => e.id)).toEqual(['sister', 'me']);
+  });
+
+  it('does nothing at either end of the sibling set', () => {
+    expect(moveMember(family(), 'me', -1)).toEqual(family());
+    expect(moveMember(family(), 'sister', 1)).toEqual(family());
+  });
+
+  it('steps over people who are not siblings', () => {
+    // 'uncle' sits after 'sister' in the flat list but belongs to grandpa, not dad.
+    const after = moveMember(family(), 'uncle', -1);
+
+    expect(after.filter((e) => e.parentId === 'grandpa').map((e) => e.id)).toEqual([
+      'uncle',
+      'dad',
+    ]);
+    // Dad's own children are untouched by a move two levels up.
+    expect(after.filter((e) => e.parentId === 'dad').map((e) => e.id)).toEqual(['me', 'sister']);
+  });
+
+  it('moves roots among themselves', () => {
+    const roots = [member('a', null), member('b', null)];
+
+    expect(moveMember(roots, 'b', -1).map((e) => e.id)).toEqual(['b', 'a']);
+  });
+
+  it('ignores an id that is not in the tree', () => {
+    expect(moveMember(family(), 'nobody', 1)).toEqual(family());
+  });
+});
+
+describe('sortChildrenByBirth', () => {
+  const withBirths = (): FamilyMember[] => [
+    member('dad', null),
+    member('c', 'dad', { birth: '2510' }),
+    member('a', 'dad', { birth: '2495' }),
+    member('b', 'dad', { birth: '2502' }),
+  ];
+
+  it('puts one parent’s children oldest first', () => {
+    const after = sortChildrenByBirth(withBirths(), 'dad');
+
+    expect(after.filter((e) => e.parentId === 'dad').map((e) => e.id)).toEqual(['a', 'b', 'c']);
+  });
+
+  it('leaves the slots of everyone else alone', () => {
+    const after = sortChildrenByBirth(withBirths(), 'dad');
+
+    // The parent keeps position 0; only the children's slots are rewritten.
+    expect(after[0].id).toBe('dad');
+    expect(after).toHaveLength(4);
+  });
+
+  it('trails children with no readable birth, in the order they were entered', () => {
+    const mixed = [
+      member('dad', null),
+      member('unknown1', 'dad'),
+      member('young', 'dad', { birth: '2510' }),
+      member('unknown2', 'dad'),
+      member('old', 'dad', { birth: '2490' }),
+    ];
+    const after = sortChildrenByBirth(mixed, 'dad');
+
+    expect(after.filter((e) => e.parentId === 'dad').map((e) => e.id)).toEqual([
+      'old',
+      'young',
+      'unknown1',
+      'unknown2',
+    ]);
+  });
+
+  it('compares Buddhist and Common Era entries against each other', () => {
+    const mixedEras = [
+      member('dad', null),
+      member('be', 'dad', { birth: '2510' }),
+      member('ce', 'dad', { birth: '1950' }),
+    ];
+
+    expect(
+      sortChildrenByBirth(mixedEras, 'dad')
+        .filter((e) => e.parentId === 'dad')
+        .map((e) => e.id),
+    ).toEqual(['ce', 'be']);
+  });
+
+  it('sorts the roots when asked for null', () => {
+    const roots = [member('b', null, { birth: '2510' }), member('a', null, { birth: '2490' })];
+
+    expect(sortChildrenByBirth(roots, null).map((e) => e.id)).toEqual(['a', 'b']);
   });
 });
 

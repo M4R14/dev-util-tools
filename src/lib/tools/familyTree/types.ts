@@ -34,7 +34,14 @@ export interface FamilyMember {
   gender: Gender;
   /** How this member relates to their parent — "ลูกชาย", "ภรรยา". Free text; presets are a UI concern. */
   relationship: string;
-  /** Birth year, occupation, anything the owner wants to remember. */
+  /**
+   * Free text, not a date: a family tree is filled in from memory and from the back of
+   * photographs. See `lifeDates.ts` for what is read out of it and why the field stays loose.
+   */
+  birth: string;
+  /** Anything at all here means the person is gone, whether or not it carries a year. */
+  death: string;
+  /** Occupation, birthplace, anything else the owner wants to remember. */
   note: string;
 }
 
@@ -63,6 +70,8 @@ export interface CreateMemberInput {
   spouseId?: string | null;
   gender?: Gender;
   relationship?: string;
+  birth?: string;
+  death?: string;
   note?: string;
 }
 

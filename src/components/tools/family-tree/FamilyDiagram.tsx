@@ -21,6 +21,8 @@ interface FamilyDiagramProps {
   onRemove: (id: string) => void;
   onAddChild: (parentId: string) => void;
   onAddPartner: (memberId: string) => void;
+  onMove: (id: string, direction: -1 | 1) => void;
+  onSortChildren: (parentId: string) => void;
   /** Set when the selected member was just created, so the editor can focus their name. */
   focusNewId: string | null;
 }
@@ -46,6 +48,8 @@ export const FamilyDiagram: React.FC<FamilyDiagramProps> = ({
   onRemove,
   onAddChild,
   onAddPartner,
+  onMove,
+  onSortChildren,
   focusNewId,
 }) => {
   const layout = useMemo(() => layoutFamilyTree2D(roots), [roots]);
@@ -175,6 +179,9 @@ export const FamilyDiagram: React.FC<FamilyDiagramProps> = ({
                 onRemove={onRemove}
                 onAddChild={onAddChild}
                 onAddPartner={onAddPartner}
+                onMove={onMove}
+                onSortChildren={onSortChildren}
+                hasChildren={selectedBox.childCount > 0 || selectedBox.hiddenDescendants > 0}
                 onClose={() => onSelect(null)}
                 autoFocusName={focusNewId === selectedBox.member.id}
               />

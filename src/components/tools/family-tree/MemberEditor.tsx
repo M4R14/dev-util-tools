@@ -1,5 +1,13 @@
 import React, { useEffect, useRef } from 'react';
-import { Baby, Heart, Trash2, X } from 'lucide-react';
+import {
+  ArrowDownWideNarrow,
+  Baby,
+  ChevronLeft,
+  ChevronRight,
+  Heart,
+  Trash2,
+  X,
+} from 'lucide-react';
 import { Button } from '../../ui/Button';
 import { Input } from '../../ui/Input';
 import { RELATIONSHIP_LIST_ID } from './AddMemberForm';
@@ -13,6 +21,10 @@ export interface MemberEditorProps {
   onRemove: (id: string) => void;
   onAddChild: (parentId: string) => void;
   onAddPartner: (memberId: string) => void;
+  onMove: (id: string, direction: -1 | 1) => void;
+  onSortChildren: (parentId: string) => void;
+  /** Enables the sort action, which is meaningless on someone with nobody under them. */
+  hasChildren: boolean;
   onClose: () => void;
   /** Focus the name field on open — set when the member was created a moment ago. */
   autoFocusName: boolean;
@@ -36,6 +48,9 @@ export const MemberEditor: React.FC<MemberEditorProps> = ({
   onRemove,
   onAddChild,
   onAddPartner,
+  onMove,
+  onSortChildren,
+  hasChildren,
   onClose,
   autoFocusName,
 }) => {
@@ -96,6 +111,30 @@ export const MemberEditor: React.FC<MemberEditorProps> = ({
         </select>
       </div>
 
+      {/*
+        Free text, not date pickers. A family tree is filled in from memory and from the back of
+        photographs — "2510", "ราวๆ 2495" — and a picker that demands a valid date turns "some time
+        in the sixties" into a blank. Only the year is read out, and only for sorting and display.
+      */}
+      <div className="mb-2 grid grid-cols-2 gap-2">
+        <Input
+          value={member.birth}
+          onChange={(event) => onUpdate(member.id, { birth: event.target.value })}
+          placeholder="Born"
+          aria-label="Born"
+          className="h-8 text-xs"
+          autoComplete="off"
+        />
+        <Input
+          value={member.death}
+          onChange={(event) => onUpdate(member.id, { death: event.target.value })}
+          placeholder="Died"
+          aria-label="Died"
+          className="h-8 text-xs"
+          autoComplete="off"
+        />
+      </div>
+
       <Input
         value={member.note}
         onChange={(event) => onUpdate(member.id, { note: event.target.value })}
@@ -104,6 +143,42 @@ export const MemberEditor: React.FC<MemberEditorProps> = ({
         className="mb-2 h-8 text-xs"
         autoComplete="off"
       />
+
+      {/* Birth order is a real fact about a family, and the diagram reads eldest to youngest. */}
+      <div className="mb-2 flex items-center gap-1">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => onMove(member.id, -1)}
+          className="h-7 w-7 text-muted-foreground"
+          aria-label="Move earlier among siblings"
+          title="Move earlier among siblings"
+        >
+          <ChevronLeft className="h-3.5 w-3.5" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => onMove(member.id, 1)}
+          className="h-7 w-7 text-muted-foreground"
+          aria-label="Move later among siblings"
+          title="Move later among siblings"
+        >
+          <ChevronRight className="h-3.5 w-3.5" />
+        </Button>
+        {hasChildren && (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => onSortChildren(member.id)}
+            className="h-7 px-2 text-[11px] text-muted-foreground"
+            title="Reorder this person's children oldest first"
+          >
+            <ArrowDownWideNarrow className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
+            Sort children
+          </Button>
+        )}
+      </div>
 
       <div className="flex items-center gap-1">
         <Button

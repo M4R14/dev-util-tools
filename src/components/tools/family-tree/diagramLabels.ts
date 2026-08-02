@@ -1,4 +1,5 @@
 import { createCanvasMeasurer, truncateToWidth } from '../../../lib/tools/svgText';
+import { formatLifespan } from '../../../lib/tools/familyTree/lifeDates';
 import type { LaidOutMember } from '../../../lib/tools/familyTree/layout';
 
 /** Must match what the SVG `<text>` classes resolve to, or the measurement is of the wrong font. */
@@ -39,7 +40,14 @@ export const buildDiagramLabels = (
   return new Map(
     boxes.map((box) => {
       const full = box.member.name || 'Untitled';
-      const detail = [box.member.relationship, box.member.note].filter(Boolean).join(' · ');
+      // Lifespan first: on a family tree the years are what the reader is usually looking for.
+      const detail = [
+        formatLifespan(box.member.birth, box.member.death),
+        box.member.relationship,
+        box.member.note,
+      ]
+        .filter(Boolean)
+        .join(' · ');
 
       return [
         box.member.id,

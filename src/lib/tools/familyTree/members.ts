@@ -1,5 +1,63 @@
 import { randomUUID } from '../../platform/randomUtils';
+import { byBirthYear } from './lifeDates';
 import type { CreateMemberInput, FamilyMember, MembersResult } from './types';
+
+/**
+ * Moves a member one place among their own siblings.
+ *
+ * Sibling order was the order people happened to be entered, permanently: someone who remembered
+ * the youngest first left them on the left forever. Birth order is a real fact about a family, and
+ * a family tree is conventionally read eldest to youngest.
+ *
+ * Only siblings swap. Moving within the whole list would slide a member past unrelated people and
+ * change nothing visible, since the diagram groups by parent.
+ */
+export const moveMember = (
+  members: FamilyMember[],
+  id: string,
+  direction: -1 | 1,
+): FamilyMember[] => {
+  const from = members.findIndex((entry) => entry.id === id);
+  if (from === -1) return members;
+
+  const siblingIndexes = members
+    .map((entry, index) => ({ entry, index }))
+    .filter(({ entry }) => entry.parentId === members[from].parentId)
+    .map(({ index }) => index);
+
+  const target = siblingIndexes[siblingIndexes.indexOf(from) + direction];
+  if (target === undefined) return members;
+
+  const next = [...members];
+  [next[from], next[target]] = [next[target], next[from]];
+
+  return next;
+};
+
+/**
+ * Reorders one member's children by birth year, oldest first.
+ *
+ * Offered rather than applied automatically. Sorting the moment a date is typed would rearrange the
+ * diagram under someone mid-edit, and a tree with half its dates filled in would shuffle on every
+ * entry. Children keep their slots in the flat list, so nobody else moves.
+ */
+export const sortChildrenByBirth = (
+  members: FamilyMember[],
+  parentId: string | null,
+): FamilyMember[] => {
+  const children = members
+    .map((entry, index) => ({ entry, index }))
+    .filter(({ entry }) => entry.parentId === parentId);
+
+  const sorted = [...children].sort((left, right) => byBirthYear(left.entry, right.entry));
+
+  const next = [...members];
+  children.forEach(({ index }, slot) => {
+    next[index] = sorted[slot].entry;
+  });
+
+  return next;
+};
 
 /**
  * Every change to the flat list of members, as a pure function from list to list.
@@ -16,6 +74,8 @@ export const createMember = (input: CreateMemberInput): FamilyMember => ({
   spouseId: input.spouseId ?? null,
   gender: input.gender ?? 'unknown',
   relationship: input.relationship?.trim() ?? '',
+  birth: input.birth?.trim() ?? '',
+  death: input.death?.trim() ?? '',
   note: input.note?.trim() ?? '',
 });
 

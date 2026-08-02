@@ -43,6 +43,8 @@ interface FamilyMember {
   spouseId: string | null; // the partner drawn beside them
   gender: 'male' | 'female' | 'unknown';
   relationship: string;    // free text; how they relate to their parent
+  birth: string;           // free text, not a date — see lifeDates.ts
+  death: string;           // anything at all here means the person is gone
   note: string;
 }
 ```
@@ -100,6 +102,30 @@ screen.
 
 **Toasts are raised outside the state updater.** React calls updaters twice under StrictMode, so a
 side effect inside one fires twice — deleting used to announce itself two times in development.
+
+## Dates and order
+
+`birth` and `death` stay **free text**. A family tree is filled in from memory and from the back of
+photographs — "2510", "ราวๆ 2495", "12 มี.ค. 2503" — and a date picker that demands a valid date
+turns "some time in the sixties" into a blank.
+
+`lifeDates.ts` reads a year out of whatever is there, and nothing else depends on it, so a value it
+cannot parse costs the owner only the sorting. It takes the first four-digit run, rejects anything
+outside 1000–2999 so a phone number in the wrong field is not read as a year, and treats anything at
+or above **2300 as Buddhist** — the boundary is CE 1757, which no Common Era entry in a family tree
+can reach and no Buddhist one can fall below.
+
+`death` holding anything at all means the person is gone, whether or not it carries a year; the
+label then reads "deceased". No dagger — it carries a religious reading that does not fit every
+family this tool is for.
+
+**Sibling order is editable.** It used to be the order people happened to be entered, permanently:
+someone who remembered the youngest first left them on the left forever. `moveMember` swaps a member
+with the sibling beside them, stepping over anyone who is not a sibling, and `sortChildrenByBirth`
+reorders one person's children oldest first with unknown births trailing in place.
+
+Sorting is **offered, never automatic**. Applying it as dates are typed would rearrange the diagram
+under someone mid-edit, and a tree with half its dates filled in would shuffle on every entry.
 
 ## Partners
 

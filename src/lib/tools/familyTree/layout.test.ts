@@ -14,6 +14,8 @@ const member = (
   spouseId,
   gender: 'unknown',
   relationship: '',
+  birth: '',
+  death: '',
   note: '',
 });
 

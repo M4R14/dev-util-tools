@@ -18,6 +18,9 @@ const memberSchema = z.object({
   // Anything unrecognised reads as unknown rather than failing the whole import for one bad cell.
   gender: z.enum(['male', 'female', 'unknown']).catch('unknown').optional(),
   relationship: z.string(),
+  // Absent in every tree exported before dates existed, so optional rather than a failed import.
+  birth: z.string().optional(),
+  death: z.string().optional(),
   note: z.string(),
 });
 
@@ -37,6 +40,8 @@ const toMembers = (parsed: z.infer<typeof familyMembersSchema>): FamilyMember[] 
     spouseId: entry.spouseId ?? null,
     gender: entry.gender ?? 'unknown',
     relationship: entry.relationship,
+    birth: entry.birth ?? '',
+    death: entry.death ?? '',
     note: entry.note,
   }));
 
