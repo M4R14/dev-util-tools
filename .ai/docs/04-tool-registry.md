@@ -96,7 +96,7 @@ The registry below groups tools by responsibility to make discovery easier for c
 - `family-tree` — `/family-tree`
   - Component: `src/components/tools/family-tree/index.tsx` (+ subcomponents)
   - Hook: `src/hooks/tools/useFamilyTree.ts`
-  - Lib: `src/lib/tools/familyTree.ts`
+  - Lib: `src/lib/tools/familyTree/` (`types`, `members`, `hierarchy`, `storage`, `layout`)
   - Doc: [.ai doc](./tools/family-tree.md)
 
 - `regex-tester` — `/regex-tester`

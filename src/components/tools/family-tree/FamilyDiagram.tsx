@@ -2,13 +2,13 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Download, Maximize2, Minus, Plus, TriangleAlert } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '../../ui/Button';
-import { layoutFamilyTree2D } from '../../../lib/tools/familyTreeLayout';
+import { layoutFamilyTree2D } from '../../../lib/tools/familyTree/layout';
 import { createCanvasMeasurer, truncateToWidth } from '../../../lib/tools/svgText';
 import { downloadPng, downloadSvg } from '../../../lib/platform/svgExport';
 import { prefersReducedMotion } from '../../../lib/platform/motion';
 import { cn } from '../../../lib/utils';
 import { MemberEditor } from './MemberEditor';
-import type { FamilyMember, FamilyNode } from '../../../lib/tools/familyTree';
+import type { FamilyMember, FamilyNode } from '../../../lib/tools/familyTree/types';
 
 interface FamilyDiagramProps {
   roots: FamilyNode[];

@@ -7,7 +7,7 @@ import {
   type CreateMemberInput,
   type FamilyMember,
   type Gender,
-} from '../../../lib/tools/familyTree';
+} from '../../../lib/tools/familyTree/types';
 
 interface AddMemberFormProps {
   members: FamilyMember[];

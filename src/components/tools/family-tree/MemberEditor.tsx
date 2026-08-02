@@ -3,7 +3,7 @@ import { Baby, Heart, Trash2, X } from 'lucide-react';
 import { Button } from '../../ui/Button';
 import { Input } from '../../ui/Input';
 import { RELATIONSHIP_LIST_ID } from './AddMemberForm';
-import type { FamilyMember, Gender } from '../../../lib/tools/familyTree';
+import type { FamilyMember, Gender } from '../../../lib/tools/familyTree/types';
 
 export interface MemberEditorProps {
   member: FamilyMember;

@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Trash2, Users } from 'lucide-react';
-import { collapseHierarchy, flattenHierarchy } from '../../../lib/tools/familyTree';
+import { collapseHierarchy, flattenHierarchy } from '../../../lib/tools/familyTree/hierarchy';
 import { ToolLayout } from '../../ui/ToolLayout';
 import { Button } from '../../ui/Button';
 import { CopyButton } from '../../ui/CopyButton';

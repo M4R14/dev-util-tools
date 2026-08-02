@@ -6,8 +6,30 @@ Build a family tree from `{ name, parent, relationship }` and keep it in the bro
 - Component: `src/components/tools/family-tree/index.tsx` (+ `AddMemberForm.tsx`, `TreeView.tsx`,
   `FamilyDiagram.tsx`)
 - Hook: `src/hooks/tools/useFamilyTree.ts`
-- Lib: `src/lib/tools/familyTree.ts`, `src/lib/tools/familyTreeLayout.ts`
+- Lib: `src/lib/tools/familyTree/` — see below
 - No packages: the diagram is hand-written SVG
+
+## Module split
+
+`src/lib/tools/familyTree/` is four modules and a layout, deliberately without a barrel:
+
+| File | Holds | Depends on |
+|---|---|---|
+| `types.ts` | `FamilyMember`, `FamilyNode`, `Hierarchy`, `Gender`, `CreateMemberInput`, `FamilyFailure`, `isFamilyFailure`, `RELATIONSHIP_PRESETS` | nothing |
+| `members.ts` | every change to the flat list — create, append, update, remove, `linkSpouse`, `reparentMember`, `ancestorIdsOf` | `types`, `randomUtils` |
+| `hierarchy.ts` | `buildHierarchy`, `collapseHierarchy`, `countDescendants`, `countGenerations`, `flattenHierarchy` | `types` |
+| `storage.ts` | the zod schema, `normalizeMembers`, `serializeFamily`, `parseFamily` | `types`, `zod` |
+| `layout.ts` | `layoutFamilyTree2D` | `types` |
+
+The split follows what the callers actually ask for. Five of the six components import nothing but
+`FamilyMember` or `FamilyNode` to type a prop; only the hook wants operations. One 466-line module
+meant naming a type pulled in zod, `randomUUID` and every mutation.
+
+**No barrel on purpose.** Re-exporting everything through an `index.ts` would hand every component
+the whole surface again and undo the split. Imports name the module they want.
+
+`hierarchy.ts` does not import `members.ts` and vice versa: one derives, the other mutates, and
+neither needs the other.
 
 ## Data model
 
@@ -82,7 +104,7 @@ is gone.
 
 ## The diagram
 
-`familyTreeLayout.ts` is a pure function from the hierarchy to coordinates and connector polylines,
+`layout.ts` is a pure function from the hierarchy to coordinates and connector polylines,
 tested without rendering anything. `FamilyDiagram.tsx` only turns those numbers into SVG.
 
 **Widths are measured bottom-up before anything is placed.** A parent can be wider than its children

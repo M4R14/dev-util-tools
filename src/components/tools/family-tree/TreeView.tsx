@@ -4,7 +4,7 @@ import { Button } from '../../ui/Button';
 import { Input } from '../../ui/Input';
 import { cn } from '../../../lib/utils';
 import { RELATIONSHIP_LIST_ID } from './AddMemberForm';
-import type { FamilyMember, FamilyNode } from '../../../lib/tools/familyTree';
+import type { FamilyMember, FamilyNode } from '../../../lib/tools/familyTree/types';
 
 interface TreeViewProps {
   nodes: FamilyNode[];

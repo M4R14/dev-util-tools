@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { buildHierarchy, type FamilyMember } from './familyTree';
-import { layoutFamilyTree2D } from './familyTreeLayout';
+import { buildHierarchy } from './hierarchy';
+import type { FamilyMember } from './types';
+import { layoutFamilyTree2D } from './layout';
 
 const member = (
   id: string,

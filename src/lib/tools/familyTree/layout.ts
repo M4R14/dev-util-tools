@@ -1,4 +1,4 @@
-import type { FamilyMember, FamilyNode } from './familyTree';
+import type { FamilyMember, FamilyNode } from './types';
 
 /**
  * Coordinates for the conventional family-tree diagram: partners side by side joined by a bar,

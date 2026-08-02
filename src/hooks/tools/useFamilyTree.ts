@@ -2,21 +2,24 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import {
   appendMember,
-  buildHierarchy,
-  countGenerations,
   createMember,
-  familyMembersSchema,
-  isFamilyFailure,
   linkSpouse as linkSpouseInList,
-  normalizeMembers,
-  parseFamily,
   removeMember as removeFromList,
   reparentMember as reparentInList,
-  serializeFamily,
   updateMember as updateInList,
+} from '../../lib/tools/familyTree/members';
+import { buildHierarchy, countGenerations } from '../../lib/tools/familyTree/hierarchy';
+import {
+  familyMembersSchema,
+  normalizeMembers,
+  parseFamily,
+  serializeFamily,
+} from '../../lib/tools/familyTree/storage';
+import {
+  isFamilyFailure,
   type CreateMemberInput,
   type FamilyMember,
-} from '../../lib/tools/familyTree';
+} from '../../lib/tools/familyTree/types';
 import { readPersisted, removePersisted, writePersisted } from '../../lib/platform/persistedState';
 
 const STORAGE_KEY = 'family-tree';
