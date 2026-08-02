@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import {
-  addMember as addToList,
+  appendMember,
   buildHierarchy,
   countGenerations,
+  createMember,
   familyMembersSchema,
   isFamilyFailure,
   linkSpouse as linkSpouseInList,
@@ -45,8 +46,11 @@ export const useFamilyTree = () => {
   const hierarchy = useMemo(() => buildHierarchy(members), [members]);
   const generations = useMemo(() => countGenerations(hierarchy.roots), [hierarchy.roots]);
 
-  const addMember = useCallback((input: CreateMemberInput) => {
-    setMembers((previous) => addToList(previous, input));
+  /** Returns the new member's id so the caller can select and focus them straight away. */
+  const addMember = useCallback((input: CreateMemberInput): string => {
+    const created = createMember(input);
+    setMembers((previous) => appendMember(previous, created));
+    return created.id;
   }, []);
 
   const updateMember = useCallback((id: string, patch: Partial<Omit<FamilyMember, 'id'>>) => {

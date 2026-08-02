@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Trash2, Users } from 'lucide-react';
-import { collapseHierarchy } from '../../../lib/tools/familyTree';
+import { collapseHierarchy, flattenHierarchy } from '../../../lib/tools/familyTree';
 import { ToolLayout } from '../../ui/ToolLayout';
 import { Button } from '../../ui/Button';
 import { CopyButton } from '../../ui/CopyButton';
@@ -45,6 +45,31 @@ const FamilyTree: React.FC = () => {
     () => collapseHierarchy(hierarchy.roots, collapsedIds),
     [hierarchy.roots, collapsedIds],
   );
+
+  /** The member just created from the diagram, so the editor can focus their empty name field. */
+  const [focusNewId, setFocusNewId] = useState<string | null>(null);
+
+  const createAndSelect = (input: Parameters<typeof addMember>[0]) => {
+    const id = addMember(input);
+    setSelectedId(id);
+    setFocusNewId(id);
+  };
+
+  const addChildFromDiagram = (memberId: string) => {
+    /*
+     * Children hang from whichever partner holds the slot, so a child added from the married-in
+     * side is attached to their partner rather than refused for standing on the wrong half.
+     *
+     * Which partner that is comes from the hierarchy, not from re-deriving it here: when neither
+     * has a parent it is decided by who was added first, and a guess based on "no parent and has a
+     * spouse" gets the slot holder themselves exactly backwards.
+     */
+    const holder = flattenHierarchy(hierarchy.roots).find(
+      (node) => node.spouse?.id === memberId,
+    );
+
+    createAndSelect({ name: '', parentId: holder ? holder.member.id : memberId });
+  };
 
   const handleImport = () => {
     if (importJson(importText)) setImportText('');
@@ -110,8 +135,9 @@ const FamilyTree: React.FC = () => {
         ) : (
           <div className="space-y-4">
             {/*
-              The diagram is the picture; the list underneath is where members are edited, moved
-              and removed. Selection is shared, so clicking a face finds the row that edits it.
+              Clicking someone in the diagram opens an editor on them, so the common edits never
+              leave the picture. The list underneath keeps what the diagram has no room for —
+              re-parenting, re-partnering, and a reading order that works without a mouse.
             */}
             <FamilyDiagram
               roots={visibleRoots}
@@ -121,6 +147,14 @@ const FamilyTree: React.FC = () => {
               cycleIds={hierarchy.cycleIds}
               collapsedIds={collapsedIds}
               onToggleCollapse={toggleCollapse}
+              onUpdate={updateMember}
+              onRemove={(id) => {
+                removeMember(id);
+                setSelectedId(null);
+              }}
+              onAddChild={addChildFromDiagram}
+              onAddPartner={(id) => createAndSelect({ name: '', spouseId: id })}
+              focusNewId={focusNewId}
             />
 
             <TreeView

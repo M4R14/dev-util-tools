@@ -138,16 +138,27 @@ export const createMember = (input: CreateMemberInput): FamilyMember => ({
   note: input.note?.trim() ?? '',
 });
 
-export const addMember = (members: FamilyMember[], input: CreateMemberInput): FamilyMember[] => {
-  const created = createMember(input);
-  const withMember = [...members, created];
+/**
+ * Appends a member that has already been built.
+ *
+ * Split from `addMember` so a caller can hold on to the id: adding from the diagram selects the new
+ * member and focuses their name field, which needs the id before the state update lands.
+ */
+export const appendMember = (
+  members: FamilyMember[],
+  member: FamilyMember,
+): FamilyMember[] => {
+  const withMember = [...members, member];
 
   // The link is symmetric, so the partner has to learn about it too — otherwise the pair renders
   // from one side only and unlinking from the other side silently does nothing.
-  return created.spouseId
-    ? updateMember(withMember, created.spouseId, { spouseId: created.id })
+  return member.spouseId
+    ? updateMember(withMember, member.spouseId, { spouseId: member.id })
     : withMember;
 };
+
+export const addMember = (members: FamilyMember[], input: CreateMemberInput): FamilyMember[] =>
+  appendMember(members, createMember(input));
 
 export const updateMember = (
   members: FamilyMember[],

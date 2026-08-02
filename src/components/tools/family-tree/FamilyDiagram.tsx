@@ -7,7 +7,8 @@ import { createCanvasMeasurer, truncateToWidth } from '../../../lib/tools/svgTex
 import { downloadPng, downloadSvg } from '../../../lib/platform/svgExport';
 import { prefersReducedMotion } from '../../../lib/platform/motion';
 import { cn } from '../../../lib/utils';
-import type { FamilyNode } from '../../../lib/tools/familyTree';
+import { MemberEditor } from './MemberEditor';
+import type { FamilyMember, FamilyNode } from '../../../lib/tools/familyTree';
 
 interface FamilyDiagramProps {
   roots: FamilyNode[];
@@ -17,7 +18,16 @@ interface FamilyDiagramProps {
   cycleIds: string[];
   collapsedIds: Set<string>;
   onToggleCollapse: (id: string) => void;
+  onUpdate: (id: string, patch: Partial<Omit<FamilyMember, 'id'>>) => void;
+  onRemove: (id: string) => void;
+  onAddChild: (parentId: string) => void;
+  onAddPartner: (memberId: string) => void;
+  /** Set when the selected member was just created, so the editor can focus their name. */
+  focusNewId: string | null;
 }
+
+/** Width of the editor card, needed to keep it from hanging off either edge of the diagram. */
+const EDITOR_WIDTH = 256;
 
 /**
  * Never shrinks past this. The first version allowed 55%, which turned out to be the worst of both
@@ -39,9 +49,15 @@ export const FamilyDiagram: React.FC<FamilyDiagramProps> = ({
   cycleIds,
   collapsedIds,
   onToggleCollapse,
+  onUpdate,
+  onRemove,
+  onAddChild,
+  onAddPartner,
+  focusNewId,
 }) => {
   const layout = useMemo(() => layoutFamilyTree2D(roots), [roots]);
   const { nodeWidth, nodeHeight, avatarSize } = layout.metrics;
+  const selectedBox = layout.boxes.find((box) => box.member.id === selectedId) ?? null;
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
@@ -101,10 +117,20 @@ export const FamilyDiagram: React.FC<FamilyDiagramProps> = ({
    * Selection is shared with the list, and on a wide tree the person picked there was routinely
    * off-screen in the diagram with nothing to say so.
    */
+  const scrolledToRef = useRef<string | null>(null);
+
   useEffect(() => {
     const container = scrollRef.current;
     const box = layout.boxes.find((entry) => entry.member.id === selectedId);
     if (!container || !box) return;
+
+    /*
+     * Only on a change of selection. The editor writes through on every keystroke, which rebuilds
+     * the layout, which would otherwise re-centre the diagram under the cursor on every letter
+     * typed into a name.
+     */
+    if (scrolledToRef.current === selectedId) return;
+    scrolledToRef.current = selectedId;
 
     container.scrollTo({
       left: box.x * scale - container.clientWidth / 2,
@@ -241,6 +267,14 @@ export const FamilyDiagram: React.FC<FamilyDiagramProps> = ({
         onPointerCancel={endDrag}
         className="w-full cursor-grab overflow-auto rounded-xl border border-border/60 bg-muted/10 p-2 active:cursor-grabbing"
       >
+        {/*
+          The editor is positioned inside this wrapper rather than over the scroll port, so it
+          travels with the diagram instead of hovering in place while the tree slides underneath.
+        */}
+        <div
+          className="relative"
+          style={{ width: layout.width * scale, height: layout.height * scale }}
+        >
         <svg
           ref={svgRef}
           viewBox={`0 0 ${layout.width} ${layout.height}`}
@@ -443,6 +477,32 @@ export const FamilyDiagram: React.FC<FamilyDiagramProps> = ({
             );
           })}
         </svg>
+
+        {selectedBox && (
+          <div
+            className="absolute z-10"
+            style={{
+              // Clamped so a member near either edge does not push the card out of the scroll area.
+              left: Math.min(
+                Math.max(selectedBox.x * scale - EDITOR_WIDTH / 2, 0),
+                Math.max(layout.width * scale - EDITOR_WIDTH, 0),
+              ),
+              top: (selectedBox.y + nodeHeight) * scale + 22,
+            }}
+          >
+            <MemberEditor
+              member={selectedBox.member}
+              isSpouse={selectedBox.isSpouse}
+              onUpdate={onUpdate}
+              onRemove={onRemove}
+              onAddChild={onAddChild}
+              onAddPartner={onAddPartner}
+              onClose={() => onSelect(null)}
+              autoFocusName={focusNewId === selectedBox.member.id}
+            />
+          </div>
+        )}
+        </div>
       </div>
     </div>
   );

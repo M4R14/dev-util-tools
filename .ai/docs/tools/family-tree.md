@@ -130,6 +130,30 @@ shows the number of hidden people because a bare chevron hides how much is behin
 control sits *below* the box: inside it, it landed exactly on the detail line and the two drew over
 each other.
 
+### Editing from the diagram
+
+Clicking a member opens `MemberEditor` anchored under them: name, relationship, gender, note, and
+buttons for child, partner and delete. It writes through on every keystroke, so there is no save
+button to forget. The list below still exists for what the card has no room for — re-parenting,
+re-partnering, and a reading order that works without a mouse.
+
+The card lives inside the scaled content wrapper, not over the scroll port, so it travels with the
+diagram rather than hovering in place while the tree slides underneath.
+
+**Adding selects and focuses the new member.** That is why `useFamilyTree.addMember` returns an id
+and `appendMember` is split out of `addMember` — the id has to be known before the state update
+lands. Click a person, press Child, type the name: no round trip to the form.
+
+**A child added from the married-in side attaches to their partner.** Children hang from whichever
+partner holds the slot, and refusing the click because someone stood on the wrong half of a couple
+would be pedantry. Which partner holds it is read off the hierarchy rather than re-derived: when
+neither has a parent it is settled by who was added first, and the obvious guess — "no parent and
+has a spouse" — identifies the slot holder exactly backwards.
+
+**Selection scrolls the diagram only when the selection changes.** Keying that effect on the layout
+alone re-centred the view on every letter typed into a name, because writing through rebuilds the
+layout.
+
 ### Export
 
 `svgExport.ts` copies the computed value of the painted properties onto each element before
