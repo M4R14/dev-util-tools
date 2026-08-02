@@ -8,12 +8,12 @@ The registry below groups tools by responsibility to make discovery easier for c
 
 - `json-formatter` — `/json-formatter`
   - Component: `src/components/tools/JSONFormatter.tsx`
-  - Hook: `src/hooks/useJsonFormatter.ts`
+  - Hook: `src/hooks/tools/useJsonFormatter.ts`
   - Doc: [.ai doc](./tools/json-formatter.md)
 
 - `xml-formatter` — `/xml-formatter`
   - Component: `src/components/tools/XMLFormatter.tsx`
-  - Hook: `src/hooks/useXmlFormatter.ts`
+  - Hook: `src/hooks/tools/useXmlFormatter.ts`
   - Lib: `xml-formatter` (package)
   - Doc: [.ai doc](./tools/xml-formatter.md)
 
@@ -21,54 +21,54 @@ The registry below groups tools by responsibility to make discovery easier for c
 
 - `base64-tool` — `/base64-tool`
   - Component: `src/components/tools/Base64Tool.tsx`
-  - Hook: `src/hooks/useBase64.ts`
+  - Hook: `src/hooks/tools/useBase64.ts`
   - Doc: [.ai doc](./tools/base64-tool.md)
 
 - `case-converter` — `/case-converter`
   - Component: `src/components/tools/CaseConverter.tsx`
-  - Hook: `src/hooks/useCaseConverter.ts`
+  - Hook: `src/hooks/tools/useCaseConverter.ts`
   - Lib: `src/lib/tools/caseUtils.ts`
   - Doc: [.ai doc](./tools/case-converter.md)
 
 - `timezone-converter` — `/timezone-converter`
   - Component: `src/components/tools/TimezoneConverter.tsx`
-  - Hook: `src/hooks/useTimezoneConverter.ts`
+  - Hook: `src/hooks/tools/useTimezoneConverter.ts`
   - Lib: `dayjs` + timezone plugin
   - Doc: [.ai doc](./tools/timezone-converter.md)
 
 - `thai-date-converter` — `/thai-date-converter`
   - Component: `src/components/tools/thai-date/index.tsx` (+ subcomponents)
-  - Hook: `src/hooks/useThaiDateConverter.ts`
+  - Hook: `src/hooks/tools/useThaiDateConverter.ts`
   - Lib: `src/lib/tools/thaiDate.ts` (dayjs)
   - Doc: [.ai doc](./tools/thai-date-converter.md)
 
 - `thai-id` — `/thai-id`
   - Component: `src/components/tools/ThaiIdTool.tsx`
-  - Hook: `src/hooks/useThaiId.ts`
+  - Hook: `src/hooks/tools/useThaiId.ts`
   - Lib: `src/lib/tools/thaiId.ts`
   - Doc: [.ai doc](./tools/thai-id.md)
 
 - `url-parser` — `/url-parser`
   - Component: `src/components/tools/UrlParser.tsx` (+ `url-parser/` subcomponents)
-  - Hook: `src/hooks/useUrlParser.ts`
+  - Hook: `src/hooks/tools/useUrlParser.ts`
   - Lib: `src/lib/tools/urlUtils.ts`
   - Doc: [.ai doc](./tools/url-parser.md)
 
 - `xml-to-json` — `/xml-to-json`
   - Component: `src/components/tools/XMLToJson.tsx`
-  - Hook: `src/hooks/useXmlToJson.ts`
+  - Hook: `src/hooks/tools/useXmlToJson.ts`
   - Lib: `src/lib/tools/xmlToJson.ts`
   - Doc: [.ai doc](./tools/xml-to-json.md)
 
 - `jwt-decoder` — `/jwt-decoder`
   - Component: `src/components/tools/JwtDecoder.tsx`
-  - Hook: `src/hooks/useJwtDecoder.ts`
+  - Hook: `src/hooks/tools/useJwtDecoder.ts`
   - Lib: `src/lib/tools/jwt.ts` (decode) + `src/lib/tools/jwtSign.ts` (verify)
   - Doc: [.ai doc](./tools/jwt-decoder.md)
 
 - `jwt-encoder` — `/jwt-encoder`
   - Component: `src/components/tools/JwtEncoder.tsx`
-  - Hook: `src/hooks/useJwtEncoder.ts`
+  - Hook: `src/hooks/tools/useJwtEncoder.ts`
   - Lib: `src/lib/tools/jwtSign.ts`
   - Doc: [.ai doc](./tools/jwt-encoder.md)
 
@@ -76,12 +76,12 @@ The registry below groups tools by responsibility to make discovery easier for c
 
 - `uuid-generator` — `/uuid-generator`
   - Component: `src/components/tools/UUIDGenerator.tsx`
-  - Hook: `src/hooks/useUUIDGenerator.ts`
+  - Hook: `src/hooks/tools/useUUIDGenerator.ts`
   - Doc: [.ai doc](./tools/uuid-generator.md)
 
 - `password-gen` — `/password-gen`
   - Component: `src/components/tools/PasswordGenerator.tsx`
-  - Hook: `src/hooks/usePasswordGenerator.ts`
+  - Hook: `src/hooks/tools/usePasswordGenerator.ts`
   - Lib: `src/lib/tools/passwordStrength.ts`
   - Doc: [.ai doc](./tools/password-gen.md)
 
@@ -89,7 +89,7 @@ The registry below groups tools by responsibility to make discovery easier for c
 
 - `diff-viewer` — `/diff-viewer`
   - Component: `src/components/tools/DiffViewer.tsx`
-  - Hook: `src/hooks/useDiffViewer.ts`
+  - Hook: `src/hooks/tools/useDiffViewer.ts`
   - Lib: `src/lib/tools/diffUtils.ts`
   - Doc: [.ai doc](./tools/diff-viewer.md)
 
@@ -121,7 +121,7 @@ The registry below groups tools by responsibility to make discovery easier for c
 
 - `ai-assistant` — `/ai-assistant`
   - Component: `src/components/tools/AIAssistant.tsx` (+ `ai/` subcomponents)
-  - Hook: `src/hooks/useAIChat.ts`
+  - Hook: `src/hooks/tools/useAIChat.ts`
   - Service: `src/services/gemini.ts`
   - Doc: [.ai doc](./tools/ai-assistant.md)
 

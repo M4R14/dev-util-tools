@@ -8,7 +8,7 @@ import { useUserPreferences } from '../context/UserPreferencesContext';
 import { Button } from './ui/Button';
 import { FavoriteButton } from './ui/FavoriteButton';
 import RelatedTools from './RelatedTools';
-import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
+import { useCopyToClipboard } from '../hooks/ui/useCopyToClipboard';
 
 interface ToolPageLayoutProps {
   tool: ToolMetadata;

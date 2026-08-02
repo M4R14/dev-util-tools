@@ -7,7 +7,7 @@ import { Input } from '../ui/Input';
 import { Card, CardContent } from '../ui/Card';
 import { CopyButton } from '../ui/CopyButton';
 import { CodeHighlight } from '../ui/CodeHighlight';
-import { useJwtDecoder } from '../../hooks/useJwtDecoder';
+import { useJwtDecoder } from '../../hooks/tools/useJwtDecoder';
 
 const formatDate = (date: Date | null) =>
   date ? date.toISOString().replace('T', ' ').slice(0, 19) + ' UTC' : '—';

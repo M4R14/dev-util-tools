@@ -6,7 +6,7 @@ import { Card, CardHeader, CardContent } from '../ui/Card';
 import { CopyButton } from '../ui/CopyButton';
 import { Button } from '../ui/Button';
 import { cn } from '../../lib/utils';
-import { useCaseConverter } from '../../hooks/useCaseConverter';
+import { useCaseConverter } from '../../hooks/tools/useCaseConverter';
 
 const EXAMPLE_INPUTS = [
   'hello world',

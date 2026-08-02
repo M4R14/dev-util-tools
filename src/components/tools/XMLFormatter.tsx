@@ -3,7 +3,7 @@ import { Trash2, AlignLeft, Minimize2, Pencil, Eye } from 'lucide-react';
 import { ToolLayout } from '../ui/ToolLayout';
 import { Button } from '../ui/Button';
 import { Textarea } from '../ui/Textarea';
-import { useXmlFormatter } from '../../hooks/useXmlFormatter';
+import { useXmlFormatter } from '../../hooks/tools/useXmlFormatter';
 import { CopyButton } from '../ui/CopyButton';
 import { CodeHighlight } from '../ui/CodeHighlight';
 import { toast } from 'sonner';

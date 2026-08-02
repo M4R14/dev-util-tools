@@ -13,7 +13,7 @@ Prettify, minify, and validate JSON data. Supports error highlighting and copy-t
 
 ## Files
 - `src/components/tools/JSONFormatter.tsx`
-- `src/hooks/useJsonFormatter.ts`
+- `src/hooks/tools/useJsonFormatter.ts`
 
 ## Usage Pattern
 - Input: Paste or type JSON in a textarea

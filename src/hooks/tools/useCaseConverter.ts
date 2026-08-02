@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { toSnakeCase, toKebabCase, toCamelCase, toPascalCase } from '../lib/tools/caseUtils';
-import { useShareableUrlState } from './useShareableUrlState';
+import { toSnakeCase, toKebabCase, toCamelCase, toPascalCase } from '../../lib/tools/caseUtils';
+import { useShareableUrlState } from '../useShareableUrlState';
 
 export const useCaseConverter = () => {
   const [searchParams] = useSearchParams();

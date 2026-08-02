@@ -38,7 +38,7 @@ This file captures cross-tool user experience features.
 
 Below the `md` breakpoint the sidebar is an overlay above the content, so it behaves as a modal:
 focus moves into it on open, `Tab`/`Shift+Tab` cycle inside it, and closing returns focus to the
-control that opened it. `src/hooks/useFocusTrap.ts` owns this.
+control that opened it. `src/hooks/ui/useFocusTrap.ts` owns this.
 
 At `md` and above the sidebar is a permanent landmark beside the content and the trap is **off** —
 trapping there would make the rest of the page unreachable. The breakpoint is read reactively

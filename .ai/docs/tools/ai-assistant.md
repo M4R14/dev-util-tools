@@ -23,7 +23,7 @@ Analyze code snippets and get intelligent suggestions via Gemini AI. Supports ch
 - `src/components/tools/ai/CodeBlock.tsx`
 - `src/components/tools/ai/MessageContent.tsx`
 - `src/components/tools/ai/SettingsModal.tsx`
-- `src/hooks/useAIChat.ts`
+- `src/hooks/tools/useAIChat.ts`
 - `src/hooks/useGeminiApiKey.ts`
 - `src/services/gemini.ts`
 

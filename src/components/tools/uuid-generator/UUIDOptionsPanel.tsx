@@ -5,7 +5,7 @@ import { Input } from '../../ui/Input';
 import { Slider } from '../../ui/Slider';
 import { Switch } from '../../ui/Switch';
 import { Button } from '../../ui/Button';
-import type { UUIDOptions } from '../../../hooks/useUUIDGenerator';
+import type { UUIDOptions } from '../../../hooks/tools/useUUIDGenerator';
 
 interface UUIDOptionsPanelProps {
   options: UUIDOptions;

@@ -5,7 +5,7 @@
 | **ToolID** | `jwt-decoder` |
 | **Route** | `/jwt-decoder` |
 | **Component** | `JwtDecoder.tsx` |
-| **Hook** | `src/hooks/useJwtDecoder.ts` |
+| **Hook** | `src/hooks/tools/useJwtDecoder.ts` |
 | **Lib** | `src/lib/tools/jwt.ts` |
 | **AI Bridge** | `jwt-decoder` — operations `decode`, `claims` |
 
@@ -25,7 +25,7 @@ Verification is HMAC-only (HS256/HS384/HS512) and needs a secure context; see
 - `src/lib/tools/jwt.ts` — `decodeJwt(token, now?)`; base64url + JSON parsing delegated to `jwt-decode`,
   validation and claim interpretation kept locally
 - `src/lib/tools/jwt.test.ts` — includes the canonical jwt.io sample token
-- `src/hooks/useJwtDecoder.ts` — input state + shareable `token` query param
+- `src/hooks/tools/useJwtDecoder.ts` — input state + shareable `token` query param
 - `src/components/tools/JwtDecoder.tsx`
 - `src/lib/ai-tool-bridge/handlers/jwtDecoder.ts`
 

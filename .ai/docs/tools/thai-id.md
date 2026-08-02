@@ -13,7 +13,7 @@ Decode Thai national ID digits by position, validate checksum (13th digit), and 
 
 ## Files
 - `src/components/tools/ThaiIdTool.tsx`
-- `src/hooks/useThaiId.ts`
+- `src/hooks/tools/useThaiId.ts`
 - `src/lib/tools/thaiId.ts`
 
 ## Usage Pattern

@@ -153,37 +153,49 @@ src/
 │       ├── ToolLayout.tsx      # Layout + Section + Panel compound component
 │       └── sonner.tsx          # Sonner toast provider (theme-aware)
 │
-├── hooks/                      # One hook per tool (business logic) + shared behaviour hooks
-│   ├── useCopyToClipboard.ts   # Clipboard write + toast + copied flag; the app's only copy path
-│   ├── useCopyToClipboard.test.ts # Unit tests for the message-resolution rules
-│   ├── useJwtDecoder.ts        # JWT input state + shareable token param
-│   ├── useJwtEncoder.ts        # Payload/secret state; secret deliberately not shareable
+├── hooks/                      # Grouped by reach: ui/ is portable, tools/ backs one route each,
+│                               # and anything at the root knows this app's domain.
+│   ├── tools/                  # One hook per tool page — state, validation, and URL sync
+│   │   ├── useJsonFormatter.ts
+│   │   ├── useXmlFormatter.ts
+│   │   ├── useXmlToJson.ts
+│   │   ├── useBase64.ts
+│   │   ├── useCaseConverter.ts
+│   │   ├── useDiffViewer.ts
+│   │   ├── useUrlParser.ts
+│   │   ├── useUUIDGenerator.ts
+│   │   ├── usePasswordGenerator.ts
+│   │   ├── useThaiId.ts
+│   │   ├── useThaiDateConverter.ts
+│   │   ├── useTimezoneConverter.ts
+│   │   ├── useJwtDecoder.ts    # JWT input state + shareable token param
+│   │   ├── useJwtEncoder.ts    # Payload/secret state; secret deliberately not shareable
+│   │   └── useAIChat.ts        # AI Assistant chat logic
+│   ├── ui/                     # Interaction behaviour with no knowledge of this app — liftable
+│   │   ├── useFocusTrap.ts     # Focus containment + restore for modal surfaces
+│   │   ├── focusTrapTargets.ts # What Tab can actually reach, and when to restore focus
+│   │   ├── focusTrapTargets.test.ts
+│   │   ├── useCopyToClipboard.ts # Clipboard write + toast + copied flag; the app's only copy path
+│   │   ├── useCopyToClipboard.test.ts # Unit tests for the message-resolution rules
+│   │   ├── useScrollLock.ts    # Freezes a named scroll container (body never scrolls in this shell)
+│   │   ├── useScrolledPast.ts  # Threshold flag driving the header title handover
+│   │   └── useMediaQuery.ts    # Reactive breakpoint + useIsDesktopViewport
 │   ├── useShareableUrlState.ts # Mirrors tool state into the query string (one write per tool)
-│   ├── useAIChat.ts            # AI Assistant chat logic
-│   ├── useBase64.ts
-│   ├── useCaseConverter.ts
-│   ├── useDiffViewer.ts
-│   ├── useJsonFormatter.ts
-│   ├── usePasswordGenerator.ts
-│   ├── useThaiId.ts
-│   ├── useThaiDateConverter.ts
-│   ├── useTimezoneConverter.ts
-│   ├── useToolSearch.ts        # MiniSearch-powered fuzzy search
-│   ├── useUrlParser.ts
-│   ├── useUUIDGenerator.ts
+│   ├── useToolSearch.ts        # Tool search over the shared index in lib/search
+│   ├── useBlogFilters.ts       # Blog category, language and search state
+│   ├── useGeminiApiKey.ts      # Sole owner of the stored Gemini key (obfuscated, not encrypted)
+│   ├── useSidebarCollapsed.ts  # Desktop-only sidebar hide, persisted
 │   ├── usePwaSettings.ts       # Shared PWA/offline hook entry (exports hook + format helpers)
-│   ├── pwa-settings/           # PWA helpers shared by usePwaSettings, the command palette, and main.tsx
-│   │   ├── cache.ts
-│   │   ├── constants.ts        # Single source for the cache prefix and toast/storage keys
-│   │   ├── environment.ts
-│   │   ├── events.ts
-│   │   ├── formatters.ts
-│   │   ├── operations.ts       # checkForServiceWorkerUpdate / clearOfflineCache incl. their toasts
-│   │   ├── serviceWorker.ts
-│   │   ├── types.ts
-│   │   └── index.ts            # Barrel exports for pwa-settings module
-│   ├── useXmlFormatter.ts
-│   └── useXmlToJson.ts
+│   └── pwa-settings/           # PWA helpers shared by usePwaSettings, the command palette, and main.tsx
+│       ├── cache.ts
+│       ├── constants.ts        # Single source for the cache prefix and toast/storage keys
+│       ├── environment.ts
+│       ├── events.ts
+│       ├── formatters.ts
+│       ├── operations.ts       # checkForServiceWorkerUpdate / clearOfflineCache incl. their toasts
+│       ├── serviceWorker.ts
+│       ├── types.ts
+│       └── index.ts            # Barrel exports for pwa-settings module
 │
 ├── context/
 │   ├── ThemeContext.tsx         # { theme, toggleTheme } — persists to localStorage

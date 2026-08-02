@@ -9,8 +9,8 @@ import {
   SidebarSelectionAnnouncer,
   useSidebarNavigation,
 } from './sidebar/index';
-import { useFocusTrap } from '../hooks/useFocusTrap';
-import { useIsDesktopViewport } from '../hooks/useMediaQuery';
+import { useFocusTrap } from '../hooks/ui/useFocusTrap';
+import { useIsDesktopViewport } from '../hooks/ui/useMediaQuery';
 
 interface SidebarProps {
   isOpen: boolean;

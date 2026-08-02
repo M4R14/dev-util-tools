@@ -13,7 +13,7 @@ Convert dates and times across different global timezones with instant result up
 
 ## Files
 - `src/components/tools/TimezoneConverter.tsx`
-- `src/hooks/useTimezoneConverter.ts`
+- `src/hooks/tools/useTimezoneConverter.ts`
 
 ## Usage Pattern
 - Input: Date/time picker, source timezone, target timezone

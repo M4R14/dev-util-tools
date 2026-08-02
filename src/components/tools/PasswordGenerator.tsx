@@ -1,7 +1,7 @@
 import React from 'react';
 import { toast } from 'sonner';
 import { ToolLayout } from '../ui/ToolLayout';
-import { usePasswordGenerator } from '../../hooks/usePasswordGenerator';
+import { usePasswordGenerator } from '../../hooks/tools/usePasswordGenerator';
 import { getPasswordStrength } from '../../lib/tools/passwordStrength';
 import {
   buildCharsetOptions,

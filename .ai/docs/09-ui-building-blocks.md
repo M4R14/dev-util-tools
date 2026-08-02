@@ -217,7 +217,7 @@ import { CopyButton } from '../ui/CopyButton';
 > it looks like a "copied" callback but only fires when the user copies a text selection inside
 > the button. Use `successMessage` for custom feedback.
 
-Copy behaviour itself lives in `src/hooks/useCopyToClipboard.ts` — reach for that hook directly
+Copy behaviour itself lives in `src/hooks/ui/useCopyToClipboard.ts` — reach for that hook directly
 when the trigger is not a plain icon button (code blocks, share links, copy-all actions).
 
 ```tsx

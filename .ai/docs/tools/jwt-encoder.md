@@ -5,7 +5,7 @@
 | **ToolID** | `jwt-encoder` |
 | **Route** | `/jwt-encoder` |
 | **Component** | `JwtEncoder.tsx` |
-| **Hook** | `src/hooks/useJwtEncoder.ts` |
+| **Hook** | `src/hooks/tools/useJwtEncoder.ts` |
 | **Lib** | `src/lib/tools/jwtSign.ts` (uses `jose`) |
 | **AI Bridge** | Not exposed — see below |
 
@@ -17,7 +17,7 @@ Web Crypto.
 ## Files
 - `src/lib/tools/jwtSign.ts` — `encodeJwt`, `verifyJwt`, `JWT_SIGNING_ALGORITHMS`
 - `src/lib/tools/jwtSign.test.ts`
-- `src/hooks/useJwtEncoder.ts`
+- `src/hooks/tools/useJwtEncoder.ts`
 - `src/components/tools/JwtEncoder.tsx`
 
 ## Security Notes

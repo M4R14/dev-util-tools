@@ -5,7 +5,7 @@ import { Button } from '../../ui/Button';
 import { CopyButton } from '../../ui/CopyButton';
 import { Input } from '../../ui/Input';
 import { Textarea } from '../../ui/Textarea';
-import type { UrlParam } from '../../../hooks/useUrlParser';
+import type { UrlParam } from '../../../hooks/tools/useUrlParser';
 
 interface UrlQueryParamsProps {
   params: UrlParam[];

@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { analyzeThaiId, formatThaiId, generateThaiId, ThaiIdAnalysis } from '../lib/tools/thaiId';
-import { useShareableUrlState } from './useShareableUrlState';
+import { analyzeThaiId, formatThaiId, generateThaiId, ThaiIdAnalysis } from '../../lib/tools/thaiId';
+import { useShareableUrlState } from '../useShareableUrlState';
 
 export const useThaiId = () => {
   const [searchParams] = useSearchParams();

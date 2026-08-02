@@ -6,7 +6,7 @@ import { Input } from '../ui/Input';
 import { Textarea } from '../ui/Textarea';
 import { Card, CardContent } from '../ui/Card';
 import { CopyButton } from '../ui/CopyButton';
-import { useJwtEncoder } from '../../hooks/useJwtEncoder';
+import { useJwtEncoder } from '../../hooks/tools/useJwtEncoder';
 import { JWT_SIGNING_ALGORITHMS } from '../../lib/tools/jwtSign';
 
 const JwtEncoder: React.FC = () => {

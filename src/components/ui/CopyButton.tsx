@@ -1,7 +1,7 @@
 import React from 'react';
 import { Copy, Check } from 'lucide-react';
 import { Button, ButtonProps } from './Button';
-import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
+import { useCopyToClipboard } from '../../hooks/ui/useCopyToClipboard';
 import { cn } from '../../lib/utils';
 
 /**

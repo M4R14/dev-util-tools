@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { askGemini } from '../services/gemini';
+import { askGemini } from '../../services/gemini';
 import { toast } from 'sonner';
-import { useGeminiApiKey } from './useGeminiApiKey';
+import { useGeminiApiKey } from '../useGeminiApiKey';
 
 const API_KEY_MISSING_ERROR = 'Please configure your Gemini API Key in settings.';
 const DEFAULT_SERVICE_ERROR = 'Failed to communicate with AI service';

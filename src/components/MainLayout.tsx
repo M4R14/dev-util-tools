@@ -8,8 +8,8 @@ import { useUserPreferences } from '../context/UserPreferencesContext';
 import { useSearch } from '../context/SearchContext';
 import { Toaster } from './ui/sonner';
 import { resolvePageMeta } from '../lib/platform/pageMeta';
-import { useScrollLock } from '../hooks/useScrollLock';
-import { useScrolledPast } from '../hooks/useScrolledPast';
+import { useScrollLock } from '../hooks/ui/useScrollLock';
+import { useScrolledPast } from '../hooks/ui/useScrolledPast';
 import { useSidebarCollapsed } from '../hooks/useSidebarCollapsed';
 import { SendToToolProvider } from '../context/SendToToolContext';
 import {

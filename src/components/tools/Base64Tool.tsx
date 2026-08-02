@@ -1,7 +1,7 @@
 import React from 'react';
 import { ToolLayout } from '../ui/ToolLayout';
 import { Textarea } from '../ui/Textarea';
-import { useBase64 } from '../../hooks/useBase64';
+import { useBase64 } from '../../hooks/tools/useBase64';
 import { CopyButton } from '../ui/CopyButton';
 import { SendToToolButton } from '../ui/SendToToolButton';
 

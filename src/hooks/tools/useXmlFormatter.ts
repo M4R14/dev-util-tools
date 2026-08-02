@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { DEFAULT_XML_INDENT, formatXml, minifyXml } from '../lib/tools/xmlUtils';
-import { useShareableUrlState } from './useShareableUrlState';
+import { DEFAULT_XML_INDENT, formatXml, minifyXml } from '../../lib/tools/xmlUtils';
+import { useShareableUrlState } from '../useShareableUrlState';
 
 export const useXmlFormatter = () => {
   const [searchParams] = useSearchParams();

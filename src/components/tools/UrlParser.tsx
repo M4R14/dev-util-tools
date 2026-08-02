@@ -2,8 +2,8 @@ import React from 'react';
 import { Link2 } from 'lucide-react';
 import { ToolLayout } from '../ui/ToolLayout';
 import { CopyButton } from '../ui/CopyButton';
-import { useUrlParser } from '../../hooks/useUrlParser';
-import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
+import { useUrlParser } from '../../hooks/tools/useUrlParser';
+import { useCopyToClipboard } from '../../hooks/ui/useCopyToClipboard';
 import { toast } from 'sonner';
 import { UrlComponents, UrlInputSection, UrlQueryParams } from './url-parser';
 

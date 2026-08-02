@@ -2,7 +2,7 @@ import React from 'react';
 import { Copy, Check } from 'lucide-react';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
-import { useCopyToClipboard } from '../../../hooks/useCopyToClipboard';
+import { useCopyToClipboard } from '../../../hooks/ui/useCopyToClipboard';
 
 interface CodeBlockProps {
   language: string;

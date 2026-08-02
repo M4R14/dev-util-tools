@@ -1,10 +1,10 @@
 import { useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import { readBooleanParam, readNumberParam, serializeBooleanParam } from '../lib/platform/shareableUrlState';
-import { randomUUID } from '../lib/platform/randomUtils';
-import { useShareableUrlState } from './useShareableUrlState';
-import { useCopyToClipboard } from './useCopyToClipboard';
+import { readBooleanParam, readNumberParam, serializeBooleanParam } from '../../lib/platform/shareableUrlState';
+import { randomUUID } from '../../lib/platform/randomUtils';
+import { useShareableUrlState } from '../useShareableUrlState';
+import { useCopyToClipboard } from '../ui/useCopyToClipboard';
 
 export interface UUIDOptions {
   version: 'v4';

@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { convertXmlToJson } from '../lib/tools/xmlToJson';
-import { readBooleanParam, serializeBooleanParam } from '../lib/platform/shareableUrlState';
-import { useShareableUrlState } from './useShareableUrlState';
+import { convertXmlToJson } from '../../lib/tools/xmlToJson';
+import { readBooleanParam, serializeBooleanParam } from '../../lib/platform/shareableUrlState';
+import { useShareableUrlState } from '../useShareableUrlState';
 
 export const useXmlToJson = () => {
   const [searchParams] = useSearchParams();

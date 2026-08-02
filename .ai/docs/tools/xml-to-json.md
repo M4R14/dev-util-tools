@@ -13,7 +13,7 @@ Convert XML documents into structured JSON with optional attribute preservation 
 
 ## Files
 - `src/components/tools/XMLToJson.tsx`
-- `src/hooks/useXmlToJson.ts`
+- `src/hooks/tools/useXmlToJson.ts`
 - `src/lib/tools/xmlToJson.ts`
 
 ## Usage Pattern

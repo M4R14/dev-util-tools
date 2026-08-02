@@ -3,7 +3,7 @@ import { Search, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useToolSearch } from '../hooks/useToolSearch';
-import { useFocusTrap } from '../hooks/useFocusTrap';
+import { useFocusTrap } from '../hooks/ui/useFocusTrap';
 import { scrollBehavior } from '../lib/platform/motion';
 import { useSendToTool } from '../context/SendToToolContext';
 import {

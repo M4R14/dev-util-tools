@@ -70,7 +70,7 @@ interactive and answered nothing.
   them anyway — otherwise the trap computes its wrap point on an element `Tab` never reaches.
 - **The palette unmounts on close.** React detaches the container and the browser drops focus onto
   `<body>`, so a restore guarded only by "is focus still inside the container" never fires. Both
-  rules live in `src/hooks/focusTrapTargets.ts` with tests.
+  rules live in `src/hooks/ui/focusTrapTargets.ts` with tests.
 
 ## UX & Accessibility Notes
 
@@ -92,8 +92,8 @@ interactive and answered nothing.
 - Action wiring (settings/update/cache): `src/components/main-layout/useCommandPaletteActions.ts`
 - Global hotkey handler: `src/components/main-layout/useCommandPaletteHotkey.ts`
 - Tool metadata search index: `src/hooks/useToolSearch.ts` + `src/data/tools.tsx`
-- Focus trap: `src/hooks/useFocusTrap.ts` + `src/hooks/focusTrapTargets.ts`
-- Scroll lock: `src/hooks/useScrollLock.ts`
+- Focus trap: `src/hooks/ui/useFocusTrap.ts` + `src/hooks/ui/focusTrapTargets.ts`
+- Scroll lock: `src/hooks/ui/useScrollLock.ts`
 - Motion preference: `src/lib/platform/motion.ts`
 
 ## Related

@@ -1,8 +1,8 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { decodeJwt, type DecodedJwt } from '../lib/tools/jwt';
-import { verifyJwt, type VerifyJwtResult } from '../lib/tools/jwtSign';
-import { useShareableUrlState } from './useShareableUrlState';
+import { decodeJwt, type DecodedJwt } from '../../lib/tools/jwt';
+import { verifyJwt, type VerifyJwtResult } from '../../lib/tools/jwtSign';
+import { useShareableUrlState } from '../useShareableUrlState';
 
 export const useJwtDecoder = () => {
   const [searchParams] = useSearchParams();

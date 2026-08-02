@@ -1,6 +1,6 @@
 import React from 'react';
 import { AlertTriangle, Loader2, Sparkles } from 'lucide-react';
-import type { Message } from '../../../hooks/useAIChat';
+import type { Message } from '../../../hooks/tools/useAIChat';
 import EmptyState from './EmptyState';
 import ChatMessage from './ChatMessage';
 

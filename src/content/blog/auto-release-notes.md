@@ -7,6 +7,7 @@ summary: Auto-generated from the latest 12 commits and PR references.
 ---
 Generated automatically from git history.
 
+- Aug 2, 2026 — [`a1d036c`](https://github.com/M4R14/dev-util-tools/commit/a1d036c12d314cc95db6e1dd0774647cc0fdd984): refactor: group src/lib by what each module is for
 - Aug 2, 2026 — [`d85f66c`](https://github.com/M4R14/dev-util-tools/commit/d85f66c47ebd51876e3cfa9df38f102256fef01d): feat: rework the app shell around focus, duplication and piping output
 - Aug 2, 2026 — [`0763b5d`](https://github.com/M4R14/dev-util-tools/commit/0763b5d86d1ddb24b04889483d056df262ff1033): refactor: route every search through one shared index
 - Aug 2, 2026 — [`54d7cc6`](https://github.com/M4R14/dev-util-tools/commit/54d7cc6e7e5c83db0b76af85d2637ce68224a462): feat: make Settings a real settings page and stop trusting localStorage
@@ -18,4 +19,3 @@ Generated automatically from git history.
 - Feb 21, 2026 — [`ad745f3`](https://github.com/M4R14/dev-util-tools/commit/ad745f31c995b8e94ecc1cc01fcd92891274e7aa): feat: implement AI tool bridge with error handling and various tool runners
 - Feb 21, 2026 — [`a742004`](https://github.com/M4R14/dev-util-tools/commit/a742004d1eca9de891ba20856f26798285853982): feat: Enhance AI Tool Bridge with batch processing and snapshot capabilities
 - Feb 21, 2026 — [`1c10e2e`](https://github.com/M4R14/dev-util-tools/commit/1c10e2e65ab3d149e0e6204a040ab8a58141e30a): feat: enhance AI tool catalog with examples and usage tips for better usability
-- Feb 21, 2026 — [`8b27753`](https://github.com/M4R14/dev-util-tools/commit/8b277536bbbef26aac1bfe4ce45b244ce9b631c9): feat: enhance command palette and sidebar navigation with improved keyboard handling and reliability guarantees

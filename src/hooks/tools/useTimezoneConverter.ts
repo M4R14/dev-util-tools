@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { useSearchParams } from 'react-router-dom';
-import { useShareableUrlState } from './useShareableUrlState';
+import { useShareableUrlState } from '../useShareableUrlState';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
