@@ -5,7 +5,12 @@ export type AIToolId =
   | 'case-converter'
   | 'url-parser'
   | 'diff-viewer'
-  | 'thai-date-converter';
+  | 'thai-date-converter'
+  | 'thai-id'
+  | 'jwt-decoder'
+  | 'xml-to-json'
+  | 'uuid-generator'
+  | 'password-gen';
 
 export interface AIToolRequest {
   tool: AIToolId;
@@ -55,9 +60,20 @@ export interface AIToolResponse {
   errorDetails?: ToolErrorDetails;
 }
 
+/**
+ * How much an agent should trust doing this job in its own head instead of calling the tool.
+ *
+ * - `exact` — the answer depends on an algorithm a language model reproduces unreliably
+ *   (checksums, unicode-safe base64, diffing, base64url). Call the tool.
+ * - `llm-can-approximate` — a capable model usually gets this right unaided; the tool is a
+ *   convenience and a consistency guarantee, not a correctness requirement.
+ */
+export type AIToolReliability = 'exact' | 'llm-can-approximate';
+
 export interface AIToolCatalogItem {
   id: AIToolId;
   description: string;
+  reliability: AIToolReliability;
   operations: string[];
   examples: Array<{
     operation: string;
@@ -67,10 +83,12 @@ export interface AIToolCatalogItem {
   usageTips: string[];
 }
 
-export interface AIToolSnapshot {
-  capturedAt: string;
-  storageNamespace: string;
-  state: Record<string, Record<string, unknown>>;
+/** A batch response carries the index of the request that produced it. */
+export type AIToolBatchResponse = AIToolResponse & { index: number };
+
+export interface AIToolBatchOptions {
+  /** Stop at the first failure instead of running every request. */
+  stopOnError?: boolean;
 }
 
 export interface ToolExecutionContext {

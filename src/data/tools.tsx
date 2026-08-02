@@ -17,6 +17,8 @@ import {
   FileText,
   RotateCw,
   Car,
+  Signature,
+  KeyRound,
 } from 'lucide-react';
 import { ToolID, ToolMetadata } from '../types';
 
@@ -197,6 +199,32 @@ export const TOOLS: ToolMetadata[] = [
       ToolID.JSON_FORMATTER,
       ToolID.CASE_CONVERTER,
       ToolID.DIFF_VIEWER,
+    ],
+  },
+  {
+    id: ToolID.JWT_DECODER,
+    name: 'JWT Decoder',
+    description: 'Decode JWT claims and verify HMAC signatures against a shared secret.',
+    icon: KeyRound,
+    tags: ['jwt', 'token', 'decode', 'verify', 'auth', 'bearer', 'claims'],
+    related: [
+      ToolID.JWT_ENCODER,
+      ToolID.BASE64_TOOL,
+      ToolID.JSON_FORMATTER,
+      ToolID.TIMEZONE_CONVERTER,
+    ],
+  },
+  {
+    id: ToolID.JWT_ENCODER,
+    name: 'JWT Encoder',
+    description: 'Build a JWT from claims — unsigned, or signed with HS256/HS384/HS512.',
+    icon: Signature,
+    tags: ['jwt', 'token', 'encode', 'sign', 'hs256', 'auth'],
+    related: [
+      ToolID.JWT_DECODER,
+      ToolID.JSON_FORMATTER,
+      ToolID.PASSWORD_GEN,
+      ToolID.TIMEZONE_CONVERTER,
     ],
   },
 ];

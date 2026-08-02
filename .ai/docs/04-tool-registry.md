@@ -60,6 +60,18 @@ The registry below groups tools by responsibility to make discovery easier for c
   - Lib: `src/lib/xmlToJson.ts`
   - Doc: [.ai doc](./tools/xml-to-json.md)
 
+- `jwt-decoder` — `/jwt-decoder`
+  - Component: `src/components/tools/JwtDecoder.tsx`
+  - Hook: `src/hooks/useJwtDecoder.ts`
+  - Lib: `src/lib/jwt.ts` (decode) + `src/lib/jwtSign.ts` (verify)
+  - Doc: [.ai doc](./tools/jwt-decoder.md)
+
+- `jwt-encoder` — `/jwt-encoder`
+  - Component: `src/components/tools/JwtEncoder.tsx`
+  - Hook: `src/hooks/useJwtEncoder.ts`
+  - Lib: `src/lib/jwtSign.ts`
+  - Doc: [.ai doc](./tools/jwt-encoder.md)
+
 ## Generators
 
 - `uuid-generator` — `/uuid-generator`
@@ -118,7 +130,11 @@ The registry below groups tools by responsibility to make discovery easier for c
   - Runner lib: `src/lib/aiToolBridge.ts`
   - Extra endpoints: `/ai-bridge/catalog`, `/ai-bridge/spec`
   - Static JSON endpoints: `/ai-bridge/catalog.json`, `/ai-bridge/spec.json`
-  - Purpose: machine-readable, deterministic tool execution for browser-controlled AI agents
+  - Purpose: machine-readable tool execution for browser-controlled AI agents
+  - Covers 12 of the 19 tools. The remaining 7 are external link-outs or the AI assistant, which
+    have no logic to run.
+  - Response *shape* is stable, but two tools are generators: `uuid-generator` and `password-gen`
+    return fresh random values on every call by design.
   - Doc: [.ai doc](./tools/ai-bridge.md)
 
 ---

@@ -1,7 +1,11 @@
 import path from 'path';
 import { defineConfig, loadEnv, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
-import { AI_BRIDGE_SCHEMA, AI_TOOL_CATALOG, AI_TOOL_OPERATIONS } from './src/lib/aiToolBridge';
+// Imported from the catalog/schema modules rather than the `aiToolBridge` facade on purpose:
+// the facade also re-exports `runAITool`, which drags every tool runner — and their CommonJS
+// dependencies — into Node's ESM loader while it is merely reading this config file.
+import { AI_TOOL_CATALOG, AI_TOOL_OPERATIONS } from './src/lib/ai-tool-bridge/catalog';
+import { AI_BRIDGE_SCHEMA } from './src/lib/ai-tool-bridge/schema';
 
 /// <reference types="vitest" />
 

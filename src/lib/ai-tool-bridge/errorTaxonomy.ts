@@ -6,10 +6,7 @@ export interface ToolErrorTaxonomyEntry {
   type: string;
 }
 
-export const ERROR_TAXONOMY: Record<
-  ToolErrorCode,
-  ToolErrorTaxonomyEntry
-> = {
+export const ERROR_TAXONOMY: Record<ToolErrorCode, ToolErrorTaxonomyEntry> = {
   UNSUPPORTED_TOOL: {
     status: 400,
     title: 'Unsupported Tool',

@@ -11,8 +11,8 @@ const BridgeHeroCard: React.FC = () => {
           AI Agent Bridge
         </CardTitle>
         <CardDescription>
-          Bridge สำหรับ AI/browser agents โดยรองรับ query execution, capability discovery และ
-          schema validation ในหน้าเดียว
+          Bridge สำหรับ AI/browser agents โดยรองรับ query execution, capability discovery และ schema
+          validation ในหน้าเดียว
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-0 text-xs text-muted-foreground">

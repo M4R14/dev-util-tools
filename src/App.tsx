@@ -1,11 +1,12 @@
-import React, { Suspense, lazy, ComponentType } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import React, { Suspense, lazy, useEffect, ComponentType } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ToolID } from './types';
 import MainLayout from './components/MainLayout';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ThemeProvider } from './context/ThemeContext';
 import { UserPreferencesProvider } from './context/UserPreferencesContext';
 import { SearchProvider } from './context/SearchContext';
+import { installDevPulseAI } from './lib/aiBridgeGlobal';
 
 // Lazy-loaded tool pages — each becomes its own chunk
 const Dashboard = lazy(() => import('./components/Dashboard'));
@@ -34,6 +35,8 @@ const TOOL_COMPONENTS: Record<ToolID, React.LazyExoticComponent<ComponentType>> 
   [ToolID.REGEX_TESTER]: lazy(() => import('./components/tools/RegexTester')),
   [ToolID.XML_FORMATTER]: lazy(() => import('./components/tools/XMLFormatter')),
   [ToolID.XML_TO_JSON]: lazy(() => import('./components/tools/XMLToJson')),
+  [ToolID.JWT_DECODER]: lazy(() => import('./components/tools/JwtDecoder')),
+  [ToolID.JWT_ENCODER]: lazy(() => import('./components/tools/JwtEncoder')),
 };
 
 // Lightweight loading fallback
@@ -46,71 +49,107 @@ const PageLoader = () => (
   </div>
 );
 
+/**
+ * `/ai-bridge?mode=result-only` is meant to be read by a machine, so it renders without the
+ * sidebar, header and footer. Otherwise an agent that reads the page text wades through every
+ * tool name in the nav to find a one-line JSON response.
+ */
+const useIsBareBridgeRoute = () => {
+  const location = useLocation();
+
+  return (
+    location.pathname === '/ai-bridge' &&
+    new URLSearchParams(location.search).get('mode') === 'result-only'
+  );
+};
+
+const AppRoutes: React.FC = () => {
+  const isBareBridge = useIsBareBridgeRoute();
+
+  if (isBareBridge) {
+    return (
+      <Suspense fallback={<PageLoader />}>
+        <ErrorBoundary>
+          <AIAgentBridge />
+        </ErrorBoundary>
+      </Suspense>
+    );
+  }
+
+  return (
+    <MainLayout>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          {Object.entries(TOOL_COMPONENTS).map(([toolId, LazyComponent]) => (
+            <Route
+              key={toolId}
+              path={`/${toolId}`}
+              element={
+                <ErrorBoundary>
+                  <LazyComponent />
+                </ErrorBoundary>
+              }
+            />
+          ))}
+
+          <Route path="/" element={<Dashboard />} />
+          <Route
+            path="/blog"
+            element={
+              <ErrorBoundary>
+                <Blog />
+              </ErrorBoundary>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ErrorBoundary>
+                <Settings />
+              </ErrorBoundary>
+            }
+          />
+          <Route
+            path="/ai-bridge"
+            element={
+              <ErrorBoundary>
+                <AIAgentBridge />
+              </ErrorBoundary>
+            }
+          />
+          <Route
+            path="/ai-bridge/catalog"
+            element={
+              <ErrorBoundary>
+                <AIAgentBridge />
+              </ErrorBoundary>
+            }
+          />
+          <Route
+            path="/ai-bridge/spec"
+            element={
+              <ErrorBoundary>
+                <AIAgentBridge />
+              </ErrorBoundary>
+            }
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
+    </MainLayout>
+  );
+};
+
 const App: React.FC = () => {
+  // Installed here rather than inside the /ai-bridge route so agents keep the API while they
+  // navigate. See src/lib/aiBridgeGlobal.ts.
+  useEffect(() => installDevPulseAI(), []);
+
   return (
     <ThemeProvider>
       <UserPreferencesProvider>
         <SearchProvider>
-          <MainLayout>
-            <Suspense fallback={<PageLoader />}>
-              <Routes>
-                {Object.entries(TOOL_COMPONENTS).map(([toolId, LazyComponent]) => (
-                  <Route
-                    key={toolId}
-                    path={`/${toolId}`}
-                    element={
-                      <ErrorBoundary>
-                        <LazyComponent />
-                      </ErrorBoundary>
-                    }
-                  />
-                ))}
-
-                <Route path="/" element={<Dashboard />} />
-                <Route
-                  path="/blog"
-                  element={
-                    <ErrorBoundary>
-                      <Blog />
-                    </ErrorBoundary>
-                  }
-                />
-                <Route
-                  path="/settings"
-                  element={
-                    <ErrorBoundary>
-                      <Settings />
-                    </ErrorBoundary>
-                  }
-                />
-                <Route
-                  path="/ai-bridge"
-                  element={
-                    <ErrorBoundary>
-                      <AIAgentBridge />
-                    </ErrorBoundary>
-                  }
-                />
-                <Route
-                  path="/ai-bridge/catalog"
-                  element={
-                    <ErrorBoundary>
-                      <AIAgentBridge />
-                    </ErrorBoundary>
-                  }
-                />
-                <Route
-                  path="/ai-bridge/spec"
-                  element={
-                    <ErrorBoundary>
-                      <AIAgentBridge />
-                    </ErrorBoundary>
-                  }
-                />
-                <Route path="*" element={<Navigate to="/" replace />} />
-              </Routes>
-            </Suspense>
-          </MainLayout>
+          <AppRoutes />
         </SearchProvider>
       </UserPreferencesProvider>
     </ThemeProvider>

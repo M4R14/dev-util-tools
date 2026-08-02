@@ -59,7 +59,7 @@ src/
 │   │    ├── LiveResponseCard.tsx
 │   │    ├── SnippetCard.tsx    # Code snippet card (moved from ui/: only the bridge uses it)
 │   │    └── index.ts           # Barrel exports for ai-bridge module
-│   ├── tools/                  # One component per tool (19 tools)
+│   ├── tools/                  # One component per tool (21 tools)
 │   │   ├── JSONFormatter.tsx
 │   │   ├── Base64Tool.tsx
 │   │   ├── CaseConverter.tsx
@@ -126,7 +126,9 @@ src/
 │   │   │   └── index.ts        # Barrel exports for diff-viewer module
 │   │   ├── RegexTester.tsx
 │   │   ├── XMLFormatter.tsx
-│   │   └── XMLToJson.tsx
+│   │   ├── XMLToJson.tsx
+│   │   ├── JwtDecoder.tsx
+│   │   └── JwtEncoder.tsx
 │   ├── sidebar/                # Sidebar sub-components
 │   │   ├── SidebarBrand.tsx    # Logo and app name
 │   │   ├── SidebarEmptyState.tsx # Empty result message for sidebar search
@@ -154,6 +156,8 @@ src/
 ├── hooks/                      # One hook per tool (business logic) + shared behaviour hooks
 │   ├── useCopyToClipboard.ts   # Clipboard write + toast + copied flag; the app's only copy path
 │   ├── useCopyToClipboard.test.ts # Unit tests for the message-resolution rules
+│   ├── useJwtDecoder.ts        # JWT input state + shareable token param
+│   ├── useJwtEncoder.ts        # Payload/secret state; secret deliberately not shareable
 │   ├── useShareableUrlState.ts # Mirrors tool state into the query string (one write per tool)
 │   ├── useAIChat.ts            # AI Assistant chat logic
 │   ├── useBase64.ts
@@ -187,7 +191,7 @@ src/
 │   └── UserPreferencesContext.tsx # { favorites, recents, toggleFavorite, addRecent }
 │
 ├── data/
-│   ├── tools.tsx               # TOOLS array (19 entries) + getToolById()
+│   ├── tools.tsx               # TOOLS array (21 entries) + getToolById()
 │   ├── externalTools.ts        # Hero + section content for every external-tool landing page
 │   ├── blogPosts.ts            # Markdown loader/parser for blog posts (frontmatter + markdown-to-HTML)
 │   └── aiBridge.ts             # AI Bridge endpoint specs + query templates/snippets
@@ -226,7 +230,11 @@ src/
 │   ├── base64Utils.ts          # Unicode-safe encode/decode (shared with the AI bridge)
 │   ├── base64Utils.test.ts     # Unit tests incl. Thai text and emoji round-trips
 │   ├── xmlToJson.ts            # convertXmlToJson (uses `simple-xml-to-json` + DOMParser)
+│   ├── jwt.ts                  # decodeJwt — jwt-decode for parsing, local validation; never verifies
 │   ├── xmlToJson.test.ts       # Unit tests; DOMParser is stubbed because jsdom cannot boot here
+│   ├── jwt.test.ts             # Unit tests incl. the canonical jwt.io token
+│   ├── jwtSign.ts              # encodeJwt/verifyJwt via jose (HS256/384/512 + unsigned)
+│   ├── jwtSign.test.ts         # Unit tests incl. tampered payload and alg:none rejection
 │   ├── pageMeta.ts             # resolvePageMeta — pathname to title/description/documentTitle
 │   ├── pageMeta.test.ts        # Table tests across tool, blog, settings, ai-bridge, dashboard routes
 │   ├── relatedTools.ts         # getRelatedTools — curated `related` IDs then MiniSearch auto-query fallback
@@ -234,7 +242,8 @@ src/
 │   ├── aiBridgeQuery.ts        # Parse/normalize AI bridge query parameters into AIToolRequest (zod-validated)
 │   ├── aiBridgeQuery.test.ts   # Unit tests for AI bridge query parsing/normalization
 │   ├── aiToolBridge.ts         # Public facade for AI bridge exports (backward-compatible import path)
-│   ├── ai-tool-bridge/         # Internal AI bridge modules (catalog/schema/runners/snapshot/types)
+│   ├── aiBridgeGlobal.ts       # Installs window.DevPulseAI app-wide (lazy-loads the runner)
+│   ├── ai-tool-bridge/         # Internal AI bridge modules (catalog/schema/runners/types)
 │   │   ├── index.ts
 │   │   ├── types.ts
 │   │   ├── catalog.ts
@@ -245,8 +254,6 @@ src/
 │   │   ├── registry.ts
 │   │   ├── errorTaxonomy.ts
 │   │   ├── errorResponse.ts
-│   │   ├── snapshotPolicy.ts
-│   │   ├── snapshot.ts
 │   │   ├── runners.ts
 │   │   ├── runners.test.ts
 │   │   ├── handlers/
@@ -258,7 +265,13 @@ src/
 │   │   │   ├── caseConverter.ts
 │   │   │   ├── urlParser.ts
 │   │   │   ├── diffViewer.ts
-│   │   │   └── thaiDateConverter.ts
+│   │   │   ├── thaiDateConverter.ts
+│   │   │   ├── thaiId.ts
+│   │   │   ├── jwtDecoder.ts
+│   │   │   ├── xmlToJson.ts
+│   │   │   ├── uuidGenerator.ts
+│   │   │   ├── passwordGenerator.ts
+│   │   │   └── handlers.test.ts  # Bridge-level tests for the newer handlers
 │   ├── passwordStrength.ts     # getPasswordStrength() + PasswordOptions (zod-validated)
 │   ├── passwordStrength.test.ts # Unit tests for password strength scoring
 │   ├── thaiId.ts               # Thai ID decode/validation helpers (zod-validated IDs)

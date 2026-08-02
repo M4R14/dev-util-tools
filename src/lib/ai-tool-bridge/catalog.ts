@@ -65,6 +65,49 @@ const BASE_AI_TOOL_CATALOG: Array<{
       { operation: 'parse', input: '21 ก.พ. 2569' },
     ],
   },
+  {
+    id: 'thai-id',
+    operations: ['analyze', 'validate', 'format', 'generate'],
+    examples: [
+      { operation: 'validate', input: '1101700207367' },
+      { operation: 'analyze', input: '1101700207367' },
+      { operation: 'generate', input: '' },
+    ],
+  },
+  {
+    id: 'jwt-decoder',
+    operations: ['decode', 'claims'],
+    examples: [
+      {
+        operation: 'decode',
+        input:
+          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
+      },
+    ],
+  },
+  {
+    id: 'xml-to-json',
+    operations: ['convert'],
+    examples: [
+      {
+        operation: 'convert',
+        input: '<root id="1"><item>a</item><item>b</item></root>',
+        options: { includeAttributes: true },
+      },
+    ],
+  },
+  {
+    id: 'uuid-generator',
+    operations: ['generate'],
+    examples: [{ operation: 'generate', input: '', options: { quantity: 3 } }],
+  },
+  {
+    id: 'password-gen',
+    operations: ['generate'],
+    examples: [
+      { operation: 'generate', input: '', options: { length: 24, includeSymbols: false } },
+    ],
+  },
 ];
 
 export const AI_TOOL_CATALOG: AIToolCatalogItem[] = BASE_AI_TOOL_CATALOG.map((item) => {
@@ -72,6 +115,7 @@ export const AI_TOOL_CATALOG: AIToolCatalogItem[] = BASE_AI_TOOL_CATALOG.map((it
   return {
     ...item,
     description: metadata?.description ?? item.id,
+    reliability: metadata?.reliability ?? 'llm-can-approximate',
     usageTips: metadata?.usageTips ? [...metadata.usageTips] : [],
   };
 });

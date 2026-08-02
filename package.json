@@ -29,6 +29,8 @@
     "dayjs": "^1.11.19",
     "diff": "^8.0.3",
     "highlight.js": "^11.11.1",
+    "jose": "^6.2.7",
+    "jwt-decode": "^4.0.0",
     "lucide-react": "^0.564.0",
     "marked": "^17.0.3",
     "minisearch": "^7.2.0",

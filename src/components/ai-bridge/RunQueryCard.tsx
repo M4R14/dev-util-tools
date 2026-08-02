@@ -56,7 +56,12 @@ const RunQueryCard: React.FC<RunQueryCardProps> = ({
           className="min-h-[88px] font-mono text-xs"
         />
         <div className="flex items-center gap-2">
-          <Button size="sm" onClick={onRun} data-action="run-ai-bridge-query" data-testid="ai-bridge-run-button">
+          <Button
+            size="sm"
+            onClick={onRun}
+            data-action="run-ai-bridge-query"
+            data-testid="ai-bridge-run-button"
+          >
             Run Query
           </Button>
           <Button

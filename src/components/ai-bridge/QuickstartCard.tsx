@@ -14,13 +14,24 @@ const QuickstartCard: React.FC = () => {
       <CardContent className="pt-0">
         <ol className="text-xs text-muted-foreground space-y-1 list-decimal pl-4">
           <li>
-            เปิด <code>/ai-bridge</code> เพื่อ initialize <code>window.DevPulseAI</code>
+            <code>window.DevPulseAI</code> พร้อมใช้ทุกหน้า ไม่ต้องอยู่ที่ <code>/ai-bridge</code>{' '}
+            และไม่หายเมื่อเปลี่ยนหน้า (รอ event <code>devpulse-ai-ready</code> ได้ถ้าต้องการ)
           </li>
-          <li>เรียก <code>window.DevPulseAI.catalog()</code> เพื่อดูความสามารถ</li>
-          <li>ส่ง query หรือใช้ <code>window.DevPulseAI.run(request)</code></li>
           <li>
-            ใช้ <code>window.DevPulseAI.runBatch(requests)</code> และ{' '}
-            <code>window.DevPulseAI.getSnapshot()</code> สำหรับงาน automation ต่อเนื่อง
+            <code>await window.DevPulseAI.catalog()</code> เพื่อดูความสามารถ
+          </li>
+          <li>
+            ส่ง query ทาง URL หรือ <code>await window.DevPulseAI.run(request)</code> — ทุก method
+            เป็น async เพราะ runner โหลดตอนเรียกครั้งแรก
+          </li>
+          <li>
+            <code>describe(toolId)</code> ดูทีละตัวประหยัด context ·{' '}
+            <code>{'runBatch(requests, { stopOnError: true })'}</code> สำหรับงานต่อเนื่อง — ทุก
+            response มี <code>index</code> กำกับ
+          </li>
+          <li>
+            ต้องการผลลัพธ์ล้วน ๆ ต่อ <code>&amp;mode=result-only</code> — จะ render เฉพาะ{' '}
+            <code>#ai-bridge-output</code> ไม่มี sidebar/header
           </li>
         </ol>
       </CardContent>

@@ -19,6 +19,10 @@ export enum ToolID {
   JSON_FORMATTER = 'json-formatter',
   XML_FORMATTER = 'xml-formatter',
 
+  // inspector
+  JWT_DECODER = 'jwt-decoder',
+  JWT_ENCODER = 'jwt-encoder',
+
   // external tool
   DUMMY_IMAGE = 'dummy-image',
   REGEX_TESTER = 'regex-tester',

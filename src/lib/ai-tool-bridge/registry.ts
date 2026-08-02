@@ -4,9 +4,14 @@ import {
   runCaseConverter,
   runDiffViewer,
   runJsonFormatter,
+  runJwtDecoder,
+  runPasswordGenerator,
   runThaiDateConverter,
+  runThaiId,
   runUrlParser,
+  runUuidGenerator,
   runXmlFormatter,
+  runXmlToJson,
   type ToolRunner,
 } from './handlers';
 import type { AIToolId, ToolExecutionContext } from './types';
@@ -19,6 +24,11 @@ export const TOOL_RUNNERS = {
   'url-parser': runUrlParser,
   'diff-viewer': runDiffViewer,
   'thai-date-converter': runThaiDateConverter,
+  'thai-id': runThaiId,
+  'jwt-decoder': runJwtDecoder,
+  'xml-to-json': runXmlToJson,
+  'uuid-generator': runUuidGenerator,
+  'password-gen': runPasswordGenerator,
 } satisfies Record<AIToolId, ToolRunner>;
 
 export const resolveToolRunner = (tool: AIToolId): ToolRunner => TOOL_RUNNERS[tool];
@@ -43,7 +53,9 @@ export const getToolRegistryDiagnostics = (): ToolRegistryDiagnostics => {
   const runnerToolIds = Object.keys(TOOL_RUNNERS).sort();
 
   const missingRunnerTools = catalogToolIds.filter((toolId) => !runnerToolIds.includes(toolId));
-  const extraRunnerTools = runnerToolIds.filter((toolId) => !catalogToolIds.includes(toolId as AIToolId));
+  const extraRunnerTools = runnerToolIds.filter(
+    (toolId) => !catalogToolIds.includes(toolId as AIToolId),
+  );
 
   return {
     isConsistent: missingRunnerTools.length === 0 && extraRunnerTools.length === 0,

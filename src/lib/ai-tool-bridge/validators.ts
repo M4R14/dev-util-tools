@@ -19,10 +19,7 @@ export const assertSupportedOperation = (
         code: 'UNSUPPORTED_OPERATION',
         supportedOperations: [...supportedOperations],
         didYouMean: suggestion,
-        hints: [
-          `Use one of: ${supportedOperations.join(', ')}`,
-          `Did you mean "${suggestion}"?`,
-        ],
+        hints: [`Use one of: ${supportedOperations.join(', ')}`, `Did you mean "${suggestion}"?`],
       },
     );
   }
