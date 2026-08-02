@@ -4,8 +4,8 @@ import {
   readBooleanParam,
   readNumberParam,
   serializeBooleanParam,
-} from '../lib/shareableUrlState';
-import { generatePassword as buildPassword } from '../lib/passwordGenerator';
+} from '../lib/platform/shareableUrlState';
+import { generatePassword as buildPassword } from '../lib/tools/passwordGenerator';
 import { useShareableUrlState } from './useShareableUrlState';
 
 const DEFAULT_LENGTH = 16;

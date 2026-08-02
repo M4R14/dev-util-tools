@@ -14,7 +14,7 @@ Switch between camelCase, PascalCase, snake_case, kebab-case, and more. Supports
 ## Files
 - `src/components/tools/CaseConverter.tsx`
 - `src/hooks/useCaseConverter.ts`
-- `src/lib/caseUtils.ts`
+- `src/lib/tools/caseUtils.ts`
 
 ## Usage Pattern
 - Input: Textarea for source text

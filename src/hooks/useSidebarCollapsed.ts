@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { z } from 'zod';
-import { readPersisted, writePersisted } from '../lib/persistedState';
+import { readPersisted, writePersisted } from '../lib/platform/persistedState';
 
 const STORAGE_KEY = 'sidebar-collapsed';
 

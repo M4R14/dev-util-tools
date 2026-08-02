@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { BLOG_POSTS, type BlogCategory, type BlogPost } from '../data/blogPosts';
-import { BLOG_LANGUAGES, type BlogLanguage } from '../lib/blogContent';
-import { createSearchIndex } from '../lib/search';
-import { readPersistedRaw, writePersistedRaw } from '../lib/persistedState';
+import { BLOG_LANGUAGES, type BlogLanguage } from '../lib/content/blogContent';
+import { createSearchIndex } from '../lib/search/search';
+import { readPersistedRaw, writePersistedRaw } from '../lib/platform/persistedState';
 
 export type BlogCategoryFilter = 'all' | BlogCategory;
 

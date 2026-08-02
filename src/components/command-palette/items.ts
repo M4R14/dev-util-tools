@@ -1,5 +1,5 @@
 import type { ToolMetadata } from '../../types';
-import { createSearchIndex } from '../../lib/search';
+import { createSearchIndex } from '../../lib/search/search';
 import type { CommandPaletteAction, CommandPaletteItem } from './types';
 
 /**

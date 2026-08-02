@@ -1,6 +1,6 @@
 # Search Features
 
-Every search in DevPulse goes through `src/lib/search.ts`. Do not construct MiniSearch directly.
+Every search in DevPulse goes through `src/lib/search/search.ts`. Do not construct MiniSearch directly.
 
 ## Why one module
 
@@ -61,7 +61,7 @@ cache on the array alone silently hands one caller the other's index.
 
 ## Tokeniser Behaviour
 
-`src/lib/searchTokenizer.ts` uses `Intl.Segmenter`, which carries Unicode word-break data and is
+`src/lib/search/searchTokenizer.ts` uses `Intl.Segmenter`, which carries Unicode word-break data and is
 built into the platform — no dependency, no word list to maintain.
 
 It also splits on `.` `_` `/` while keeping the whole term, because Unicode treats those as
@@ -92,10 +92,10 @@ English names (`JSON`, `Base64`, `UUID`) and do not need them.
 
 ## Source of Truth
 
-- Shared index + defaults: `src/lib/search.ts`
-- Tokeniser: `src/lib/searchTokenizer.ts`
+- Shared index + defaults: `src/lib/search/search.ts`
+- Tokeniser: `src/lib/search/searchTokenizer.ts`
 - Tool search: `src/hooks/useToolSearch.ts`
-- Related tools: `src/lib/relatedTools.ts`
+- Related tools: `src/lib/search/relatedTools.ts`
 - Blog search: `src/hooks/useBlogFilters.ts`
 - Palette actions: `src/components/command-palette/items.ts`
 - Shared term: `src/context/SearchContext.tsx`

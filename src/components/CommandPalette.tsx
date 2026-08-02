@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { useToolSearch } from '../hooks/useToolSearch';
 import { useFocusTrap } from '../hooks/useFocusTrap';
-import { scrollBehavior } from '../lib/motion';
+import { scrollBehavior } from '../lib/platform/motion';
 import { useSendToTool } from '../context/SendToToolContext';
 import {
   buildCommandPaletteItems,

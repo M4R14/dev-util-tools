@@ -1,4 +1,4 @@
-import { formatThaiDate, parseThaiDate } from '../../thaiDate';
+import { formatThaiDate, parseThaiDate } from '../../tools/thaiDate';
 import { assertSupportedOperation, asString } from '../validators';
 import type { ToolRunner } from './types';
 

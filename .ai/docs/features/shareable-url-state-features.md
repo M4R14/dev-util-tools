@@ -27,11 +27,11 @@ This document tracks shareable query-string state support across tools.
 - Default values are omitted from query string when possible for cleaner URLs.
 - Existing page-level share action copies current URL, so synced state is included automatically.
 - Phase 2 coverage now includes all local tools in the current registry.
-- Query sync rule application is centralized via `src/lib/shareableUrlState.ts` to keep behavior consistent across hooks.
+- Query sync rule application is centralized via `src/lib/platform/shareableUrlState.ts` to keep behavior consistent across hooks.
 
 ## Shared Helper Contract
 
-Source: `src/lib/shareableUrlState.ts`
+Source: `src/lib/platform/shareableUrlState.ts`
 
 `buildShareableSearchParams(currentQuery, params)` accepts a list of `ShareableQueryParam`:
 

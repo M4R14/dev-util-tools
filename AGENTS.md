@@ -67,10 +67,10 @@ If code behavior or structure changes, update matching docs in the same change:
 
 When a tool uses query-string state syncing:
 
-1. Reuse `src/lib/shareableUrlState.ts` (`buildShareableSearchParams`) instead of re-implementing `URLSearchParams` sync logic in each hook.
+1. Reuse `src/lib/platform/shareableUrlState.ts` (`buildShareableSearchParams`) instead of re-implementing `URLSearchParams` sync logic in each hook.
 2. Keep query defaults explicit via `defaultValue` so URLs stay clean and deterministic.
 3. Update `.ai/docs/features/shareable-url-state-features.md` and affected tool docs with exact query keys.
-4. If helper behavior changes, add/update tests in `src/lib/shareableUrlState.test.ts`.
+4. If helper behavior changes, add/update tests in `src/lib/platform/shareableUrlState.test.ts`.
 
 ## Validation Gate
 

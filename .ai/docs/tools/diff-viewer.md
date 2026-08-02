@@ -15,7 +15,7 @@ Compare two texts side-by-side and view differences. Supports unified/split view
 - `src/components/tools/DiffViewer.tsx`
 - `src/components/tools/diff-viewer/*`
 - `src/hooks/useDiffViewer.ts`
-- `src/lib/diffUtils.ts`
+- `src/lib/tools/diffUtils.ts`
 
 ## Usage Pattern
 - Input: Two textareas (A, B)

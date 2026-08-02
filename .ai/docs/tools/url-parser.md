@@ -18,7 +18,7 @@ Parse, encode, and decode URLs with live validation, canonical preview, and inte
 - `src/components/tools/url-parser/UrlInputSection.tsx`
 - `src/components/tools/url-parser/UrlQueryParams.tsx`
 - `src/hooks/useUrlParser.ts`
-- `src/lib/urlUtils.ts`
+- `src/lib/tools/urlUtils.ts`
 
 ## Usage Pattern
 - Input: URL string

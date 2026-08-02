@@ -3,7 +3,7 @@ import { ArrowLeftRight, Trash2 } from 'lucide-react';
 import { Button } from '../../ui/Button';
 import { CopyButton } from '../../ui/CopyButton';
 import { cn } from '../../../lib/utils';
-import type { DiffStats } from '../../../lib/diffUtils';
+import type { DiffStats } from '../../../lib/tools/diffUtils';
 import type { DiffViewMode } from '../../../hooks/useDiffViewer';
 
 interface DiffToolbarProps {

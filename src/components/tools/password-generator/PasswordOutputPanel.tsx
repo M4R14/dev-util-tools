@@ -4,7 +4,7 @@ import { ToolLayout } from '../../ui/ToolLayout';
 import { Button } from '../../ui/Button';
 import { CopyButton } from '../../ui/CopyButton';
 import { cn } from '../../../lib/utils';
-import type { PasswordStrength } from '../../../lib/passwordStrength';
+import type { PasswordStrength } from '../../../lib/tools/passwordStrength';
 
 interface PasswordOutputPanelProps {
   password: string;

@@ -6,7 +6,7 @@ import { TOOLS } from '../../data/tools';
 import { useUserPreferences } from '../../context/UserPreferencesContext';
 import { useSearch } from '../../context/SearchContext';
 import { useToolSearch } from '../../hooks/useToolSearch';
-import { resolvePageMeta } from '../../lib/pageMeta';
+import { resolvePageMeta } from '../../lib/platform/pageMeta';
 import { toVisibleTools, useSidebarSections } from './useSidebarSections';
 import { useCollapsedSections } from './useCollapsedSections';
 

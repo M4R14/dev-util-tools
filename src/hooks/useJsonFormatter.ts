@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { DEFAULT_JSON_INDENT, formatJson, minifyJson } from '../lib/jsonUtils';
+import { DEFAULT_JSON_INDENT, formatJson, minifyJson } from '../lib/tools/jsonUtils';
 import { useShareableUrlState } from './useShareableUrlState';
 
 const DEFAULT_INDENT = DEFAULT_JSON_INDENT;

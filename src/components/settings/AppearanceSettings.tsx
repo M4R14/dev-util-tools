@@ -2,7 +2,7 @@ import React from 'react';
 import { Monitor, Moon, Palette, Sun } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
 import { useTheme } from '../../context/ThemeContext';
-import { THEME_PREFERENCES, type ThemePreference } from '../../lib/theme';
+import { THEME_PREFERENCES, type ThemePreference } from '../../lib/platform/theme';
 import { cn } from '../../lib/utils';
 
 const OPTION_META: Record<ThemePreference, { label: string; icon: typeof Sun }> = {

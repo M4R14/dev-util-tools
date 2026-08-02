@@ -11,7 +11,7 @@ import {
 import { ToolLayout } from '../../ui/ToolLayout';
 import { Card, CardContent } from '../../ui/Card';
 import { useThaiDateConverter } from '../../../hooks/useThaiDateConverter';
-import { BUDDHIST_YEAR_OFFSET } from '../../../lib/thaiDate';
+import { BUDDHIST_YEAR_OFFSET } from '../../../lib/tools/thaiDate';
 import { cn } from '../../../lib/utils';
 import CurrentTimeSection from './CurrentTimeSection';
 import DateConverterSection from './DateConverterSection';

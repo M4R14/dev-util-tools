@@ -11,7 +11,7 @@ src/
 ├── components/
 │   ├── MainLayout.tsx          # Shell: sidebar + header + cmd palette + content area + footer
 │   ├── main-layout/            # Main layout sub-modules (command actions, shell fragments)
-│   │   │                       # Page-meta logic lives in src/lib/pageMeta.ts — it is pure
+│   │   │                       # Page-meta logic lives in src/lib/platform/pageMeta.ts — it is pure
 │   │   ├── BackgroundDecor.tsx
 │   │   ├── MainContentWrapper.tsx
 │   │   ├── SkipToMainContentLink.tsx
@@ -209,79 +209,52 @@ src/
 │       └── auto-release-notes.md # Auto-generated mini release notes from git history
 │
 ├── lib/                        # Framework-free logic (no React, no react-router)
-│   │                           # Most modules are pure functions. Two exceptions, both deliberate:
-│   │                           #   relatedTools.ts caches its MiniSearch index in a WeakMap
-│   │                           #   randomUtils.ts + obfuscation.ts read platform globals (crypto, btoa)
-│   ├── utils.ts                # cn() — clsx + tailwind-merge
-│   ├── caseUtils.ts            # toSnakeCase, toKebabCase, toCamelCase, toPascalCase
-│   ├── caseUtils.test.ts       # Unit tests for case conversion utilities
-│   ├── diffUtils.ts            # computeDiff, getDiffStats, toUnifiedDiff (uses `diff` lib)
-│   ├── diffUtils.test.ts       # Unit tests for diff utility helpers
-│   ├── randomUtils.ts          # randomInt/randomString/randomUUID on crypto.getRandomValues
-│   ├── randomUtils.test.ts     # Unit tests incl. the no-native-randomUUID and no-crypto paths
-│   ├── passwordGenerator.ts    # Password charsets + generatePassword (uses randomUtils)
-│   ├── passwordGenerator.test.ts
-│   ├── obfuscation.ts          # obfuscate/deobfuscate for localStorage — encoding, NOT encryption
-│   ├── obfuscation.test.ts     # Unit tests for the obfuscation round-trip
-│   ├── jsonUtils.ts            # formatJson/minifyJson/assertValidJson (shared with the AI bridge)
-│   ├── jsonUtils.test.ts       # Unit tests for JSON transforms
-│   ├── xmlUtils.ts             # formatXml/minifyXml/assertValidXml (shared with the AI bridge)
-│   ├── xmlUtils.test.ts        # Unit tests incl. xml-formatter's lenient validation
-│   ├── base64Utils.ts          # Unicode-safe encode/decode (shared with the AI bridge)
-│   ├── base64Utils.test.ts     # Unit tests incl. Thai text and emoji round-trips
-│   ├── xmlToJson.ts            # convertXmlToJson (uses `simple-xml-to-json` + DOMParser)
-│   ├── jwt.ts                  # decodeJwt — jwt-decode for parsing, local validation; never verifies
-│   ├── xmlToJson.test.ts       # Unit tests; DOMParser is stubbed because jsdom cannot boot here
-│   ├── jwt.test.ts             # Unit tests incl. the canonical jwt.io token
-│   ├── jwtSign.ts              # encodeJwt/verifyJwt via jose (HS256/384/512 + unsigned)
-│   ├── jwtSign.test.ts         # Unit tests incl. tampered payload and alg:none rejection
-│   ├── pageMeta.ts             # resolvePageMeta — pathname to title/description/documentTitle
-│   ├── pageMeta.test.ts        # Table tests across tool, blog, settings, ai-bridge, dashboard routes
-│   ├── relatedTools.ts         # getRelatedTools — curated `related` IDs then MiniSearch auto-query fallback
-│   ├── relatedTools.test.ts    # Unit tests for related-tool resolution
-│   ├── aiBridgeQuery.ts        # Parse/normalize AI bridge query parameters into AIToolRequest (zod-validated)
-│   ├── aiBridgeQuery.test.ts   # Unit tests for AI bridge query parsing/normalization
-│   ├── aiToolBridge.ts         # Public facade for AI bridge exports (backward-compatible import path)
+│   │                           # Grouped by what the module is for. Anything cross-cutting that is
+│   │                           # not tool-specific belongs in platform/; a transform that backs one
+│   │                           # tool page belongs in tools/.
+│   │                           # Most modules are pure. The deliberate exceptions:
+│   │                           #   search/ caches MiniSearch indexes in a WeakMap
+│   │                           #   platform/ reads globals (crypto, btoa, localStorage, matchMedia)
+│   ├── utils.ts                # cn() — clsx + tailwind-merge. Used everywhere, so it stays at root
+│   ├── tools/                  # Pure logic behind one tool page each; several shared with the AI bridge
+│   │   ├── jsonUtils.ts        # formatJson/minifyJson/assertValidJson
+│   │   ├── xmlUtils.ts         # formatXml/minifyXml/assertValidXml (xml-formatter repairs silently)
+│   │   ├── xmlToJson.ts        # convertXmlToJson (simple-xml-to-json + DOMParser)
+│   │   ├── base64Utils.ts      # Unicode-safe encode/decode
+│   │   ├── caseUtils.ts        # toSnakeCase, toKebabCase, toCamelCase, toPascalCase
+│   │   ├── diffUtils.ts        # computeDiff, getDiffStats, toUnifiedDiff
+│   │   ├── urlUtils.ts         # parseUrl, updateUrlParam
+│   │   ├── thaiDate.ts         # Thai date formatting/parsing (dayjs)
+│   │   ├── thaiId.ts           # Thai national ID decode/validation
+│   │   ├── jwt.ts              # decodeJwt — parses, never verifies
+│   │   ├── jwtSign.ts          # encodeJwt/verifyJwt via jose; throws without crypto.subtle
+│   │   ├── passwordGenerator.ts # Charsets + generatePassword (uses platform/randomUtils)
+│   │   ├── passwordStrength.ts # getPasswordStrength() + PasswordOptions
+│   │   └── *.test.ts           # One test file per module
+│   ├── search/                 # Every search in the app goes through here — see search-features.md
+│   │   ├── search.ts           # createSearchIndex: the tokeniser, defaults and cache in one place
+│   │   ├── searchTokenizer.ts  # Intl.Segmenter — Thai has no spaces between words
+│   │   ├── relatedTools.ts     # getRelatedTools; overrides the defaults with recorded reasons
+│   │   └── *.test.ts
+│   ├── content/                # Rendering authored markdown
+│   │   ├── markdown.ts         # marked configured to escape raw HTML + restrict link protocols
+│   │   ├── blogContent.ts      # Splits a post into ## TH / ## EN sections
+│   │   └── *.test.ts
+│   ├── platform/               # Cross-cutting app concerns and platform-global wrappers
+│   │   ├── persistedState.ts   # Validated localStorage; never throws — see platform-ux-features.md
+│   │   ├── pageMeta.ts         # resolvePageMeta — pathname to title/description/documentTitle
+│   │   ├── shareableUrlState.ts # Query-sync rules shared by every tool hook
+│   │   ├── theme.ts            # light/dark/system vocabulary, kept out of ThemeContext
+│   │   ├── motion.ts           # One prefers-reduced-motion check
+│   │   ├── randomUtils.ts      # randomInt/randomString/randomUUID on crypto.getRandomValues
+│   │   ├── obfuscation.ts      # obfuscate/deobfuscate — encoding, NOT encryption
+│   │   └── *.test.ts           # (motion.ts has none — it is a single matchMedia read)
+│   ├── aiToolBridge.ts         # Public facade for AI bridge exports (documented import path)
 │   ├── aiBridgeGlobal.ts       # Installs window.DevPulseAI app-wide (lazy-loads the runner)
-│   ├── ai-tool-bridge/         # Internal AI bridge modules (catalog/schema/runners/types)
-│   │   ├── index.ts
-│   │   ├── types.ts
-│   │   ├── catalog.ts
-│   │   ├── contracts.ts
-│   │   ├── schema.ts
-│   │   ├── errors.ts
-│   │   ├── validators.ts
-│   │   ├── registry.ts
-│   │   ├── errorTaxonomy.ts
-│   │   ├── errorResponse.ts
-│   │   ├── runners.ts
-│   │   ├── runners.test.ts
-│   │   ├── handlers/
-│   │   │   ├── index.ts
-│   │   │   ├── types.ts
-│   │   │   ├── jsonFormatter.ts
-│   │   │   ├── xmlFormatter.ts
-│   │   │   ├── base64Tool.ts
-│   │   │   ├── caseConverter.ts
-│   │   │   ├── urlParser.ts
-│   │   │   ├── diffViewer.ts
-│   │   │   ├── thaiDateConverter.ts
-│   │   │   ├── thaiId.ts
-│   │   │   ├── jwtDecoder.ts
-│   │   │   ├── xmlToJson.ts
-│   │   │   ├── uuidGenerator.ts
-│   │   │   ├── passwordGenerator.ts
-│   │   │   └── handlers.test.ts  # Bridge-level tests for the newer handlers
-│   ├── passwordStrength.ts     # getPasswordStrength() + PasswordOptions (zod-validated)
-│   ├── passwordStrength.test.ts # Unit tests for password strength scoring
-│   ├── thaiId.ts               # Thai ID decode/validation helpers (zod-validated IDs)
-│   ├── thaiId.test.ts          # Unit tests for Thai ID utility helpers
-│   ├── thaiDate.ts             # Thai date formatting/parsing (uses `dayjs`, zod-validated parse input)
-│   ├── thaiDate.test.ts        # Unit tests for Thai date utilities
-│   ├── shareableUrlState.ts    # Shared helper for shareable URL query sync rules
-│   ├── shareableUrlState.test.ts # Unit tests for query sync helper behavior
-│   ├── urlUtils.ts             # parseUrl, updateUrlParam (zod-validated param mutations)
-│   └── urlUtils.test.ts        # Unit tests for URL parsing and param helpers
+│   ├── aiBridgeQuery.ts        # Parse/normalize AI bridge query params into AIToolRequest
+│   ├── aiBridgeQuery.test.ts
+│   └── ai-tool-bridge/         # Internal AI bridge modules (catalog/schema/runners/handlers)
+│                               # Left where it is: vite.config.ts and the docs name these paths
 │
 ├── services/
 │   └── gemini.ts               # askGemini(prompt, codeContext?, apiKey?) — Google Gemini API

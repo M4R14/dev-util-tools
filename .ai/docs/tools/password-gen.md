@@ -15,7 +15,7 @@ Create secure, random passwords with customizable options, visibility controls, 
 - `src/components/tools/PasswordGenerator.tsx`
 - `src/components/tools/password-generator/*`
 - `src/hooks/usePasswordGenerator.ts`
-- `src/lib/passwordStrength.ts`
+- `src/lib/tools/passwordStrength.ts`
 
 ## Usage Pattern
 - Options: Length slider (+ presets), uppercase, lowercase, numbers, symbols

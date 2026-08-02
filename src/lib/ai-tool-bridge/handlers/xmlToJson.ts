@@ -1,4 +1,4 @@
-import { convertXmlToJson } from '../../xmlToJson';
+import { convertXmlToJson } from '../../tools/xmlToJson';
 import { assertOptionType, assertSupportedOperation, asString } from '../validators';
 import type { ToolRunner } from './types';
 

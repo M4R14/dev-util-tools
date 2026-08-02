@@ -1,5 +1,5 @@
 import React from 'react';
-import type { DiffLine } from '../../../lib/diffUtils';
+import type { DiffLine } from '../../../lib/tools/diffUtils';
 import { cn } from '../../../lib/utils';
 
 interface DiffLineRowProps {

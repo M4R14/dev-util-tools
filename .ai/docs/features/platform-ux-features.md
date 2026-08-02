@@ -127,7 +127,7 @@ The header is a navigation bar. It does not repeat what the page below it alread
 
 ## Dark Mode
 
-- Three theme preferences: `light`, `dark`, and `system` (`src/lib/theme.ts`).
+- Three theme preferences: `light`, `dark`, and `system` (`src/lib/platform/theme.ts`).
 - `system` follows `prefers-color-scheme` **live** via a `matchMedia` listener, so the app changes
   with the OS while it stays selected. An explicit `light`/`dark` never moves on its own.
 - The header button cycles light → dark → system; `/settings` offers the three as a segmented
@@ -138,7 +138,7 @@ The header is a navigation bar. It does not repeat what the page below it alread
 
 ## Personalization & Persistence
 
-- Favorites and recents are persisted in localStorage, both read through `src/lib/persistedState.ts`.
+- Favorites and recents are persisted in localStorage, both read through `src/lib/platform/persistedState.ts`.
 - Stored tool ids are validated against `TOOLS` on read; ids for tools that no longer exist are
   dropped and the pruned list is written back, so the sidebar count and storage cannot drift.
 - Theme preference persists and syncs with app state.
@@ -154,7 +154,7 @@ The header is a navigation bar. It does not repeat what the page below it alread
 
 ## localStorage Is Never Trusted
 
-All reads go through `src/lib/persistedState.ts`, which validates with zod and falls back rather
+All reads go through `src/lib/platform/persistedState.ts`, which validates with zod and falls back rather
 than throwing.
 
 This is not defensive decoration. `UserPreferencesContext` previously called

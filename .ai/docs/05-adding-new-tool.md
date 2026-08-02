@@ -90,7 +90,7 @@ import { MyIcon } from 'lucide-react'; // pick an icon from lucide-react
 ```
 
 `related` is optional: it pins the first entries of the **Related Tools** section on the tool page.
-Omit it and `src/lib/relatedTools.ts` fills the slots automatically by querying a MiniSearch index
+Omit it and `src/lib/search/relatedTools.ts` fills the slots automatically by querying a MiniSearch index
 with the tool's name + tags — so good `tags` are what make auto-suggestions work. Add `related`
 only when the automatic result is wrong or empty.
 

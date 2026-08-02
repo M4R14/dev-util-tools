@@ -1,5 +1,5 @@
-import { generatePassword, getPasswordCharset } from '../../passwordGenerator';
-import { getPasswordStrength } from '../../passwordStrength';
+import { generatePassword, getPasswordCharset } from '../../tools/passwordGenerator';
+import { getPasswordStrength } from '../../tools/passwordStrength';
 import { assertOptionType, assertSupportedOperation } from '../validators';
 import { BridgeValidationError } from '../errors';
 import type { ToolRunner } from './types';

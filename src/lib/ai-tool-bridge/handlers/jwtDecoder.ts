@@ -1,4 +1,4 @@
-import { decodeJwt } from '../../jwt';
+import { decodeJwt } from '../../tools/jwt';
 import { assertSupportedOperation, asString } from '../validators';
 import type { ToolRunner } from './types';
 

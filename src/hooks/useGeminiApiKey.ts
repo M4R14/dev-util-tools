@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
-import { obfuscate, deobfuscate } from '../lib/obfuscation';
-import { readPersistedRaw, removePersisted, writePersistedRaw } from '../lib/persistedState';
+import { obfuscate, deobfuscate } from '../lib/platform/obfuscation';
+import { readPersistedRaw, removePersisted, writePersistedRaw } from '../lib/platform/persistedState';
 
 export const GEMINI_KEY_STORAGE_KEY = 'devpulse_secure_config';
 

@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
-import { nextThemePreference } from '../lib/theme';
+import { nextThemePreference } from '../lib/platform/theme';
 import { Button } from './ui/Button';
 import { FavoriteButton } from './ui/FavoriteButton';
 import { cn } from '../lib/utils';

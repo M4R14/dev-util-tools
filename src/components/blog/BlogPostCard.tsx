@@ -1,7 +1,7 @@
 import React from 'react';
 import type { BlogPost } from '../../data/blogPosts';
 import { BLOG_CATEGORY_META } from '../../data/blogCategories';
-import type { BlogLanguage } from '../../lib/blogContent';
+import type { BlogLanguage } from '../../lib/content/blogContent';
 import { cn } from '../../lib/utils';
 
 interface BlogPostCardProps {

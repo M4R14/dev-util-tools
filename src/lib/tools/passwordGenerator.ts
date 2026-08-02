@@ -1,4 +1,4 @@
-import { randomString } from './randomUtils';
+import { randomString } from '../platform/randomUtils';
 import type { PasswordOptions } from './passwordStrength';
 
 /**

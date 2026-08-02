@@ -11,8 +11,8 @@ import { useLocation } from 'react-router-dom';
 import { z } from 'zod';
 import { ToolID } from '../types';
 import { TOOLS } from '../data/tools';
-import { resolvePageMeta } from '../lib/pageMeta';
-import { readPersisted, writePersisted } from '../lib/persistedState';
+import { resolvePageMeta } from '../lib/platform/pageMeta';
+import { readPersisted, writePersisted } from '../lib/platform/persistedState';
 
 const RECENTS_LIMIT = 8;
 

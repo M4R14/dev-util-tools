@@ -1,5 +1,5 @@
-import { TOOLS } from '../data/tools';
-import type { ToolID, ToolMetadata } from '../types';
+import { TOOLS } from '../../data/tools';
+import type { ToolID, ToolMetadata } from '../../types';
 
 /**
  * Everything a page's chrome needs, derived from the pathname alone.

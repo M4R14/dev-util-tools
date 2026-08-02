@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { z } from 'zod';
-import { readPersisted, writePersisted } from '../../lib/persistedState';
+import { readPersisted, writePersisted } from '../../lib/platform/persistedState';
 import type { SidebarSectionKey } from './navigationLayout';
 
 const STORAGE_KEY = 'sidebar-collapsed-sections';

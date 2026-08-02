@@ -1,4 +1,4 @@
-import { toCamelCase, toKebabCase, toPascalCase, toSnakeCase } from '../../caseUtils';
+import { toCamelCase, toKebabCase, toPascalCase, toSnakeCase } from '../../tools/caseUtils';
 import { SUPPORTED_CASE_TARGETS } from '../catalog';
 import { BridgeValidationError, getClosestMatch } from '../errors';
 import { assertOptionType, assertSupportedOperation, asString } from '../validators';

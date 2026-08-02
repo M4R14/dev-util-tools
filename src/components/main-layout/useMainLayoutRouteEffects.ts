@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import type { RefObject } from 'react';
-import { scrollBehavior } from '../../lib/motion';
+import { scrollBehavior } from '../../lib/platform/motion';
 
 interface UseMainLayoutRouteEffectsOptions {
   pathname: string;

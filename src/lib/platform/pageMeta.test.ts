@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { resolvePageMeta } from './pageMeta';
-import { TOOLS } from '../data/tools';
+import { TOOLS } from '../../data/tools';
 
 describe('resolvePageMeta', () => {
   describe.each([

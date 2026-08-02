@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { renderInlineMarkdown, renderMarkdown } from '../lib/markdown';
+import { renderInlineMarkdown, renderMarkdown } from '../lib/content/markdown';
 import {
   isLanguageNeutral,
   splitLanguageSections,
   type BlogLanguageSections,
-} from '../lib/blogContent';
+} from '../lib/content/blogContent';
 
 export type BlogCategory = 'release' | 'improvement' | 'fix';
 

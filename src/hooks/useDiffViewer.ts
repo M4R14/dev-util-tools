@@ -1,6 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { computeDiff, getDiffStats, toUnifiedDiff, DiffLine, DiffStats } from '../lib/diffUtils';
+import { computeDiff, getDiffStats, toUnifiedDiff, DiffLine, DiffStats } from '../lib/tools/diffUtils';
 import { useShareableUrlState } from './useShareableUrlState';
 
 export type DiffViewMode = 'split' | 'unified';

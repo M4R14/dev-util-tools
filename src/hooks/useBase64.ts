@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { decodeUnicodeFromBase64, encodeUnicodeToBase64 } from '../lib/base64Utils';
+import { decodeUnicodeFromBase64, encodeUnicodeToBase64 } from '../lib/tools/base64Utils';
 import { useShareableUrlState } from './useShareableUrlState';
 
 const encodeTextToBase64 = (value: string) => {

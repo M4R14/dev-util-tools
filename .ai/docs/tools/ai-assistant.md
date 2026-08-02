@@ -33,7 +33,7 @@ Analyze code snippets and get intelligent suggestions via Gemini AI. Supports ch
 modal and the `/settings` page go through it, so the two surfaces cannot disagree about where the
 key lives or how it is encoded.
 
-The key is **obfuscated, not encrypted** — `src/lib/obfuscation.ts` is `base64(reverse(text))`,
+The key is **obfuscated, not encrypted** — `src/lib/platform/obfuscation.ts` is `base64(reverse(text))`,
 which has no key and protects nothing from anyone with access to the browser profile. It exists so
 that a casual glance at devtools does not show a raw API key.
 

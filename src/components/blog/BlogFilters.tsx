@@ -2,7 +2,7 @@ import React from 'react';
 import { Languages, Search } from 'lucide-react';
 import { BLOG_CATEGORY_META, BLOG_CATEGORY_ORDER } from '../../data/blogCategories';
 import type { BlogCategoryFilter } from '../../hooks/useBlogFilters';
-import { BLOG_LANGUAGES, type BlogLanguage } from '../../lib/blogContent';
+import { BLOG_LANGUAGES, type BlogLanguage } from '../../lib/content/blogContent';
 import { Input } from '../ui/Input';
 import { cn } from '../../lib/utils';
 

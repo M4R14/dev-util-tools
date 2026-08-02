@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { ToolMetadata } from '../types';
 import { TOOLS } from '../data/tools';
-import { createSearchIndex } from '../lib/search';
+import { createSearchIndex } from '../lib/search/search';
 
 /**
  * Filter and rank tools by a search term.

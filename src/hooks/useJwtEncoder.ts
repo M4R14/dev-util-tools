@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { encodeJwt, type JwtSigningAlgorithm } from '../lib/jwtSign';
+import { encodeJwt, type JwtSigningAlgorithm } from '../lib/tools/jwtSign';
 import { useShareableUrlState } from './useShareableUrlState';
 
 const DEFAULT_PAYLOAD = JSON.stringify({ sub: '1234567890', name: 'John Doe' }, null, 2);

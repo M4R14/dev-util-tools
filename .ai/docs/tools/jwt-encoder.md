@@ -6,7 +6,7 @@
 | **Route** | `/jwt-encoder` |
 | **Component** | `JwtEncoder.tsx` |
 | **Hook** | `src/hooks/useJwtEncoder.ts` |
-| **Lib** | `src/lib/jwtSign.ts` (uses `jose`) |
+| **Lib** | `src/lib/tools/jwtSign.ts` (uses `jose`) |
 | **AI Bridge** | Not exposed — see below |
 
 ## Description
@@ -15,8 +15,8 @@ Builds a JWT from a JSON payload. With no secret it produces an **unsigned** `al
 Web Crypto.
 
 ## Files
-- `src/lib/jwtSign.ts` — `encodeJwt`, `verifyJwt`, `JWT_SIGNING_ALGORITHMS`
-- `src/lib/jwtSign.test.ts`
+- `src/lib/tools/jwtSign.ts` — `encodeJwt`, `verifyJwt`, `JWT_SIGNING_ALGORITHMS`
+- `src/lib/tools/jwtSign.test.ts`
 - `src/hooks/useJwtEncoder.ts`
 - `src/components/tools/JwtEncoder.tsx`
 

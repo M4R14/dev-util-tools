@@ -20,7 +20,7 @@ Convert Gregorian dates to Thai Buddhist Era (BE) formats. Supports text parsing
 - `src/components/tools/thai-date/TextParserInput.tsx`
 - `src/components/tools/thai-date/ParserResultSection.tsx`
 - `src/hooks/useThaiDateConverter.ts`
-- `src/lib/thaiDate.ts`
+- `src/lib/tools/thaiDate.ts`
 
 ## Usage Pattern
 - Input: Text or picker (day/month/year)

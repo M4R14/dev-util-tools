@@ -15,8 +15,8 @@ Auto-generated release notes are written to:
 The app loads these files in `src/data/blogPosts.ts` using `import.meta.glob(..., query: '?raw')`, then:
 
 - parses and **validates** frontmatter against a zod schema
-- splits the body into `## TH` / `## EN` sections (`src/lib/blogContent.ts`)
-- renders each section to HTML via `src/lib/markdown.ts`
+- splits the body into `## TH` / `## EN` sections (`src/lib/content/blogContent.ts`)
+- renders each section to HTML via `src/lib/content/markdown.ts`
 
 ## Required Frontmatter
 
@@ -96,13 +96,13 @@ Paragraph content here...
 
 Render behavior:
 
-- The markdown body is rendered to HTML in `src/data/blogPosts.ts` via `src/lib/markdown.ts`.
+- The markdown body is rendered to HTML in `src/data/blogPosts.ts` via `src/lib/content/markdown.ts`.
 - Inline markdown like emphasis (`*text*`), strong text, inline code, and links is supported.
 - List markdown (`- item`, `1. item`) stays in the body and is rendered as normal HTML lists.
 
 ## Raw HTML Is Escaped, Not Rendered
 
-`src/lib/markdown.ts` configures `marked` so that raw HTML in a post is escaped and shown as text,
+`src/lib/content/markdown.ts` configures `marked` so that raw HTML in a post is escaped and shown as text,
 and so that link/image URLs are limited to `http:`, `https:`, `mailto:`, and relative paths.
 
 Do not write HTML in a post expecting it to render — it will appear literally.
@@ -135,7 +135,7 @@ MiniSearch's default tokeniser splits on whitespace and punctuation. Thai is wri
 between words, so a whole Thai sentence became a single token and searching `ลายเซ็น` matched
 nothing.
 
-This is no longer blog-specific. All four search surfaces go through `src/lib/search.ts`, which
+This is no longer blog-specific. All four search surfaces go through `src/lib/search/search.ts`, which
 owns the tokeniser — see [Search](./features/search-features.md).
 
 > An earlier version of this page claimed the limitation "has not bitten" tool search because its
@@ -158,9 +158,9 @@ owns the tokeniser — see [Search](./features/search-features.md).
 | `src/content/blog/*.md`              | The posts themselves                                             |
 | `src/data/blogPosts.ts`              | Frontmatter validation, language split, HTML rendering           |
 | `src/data/blogCategories.ts`         | Category labels/icons, shared by the card badge and filter chips |
-| `src/lib/markdown.ts`                | `marked` configuration — HTML escaping and URL allowlist         |
-| `src/lib/blogContent.ts`             | `## TH` / `## EN` splitting                                      |
-| `src/lib/searchTokenizer.ts`         | Thai-aware tokenising for search                                 |
+| `src/lib/content/markdown.ts`                | `marked` configuration — HTML escaping and URL allowlist         |
+| `src/lib/content/blogContent.ts`             | `## TH` / `## EN` splitting                                      |
+| `src/lib/search/searchTokenizer.ts`         | Thai-aware tokenising for search                                 |
 | `src/hooks/useBlogFilters.ts`        | Category, language, and search state                             |
 | `src/components/Blog.tsx`            | Page shell and empty state                                       |
 | `src/components/blog/`               | `BlogPostCard`, `BlogFilters`                                    |

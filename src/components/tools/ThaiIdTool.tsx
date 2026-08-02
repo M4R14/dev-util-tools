@@ -13,7 +13,7 @@ import { ToolLayout } from '../ui/ToolLayout';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { CopyButton } from '../ui/CopyButton';
-import { THAI_ID_PERSON_TYPES, THAI_ID_STRUCTURE } from '../../lib/thaiId';
+import { THAI_ID_PERSON_TYPES, THAI_ID_STRUCTURE } from '../../lib/tools/thaiId';
 import { useThaiId } from '../../hooks/useThaiId';
 
 const ThaiIdTool: React.FC = () => {

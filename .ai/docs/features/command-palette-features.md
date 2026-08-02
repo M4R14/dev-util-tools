@@ -78,7 +78,7 @@ interactive and answered nothing.
 - Active item is exposed via `aria-activedescendant`.
 - Backdrop click closes the palette.
 - Empty-state message appears when there are no matching results.
-- `scrollIntoView` for the active item honours `prefers-reduced-motion` via `src/lib/motion.ts`,
+- `scrollIntoView` for the active item honours `prefers-reduced-motion` via `src/lib/platform/motion.ts`,
   which route transitions also use.
 - A failing action surfaces a toast. Errors used to be swallowed with a comment asserting that
   handlers report their own failures — true for the built-ins, but an unexpected throw vanished and
@@ -94,7 +94,7 @@ interactive and answered nothing.
 - Tool metadata search index: `src/hooks/useToolSearch.ts` + `src/data/tools.tsx`
 - Focus trap: `src/hooks/useFocusTrap.ts` + `src/hooks/focusTrapTargets.ts`
 - Scroll lock: `src/hooks/useScrollLock.ts`
-- Motion preference: `src/lib/motion.ts`
+- Motion preference: `src/lib/platform/motion.ts`
 
 ## Related
 

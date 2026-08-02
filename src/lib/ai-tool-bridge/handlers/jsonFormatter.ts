@@ -1,4 +1,4 @@
-import { DEFAULT_JSON_INDENT, assertValidJson, formatJson, minifyJson } from '../../jsonUtils';
+import { DEFAULT_JSON_INDENT, assertValidJson, formatJson, minifyJson } from '../../tools/jsonUtils';
 import { assertOptionType, assertSupportedOperation, asString } from '../validators';
 import type { ToolRunner } from './types';
 

@@ -33,7 +33,7 @@ This file lists user-facing capabilities for each tool.
 Every tool page renders a **Related Tools** section below its content, injected once in
 `src/components/ToolPageLayout.tsx` (no per-tool wiring required).
 
-- Resolution lives in `src/lib/relatedTools.ts` (`getRelatedTools`), limit `RELATED_TOOLS_LIMIT = 4`.
+- Resolution lives in `src/lib/search/relatedTools.ts` (`getRelatedTools`), limit `RELATED_TOOLS_LIMIT = 4`.
 - Curated `related?: ToolID[]` in `src/data/tools.tsx` wins and keeps its declared order. It is optional —
   treat it as an override for pairs the search misses or ranks badly.
 - Remaining slots are filled automatically by querying a MiniSearch index (same engine as tool search)
@@ -54,8 +54,8 @@ Every tool page renders a **Related Tools** section below its content, injected 
 - External helper tools provide curated shortcuts, templates, and references, then open trusted external sites.
 - All six external helper pages render through `src/components/tools/ExternalToolPage.tsx`; their
   content lives as data in `src/data/externalTools.ts`, so each tool component is one line.
-- Core transforms are shared between the UI and the AI bridge: `src/lib/jsonUtils.ts`,
-  `src/lib/xmlUtils.ts`, and `src/lib/base64Utils.ts` back both `useJsonFormatter`/`useXmlFormatter`/
+- Core transforms are shared between the UI and the AI bridge: `src/lib/tools/jsonUtils.ts`,
+  `src/lib/tools/xmlUtils.ts`, and `src/lib/tools/base64Utils.ts` back both `useJsonFormatter`/`useXmlFormatter`/
   `useBase64` and the matching bridge handlers, so both surfaces cannot drift apart.
 
 ## Tool Discoverability

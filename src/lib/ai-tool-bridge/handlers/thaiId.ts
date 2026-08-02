@@ -1,4 +1,4 @@
-import { analyzeThaiId, formatThaiId, generateThaiId } from '../../thaiId';
+import { analyzeThaiId, formatThaiId, generateThaiId } from '../../tools/thaiId';
 import { assertSupportedOperation, asString } from '../validators';
 import type { ToolRunner } from './types';
 

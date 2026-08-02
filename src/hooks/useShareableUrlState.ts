@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { buildShareableSearchParams, type ShareableQueryParam } from '../lib/shareableUrlState';
+import { buildShareableSearchParams, type ShareableQueryParam } from '../lib/platform/shareableUrlState';
 
 /**
  * Mirror a tool's state into the query string so its URL is shareable.

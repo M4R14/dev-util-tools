@@ -27,7 +27,7 @@ The registry below groups tools by responsibility to make discovery easier for c
 - `case-converter` — `/case-converter`
   - Component: `src/components/tools/CaseConverter.tsx`
   - Hook: `src/hooks/useCaseConverter.ts`
-  - Lib: `src/lib/caseUtils.ts`
+  - Lib: `src/lib/tools/caseUtils.ts`
   - Doc: [.ai doc](./tools/case-converter.md)
 
 - `timezone-converter` — `/timezone-converter`
@@ -39,37 +39,37 @@ The registry below groups tools by responsibility to make discovery easier for c
 - `thai-date-converter` — `/thai-date-converter`
   - Component: `src/components/tools/thai-date/index.tsx` (+ subcomponents)
   - Hook: `src/hooks/useThaiDateConverter.ts`
-  - Lib: `src/lib/thaiDate.ts` (dayjs)
+  - Lib: `src/lib/tools/thaiDate.ts` (dayjs)
   - Doc: [.ai doc](./tools/thai-date-converter.md)
 
 - `thai-id` — `/thai-id`
   - Component: `src/components/tools/ThaiIdTool.tsx`
   - Hook: `src/hooks/useThaiId.ts`
-  - Lib: `src/lib/thaiId.ts`
+  - Lib: `src/lib/tools/thaiId.ts`
   - Doc: [.ai doc](./tools/thai-id.md)
 
 - `url-parser` — `/url-parser`
   - Component: `src/components/tools/UrlParser.tsx` (+ `url-parser/` subcomponents)
   - Hook: `src/hooks/useUrlParser.ts`
-  - Lib: `src/lib/urlUtils.ts`
+  - Lib: `src/lib/tools/urlUtils.ts`
   - Doc: [.ai doc](./tools/url-parser.md)
 
 - `xml-to-json` — `/xml-to-json`
   - Component: `src/components/tools/XMLToJson.tsx`
   - Hook: `src/hooks/useXmlToJson.ts`
-  - Lib: `src/lib/xmlToJson.ts`
+  - Lib: `src/lib/tools/xmlToJson.ts`
   - Doc: [.ai doc](./tools/xml-to-json.md)
 
 - `jwt-decoder` — `/jwt-decoder`
   - Component: `src/components/tools/JwtDecoder.tsx`
   - Hook: `src/hooks/useJwtDecoder.ts`
-  - Lib: `src/lib/jwt.ts` (decode) + `src/lib/jwtSign.ts` (verify)
+  - Lib: `src/lib/tools/jwt.ts` (decode) + `src/lib/tools/jwtSign.ts` (verify)
   - Doc: [.ai doc](./tools/jwt-decoder.md)
 
 - `jwt-encoder` — `/jwt-encoder`
   - Component: `src/components/tools/JwtEncoder.tsx`
   - Hook: `src/hooks/useJwtEncoder.ts`
-  - Lib: `src/lib/jwtSign.ts`
+  - Lib: `src/lib/tools/jwtSign.ts`
   - Doc: [.ai doc](./tools/jwt-encoder.md)
 
 ## Generators
@@ -82,7 +82,7 @@ The registry below groups tools by responsibility to make discovery easier for c
 - `password-gen` — `/password-gen`
   - Component: `src/components/tools/PasswordGenerator.tsx`
   - Hook: `src/hooks/usePasswordGenerator.ts`
-  - Lib: `src/lib/passwordStrength.ts`
+  - Lib: `src/lib/tools/passwordStrength.ts`
   - Doc: [.ai doc](./tools/password-gen.md)
 
 ## Viewers & Utilities
@@ -90,7 +90,7 @@ The registry below groups tools by responsibility to make discovery easier for c
 - `diff-viewer` — `/diff-viewer`
   - Component: `src/components/tools/DiffViewer.tsx`
   - Hook: `src/hooks/useDiffViewer.ts`
-  - Lib: `src/lib/diffUtils.ts`
+  - Lib: `src/lib/tools/diffUtils.ts`
   - Doc: [.ai doc](./tools/diff-viewer.md)
 
 - `regex-tester` — `/regex-tester`

@@ -1,4 +1,4 @@
-import { ToolID, ToolMetadata } from '../types';
+import { ToolID, ToolMetadata } from '../../types';
 import { createSearchIndex } from './search';
 
 /** Default number of related tools rendered on a tool page. */

@@ -1,4 +1,4 @@
-import { parseUrl } from '../../urlUtils';
+import { parseUrl } from '../../tools/urlUtils';
 import { assertSupportedOperation, asString } from '../validators';
 import type { ToolRunner } from './types';
 

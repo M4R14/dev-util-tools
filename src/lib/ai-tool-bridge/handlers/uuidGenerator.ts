@@ -1,4 +1,4 @@
-import { randomUUID } from '../../randomUtils';
+import { randomUUID } from '../../platform/randomUtils';
 import { assertOptionType, assertSupportedOperation } from '../validators';
 import { BridgeValidationError } from '../errors';
 import type { ToolRunner } from './types';

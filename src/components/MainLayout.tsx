@@ -7,7 +7,7 @@ import ToolPageLayout from './ToolPageLayout';
 import { useUserPreferences } from '../context/UserPreferencesContext';
 import { useSearch } from '../context/SearchContext';
 import { Toaster } from './ui/sonner';
-import { resolvePageMeta } from '../lib/pageMeta';
+import { resolvePageMeta } from '../lib/platform/pageMeta';
 import { useScrollLock } from '../hooks/useScrollLock';
 import { useScrolledPast } from '../hooks/useScrolledPast';
 import { useSidebarCollapsed } from '../hooks/useSidebarCollapsed';

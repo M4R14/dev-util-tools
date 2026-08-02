@@ -7,7 +7,7 @@ import { Textarea } from '../ui/Textarea';
 import { Card, CardContent } from '../ui/Card';
 import { CopyButton } from '../ui/CopyButton';
 import { useJwtEncoder } from '../../hooks/useJwtEncoder';
-import { JWT_SIGNING_ALGORITHMS } from '../../lib/jwtSign';
+import { JWT_SIGNING_ALGORITHMS } from '../../lib/tools/jwtSign';
 
 const JwtEncoder: React.FC = () => {
   const {

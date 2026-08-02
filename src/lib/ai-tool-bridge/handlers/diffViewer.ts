@@ -1,4 +1,4 @@
-import { computeDiff, getDiffStats } from '../../diffUtils';
+import { computeDiff, getDiffStats } from '../../tools/diffUtils';
 import { assertOptionType, assertSupportedOperation, asObject, asString } from '../validators';
 import type { ToolRunner } from './types';
 

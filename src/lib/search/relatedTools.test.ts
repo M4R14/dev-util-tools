@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { Code2 } from 'lucide-react';
 import { getRelatedTools } from './relatedTools';
-import { TOOLS } from '../data/tools';
-import { ToolID, ToolMetadata } from '../types';
+import { TOOLS } from '../../data/tools';
+import { ToolID, ToolMetadata } from '../../types';
 
 const tool = (id: ToolID, tags: string[], related?: ToolID[]): ToolMetadata => ({
   id,

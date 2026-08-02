@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { readPersistedRaw, writePersistedRaw } from '../lib/persistedState';
+import { readPersistedRaw, writePersistedRaw } from '../lib/platform/persistedState';
 import {
   DARK_COLOR_SCHEME_QUERY,
   THEME_STORAGE_KEY,
@@ -7,7 +7,7 @@ import {
   nextThemePreference,
   type ResolvedTheme,
   type ThemePreference,
-} from '../lib/theme';
+} from '../lib/platform/theme';
 
 const prefersDark = () => window.matchMedia(DARK_COLOR_SCHEME_QUERY).matches;
 

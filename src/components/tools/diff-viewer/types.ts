@@ -1,4 +1,4 @@
-import type { DiffLine } from '../../../lib/diffUtils';
+import type { DiffLine } from '../../../lib/tools/diffUtils';
 
 export interface SplitRow {
   oldLine?: DiffLine;
