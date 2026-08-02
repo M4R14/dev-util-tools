@@ -3,15 +3,20 @@ export enum ToolID {
   AI_ASSISTANT = 'ai-assistant',
   URL_PARSER = 'url-parser',
   DIFF_VIEWER = 'diff-viewer',
+  JSON_COMPARE = 'json-compare',
+  CURL_PARSER = 'curl-parser',
+  JSON_PATH = 'json-path',
 
   // generator
   UUID_GENERATOR = 'uuid-generator',
   PASSWORD_GEN = 'password-gen',
+  TEST_DATA_GENERATOR = 'test-data-generator',
 
   // converter
   THAI_DATE_CONVERTER = 'thai-date-converter',
   THAI_ID = 'thai-id',
   TIMEZONE_CONVERTER = 'timezone-converter',
+  TIMESTAMP_CONVERTER = 'timestamp-converter',
   CASE_CONVERTER = 'case-converter',
   XML_TO_JSON = 'xml-to-json',
 

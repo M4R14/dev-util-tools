@@ -47,6 +47,41 @@ const BASE_AI_TOOL_CATALOG: Array<{
     examples: [{ operation: 'parse', input: 'https://example.com/path?a=1&b=2#hash' }],
   },
   {
+    id: 'json-compare',
+    operations: ['compare'],
+    examples: [
+      {
+        operation: 'compare',
+        input: { left: { id: 1, name: 'a' }, right: { name: 'a', id: 1 } },
+      },
+    ],
+  },
+  {
+    id: 'json-path',
+    operations: ['query'],
+    examples: [
+      {
+        operation: 'query',
+        input: { value: { data: { items: [{ id: 1 }, { id: 2 }] } }, path: '$.data.items[*].id' },
+      },
+    ],
+  },
+  {
+    id: 'curl-parser',
+    operations: ['parse'],
+    examples: [
+      {
+        operation: 'parse',
+        input: "curl 'https://api.example.com/v1/users?page=2' -H 'accept: application/json'",
+      },
+    ],
+  },
+  {
+    id: 'timestamp-converter',
+    operations: ['parse'],
+    examples: [{ operation: 'parse', input: '1735689600' }],
+  },
+  {
     id: 'diff-viewer',
     operations: ['compare'],
     examples: [
