@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import {
   appendMember,
@@ -21,8 +21,13 @@ import {
   type FamilyMember,
 } from '../../lib/tools/familyTree/types';
 import { readPersisted, removePersisted, writePersisted } from '../../lib/platform/persistedState';
+import { downloadText } from '../../lib/platform/download';
 
 const STORAGE_KEY = 'family-tree';
+/** Fixed id so the warning replaces itself rather than stacking one per keystroke. */
+const STORAGE_ERROR_TOAST = 'family-tree-storage';
+/** Long enough to notice the tree emptied and reach for the button. */
+const UNDO_MS = 12_000;
 
 /**
  * The tree lives in localStorage and nowhere else.
@@ -36,6 +41,17 @@ export const useFamilyTree = () => {
     normalizeMembers(readPersisted(STORAGE_KEY, familyMembersSchema, [])),
   );
 
+  /**
+   * Whether the last write reached storage.
+   *
+   * `writePersisted` returns `false` when localStorage refuses — a full quota, or Safari in private
+   * mode — and this used to throw that answer away. Someone could spend an hour entering their
+   * whole family, see every edit appear on screen, and lose all of it on the next reload with no
+   * signal that anything was wrong. This tool has no value except the data typed into it, so a
+   * failure to keep it is the one thing that must not be quiet.
+   */
+  const storageFailedRef = useRef(false);
+
   useEffect(() => {
     if (members.length === 0) {
       // Writing `[]` would resurrect an empty tree over a cleared one on the next visit.
@@ -43,7 +59,23 @@ export const useFamilyTree = () => {
       return;
     }
 
-    writePersisted(STORAGE_KEY, members);
+    const stored = writePersisted(STORAGE_KEY, members);
+
+    if (!stored && !storageFailedRef.current) {
+      storageFailedRef.current = true;
+      // Not dismissed on its own: the reader has to see it, and the way out is to export now.
+      toast.error('This browser refused to save the tree — export it before you close the tab.', {
+        duration: Infinity,
+        id: STORAGE_ERROR_TOAST,
+      });
+      return;
+    }
+
+    if (stored && storageFailedRef.current) {
+      storageFailedRef.current = false;
+      toast.dismiss(STORAGE_ERROR_TOAST);
+      toast.success('Saving works again');
+    }
   }, [members]);
 
   const hierarchy = useMemo(() => buildHierarchy(members), [members]);
@@ -60,24 +92,32 @@ export const useFamilyTree = () => {
     setMembers((previous) => updateInList(previous, id, patch));
   }, []);
 
-  const removeMember = useCallback((id: string) => {
-    setMembers((previous) => {
-      const target = previous.find((member) => member.id === id);
-      const lifted = previous.filter((member) => member.parentId === id).length;
-      const next = removeFromList(previous, id);
+  /**
+   * Removing announces where the children went, and stays undoable.
+   *
+   * The toast is raised here rather than inside the state updater. React calls updaters twice under
+   * StrictMode, so a side effect in one fires twice — this used to announce every deletion two
+   * times in development.
+   */
+  const removeMember = useCallback(
+    (id: string) => {
+      const target = members.find((member) => member.id === id);
+      if (!target) return;
 
-      if (target && lifted > 0) {
-        // Say where they went. Silently re-parenting looks like the subtree was deleted too.
-        toast.success(
-          `Removed ${target.name || 'member'} — ${lifted} moved up to their place`,
-        );
-      } else if (target) {
-        toast.success(`Removed ${target.name || 'member'}`);
-      }
+      const lifted = members.filter((member) => member.parentId === id).length;
+      const previous = members;
 
-      return next;
-    });
-  }, []);
+      setMembers(removeFromList(members, id));
+
+      toast.success(
+        lifted > 0
+          ? `Removed ${target.name || 'member'} — ${lifted} moved up to their place`
+          : `Removed ${target.name || 'member'}`,
+        { duration: UNDO_MS, action: { label: 'Undo', onClick: () => setMembers(previous) } },
+      );
+    },
+    [members],
+  );
 
   const reparentMember = useCallback((id: string, parentId: string | null) => {
     setMembers((previous) => {
@@ -105,23 +145,54 @@ export const useFamilyTree = () => {
     });
   }, []);
 
-  const clearAll = useCallback(() => {
-    setMembers([]);
-    toast.success('Family tree cleared');
-  }, []);
+  /**
+   * Replaces the whole tree, keeping the old one within reach.
+   *
+   * Clearing and importing both throw away everything at once, and a confirmation dialog only ever
+   * asks before the mistake. An undo answers the case that actually happens: the click already
+   * landed, and the tree the owner spent an hour on is gone from the screen.
+   */
+  const replaceAll = useCallback(
+    (next: FamilyMember[], message: string) => {
+      const previous = members;
+      setMembers(next);
 
-  const importJson = useCallback((raw: string) => {
-    const result = parseFamily(raw);
+      toast.success(message, {
+        duration: UNDO_MS,
+        action:
+          previous.length > 0
+            ? { label: 'Undo', onClick: () => setMembers(previous) }
+            : undefined,
+      });
+    },
+    [members],
+  );
 
-    if (isFamilyFailure(result)) {
-      toast.error(result.reason);
-      return false;
-    }
+  const clearAll = useCallback(
+    () => replaceAll([], 'Family tree cleared'),
+    [replaceAll],
+  );
 
-    setMembers(result.members);
-    toast.success(`Imported ${result.members.length} members`);
-    return true;
-  }, []);
+  const importJson = useCallback(
+    (raw: string) => {
+      const result = parseFamily(raw);
+
+      if (isFamilyFailure(result)) {
+        toast.error(result.reason);
+        return false;
+      }
+
+      replaceAll(result.members, `Imported ${result.members.length} members`);
+      return true;
+    },
+    [replaceAll],
+  );
+
+  const downloadJson = useCallback(() => {
+    // Copying to the clipboard was the only way out, which is the easiest place to lose something.
+    downloadText(serializeFamily(members), 'family-tree.json', 'application/json');
+    toast.success('Saved family-tree.json');
+  }, [members]);
 
   const asJson = useMemo(() => serializeFamily(members), [members]);
 
@@ -136,6 +207,7 @@ export const useFamilyTree = () => {
     linkSpouse,
     clearAll,
     importJson,
+    downloadJson,
     asJson,
   };
 };

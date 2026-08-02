@@ -85,6 +85,22 @@ button. `useFamilyTree` uses `persistedState`, not `useShareableState`, for this
 Clearing the tree removes the storage key rather than writing `[]`, so an empty tree does not come
 back on the next visit.
 
+**A refused write is announced and stays on screen.** `writePersisted` returns `false` when
+localStorage says no — a full quota, Safari in private mode — and the hook used to discard that.
+Someone could enter their whole family, watch every edit appear, and lose all of it on reload with
+no signal at all. The warning has a fixed toast id so it replaces itself instead of stacking one per
+keystroke, has no timeout, and is withdrawn with a confirmation once a write succeeds again. This
+tool has no value except the data typed into it, so a failure to keep it is the one thing that
+cannot be quiet.
+
+**Destructive actions are undoable, not guarded by a dialog.** Clear, import and delete all offer an
+Undo on the toast for twelve seconds. A confirmation only ever asks before the mistake; undo answers
+the case that actually happens, where the click already landed and an hour of work is off the
+screen.
+
+**Toasts are raised outside the state updater.** React calls updaters twice under StrictMode, so a
+side effect inside one fires twice — deleting used to announce itself two times in development.
+
 ## Partners
 
 `spouseId` is symmetric — every write sets both sides, or the pair renders from one side only and

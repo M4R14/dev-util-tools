@@ -6,6 +6,8 @@
  * every fill, stroke and font resolved to a default. So the computed value of the handful of
  * properties that matter is copied onto each element as an attribute before serialising.
  */
+import { downloadBlob } from './download';
+
 const PAINTED_PROPERTIES = [
   'fill',
   'stroke',
@@ -53,19 +55,8 @@ export const serializeSvg = (svg: SVGSVGElement): string => {
   return `<?xml version="1.0" encoding="UTF-8"?>\n${new XMLSerializer().serializeToString(clone)}`;
 };
 
-const triggerDownload = (blob: Blob, filename: string) => {
-  const url = URL.createObjectURL(blob);
-  const anchor = document.createElement('a');
-
-  anchor.href = url;
-  anchor.download = filename;
-  anchor.click();
-
-  URL.revokeObjectURL(url);
-};
-
 export const downloadSvg = (svg: SVGSVGElement, filename: string) => {
-  triggerDownload(new Blob([serializeSvg(svg)], { type: 'image/svg+xml' }), filename);
+  downloadBlob(new Blob([serializeSvg(svg)], { type: 'image/svg+xml' }), filename);
 };
 
 /**
@@ -106,7 +97,7 @@ export const downloadPng = async (
     const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
     if (!blob) throw new Error('The image could not be encoded.');
 
-    triggerDownload(blob, filename);
+    downloadBlob(blob, filename);
   } finally {
     URL.revokeObjectURL(url);
   }

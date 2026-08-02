@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { Trash2, Users } from 'lucide-react';
+import { Download, Trash2, UserPlus, Users } from 'lucide-react';
 import { collapseHierarchy, flattenHierarchy } from '../../../lib/tools/familyTree/hierarchy';
 import { ToolLayout } from '../../ui/ToolLayout';
 import { Button } from '../../ui/Button';
@@ -8,6 +8,7 @@ import { CodeInput } from '../../ui/CodeInput';
 import { AddMemberForm, RelationshipPresets } from './AddMemberForm';
 import { TreeView } from './TreeView';
 import { FamilyDiagram } from './FamilyDiagram';
+import { MemberSearch } from './MemberSearch';
 import { useFamilyTree } from '../../../hooks/tools/useFamilyTree';
 
 const FamilyTree: React.FC = () => {
@@ -22,6 +23,7 @@ const FamilyTree: React.FC = () => {
     linkSpouse,
     clearAll,
     importJson,
+    downloadJson,
     asJson,
   } = useFamilyTree();
 
@@ -79,27 +81,23 @@ const FamilyTree: React.FC = () => {
     <ToolLayout>
       <RelationshipPresets />
 
-      <ToolLayout.Panel
-        title="Add a member"
-        className="mb-4"
-        actions={
-          members.length > 0 ? (
-            <span className="text-xs text-muted-foreground">
-              {members.length} {members.length === 1 ? 'member' : 'members'} · {generations}{' '}
-              {generations === 1 ? 'generation' : 'generations'}
-            </span>
-          ) : null
-        }
-      >
-        <AddMemberForm
-          members={members}
-          defaultParentId={pendingParentId}
-          onAdd={(input) => {
-            addMember(input);
-            setPendingParentId(input.parentId ?? null);
-          }}
-        />
-      </ToolLayout.Panel>
+      {/*
+        The full form only exists while the tree is empty. Once anyone is on the canvas, adding is
+        faster from the diagram — click a person, press Child, type — and this panel was a second,
+        slower way to do the same job, sitting above the picture the whole time.
+      */}
+      {members.length === 0 && (
+        <ToolLayout.Panel title="Add a member" className="mb-4">
+          <AddMemberForm
+            members={members}
+            defaultParentId={pendingParentId}
+            onAdd={(input) => {
+              addMember(input);
+              setPendingParentId(input.parentId ?? null);
+            }}
+          />
+        </ToolLayout.Panel>
+      )}
 
       <ToolLayout.Panel
         title="Tree"
@@ -107,7 +105,30 @@ const FamilyTree: React.FC = () => {
         actions={
           members.length > 0 ? (
             <div className="flex items-center gap-1">
-              <CopyButton value={asJson} label="Export" successMessage="Family tree copied as JSON" />
+              <span className="mr-1 text-xs text-muted-foreground">
+                {members.length} {members.length === 1 ? 'member' : 'members'} · {generations}{' '}
+                {generations === 1 ? 'generation' : 'generations'}
+              </span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => createAndSelect({ name: '' })}
+                className="h-8 px-2 text-xs"
+              >
+                <UserPlus className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
+                Add
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={downloadJson}
+                className="h-8 px-2 text-xs"
+                title="Download the tree as a file"
+              >
+                <Download className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
+                JSON
+              </Button>
+              <CopyButton value={asJson} label="Copy" successMessage="Family tree copied as JSON" />
               <Button
                 variant="ghost"
                 size="icon"
@@ -134,6 +155,9 @@ const FamilyTree: React.FC = () => {
           </div>
         ) : (
           <div className="space-y-4">
+            {/* A tree past a screenful cannot be scanned by eye; selecting also scrolls to them. */}
+            <MemberSearch members={members} onSelect={setSelectedId} />
+
             {/*
               Clicking someone in the diagram opens an editor on them, so the common edits never
               leave the picture. The list underneath keeps what the diagram has no room for —
