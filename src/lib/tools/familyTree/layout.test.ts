@@ -194,18 +194,13 @@ describe('layoutFamilyTree2D', () => {
       { ...member('b', 'gp'), otherParentId: 'second' },
     ];
 
-    it('puts the shared parent between their partners', () => {
+    it('lines the partners up beside the shared parent', () => {
       const layout = layoutOf(remarried());
-      const [first, gp, second] = ['first', 'gp', 'second'].map((id) => boxOf(layout, id)!);
+      const [gp, first, second] = ['gp', 'first', 'second'].map((id) => boxOf(layout, id)!);
 
-      expect([first.y, gp.y, second.y]).toEqual([0, 0, 0]);
-      /*
-       * Left to right: first partner, the shared parent, second partner. With the parent at one
-       * end the second bar joined two partners to each other, and that marriage's children dropped
-       * out of the first partner's head.
-       */
-      expect(gp.x - first.x).toBe(140);
-      expect(second.x - gp.x).toBe(140);
+      expect([first.y, second.y]).toEqual([gp.y, gp.y]);
+      expect(first.x - gp.x).toBe(140);
+      expect(second.x - first.x).toBe(140);
     });
 
     it('joins every bar to the shared parent, never one partner to another', () => {
@@ -219,42 +214,83 @@ describe('layoutFamilyTree2D', () => {
       });
     });
 
+    it('arcs a second marriage above the heads instead of across them', () => {
+      const layout = layoutOf(remarried());
+      const gp = boxOf(layout, 'gp')!;
+      const [firstBar, secondBar] = layout.connectors.filter(
+        (connector) => connector.kind === 'spouse',
+      );
+
+      // The first is the classic straight bar between two avatars.
+      expect(firstBar.points).toHaveLength(2);
+      expect(firstBar.points[0].y).toBe(firstBar.points[1].y);
+
+      // The second goes up, across above the row, and back down.
+      expect(secondBar.points).toHaveLength(4);
+      expect(secondBar.points[1].y).toBeLessThan(gp.y);
+      expect(secondBar.points[2].y).toBeLessThan(gp.y);
+    });
+
+    it('leaves room above the top row for the raised bars', () => {
+      // Without it the arc is drawn off the top of the canvas and simply not seen.
+      expect(boxOf(layoutOf(remarried()), 'gp')!.y).toBeGreaterThan(0);
+    });
+
     it('gives the slot enough width for three people', () => {
       // Three at 100 with two 40 gaps.
       expect(layoutOf(remarried()).width).toBe(380);
     });
 
-    it('hangs each child from the bar of the marriage they belong to', () => {
+    it('descends the first marriage from the couple bar and the rest from their own partner', () => {
       const layout = layoutOf(remarried());
       const gp = boxOf(layout, 'gp')!;
       const first = boxOf(layout, 'first')!;
       const second = boxOf(layout, 'second')!;
 
-      const dropFrom = (x: number) =>
+      const dropAt = (x: number, y: number) =>
         layout.connectors.find(
           (connector) =>
             connector.kind === 'descent' &&
             connector.points[0].x === x &&
-            connector.points[0].y === 30,
+            connector.points[0].y === y,
         );
 
-      // This is the whole point: half-siblings descend from different bars.
-      expect(dropFrom((gp.x + first.x) / 2)).toBeDefined();
-      expect(dropFrom((gp.x + second.x) / 2)).toBeDefined();
+      // Half-siblings descend from different places, and neither place is another person's box.
+      expect(dropAt((gp.x + first.x) / 2, gp.y + 30)).toBeDefined();
+      expect(dropAt(second.x, gp.y + 100)).toBeDefined();
     });
 
-    it('drops a child of no recorded marriage from under the holder alone', () => {
-      const layout = layoutOf([...remarried(), member('c', 'gp')]);
-      const gp = boxOf(layout, 'gp')!;
+    it('keeps a third marriage clear of everyone else', () => {
+      const thrice: FamilyMember[] = [
+        { ...member('gp', null), spouseIds: ['w1', 'w2', 'w3'] },
+        { ...member('w1', null), spouseIds: ['gp'] },
+        { ...member('w2', null), spouseIds: ['gp'] },
+        { ...member('w3', null), spouseIds: ['gp'] },
+        { ...member('a', 'gp'), otherParentId: 'w1' },
+        { ...member('b', 'gp'), otherParentId: 'w2' },
+        { ...member('c', 'gp'), otherParentId: 'w3' },
+      ];
+      const layout = layoutOf(thrice);
+      const xs = new Map(layout.boxes.map((box) => [box.member.id, box.x]));
 
-      const holderDrop = layout.connectors.find(
-        (connector) =>
-          connector.kind === 'descent' &&
-          connector.points[0].x === gp.x &&
-          connector.points[0].y === 100,
-      );
+      const drops = layout.connectors
+        .filter((connector) => connector.kind === 'descent')
+        .filter((connector) => connector.points[0].x === connector.points[1].x)
+        .map((connector) => connector.points[0].x);
 
-      expect(holderDrop).toBeDefined();
+      // Each marriage descends from somewhere of its own...
+      expect(new Set(drops).size).toBeGreaterThanOrEqual(3);
+
+      // ...and no descent starts on top of a partner who is not that marriage's own.
+      expect(drops).not.toContain(xs.get('w1'));
+      expect(drops).not.toContain(xs.get('gp'));
+
+      // The bars stack rather than sharing a line, so three marriages stay countable.
+      const barHeights = layout.connectors
+        .filter((connector) => connector.kind === 'spouse')
+        .map((connector) => Math.min(...connector.points.map((point) => point.y)));
+
+      expect(new Set(barHeights).size).toBe(3);
     });
 
     it('treats an unrecorded second parent as the only partner when there is one', () => {

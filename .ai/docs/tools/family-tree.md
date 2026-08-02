@@ -146,11 +146,21 @@ every tree built before the field existed looks like this.
 `unlinkSpouse` clears the attribution of any child of that pairing, or they would hang off a bar
 that is no longer drawn, which puts them nowhere. `removeMember` does the same.
 
-**A shared parent with more than one partner is drawn between them.** With the parent at one end of
-the row, the second bar visually joined two partners *to each other*, and that marriage's children
-dropped out of the first partner's head — caught by looking at it, not by a test. Past two partners
-a bar has to span over an inner one; the bars stagger so they stay countable, but a third marriage
-is drawn less clearly than the first two.
+**Marriages after the first arc above the row.** The shared parent leads, partners follow in
+marriage order. The first marriage gets the classic straight bar between the two avatars; each later
+one goes up from the parent, across above everyone's heads at its own height, and back down into
+that partner.
+
+Two earlier attempts failed here, both found by looking at the picture rather than by a test.
+Chaining each bar to the previous box made it read as two wives married *to each other*. Putting the
+parent in the middle fixed exactly two partners and broke again at three, because the midpoint of a
+non-adjacent pair lands squarely on whoever sits between them — so that marriage's children
+descended out of another wife's head.
+
+A raised bar has no midpoint to collide with, which is why the descent rule differs too: the first
+marriage's children drop from the middle of its bar, and every later marriage's children drop from
+under **their own** partner. Nothing crosses anything, at any number of marriages. `rowY` leaves
+room above the top row or the arcs would be drawn off the canvas and simply not seen.
 
 Old exports carry `spouseId` rather than `spouseIds`; `storage.ts` accepts both and lifts the single
 key into the list, so a saved file is never a reason to lose a tree.

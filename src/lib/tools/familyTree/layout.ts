@@ -47,6 +47,9 @@ export interface Layout2DOptions {
   padding?: number;
 }
 
+/** How far above the row each successive marriage bar arcs. */
+const RAISED_BAR_STEP = 14;
+
 const DEFAULTS: Required<Layout2DOptions> = {
   nodeWidth: 116,
   nodeHeight: 96,
@@ -125,19 +128,45 @@ export const layoutFamilyTree2D = (
     return Math.max(unitWidth(node), childrenWidth);
   };
 
-  /** Centre of the bar a group of children hangs from — between the pair, or the holder alone. */
-  const anchorX = (
+  /**
+   * Where a group of children drops from.
+   *
+   * The first marriage descends from the middle of the bar between the couple, as it always has.
+   * Later marriages descend from under that partner instead, because the midpoint of a
+   * non-adjacent pair lands on whoever sits between them. Children with no recorded marriage drop
+   * from under the shared parent.
+   */
+  const anchorOf = (
+    node: FamilyNode,
     holderX: number,
     partnerXs: Map<string, number>,
     partnerId: string | null,
-  ): number => {
-    const partnerX = partnerId === null ? undefined : partnerXs.get(partnerId);
-    return partnerX === undefined ? holderX : (holderX + partnerX) / 2;
+    y: number,
+  ): { x: number; y: number } => {
+    if (partnerId === null) return { x: holderX, y: y + nodeHeight };
+
+    const index = node.spouses.findIndex((spouse) => spouse.id === partnerId);
+    const partnerX = partnerXs.get(partnerId);
+    if (partnerX === undefined) return { x: holderX, y: y + nodeHeight };
+
+    return index === 0
+      ? { x: (holderX + partnerX) / 2, y: y + avatarSize / 2 }
+      : { x: partnerX, y: y + nodeHeight };
   };
 
   const boxes: LaidOutMember[] = [];
   const connectors: Connector[] = [];
-  const rowY = (depth: number) => padding + depth * (nodeHeight + levelGap);
+
+  /** Room above the first row for the raised bars of any second or later marriage. */
+  const deepestMarriage = (nodes: FamilyNode[]): number =>
+    nodes.reduce(
+      (most, node) =>
+        Math.max(most, node.spouses.length - 1, deepestMarriage(node.children)),
+      0,
+    );
+  const topRoom = Math.max(0, deepestMarriage(roots)) * RAISED_BAR_STEP;
+
+  const rowY = (depth: number) => padding + topRoom + depth * (nodeHeight + levelGap);
 
   const place = (node: FamilyNode, left: number, depth: number) => {
     const width = widthOf(node);
@@ -157,48 +186,41 @@ export const layoutFamilyTree2D = (
     const rowStart = centreX - (node.spouses.length * step) / 2;
     const barY = y + avatarSize / 2;
 
-    /*
-     * Order along the row. With one marriage the holder leads, as a couple has always been drawn.
-     * With more, the holder moves between their partners — every bar joins the holder to somebody,
-     * and with the holder at one end the second bar visually joined two partners to each other and
-     * dropped that marriage's children out of the first partner's head.
-     *
-     * Past two partners a bar has to span over an inner one; the rows stagger so they stay
-     * distinguishable, but a third marriage is drawn less clearly than the first two.
-     */
-    const row =
-      node.spouses.length <= 1
-        ? [node.member, ...node.spouses]
-        : [node.spouses[0], node.member, ...node.spouses.slice(1)];
+    // Holder first, then each partner in marriage order.
+    const holderX = rowStart;
+    boxes.push({ member: node.member, x: holderX, y, isSpouse: false, ...own });
 
-    const xOf = new Map<string, number>();
-    row.forEach((person, index) => {
-      const x = rowStart + step * index;
-      xOf.set(person.id, x);
-      boxes.push({
-        member: person,
-        x,
-        y,
-        isSpouse: person.id !== node.member.id,
-        ...(person.id === node.member.id ? own : partner),
-      });
-    });
-
-    const holderX = xOf.get(node.member.id) as number;
-    const partnerXs = new Map(
-      node.spouses.map((spouse) => [spouse.id, xOf.get(spouse.id) as number]),
-    );
+    const partnerXs = new Map<string, number>();
 
     node.spouses.forEach((spouse, index) => {
-      // One bar per marriage, each joining the holder to that partner. The bar sits at the avatars'
-      // height so the drop to the children passes between the names rather than through them.
-      // Bars beyond the first are nudged down so overlapping ones stay countable.
+      const x = rowStart + step * (index + 1);
+      partnerXs.set(spouse.id, x);
+      boxes.push({ member: spouse, x, y, isSpouse: true, ...partner });
+
+      /*
+       * The first marriage gets the classic bar between the two avatars. Later ones are drawn as
+       * arcs *above* the heads, back to the shared parent.
+       *
+       * Two earlier attempts both failed on a third partner. Chaining each bar to the previous box
+       * made it look like two wives were married to each other. Putting the shared parent in the
+       * middle fixed exactly two, then broke again at three, because the midpoint of a
+       * non-adjacent pair lands squarely on whoever sits between them — so that marriage's children
+       * descended out of another wife's head. A raised bar has no midpoint to collide with.
+       */
       connectors.push({
         kind: 'spouse',
-        points: [
-          { x: holderX, y: barY + (index > 1 ? (index - 1) * 5 : 0) },
-          { x: partnerXs.get(spouse.id) as number, y: barY + (index > 1 ? (index - 1) * 5 : 0) },
-        ],
+        points:
+          index === 0
+            ? [
+                { x: holderX, y: barY },
+                { x, y: barY },
+              ]
+            : [
+                { x: holderX, y: barY },
+                { x: holderX, y: y - RAISED_BAR_STEP * index },
+                { x, y: y - RAISED_BAR_STEP * index },
+                { x, y },
+              ],
       });
     });
 
@@ -225,15 +247,13 @@ export const layoutFamilyTree2D = (
 
     for (const group of childGroups(node)) {
       const centres = group.children.map((child) => centreOf.get(child.member.id) ?? 0);
-      // Children of a marriage drop from that couple's bar; unattributed ones from under the
-      // holder's own name, which is where a single parent's children have always come from.
-      const from = anchorX(holderX, partnerXs, group.partnerId);
-      const dropFromY = group.partnerId === null ? y + nodeHeight : barY;
+      const anchor = anchorOf(node, holderX, partnerXs, group.partnerId, y);
+      const from = anchor.x;
 
       connectors.push({
         kind: 'descent',
         points: [
-          { x: from, y: dropFromY },
+          { x: from, y: anchor.y },
           { x: from, y: busY },
         ],
       });
