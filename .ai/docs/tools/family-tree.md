@@ -203,10 +203,23 @@ tested without rendering anything. The rendering is split the same way the work 
 read or write the same two numbers — the scroll offsets of one element. Splitting them would mean
 four things fighting over the same ref.
 
-**Widths are measured bottom-up before anything is placed.** A parent can be wider than its children
-(a couple with one child) or narrower (six children under one person). `widthOf` takes the larger and
-the placement centres the smaller inside it, which avoids a second pass to push overlapping subtrees
-apart.
+**Branches are packed by their outline, not by reserving a rectangle each.** `buildSubtree` lays out
+each subtree relative to its own root and records `left[d]` / `right[d]` — the outermost edges
+anything reaches at each depth. `packSiblings` then slides the next branch in until those outlines
+nearly touch, so a shallow branch can tuck under the overhang of a deep one.
+
+The rule it replaced was `width = max(own, sum of children)`, which is cheap and wrong in a specific
+way: a long chain under one child inflates the block of every ancestor, so siblings get pushed apart
+at *every* level, including levels where nothing sits between them. Measured on a realistically
+lopsided tree — one line carried down four generations, the other children stopping — that cost 27%
+of the width at two branches and 32% at three. On a **uniform** tree the two rules agree exactly,
+which is why the first shapes I tested showed no change at all and nearly sent me looking elsewhere.
+
+A parent still ends up centred over its children, or the children centred under it when the parent
+is the wider — both fall out of putting the parent at the middle of the span its children occupy.
+
+Roots are packed against each other too, with a wider gap, so two unrelated families do not read as
+two siblings.
 
 **Children hang from the partner bar, not from under a name.** For a couple the drop starts at the
 bar's height so it passes between the two names; for a single parent it starts below the box. A lone

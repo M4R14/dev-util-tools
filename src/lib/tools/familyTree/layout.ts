@@ -113,19 +113,97 @@ export const layoutFamilyTree2D = (
     childGroups(node).flatMap((group) => group.children);
 
   /**
-   * Width of everything under a node, measured bottom-up before anything is placed.
+   * A subtree positioned relative to its own root, plus the shape of its silhouette.
    *
-   * A parent can be wider than its children — a married couple with one child — or narrower, with
-   * six children under a single person. Taking the larger of the two and centring the smaller
-   * inside it handles both without a second pass to push overlapping subtrees apart.
+   * `left[d]` and `right[d]` are the outermost edges anything reaches at each depth below this
+   * root. Two subtrees can be slid together until those outlines touch, which is what lets a
+   * shallow branch tuck under the overhang of a deep one.
    */
-  const widthOf = (node: FamilyNode): number => {
-    const childrenWidth = node.children.reduce(
-      (total, child, index) => total + widthOf(child) + (index > 0 ? siblingGap : 0),
-      0,
-    );
+  interface Subtree {
+    placed: { node: FamilyNode; centreX: number; depth: number }[];
+    left: number[];
+    right: number[];
+  }
 
-    return Math.max(unitWidth(node), childrenWidth);
+  /**
+   * Slides sibling subtrees together until their outlines nearly touch, and returns each one's
+   * offset.
+   *
+   * The old rule was `width = max(own, sum of children)`, which reserves a rectangle per subtree.
+   * That is cheap and wrong in a specific way: a long chain under one child inflates the block of
+   * every ancestor, so siblings are pushed apart at *every* level, including levels where nothing
+   * sits between them. Measured on an interlocking pair, four people in one row were spread across
+   * 1412px where 548px would have held them — the deeper the tree, the worse it got.
+   *
+   * Comparing the actual outlines only separates branches at the depths where they really meet.
+   */
+  const packSiblings = (subs: Subtree[], gap: number): number[] => {
+    const offsets: number[] = [];
+    const merged: { left: number[]; right: number[] } = { left: [], right: [] };
+
+    subs.forEach((sub, index) => {
+      let offset = 0;
+
+      if (index > 0) {
+        const shared = Math.min(merged.right.length, sub.left.length);
+        for (let depth = 0; depth < shared; depth += 1) {
+          offset = Math.max(offset, merged.right[depth] + gap - sub.left[depth]);
+        }
+      }
+
+      offsets.push(offset);
+
+      for (let depth = 0; depth < sub.left.length; depth += 1) {
+        const leftEdge = sub.left[depth] + offset;
+        const rightEdge = sub.right[depth] + offset;
+
+        merged.left[depth] =
+          merged.left[depth] === undefined ? leftEdge : Math.min(merged.left[depth], leftEdge);
+        merged.right[depth] =
+          merged.right[depth] === undefined ? rightEdge : Math.max(merged.right[depth], rightEdge);
+      }
+    });
+
+    return offsets;
+  };
+
+  /** Positions one subtree bottom-up, with its own root at x = 0. */
+  const buildSubtree = (node: FamilyNode): Subtree => {
+    const half = unitWidth(node) / 2;
+    const children = orderedChildren(node);
+
+    if (children.length === 0) {
+      return { placed: [{ node, centreX: 0, depth: 0 }], left: [-half], right: [half] };
+    }
+
+    const subs = children.map(buildSubtree);
+    const offsets = packSiblings(subs, siblingGap);
+    // Centred over its children, or the children centred under it when the parent is the wider —
+    // a married couple with one child. Both fall out of putting the parent at the span's middle.
+    const parentX = (offsets[0] + offsets[offsets.length - 1]) / 2;
+
+    const placed: Subtree['placed'] = [{ node, centreX: 0, depth: 0 }];
+    const left: number[] = [-half];
+    const right: number[] = [half];
+
+    subs.forEach((sub, index) => {
+      const shift = offsets[index] - parentX;
+
+      sub.placed.forEach((entry) =>
+        placed.push({ node: entry.node, centreX: entry.centreX + shift, depth: entry.depth + 1 }),
+      );
+
+      sub.left.forEach((edge, depth) => {
+        const at = depth + 1;
+        left[at] = left[at] === undefined ? edge + shift : Math.min(left[at], edge + shift);
+      });
+      sub.right.forEach((edge, depth) => {
+        const at = depth + 1;
+        right[at] = right[at] === undefined ? edge + shift : Math.max(right[at], edge + shift);
+      });
+    });
+
+    return { placed, left, right };
   };
 
   /**
@@ -168,9 +246,32 @@ export const layoutFamilyTree2D = (
 
   const rowY = (depth: number) => padding + topRoom + depth * (nodeHeight + levelGap);
 
-  const place = (node: FamilyNode, left: number, depth: number) => {
-    const width = widthOf(node);
-    const centreX = left + width / 2;
+  /**
+   * Positions for every node, worked out by the packing pass above.
+   *
+   * Roots are packed against each other too, with a wider gap so separate families read as
+   * separate. Everything is then shifted right so the leftmost edge lands on the padding.
+   */
+  const rootSubs = roots.map(buildSubtree);
+  const rootOffsets = packSiblings(rootSubs, siblingGap * 3);
+
+  const centreOf = new Map<string, number>();
+  let leftmost = Infinity;
+
+  rootSubs.forEach((sub, index) => {
+    sub.placed.forEach((entry) =>
+      centreOf.set(entry.node.member.id, entry.centreX + rootOffsets[index]),
+    );
+    sub.left.forEach((edge) => {
+      leftmost = Math.min(leftmost, edge + rootOffsets[index]);
+    });
+  });
+
+  const originShift = leftmost === Infinity ? 0 : padding - leftmost;
+  centreOf.forEach((x, id) => centreOf.set(id, x + originShift));
+
+  const emit = (node: FamilyNode, depth: number) => {
+    const centreX = centreOf.get(node.member.id) ?? 0;
     const y = rowY(depth);
 
     const own = {
@@ -226,21 +327,7 @@ export const layoutFamilyTree2D = (
 
     if (node.children.length === 0) return;
 
-    const ordered = orderedChildren(node);
-    const childrenWidth = ordered.reduce(
-      (total, child, index) => total + widthOf(child) + (index > 0 ? siblingGap : 0),
-      0,
-    );
-
-    let cursor = left + (width - childrenWidth) / 2;
-    const centreOf = new Map<string, number>();
-
-    for (const child of ordered) {
-      const childWidth = widthOf(child);
-      place(child, cursor, depth + 1);
-      centreOf.set(child.member.id, cursor + childWidth / 2);
-      cursor += childWidth + siblingGap;
-    }
+    orderedChildren(node).forEach((child) => emit(child, depth + 1));
 
     const busY = y + nodeHeight + levelGap / 2;
     const childTopY = rowY(depth + 1);
@@ -283,11 +370,7 @@ export const layoutFamilyTree2D = (
     }
   };
 
-  let cursor = padding;
-  for (const root of roots) {
-    place(root, cursor, 0);
-    cursor += widthOf(root) + siblingGap * 2;
-  }
+  roots.forEach((root) => emit(root, 0));
 
   const deepest = boxes.reduce((max, box) => Math.max(max, box.depth), 0);
   const right = boxes.reduce((max, box) => Math.max(max, box.x + nodeWidth / 2), 0);

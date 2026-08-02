@@ -312,6 +312,97 @@ describe('layoutFamilyTree2D', () => {
     });
   });
 
+  describe('packing sibling branches', () => {
+    /** Every pair of boxes sharing a row, closest first. */
+    const tightestGap = (layout: ReturnType<typeof layoutOf>): number => {
+      const rows = new Map<number, number[]>();
+      layout.boxes.forEach((box) => rows.set(box.y, [...(rows.get(box.y) ?? []), box.x]));
+
+      let closest = Infinity;
+      rows.forEach((xs) => {
+        const sorted = [...xs].sort((left, right) => left - right);
+        for (let i = 1; i < sorted.length; i += 1) {
+          closest = Math.min(closest, sorted[i] - sorted[i - 1]);
+        }
+      });
+
+      return closest;
+    };
+
+    /**
+     * Two branches whose outlines interlock: one carries its line down the left, the other down
+     * the right. Reserving a rectangle per branch cannot exploit that; comparing outlines can.
+     */
+    const interlocking = (): FamilyMember[] => {
+      const members = [member('root', null), member('L', 'root'), member('R', 'root')];
+      let left = 'L';
+      let right = 'R';
+
+      for (let i = 0; i < 4; i += 1) {
+        members.push(member(`l${i}`, left), member(`lpad${i}`, left));
+        left = `l${i}`;
+        members.push(member(`rpad${i}`, right), member(`r${i}`, right));
+        right = `r${i}`;
+      }
+
+      return members;
+    };
+
+    it('never lets two boxes on a row come closer than one node plus the gap', () => {
+      // The thing packing could plausibly break, checked on the shape most likely to break it.
+      expect(tightestGap(layoutOf(interlocking()))).toBe(120);
+    });
+
+    it('tucks a shallow branch under the overhang of a deep one', () => {
+      const layout = layoutOf(interlocking());
+
+      /*
+       * Under the replaced rule — width = max(own, sum of children) — a long chain under one child
+       * inflated the block of every ancestor, so siblings were pushed apart at every level, even
+       * ones where nothing sat between them. Every row grew by a node width over the row above it.
+       *
+       * The numbers below are what the packed layout produces. The block rule gave 1180 for the
+       * same fixture. Neither is the theoretical optimum — the outlines above genuinely do keep
+       * these branches apart — but the overhang is no longer paid for at every level on the way
+       * down.
+       */
+      const deepest = Math.max(...layout.boxes.map((entry) => entry.depth));
+      const bottom = layout.boxes.filter((box) => box.depth === deepest);
+      const span = Math.max(...bottom.map((b) => b.x)) - Math.min(...bottom.map((b) => b.x));
+
+      expect(bottom).toHaveLength(4);
+      expect(span).toBe(720);
+      expect(layout.width).toBe(820);
+    });
+
+    it('leaves a uniform tree exactly where it was', () => {
+      // Where every branch has the same silhouette there is nothing to tuck, and the packed result
+      // must match what the simple rule already produced.
+      const balanced = [
+        member('r', null),
+        member('a', 'r'),
+        member('b', 'r'),
+        member('a1', 'a'),
+        member('a2', 'a'),
+        member('b1', 'b'),
+        member('b2', 'b'),
+      ];
+      const layout = layoutOf(balanced);
+
+      expect(layout.width).toBe(460);
+      expect(boxOf(layout, 'r')?.x).toBe(230);
+      expect(tightestGap(layout)).toBe(120);
+    });
+
+    it('keeps separate roots further apart than siblings', () => {
+      const layout = layoutOf([member('r1', null), member('r2', null)]);
+      const gap = boxOf(layout, 'r2')!.x - boxOf(layout, 'r1')!.x;
+
+      // Two families that are not related should not read as two siblings.
+      expect(gap).toBeGreaterThan(120);
+    });
+  });
+
   it('places every member exactly once, partners included', () => {
     const layout = layoutOf([
       member('gp', null, 'gm'),
