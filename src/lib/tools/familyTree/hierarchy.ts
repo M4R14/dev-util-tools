@@ -74,13 +74,16 @@ export const buildHierarchy = (members: FamilyMember[]): Hierarchy => {
    * would each attach to the other and both disappear from the diagram.
    */
   const isMarriedIn = (member: FamilyMember): boolean => {
-    if (member.parentId !== null || !member.spouseId) return false;
+    if (member.parentId !== null || member.spouseIds.length === 0) return false;
 
-    const partner = byId.get(member.spouseId);
-    if (!partner || partner.spouseId !== member.id) return false;
+    // Any one partner willing to hold a slot is enough to be drawn beside them.
+    return member.spouseIds.some((partnerId) => {
+      const partner = byId.get(partnerId);
+      if (!partner || !partner.spouseIds.includes(member.id)) return false;
 
-    if (partner.parentId !== null) return true;
-    return (indexOf.get(partner.id) ?? 0) < (indexOf.get(member.id) ?? 0);
+      if (partner.parentId !== null) return true;
+      return (indexOf.get(partner.id) ?? 0) < (indexOf.get(member.id) ?? 0);
+    });
   };
 
   const childrenOf = new Map<string, FamilyMember[]>();
@@ -99,18 +102,19 @@ export const buildHierarchy = (members: FamilyMember[]): Hierarchy => {
     childrenOf.set(member.parentId as string, siblings);
   }
 
-  const spouseOf = (member: FamilyMember): FamilyMember | null => {
-    if (!member.spouseId) return null;
-
-    const partner = byId.get(member.spouseId);
-    return partner && isMarriedIn(partner) ? partner : null;
-  };
+  /** In the order they were linked, so a first marriage stays to the left of a second. */
+  const spousesOf = (member: FamilyMember): FamilyMember[] =>
+    member.spouseIds
+      .map((partnerId) => byId.get(partnerId))
+      .filter(
+        (partner): partner is FamilyMember => Boolean(partner) && isMarriedIn(partner as FamilyMember),
+      );
 
   // No visited-set needed: every member is either a root or the child of exactly one member that
   // is not below them, so the descent is a forest and cannot revisit.
   const toNode = (member: FamilyMember, depth: number): FamilyNode => ({
     member,
-    spouse: spouseOf(member),
+    spouses: spousesOf(member),
     depth,
     children: (childrenOf.get(member.id) ?? []).map((child) => toNode(child, depth + 1)),
   });

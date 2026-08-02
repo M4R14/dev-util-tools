@@ -17,13 +17,25 @@ export interface FamilyMember {
   /** `null` marks a root. Ids that point at nobody are surfaced by `buildHierarchy`, not dropped. */
   parentId: string | null;
   /**
-   * The partner drawn beside this member, with their children hanging from the pair.
+   * Partners drawn beside this member, in the order they should appear.
+   *
+   * A list, not one id: a person can marry more than once, and with a single slot the second
+   * marriage simply could not be recorded — every child ended up under one undifferentiated parent
+   * whatever the marriage.
    *
    * Symmetric — both sides carry the link. Only a partner who has no parent of their own is drawn
    * beside someone; a partner who is themselves a descendant stays under their own parent, because
    * a tree cannot put one person in two places at once.
    */
-  spouseId: string | null;
+  spouseIds: string[];
+  /**
+   * Which of `parentId`'s partners this member also descends from.
+   *
+   * This is what separates half-siblings. Without it, the children of a first and a second marriage
+   * hang from the same parent in one row with nothing to say they have different mothers. `null`
+   * means unrecorded, and those children hang from the parent alone rather than from any couple.
+   */
+  otherParentId: string | null;
   /**
    * Drives the shape and colour in the diagram.
    *
@@ -47,8 +59,8 @@ export interface FamilyMember {
 
 export interface FamilyNode {
   member: FamilyMember;
-  /** The married-in partner sharing this node's slot, if any. Has no children of their own. */
-  spouse: FamilyMember | null;
+  /** Married-in partners sharing this node's slot. None of them have children of their own here. */
+  spouses: FamilyMember[];
   depth: number;
   children: FamilyNode[];
   /** Set by `collapseHierarchy` when this node's branch is folded away. */
@@ -68,6 +80,8 @@ export interface CreateMemberInput {
   parentId?: string | null;
   /** Marries the new member to this one, so the pair is drawn together. */
   spouseId?: string | null;
+  /** The other parent this member descends from, when the parent has more than one partner. */
+  otherParentId?: string | null;
   gender?: Gender;
   relationship?: string;
   birth?: string;

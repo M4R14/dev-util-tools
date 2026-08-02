@@ -21,6 +21,7 @@ const FamilyTree: React.FC = () => {
     removeMember,
     reparentMember,
     linkSpouse,
+    unlinkSpouse,
     moveMember,
     sortChildren,
     clearAll,
@@ -69,10 +70,25 @@ const FamilyTree: React.FC = () => {
      * spouse" gets the slot holder themselves exactly backwards.
      */
     const holder = flattenHierarchy(hierarchy.roots).find(
-      (node) => node.spouse?.id === memberId,
+      (node) => node.spouses.some((spouse) => spouse.id === memberId),
     );
 
     createAndSelect({ name: '', parentId: holder ? holder.member.id : memberId });
+  };
+
+  /**
+   * The partners of a member's parent — the candidates for their second parent.
+   *
+   * Read off the members list rather than the hierarchy, because a member being edited may be a
+   * root whose parent is not drawn as anyone's node.
+   */
+  const partnersOfParent = (member: (typeof members)[number]) => {
+    const parent = members.find((entry) => entry.id === member.parentId);
+    if (!parent) return [];
+
+    return parent.spouseIds
+      .map((id) => members.find((entry) => entry.id === id))
+      .filter((entry): entry is (typeof members)[number] => Boolean(entry));
   };
 
   const handleImport = () => {
@@ -182,6 +198,7 @@ const FamilyTree: React.FC = () => {
               onAddPartner={(id) => createAndSelect({ name: '', spouseId: id })}
               onMove={moveMember}
               onSortChildren={sortChildren}
+              partnersOfParent={partnersOfParent}
               focusNewId={focusNewId}
             />
 
@@ -196,6 +213,7 @@ const FamilyTree: React.FC = () => {
               onRemove={removeMember}
               onReparent={reparentMember}
               onLinkSpouse={linkSpouse}
+              onUnlinkSpouse={unlinkSpouse}
               onAddChild={setPendingParentId}
             />
           </div>

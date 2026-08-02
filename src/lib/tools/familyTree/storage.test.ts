@@ -11,7 +11,8 @@ const member = (
   id,
   name: id,
   parentId,
-  spouseId: null,
+  spouseIds: [],
+  otherParentId: null,
   gender: 'unknown',
   relationship: '',
   birth: '',
@@ -78,13 +79,13 @@ describe('serializeFamily and parseFamily', () => {
 
   it('round-trips a partner link', () => {
     const couple = [
-      member('gp', null, { spouseId: 'gm' }),
-      member('gm', null, { spouseId: 'gp' }),
+      member('gp', null, { spouseIds: ['gm'] }),
+      member('gm', null, { spouseIds: ['gp'] }),
     ];
     const result = parseFamily(serializeFamily(couple));
 
     expect(result.ok).toBe(true);
-    if (result.ok) expect(result.members[0].spouseId).toBe('gm');
+    if (result.ok) expect(result.members[0].spouseIds).toEqual(['gm']);
   });
 
   it('reads a member with no gender as unknown rather than rejecting the file', () => {
@@ -92,5 +93,29 @@ describe('serializeFamily and parseFamily', () => {
 
     expect(result.ok).toBe(true);
     if (result.ok) expect(result.members[0].gender).toBe('unknown');
+  });
+
+  it('lifts the old single-partner key into the list', () => {
+    // Every tree exported before remarriage was supported carries `spouseId`, and someone's saved
+    // file is not a reason to lose their tree.
+    const legacy =
+      '[{"id":"a","name":"A","spouseId":"b","relationship":"","note":""},' +
+      '{"id":"b","name":"B","spouseId":"a","relationship":"","note":""}]';
+    const result = parseFamily(legacy);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.members[0].spouseIds).toEqual(['b']);
+    expect(result.members[1].spouseIds).toEqual(['a']);
+    expect(result.members[0].otherParentId).toBeNull();
+  });
+
+  it('prefers the list when a file carries both keys', () => {
+    const both =
+      '[{"id":"a","name":"A","spouseId":"old","spouseIds":["x","y"],"relationship":"","note":""}]';
+    const result = parseFamily(both);
+
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.members[0].spouseIds).toEqual(['x', 'y']);
   });
 });

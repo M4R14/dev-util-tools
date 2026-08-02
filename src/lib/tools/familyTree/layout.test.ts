@@ -11,7 +11,8 @@ const member = (
   id,
   name: id,
   parentId,
-  spouseId,
+  spouseIds: spouseId ? [spouseId] : [],
+  otherParentId: null,
   gender: 'unknown',
   relationship: '',
   birth: '',
@@ -182,6 +183,97 @@ describe('layoutFamilyTree2D', () => {
 
     expect(r1.y).toBe(r2.y);
     expect(r2.x - r1.x).toBeGreaterThanOrEqual(100);
+  });
+
+  describe('a second marriage', () => {
+    const remarried = (): FamilyMember[] => [
+      { ...member('gp', null), spouseIds: ['first', 'second'] },
+      { ...member('first', null), spouseIds: ['gp'] },
+      { ...member('second', null), spouseIds: ['gp'] },
+      { ...member('a', 'gp'), otherParentId: 'first' },
+      { ...member('b', 'gp'), otherParentId: 'second' },
+    ];
+
+    it('puts the shared parent between their partners', () => {
+      const layout = layoutOf(remarried());
+      const [first, gp, second] = ['first', 'gp', 'second'].map((id) => boxOf(layout, id)!);
+
+      expect([first.y, gp.y, second.y]).toEqual([0, 0, 0]);
+      /*
+       * Left to right: first partner, the shared parent, second partner. With the parent at one
+       * end the second bar joined two partners to each other, and that marriage's children dropped
+       * out of the first partner's head.
+       */
+      expect(gp.x - first.x).toBe(140);
+      expect(second.x - gp.x).toBe(140);
+    });
+
+    it('joins every bar to the shared parent, never one partner to another', () => {
+      const layout = layoutOf(remarried());
+      const gp = boxOf(layout, 'gp')!;
+      const bars = layout.connectors.filter((connector) => connector.kind === 'spouse');
+
+      expect(bars).toHaveLength(2);
+      bars.forEach((bar) => {
+        expect(bar.points.some((point) => point.x === gp.x)).toBe(true);
+      });
+    });
+
+    it('gives the slot enough width for three people', () => {
+      // Three at 100 with two 40 gaps.
+      expect(layoutOf(remarried()).width).toBe(380);
+    });
+
+    it('hangs each child from the bar of the marriage they belong to', () => {
+      const layout = layoutOf(remarried());
+      const gp = boxOf(layout, 'gp')!;
+      const first = boxOf(layout, 'first')!;
+      const second = boxOf(layout, 'second')!;
+
+      const dropFrom = (x: number) =>
+        layout.connectors.find(
+          (connector) =>
+            connector.kind === 'descent' &&
+            connector.points[0].x === x &&
+            connector.points[0].y === 30,
+        );
+
+      // This is the whole point: half-siblings descend from different bars.
+      expect(dropFrom((gp.x + first.x) / 2)).toBeDefined();
+      expect(dropFrom((gp.x + second.x) / 2)).toBeDefined();
+    });
+
+    it('drops a child of no recorded marriage from under the holder alone', () => {
+      const layout = layoutOf([...remarried(), member('c', 'gp')]);
+      const gp = boxOf(layout, 'gp')!;
+
+      const holderDrop = layout.connectors.find(
+        (connector) =>
+          connector.kind === 'descent' &&
+          connector.points[0].x === gp.x &&
+          connector.points[0].y === 100,
+      );
+
+      expect(holderDrop).toBeDefined();
+    });
+
+    it('treats an unrecorded second parent as the only partner when there is one', () => {
+      // Every tree built before the field existed looks like this, and its children still belong
+      // to the couple rather than to one parent alone.
+      const single: FamilyMember[] = [
+        { ...member('gp', null), spouseIds: ['gm'] },
+        { ...member('gm', null), spouseIds: ['gp'] },
+        member('kid', 'gp'),
+      ];
+      const layout = layoutOf(single);
+      const centre = (boxOf(layout, 'gp')!.x + boxOf(layout, 'gm')!.x) / 2;
+
+      const barDrop = layout.connectors.find(
+        (connector) => connector.points[0].x === centre && connector.points[0].y === 30,
+      );
+
+      expect(barDrop).toBeDefined();
+    });
   });
 
   it('places every member exactly once, partners included', () => {

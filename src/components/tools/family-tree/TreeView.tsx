@@ -16,7 +16,8 @@ interface TreeViewProps {
   onUpdate: (id: string, patch: Partial<Omit<FamilyMember, 'id'>>) => void;
   onRemove: (id: string) => void;
   onReparent: (id: string, parentId: string | null) => void;
-  onLinkSpouse: (id: string, spouseId: string | null) => void;
+  onLinkSpouse: (id: string, spouseId: string) => void;
+  onUnlinkSpouse: (id: string, spouseId: string) => void;
   onAddChild: (id: string) => void;
 }
 
@@ -29,12 +30,20 @@ interface MemberRowProps extends RowHandlers {
    * have no children of their own to add to.
    */
   isSpouse: boolean;
+  /** Set on a partner row: who they are married to, so the row can offer to end it. */
+  onUnlinkFrom?: { id: string; name: string };
 }
 
 const selectClassName =
   'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm';
 
-const MemberRow: React.FC<MemberRowProps> = ({ member, isSpouse, members, ...rest }) => {
+const MemberRow: React.FC<MemberRowProps> = ({
+  member,
+  isSpouse,
+  onUnlinkFrom,
+  members,
+  ...rest
+}) => {
   const {
     orphanedIds,
     cycleIds,
@@ -44,6 +53,7 @@ const MemberRow: React.FC<MemberRowProps> = ({ member, isSpouse, members, ...res
     onRemove,
     onReparent,
     onLinkSpouse,
+    onUnlinkSpouse,
     onAddChild,
   } = rest;
 
@@ -59,12 +69,13 @@ const MemberRow: React.FC<MemberRowProps> = ({ member, isSpouse, members, ...res
     onUpdate(member.id, {
       name: draft.name.trim(),
       relationship: draft.relationship.trim(),
+      birth: draft.birth.trim(),
+      death: draft.death.trim(),
       note: draft.note.trim(),
       gender: draft.gender,
     });
 
     if (draft.parentId !== member.parentId) onReparent(member.id, draft.parentId);
-    if (draft.spouseId !== member.spouseId) onLinkSpouse(member.id, draft.spouseId);
     setIsEditing(false);
   };
 
@@ -129,17 +140,23 @@ const MemberRow: React.FC<MemberRowProps> = ({ member, isSpouse, members, ...res
               <option value="female">Female</option>
             </select>
           </label>
+          {/*
+            Adds a partner rather than setting the one partner: a person can marry more than once,
+            so this is not a value to replace. Existing partners are unlinked from their own rows.
+          */}
           <label className="space-y-1">
-            <span className="text-[11px] text-muted-foreground">Partner</span>
+            <span className="text-[11px] text-muted-foreground">Add partner</span>
             <select
-              value={draft.spouseId ?? ''}
-              onChange={(event) => setDraft({ ...draft, spouseId: event.target.value || null })}
-              aria-label="Partner"
+              value=""
+              onChange={(event) => {
+                if (event.target.value) onLinkSpouse(member.id, event.target.value);
+              }}
+              aria-label="Add partner"
               className={selectClassName}
             >
-              <option value="">— none</option>
+              <option value="">— choose someone</option>
               {others
-                .filter((candidate) => !candidate.spouseId || candidate.spouseId === member.id)
+                .filter((candidate) => !member.spouseIds.includes(candidate.id))
                 .map((candidate) => (
                   <option key={candidate.id} value={candidate.id}>
                     {candidate.name || 'Untitled'}
@@ -178,6 +195,18 @@ const MemberRow: React.FC<MemberRowProps> = ({ member, isSpouse, members, ...res
     >
       {isSpouse && (
         <Heart className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
+      )}
+
+      {/* Ending a marriage belongs on the partner's own row, where it is unambiguous who leaves. */}
+      {onUnlinkFrom && (
+        <button
+          type="button"
+          onClick={() => onUnlinkSpouse(onUnlinkFrom.id, member.id)}
+          className="text-[11px] text-muted-foreground underline underline-offset-2 hover:text-destructive"
+          title={`No longer partnered with ${onUnlinkFrom.name || 'them'}`}
+        >
+          unlink
+        </button>
       )}
 
       {/*
@@ -256,14 +285,20 @@ const NodeBranch: React.FC<BranchProps> = ({ node, ...rest }) => (
     <MemberRow {...rest} member={node.member} isSpouse={false} />
 
     {/*
-      The married-in partner has no slot of their own in the diagram, so without a row here they
-      would be in the picture but impossible to rename, re-link or remove.
+      Married-in partners have no slot of their own in the diagram, so without rows here they would
+      be in the picture but impossible to rename, re-link or remove. One row each, in marriage
+      order, so a second marriage is visible as a second row rather than replacing the first.
     */}
-    {node.spouse && (
-      <div className="mt-1.5 pl-4 sm:pl-6">
-        <MemberRow {...rest} member={node.spouse} isSpouse />
+    {node.spouses.map((spouse) => (
+      <div key={spouse.id} className="mt-1.5 pl-4 sm:pl-6">
+        <MemberRow
+          {...rest}
+          member={spouse}
+          isSpouse
+          onUnlinkFrom={{ id: node.member.id, name: node.member.name }}
+        />
       </div>
-    )}
+    ))}
 
     {node.children.length > 0 && (
       <ul className="mt-1.5 space-y-1.5 border-l border-border/70 pl-4 sm:pl-6">

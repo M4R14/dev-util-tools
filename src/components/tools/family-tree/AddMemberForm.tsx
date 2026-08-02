@@ -115,14 +115,11 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
             ))}
           </optgroup>
           <optgroup label="Partner of">
-            {members
-              // Someone already drawn beside a partner has no second slot to offer.
-              .filter((member) => !member.spouseId)
-              .map((member) => (
-                <option key={member.id} value={`spouse:${member.id}`}>
-                  {member.name || 'Untitled'}
-                </option>
-              ))}
+            {members.map((member) => (
+              <option key={member.id} value={`spouse:${member.id}`}>
+                {member.name || 'Untitled'}
+              </option>
+            ))}
           </optgroup>
         </select>
       </label>

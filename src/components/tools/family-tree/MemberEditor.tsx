@@ -25,6 +25,8 @@ export interface MemberEditorProps {
   onSortChildren: (parentId: string) => void;
   /** Enables the sort action, which is meaningless on someone with nobody under them. */
   hasChildren: boolean;
+  /** The partners of this member's parent, so a child of a remarriage can say which one. */
+  parentPartners: FamilyMember[];
   onClose: () => void;
   /** Focus the name field on open — set when the member was created a moment ago. */
   autoFocusName: boolean;
@@ -51,6 +53,7 @@ export const MemberEditor: React.FC<MemberEditorProps> = ({
   onMove,
   onSortChildren,
   hasChildren,
+  parentPartners,
   onClose,
   autoFocusName,
 }) => {
@@ -144,6 +147,32 @@ export const MemberEditor: React.FC<MemberEditorProps> = ({
         autoComplete="off"
       />
 
+      {/*
+        Which marriage this member came from. Only offered when their parent has more than one
+        partner — with a single marriage there is nothing to choose, and the question would only
+        raise a doubt that does not exist.
+      */}
+      {parentPartners.length > 1 && (
+        <label className="mb-2 block space-y-1">
+          <span className="text-[11px] text-muted-foreground">Second parent</span>
+          <select
+            value={member.otherParentId ?? ''}
+            onChange={(event) =>
+              onUpdate(member.id, { otherParentId: event.target.value || null })
+            }
+            aria-label="Second parent"
+            className={selectClassName}
+          >
+            <option value="">— not recorded</option>
+            {parentPartners.map((partner) => (
+              <option key={partner.id} value={partner.id}>
+                {partner.name || 'Untitled'}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
+
       {/* Birth order is a real fact about a family, and the diagram reads eldest to youngest. */}
       <div className="mb-2 flex items-center gap-1">
         <Button
@@ -198,9 +227,9 @@ export const MemberEditor: React.FC<MemberEditorProps> = ({
           variant="outline"
           size="sm"
           onClick={() => onAddPartner(member.id)}
-          disabled={Boolean(member.spouseId)}
           className="h-7 flex-1 px-2 text-xs"
-          title={member.spouseId ? 'Already has a partner' : 'Add a partner'}
+          // No longer capped at one: a second marriage is a thing family trees have to say.
+          title={member.spouseIds.length > 0 ? 'Add another partner' : 'Add a partner'}
         >
           <Heart className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
           Partner

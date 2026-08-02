@@ -14,7 +14,13 @@ const memberSchema = z.object({
   name: z.string(),
   // Optional as well as nullable: a hand-written import that simply omits the key means a root.
   parentId: z.string().nullable().optional(),
+  /**
+   * Both shapes are accepted. `spouseId` is what every tree exported before remarriage was
+   * supported carries, and someone's saved file is not a reason to lose their tree.
+   */
   spouseId: z.string().nullable().optional(),
+  spouseIds: z.array(z.string()).optional(),
+  otherParentId: z.string().nullable().optional(),
   // Anything unrecognised reads as unknown rather than failing the whole import for one bad cell.
   gender: z.enum(['male', 'female', 'unknown']).catch('unknown').optional(),
   relationship: z.string(),
@@ -37,7 +43,9 @@ const toMembers = (parsed: z.infer<typeof familyMembersSchema>): FamilyMember[] 
     id: entry.id,
     name: entry.name,
     parentId: entry.parentId ?? null,
-    spouseId: entry.spouseId ?? null,
+    // The old single-partner key is lifted into the list, so an older export opens unchanged.
+    spouseIds: entry.spouseIds ?? (entry.spouseId ? [entry.spouseId] : []),
+    otherParentId: entry.otherParentId ?? null,
     gender: entry.gender ?? 'unknown',
     relationship: entry.relationship,
     birth: entry.birth ?? '',

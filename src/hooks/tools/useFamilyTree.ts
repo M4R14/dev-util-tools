@@ -8,6 +8,7 @@ import {
   removeMember as removeFromList,
   reparentMember as reparentInList,
   sortChildrenByBirth,
+  unlinkSpouse as unlinkInList,
   updateMember as updateInList,
 } from '../../lib/tools/familyTree/members';
 import { buildHierarchy, countGenerations } from '../../lib/tools/familyTree/hierarchy';
@@ -134,7 +135,11 @@ export const useFamilyTree = () => {
     });
   }, []);
 
-  const linkSpouse = useCallback((id: string, spouseId: string | null) => {
+  const unlinkSpouse = useCallback((id: string, spouseId: string) => {
+    setMembers((previous) => unlinkInList(previous, id, spouseId));
+  }, []);
+
+  const linkSpouse = useCallback((id: string, spouseId: string) => {
     setMembers((previous) => {
       const result = linkSpouseInList(previous, id, spouseId);
 
@@ -218,6 +223,7 @@ export const useFamilyTree = () => {
     removeMember,
     reparentMember,
     linkSpouse,
+    unlinkSpouse,
     moveMember,
     sortChildren,
     clearAll,

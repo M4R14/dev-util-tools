@@ -127,10 +127,33 @@ reorders one person's children oldest first with unknown births trailing in plac
 Sorting is **offered, never automatic**. Applying it as dates are typed would rearrange the diagram
 under someone mid-edit, and a tree with half its dates filled in would shuffle on every entry.
 
-## Partners
+## Partners and remarriage
 
-`spouseId` is symmetric — every write sets both sides, or the pair renders from one side only and
-unlinking from the other does nothing.
+`spouseIds` is a **list**, and symmetric — every write sets both sides, or the pair renders from one
+side only and unlinking from the other does nothing.
+
+A list rather than one id because a person marries more than once. With a single slot a second
+marriage could not be recorded at all: adding a partner had to drop the previous one, which quietly
+rewrote history — the children of the first marriage were left attributed to a couple that no longer
+existed.
+
+`otherParentId` on a child names which of their parent's partners they also descend from. **This is
+what separates half-siblings**; without it the children of a first and a second marriage sit in one
+undifferentiated row with nothing to say they have different mothers. When the parent has exactly
+one partner an unrecorded value means that partner — there is nothing to be ambiguous about, and
+every tree built before the field existed looks like this.
+
+`unlinkSpouse` clears the attribution of any child of that pairing, or they would hang off a bar
+that is no longer drawn, which puts them nowhere. `removeMember` does the same.
+
+**A shared parent with more than one partner is drawn between them.** With the parent at one end of
+the row, the second bar visually joined two partners *to each other*, and that marriage's children
+dropped out of the first partner's head — caught by looking at it, not by a test. Past two partners
+a bar has to span over an inner one; the bars stagger so they stay countable, but a third marriage
+is drawn less clearly than the first two.
+
+Old exports carry `spouseId` rather than `spouseIds`; `storage.ts` accepts both and lifts the single
+key into the list, so a saved file is never a reason to lose a tree.
 
 **Only a partner with no parent of their own gives up their slot.** `buildHierarchy.isMarriedIn`
 decides this. Someone who is themselves a descendant belongs under their own parent, and no tree can

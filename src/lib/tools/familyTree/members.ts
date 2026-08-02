@@ -71,7 +71,8 @@ export const createMember = (input: CreateMemberInput): FamilyMember => ({
   id: randomUUID(),
   name: input.name.trim(),
   parentId: input.parentId ?? null,
-  spouseId: input.spouseId ?? null,
+  spouseIds: input.spouseId ? [input.spouseId] : [],
+  otherParentId: input.otherParentId ?? null,
   gender: input.gender ?? 'unknown',
   relationship: input.relationship?.trim() ?? '',
   birth: input.birth?.trim() ?? '',
@@ -90,12 +91,16 @@ export const appendMember = (
   member: FamilyMember,
 ): FamilyMember[] => {
   const withMember = [...members, member];
+  const partnerId = member.spouseIds[0];
+  if (!partnerId) return withMember;
 
   // The link is symmetric, so the partner has to learn about it too — otherwise the pair renders
   // from one side only and unlinking from the other side silently does nothing.
-  return member.spouseId
-    ? updateMember(withMember, member.spouseId, { spouseId: member.id })
-    : withMember;
+  return withMember.map((entry) =>
+    entry.id === partnerId
+      ? { ...entry, spouseIds: [...entry.spouseIds, member.id] }
+      : entry,
+  );
 };
 
 export const addMember = (members: FamilyMember[], input: CreateMemberInput): FamilyMember[] =>
@@ -120,41 +125,32 @@ export const removeMember = (members: FamilyMember[], id: string): FamilyMember[
 
   return members
     .filter((member) => member.id !== id)
-    .map((member) => {
-      const lifted = member.parentId === id ? removed.parentId : member.parentId;
-      // A dangling spouseId would draw a partner bar to somebody who is no longer there.
-      const stillMarried = member.spouseId === id ? null : member.spouseId;
-
-      return { ...member, parentId: lifted, spouseId: stillMarried };
-    });
+    .map((member) => ({
+      ...member,
+      parentId: member.parentId === id ? removed.parentId : member.parentId,
+      // A dangling link would draw a partner bar to somebody who is no longer there, and leave
+      // children attributed to a second parent that does not exist.
+      spouseIds: member.spouseIds.filter((entry) => entry !== id),
+      otherParentId: member.otherParentId === id ? null : member.otherParentId,
+    }));
 };
 
 /**
- * Marries two members, or with `null` ends a marriage.
+ * Adds a marriage. Both sides are written, and nobody is married twice to the same person.
  *
- * Both sides are written every time. Someone can only be drawn beside one partner, so marrying an
- * already-married member first releases the previous one rather than leaving a half-link pointing
- * at a partner who has moved on.
+ * A list rather than a single slot, so a second marriage can be recorded at all. With one slot the
+ * only way to add a new partner was to drop the previous one, which quietly rewrote history: the
+ * children of the first marriage were left attributed to a couple that no longer existed.
  */
 export const linkSpouse = (
   members: FamilyMember[],
   id: string,
-  spouseId: string | null,
+  spouseId: string,
 ): MembersResult => {
   const member = members.find((entry) => entry.id === id);
   if (!member) return { ok: false, reason: 'That member is no longer in the tree.' };
 
   if (spouseId === id) return { ok: false, reason: 'Someone cannot marry themselves.' };
-
-  const clearOldLinks = (list: FamilyMember[]) =>
-    list.map((entry) => {
-      if (entry.id === member.spouseId && entry.id !== spouseId) return { ...entry, spouseId: null };
-      return entry;
-    });
-
-  if (spouseId === null) {
-    return { ok: true, members: updateMember(clearOldLinks(members), id, { spouseId: null }) };
-  }
 
   const partner = members.find((entry) => entry.id === spouseId);
   if (!partner) return { ok: false, reason: 'That partner is no longer in the tree.' };
@@ -163,15 +159,51 @@ export const linkSpouse = (
     return { ok: false, reason: 'A parent and their child cannot be partners.' };
   }
 
-  const released = clearOldLinks(members).map((entry) =>
-    entry.id === partner.spouseId && entry.id !== id ? { ...entry, spouseId: null } : entry,
-  );
+  if (member.spouseIds.includes(spouseId)) {
+    return { ok: false, reason: 'They are already partners.' };
+  }
+
+  const withLink = (entry: FamilyMember, otherId: string) =>
+    entry.spouseIds.includes(otherId)
+      ? entry
+      : { ...entry, spouseIds: [...entry.spouseIds, otherId] };
 
   return {
     ok: true,
-    members: updateMember(updateMember(released, id, { spouseId }), spouseId, { spouseId: id }),
+    members: members.map((entry) => {
+      if (entry.id === id) return withLink(entry, spouseId);
+      if (entry.id === spouseId) return withLink(entry, id);
+      return entry;
+    }),
   };
 };
+
+/**
+ * Ends a marriage from either side, and releases any children attributed to that pairing.
+ *
+ * Leaving `otherParentId` pointing at a former partner would keep those children hanging off a bar
+ * that is no longer drawn, which puts them nowhere.
+ */
+export const unlinkSpouse = (
+  members: FamilyMember[],
+  id: string,
+  spouseId: string,
+): FamilyMember[] =>
+  members.map((entry) => {
+    const stillMarried = entry.spouseIds.filter((candidate) =>
+      entry.id === id ? candidate !== spouseId : entry.id === spouseId ? candidate !== id : true,
+    );
+
+    const orphanedAttribution =
+      (entry.parentId === id && entry.otherParentId === spouseId) ||
+      (entry.parentId === spouseId && entry.otherParentId === id);
+
+    return {
+      ...entry,
+      spouseIds: stillMarried,
+      otherParentId: orphanedAttribution ? null : entry.otherParentId,
+    };
+  });
 
 /** Every id on the parent chain above `id`, nearest first. Stops on a cycle rather than hanging. */
 export const ancestorIdsOf = (members: FamilyMember[], id: string): string[] => {
