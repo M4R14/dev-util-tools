@@ -14,7 +14,7 @@ export enum ToolID {
   TIMEZONE_CONVERTER = 'timezone-converter',
   CASE_CONVERTER = 'case-converter',
   XML_TO_JSON = 'xml-to-json',
-  
+
   // formatter
   JSON_FORMATTER = 'json-formatter',
   XML_FORMATTER = 'xml-formatter',
@@ -42,4 +42,14 @@ export interface ToolMetadata {
   tags?: string[];
   /** Curated related tools, shown first on the tool page (order is preserved). */
   related?: ToolID[];
+  /**
+   * Query param that seeds this tool's primary text input — `input` for the JSON Formatter,
+   * `token` for the JWT Decoder, and so on.
+   *
+   * Presence is what makes a tool a valid "send output to…" target: generators (Password, UUID)
+   * and link-out tools have nothing to receive. The names are not uniform — six tools use `input`
+   * and the rest use their own — which is why the mapping is recorded here rather than guessed at
+   * the call site.
+   */
+  inputParam?: string;
 }

@@ -1,5 +1,5 @@
-import MiniSearch from 'minisearch';
 import { ToolID, ToolMetadata } from '../types';
+import { createSearchIndex } from './search';
 
 /** Default number of related tools rendered on a tool page. */
 export const RELATED_TOOLS_LIMIT = 4;
@@ -10,49 +10,34 @@ export const RELATED_TOOLS_LIMIT = 4;
  */
 const GENERIC_TAGS = new Set(['external tool']);
 
-interface IndexedTool extends ToolMetadata {
-  tagsJoined: string;
-}
-
 const meaningfulTags = (tool: ToolMetadata): string[] =>
   (tool.tags ?? []).filter((tag) => !GENERIC_TAGS.has(tag));
 
-/** One index per tool list; keyed by reference so the shared TOOLS array is built once. */
-const indexCache = new WeakMap<ToolMetadata[], MiniSearch<IndexedTool>>();
-
-const buildIndex = (tools: ToolMetadata[]): MiniSearch<IndexedTool> => {
-  const index = new MiniSearch<IndexedTool>({
-    fields: ['name', 'description', 'tagsJoined'],
-    storeFields: ['id'],
-    searchOptions: {
-      boost: { tagsJoined: 3, name: 2, description: 1 },
-      // Tighter than tool search (fuzzy 0.2 + prefix): a user typing "cro" wants prefix
-      // matches, but a related-tools list should only surface genuine term overlap.
-      // Prefix matching pulled in noise like Base64 -> Crontab Guru; dropping to 0.1
-      // still keeps near-misses such as Crontab Guru's "timer" -> Timezone Converter.
-      fuzzy: 0.1,
-      prefix: false,
+/**
+ * Every setting here is a deliberate departure from the shared defaults, because this is the one
+ * search in the app whose query is not typed by a person.
+ *
+ * - `combineWith: 'OR'` — the query is a tool's own name plus its tags, a bag of terms rather than
+ *   a phrase. Under the shared `AND` default, requiring every term to match would return nothing.
+ * - `fuzzy: 0.1`, `prefix: false` — tighter than tool search. Someone typing "cro" wants prefix
+ *   matches; a related-tools list should only surface genuine term overlap. Prefix matching pulled
+ *   in noise like Base64 → Crontab Guru, while 0.1 still keeps near-misses such as Crontab Guru's
+ *   "timer" → Timezone Converter.
+ */
+const getIndex = (tools: ToolMetadata[]) =>
+  createSearchIndex(tools, {
+    name: 'related-tools',
+    getId: (tool) => tool.id,
+    fields: {
+      name: (tool) => tool.name,
+      description: (tool) => tool.description,
+      tags: (tool) => meaningfulTags(tool).join(' '),
     },
+    boost: { tags: 3, name: 2, description: 1 },
+    fuzzy: 0.1,
+    prefix: false,
+    combineWith: 'OR',
   });
-
-  index.addAll(
-    tools.map((tool) => ({
-      ...tool,
-      tagsJoined: meaningfulTags(tool).join(' '),
-    })),
-  );
-
-  return index;
-};
-
-const getIndex = (tools: ToolMetadata[]): MiniSearch<IndexedTool> => {
-  const cached = indexCache.get(tools);
-  if (cached) return cached;
-
-  const index = buildIndex(tools);
-  indexCache.set(tools, index);
-  return index;
-};
 
 /**
  * Resolve the related tools for a tool page.
@@ -84,14 +69,10 @@ export const getRelatedTools = (
   const query = `${tool.name} ${meaningfulTags(tool).join(' ')}`.trim();
   if (!query) return [...picked.values()];
 
-  for (const result of getIndex(tools).search(query)) {
-    const id = result.id as ToolID;
-    if (id === tool.id || picked.has(id)) continue;
+  for (const candidate of getIndex(tools).search(query)) {
+    if (candidate.id === tool.id || picked.has(candidate.id)) continue;
 
-    const candidate = byId.get(id);
-    if (!candidate) continue;
-
-    picked.set(id, candidate);
+    picked.set(candidate.id, candidate);
     if (picked.size >= limit) break;
   }
 
