@@ -1,9 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { askGemini } from '../services/gemini';
-import { obfuscate, deobfuscate } from '../lib/obfuscation';
 import { toast } from 'sonner';
+import { useGeminiApiKey } from './useGeminiApiKey';
 
-const STORAGE_KEY = 'devpulse_secure_config';
 const API_KEY_MISSING_ERROR = 'Please configure your Gemini API Key in settings.';
 const DEFAULT_SERVICE_ERROR = 'Failed to communicate with AI service';
 const EMPTY_RESPONSE_TEXT = 'No response returned.';
@@ -33,19 +32,6 @@ const createMessage = (role: Message['role'], content: string): Message => {
 const getErrorMessage = (err: unknown): string =>
   err instanceof Error ? err.message : DEFAULT_SERVICE_ERROR;
 
-const loadApiKey = (): string => {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? deobfuscate(saved) : '';
-  } catch {
-    return '';
-  }
-};
-
-const persistApiKey = (apiKey: string): void => {
-  localStorage.setItem(STORAGE_KEY, obfuscate(apiKey));
-};
-
 export const useAIChat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [prompt, setPrompt] = useState('');
@@ -56,7 +42,7 @@ export const useAIChat = () => {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const [apiKey, setApiKey] = useState(loadApiKey);
+  const { apiKey, saveApiKey } = useGeminiApiKey();
   const [tempKey, setTempKey] = useState('');
   const [showSettings, setShowSettings] = useState(false);
 
@@ -78,11 +64,10 @@ export const useAIChat = () => {
   }, []);
 
   const handleSaveSettings = useCallback(() => {
-    setApiKey(tempKey);
-    persistApiKey(tempKey);
+    saveApiKey(tempKey);
     setShowSettings(false);
     toast.success('API configuration saved successfully');
-  }, [tempKey]);
+  }, [saveApiKey, tempKey]);
 
   const handleClearChat = useCallback(() => {
     setMessages([]);

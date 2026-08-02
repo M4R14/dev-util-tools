@@ -35,8 +35,8 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
             <Settings className="w-5 h-5 text-primary" /> Settings
           </CardTitle>
           <CardDescription>
-            Configure your AI assistant. API keys are stored securely in your browser&apos;s local
-            storage and are never sent to our servers.
+            Configure your AI assistant. Your key stays in this browser&apos;s local storage and is
+            sent only to Google&apos;s API — never to a DevPulse server.
           </CardDescription>
         </CardHeader>
 
@@ -55,7 +55,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
               />
             </div>
             <p className="mt-2 text-xs text-muted-foreground">
-              Your key is obfuscated before storage to prevent casual inspection.
+              Stored obfuscated, not encrypted — enough to keep it out of plain sight in devtools,
+              but anyone with access to this browser profile can recover it. Use a key you can
+              revoke, and clear it from Settings when you are done.
             </p>
           </div>
 

@@ -1,13 +1,42 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  ReactNode,
+} from 'react';
 import { useLocation } from 'react-router-dom';
+import { z } from 'zod';
 import { ToolID } from '../types';
 import { TOOLS } from '../data/tools';
+import { resolvePageMeta } from '../lib/pageMeta';
+import { readPersisted, writePersisted } from '../lib/persistedState';
+
+const RECENTS_LIMIT = 8;
+
+const toolIdListSchema = z.array(z.string());
+
+/**
+ * Tools get renamed and removed, so a stored id is not guaranteed to still exist. Dropping unknown
+ * ids on read means the sidebar count and the stored list agree — they used to drift, because the
+ * UI filtered unknown ids out while storage kept them forever.
+ */
+const readToolIds = (key: string): ToolID[] => {
+  const stored = readPersisted(key, toolIdListSchema, []);
+  const known = new Set(TOOLS.map((tool) => tool.id));
+
+  return stored.filter((id): id is ToolID => known.has(id as ToolID));
+};
 
 interface UserPreferencesContextType {
   favorites: ToolID[];
   recents: ToolID[];
   toggleFavorite: (id: ToolID) => void;
   addRecent: (id: ToolID) => void;
+  clearFavorites: () => void;
+  clearRecents: () => void;
 }
 
 const UserPreferencesContext = createContext<UserPreferencesContextType | undefined>(undefined);
@@ -25,56 +54,57 @@ interface UserPreferencesProviderProps {
 }
 
 export const UserPreferencesProvider: React.FC<UserPreferencesProviderProps> = ({ children }) => {
-  const [favorites, setFavorites] = useState<ToolID[]>(() => {
-    const saved = localStorage.getItem('favorites');
-    return saved ? JSON.parse(saved) : [];
-  });
-
-  const [recents, setRecents] = useState<ToolID[]>(() => {
-    const saved = localStorage.getItem('recents');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [favorites, setFavorites] = useState<ToolID[]>(() => readToolIds('favorites'));
+  const [recents, setRecents] = useState<ToolID[]>(() => readToolIds('recents'));
 
   const location = useLocation();
 
   useEffect(() => {
-    localStorage.setItem('favorites', JSON.stringify(favorites));
+    writePersisted('favorites', favorites);
   }, [favorites]);
 
   useEffect(() => {
-    localStorage.setItem('recents', JSON.stringify(recents));
+    writePersisted('recents', recents);
   }, [recents]);
 
-  const toggleFavorite = (id: ToolID) => {
+  const toggleFavorite = useCallback((id: ToolID) => {
     setFavorites((prev) => (prev.includes(id) ? prev.filter((fid) => fid !== id) : [...prev, id]));
-  };
+  }, []);
 
-  const addRecent = (id: ToolID) => {
+  const addRecent = useCallback((id: ToolID) => {
     setRecents((prev) => {
-      // Avoid adding if already at top
       if (prev[0] === id) return prev;
-
-      const newRecents = [id, ...prev.filter((existingId) => existingId !== id)].slice(0, 8);
-      return JSON.stringify(newRecents) !== JSON.stringify(prev) ? newRecents : prev;
+      return [id, ...prev.filter((existingId) => existingId !== id)].slice(0, RECENTS_LIMIT);
     });
-  };
+  }, []);
 
-  // Automatically update recents based on location/active tool
+  const clearFavorites = useCallback(() => setFavorites([]), []);
+  const clearRecents = useCallback(() => setRecents([]), []);
+
+  // resolvePageMeta normalises the pathname (trailing slash, base path) before matching, which
+  // the previous `pathname.substring(1)` did not.
   useEffect(() => {
-    const activeToolId = location.pathname.substring(1) as ToolID;
-    const activeTool = TOOLS.find((t) => t.id === activeToolId);
-
-    if (activeTool && activeTool.id) {
+    const { activeTool } = resolvePageMeta(location.pathname);
+    if (activeTool) {
       addRecent(activeTool.id);
     }
-  }, [location.pathname]);
+  }, [addRecent, location.pathname]);
 
-  const value = {
-    favorites,
-    recents,
-    toggleFavorite,
-    addRecent,
-  };
+  /**
+   * Memoised because this provider re-renders on every navigation (it reads useLocation), and an
+   * identity-unstable value re-renders every consumer — the whole sidebar included — each time.
+   */
+  const value = useMemo(
+    () => ({
+      favorites,
+      recents,
+      toggleFavorite,
+      addRecent,
+      clearFavorites,
+      clearRecents,
+    }),
+    [favorites, recents, toggleFavorite, addRecent, clearFavorites, clearRecents],
+  );
 
   return (
     <UserPreferencesContext.Provider value={value}>{children}</UserPreferencesContext.Provider>
