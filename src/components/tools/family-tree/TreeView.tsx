@@ -11,6 +11,8 @@ interface TreeViewProps {
   members: FamilyMember[];
   orphanedIds: string[];
   cycleIds: string[];
+  selectedId: string | null;
+  onSelect: (id: string | null) => void;
   onUpdate: (id: string, patch: Partial<Omit<FamilyMember, 'id'>>) => void;
   onRemove: (id: string) => void;
   onReparent: (id: string, parentId: string | null) => void;
@@ -22,7 +24,8 @@ interface NodeRowProps extends Omit<TreeViewProps, 'nodes'> {
 }
 
 const NodeRow: React.FC<NodeRowProps> = ({ node, members, ...rest }) => {
-  const { orphanedIds, cycleIds, onUpdate, onRemove, onReparent, onAddChild } = rest;
+  const { orphanedIds, cycleIds, selectedId, onSelect, onUpdate, onRemove, onReparent, onAddChild } =
+    rest;
   const { member } = node;
   const [isEditing, setIsEditing] = useState(false);
   const [draft, setDraft] = useState(member);
@@ -105,16 +108,30 @@ const NodeRow: React.FC<NodeRowProps> = ({ node, members, ...rest }) => {
     );
   }
 
+  const isSelected = selectedId === member.id;
+
   return (
     <div
       className={cn(
         'group flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border px-3 py-2 transition-colors',
+        isSelected && 'ring-2 ring-primary/50',
         isOrphaned || isLooped
           ? 'border-amber-500/40 bg-amber-500/5'
           : 'border-border/70 bg-card/60 hover:border-border',
       )}
     >
-      <span className="font-medium text-foreground">{member.name || 'Untitled'}</span>
+      {/*
+        Selecting from the list drives the same highlight the canvas does, so picking a name here
+        tells you where that person sits in the tree without hunting for the label.
+      */}
+      <button
+        type="button"
+        onClick={() => onSelect(isSelected ? null : member.id)}
+        className="font-medium text-foreground hover:text-primary"
+        aria-pressed={isSelected}
+      >
+        {member.name || 'Untitled'}
+      </button>
 
       {member.relationship && (
         <span className="rounded-full border border-primary/20 bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">

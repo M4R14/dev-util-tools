@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Suspense, lazy, useState } from 'react';
 import { Trash2, Users } from 'lucide-react';
 import { ToolLayout } from '../../ui/ToolLayout';
 import { Button } from '../../ui/Button';
@@ -7,6 +7,12 @@ import { CodeInput } from '../../ui/CodeInput';
 import { AddMemberForm, RelationshipPresets } from './AddMemberForm';
 import { TreeView } from './TreeView';
 import { useFamilyTree } from '../../../hooks/tools/useFamilyTree';
+
+/**
+ * three.js is far larger than the rest of this tool put together, so the list renders and becomes
+ * usable while WebGL is still on the wire.
+ */
+const FamilyScene = lazy(() => import('./FamilyScene'));
 
 const FamilyTree: React.FC = () => {
   const {
@@ -24,6 +30,7 @@ const FamilyTree: React.FC = () => {
 
   const [pendingParentId, setPendingParentId] = useState<string | null>(null);
   const [importText, setImportText] = useState('');
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const handleImport = () => {
     if (importJson(importText)) setImportText('');
@@ -87,16 +94,39 @@ const FamilyTree: React.FC = () => {
             </p>
           </div>
         ) : (
-          <TreeView
-            nodes={hierarchy.roots}
-            members={members}
-            orphanedIds={hierarchy.orphanedIds}
-            cycleIds={hierarchy.cycleIds}
-            onUpdate={updateMember}
-            onRemove={removeMember}
-            onReparent={reparentMember}
-            onAddChild={setPendingParentId}
-          />
+          <div className="space-y-4">
+            {/*
+              The canvas shows the shape; the list below is where the tree is actually operated.
+              Keeping both means the tool stays usable from a keyboard and readable to a screen
+              reader, neither of which a WebGL canvas offers.
+            */}
+            <Suspense
+              fallback={
+                <div className="flex h-[420px] items-center justify-center rounded-xl border border-border/60 text-sm text-muted-foreground">
+                  Loading the 3D view…
+                </div>
+              }
+            >
+              <FamilyScene
+                roots={hierarchy.roots}
+                selectedId={selectedId}
+                onSelect={setSelectedId}
+              />
+            </Suspense>
+
+            <TreeView
+              nodes={hierarchy.roots}
+              members={members}
+              orphanedIds={hierarchy.orphanedIds}
+              cycleIds={hierarchy.cycleIds}
+              selectedId={selectedId}
+              onSelect={setSelectedId}
+              onUpdate={updateMember}
+              onRemove={removeMember}
+              onReparent={reparentMember}
+              onAddChild={setPendingParentId}
+            />
+          </div>
         )}
       </ToolLayout.Panel>
 
