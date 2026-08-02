@@ -96,6 +96,14 @@ const summary =
     ? `Auto-generated from the latest ${entries.length} commits and PR references.`
     : 'Auto-generated release note placeholder. No git commit metadata was found.';
 
+/**
+ * Commit subjects are not curated content — whatever anyone typed lands in a rendered page. The
+ * app escapes raw HTML at render time (see src/lib/markdown.ts), but markdown itself still applies,
+ * so `fix: drop *args handling` would silently turn into emphasis and lose the asterisks. Escaping
+ * here keeps a changelog entry looking like the commit it came from.
+ */
+const escapeMarkdown = (text) => text.replace(/([\\`*_[\]<>])/g, '\\$1');
+
 const lines = entries.length
   ? entries.map((entry) => {
       const commitRef = githubRepoUrl
@@ -109,7 +117,7 @@ const lines = entries.length
             ? ` · PR #${entry.prNumber}`
             : '';
 
-      return `- ${toDisplayDate(entry.committedAt)} — ${commitRef}: ${entry.subject}${prRef}`;
+      return `- ${toDisplayDate(entry.committedAt)} — ${commitRef}: ${escapeMarkdown(entry.subject)}${prRef}`;
     })
   : ['- No commit history available in this environment.'];
 

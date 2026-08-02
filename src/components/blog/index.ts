@@ -1,1 +1,2 @@
-export { default as BlogPostCard } from './BlogPostCard';
+export { BlogFilters } from './BlogFilters';
+export { BlogPostCard } from './BlogPostCard';
