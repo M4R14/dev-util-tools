@@ -12,8 +12,9 @@ interface MemberNodeProps {
   isFlagged: boolean;
   isCollapsed: boolean;
   metrics: FamilyLayout2D['metrics'];
-  onSelect: () => void;
-  onToggleCollapse: () => void;
+  /** Take the id rather than a closure, so the handler can stay stable across renders. */
+  onSelect: (id: string) => void;
+  onToggleCollapse: (id: string) => void;
 }
 
 /** Keeps the flag, the selection and the ordinary state from being spelled out at four call sites. */
@@ -90,8 +91,8 @@ export const MemberNode: React.FC<MemberNodeProps> = ({
   return (
     <g data-member={id}>
       <g
-        onClick={onSelect}
-        onKeyDown={(event) => activate(event, onSelect)}
+        onClick={() => onSelect(id)}
+        onKeyDown={(event) => activate(event, () => onSelect(id))}
         tabIndex={0}
         role="button"
         aria-pressed={isSelected}
@@ -162,8 +163,8 @@ export const MemberNode: React.FC<MemberNodeProps> = ({
 
       {canFold && (
         <g
-          onClick={onToggleCollapse}
-          onKeyDown={(event) => activate(event, onToggleCollapse)}
+          onClick={() => onToggleCollapse(id)}
+          onKeyDown={(event) => activate(event, () => onToggleCollapse(id))}
           tabIndex={0}
           role="button"
           aria-expanded={!isCollapsed}
@@ -200,3 +201,4 @@ export const MemberNode: React.FC<MemberNodeProps> = ({
     </g>
   );
 };
+

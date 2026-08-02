@@ -64,6 +64,23 @@ export const FamilyDiagram: React.FC<FamilyDiagramProps> = ({
     [layout.boxes, nodeWidth],
   );
 
+  /*
+   * Stable identities so `MemberNode` can skip re-rendering. An arrow built per node per render
+   * would fail its comparison every time and undo the memo.
+   */
+  const flagged = useMemo(
+    () => new Set([...orphanedIds, ...cycleIds]),
+    [orphanedIds, cycleIds],
+  );
+
+  const selectedRef = React.useRef(selectedId);
+  selectedRef.current = selectedId;
+
+  const toggleSelection = useCallback(
+    (id: string) => onSelect(selectedRef.current === id ? null : id),
+    [onSelect],
+  );
+
   const viewport = useDiagramViewport({
     contentWidth: layout.width,
     contentHeight: layout.height,
@@ -153,11 +170,11 @@ export const FamilyDiagram: React.FC<FamilyDiagramProps> = ({
                   box={box}
                   label={labels.get(id)}
                   isSelected={id === selectedId}
-                  isFlagged={orphanedIds.includes(id) || cycleIds.includes(id)}
+                  isFlagged={flagged.has(id)}
                   isCollapsed={collapsedIds.has(id)}
                   metrics={layout.metrics}
-                  onSelect={() => onSelect(id === selectedId ? null : id)}
-                  onToggleCollapse={() => onToggleCollapse(id)}
+                  onSelect={toggleSelection}
+                  onToggleCollapse={onToggleCollapse}
                 />
               );
             })}

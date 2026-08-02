@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Download, Trash2, UserPlus, Users } from 'lucide-react';
 import { collapseHierarchy, flattenHierarchy } from '../../../lib/tools/familyTree/hierarchy';
 import { ToolLayout } from '../../ui/ToolLayout';
@@ -39,12 +39,20 @@ const FamilyTree: React.FC = () => {
    */
   const [collapsedIds, setCollapsedIds] = useState<Set<string>>(() => new Set());
 
-  const toggleCollapse = (id: string) =>
-    setCollapsedIds((previous) => {
-      const next = new Set(previous);
-      if (!next.delete(id)) next.add(id);
-      return next;
-    });
+  /*
+   * Stable, because `MemberNode` is memoised on its props and this is one of them. A plain arrow
+   * here is a new function on every render, which fails the comparison for every member and
+   * quietly undoes the memo — measured: the memo changed nothing at all until this was wrapped.
+   */
+  const toggleCollapse = useCallback(
+    (id: string) =>
+      setCollapsedIds((previous) => {
+        const next = new Set(previous);
+        if (!next.delete(id)) next.add(id);
+        return next;
+      }),
+    [],
+  );
 
   const visibleRoots = useMemo(
     () => collapseHierarchy(hierarchy.roots, collapsedIds),
