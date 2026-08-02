@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { byBirthYear, formatLifespan, isDeceased, parseLifeYear } from './lifeDates';
+import {
+  byBirthYear,
+  formatLifespan,
+  isDeceased,
+  parseLifeYear,
+  readWrittenYear,
+} from './lifeDates';
 
 describe('parseLifeYear', () => {
   it('reads a plain Common Era year', () => {
@@ -41,14 +47,35 @@ describe('parseLifeYear', () => {
   });
 });
 
+describe('readWrittenYear', () => {
+  it('gives back exactly the year that was typed', () => {
+    expect(readWrittenYear('2510')).toBe(2510);
+    expect(readWrittenYear('1967')).toBe(1967);
+  });
+
+  it('finds the year inside a longer date', () => {
+    expect(readWrittenYear('12 มี.ค. 2503')).toBe(2503);
+  });
+
+  it('applies the same plausibility limits as the sort key', () => {
+    expect(readWrittenYear('0812345678')).toBeNull();
+    expect(readWrittenYear('ไม่ทราบ')).toBeNull();
+  });
+});
+
 describe('formatLifespan', () => {
-  it('shows both years when both are known', () => {
-    expect(formatLifespan('2480', '2560')).toBe('1937–2017');
+  it('shows the years as written, in whichever calendar they were written in', () => {
+    /*
+     * Someone typing 2480 is thinking in Buddhist years and must not be answered with 1937 — a
+     * number they never wrote. The conversion exists for sorting; it has no business on screen.
+     */
+    expect(formatLifespan('2480', '2560')).toBe('2480–2560');
+    expect(formatLifespan('1937', '2017')).toBe('1937–2017');
   });
 
   it('shows only what is known', () => {
-    expect(formatLifespan('2510', '')).toBe('b. 1967');
-    expect(formatLifespan('', '2560')).toBe('d. 2017');
+    expect(formatLifespan('2510', '')).toBe('b. 2510');
+    expect(formatLifespan('', '2560')).toBe('d. 2560');
   });
 
   it('says nothing when nothing is known', () => {
@@ -59,7 +86,7 @@ describe('formatLifespan', () => {
   it('still reports a death that carries no readable year', () => {
     // "They are gone" is the part that matters; the year is the detail.
     expect(formatLifespan('', 'ไม่ทราบปี')).toBe('deceased');
-    expect(formatLifespan('2510', 'ไม่ทราบปี')).toBe('b. 1967');
+    expect(formatLifespan('2510', 'ไม่ทราบปี')).toBe('b. 2510');
   });
 });
 

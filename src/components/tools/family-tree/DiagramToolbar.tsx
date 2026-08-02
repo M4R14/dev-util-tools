@@ -9,9 +9,16 @@ interface DiagramToolbarProps {
   onZoomOut: () => void;
   onFit: () => void;
   onExport: (kind: 'svg' | 'png') => void;
+  /** Search sits in this row rather than a line of its own — see the note below. */
+  search?: React.ReactNode;
 }
 
-/** The chrome around the diagram: how much of it you see, and how to take a copy away. */
+/**
+ * The chrome around the diagram: how much of it you see, and how to take a copy away.
+ *
+ * Search rides along here on purpose. On its own line it pushed the first person 507px down a
+ * 1030px screen — half the window spent on everything except the picture the tool exists to draw.
+ */
 export const DiagramToolbar: React.FC<DiagramToolbarProps> = ({
   scale,
   isFitted,
@@ -19,6 +26,7 @@ export const DiagramToolbar: React.FC<DiagramToolbarProps> = ({
   onZoomOut,
   onFit,
   onExport,
+  search,
 }) => (
   <div className="flex flex-wrap items-center gap-1">
     <Button variant="outline" size="icon" onClick={onZoomOut} className="h-8 w-8" aria-label="Zoom out">
@@ -47,6 +55,8 @@ export const DiagramToolbar: React.FC<DiagramToolbarProps> = ({
       <Maximize2 className="mr-1.5 h-3.5 w-3.5" />
       Fit
     </Button>
+
+    {search && <div className="ml-2 w-48 min-w-32 flex-1 sm:max-w-64">{search}</div>}
 
     <div className="ml-auto flex items-center gap-1">
       <Button variant="ghost" size="sm" onClick={() => onExport('svg')} className="h-8 px-2 text-xs">

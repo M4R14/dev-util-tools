@@ -23,17 +23,29 @@ const BUDDHIST_OFFSET = 543;
 const PLAUSIBLE = { min: 1000, max: 2999 };
 
 /**
- * The Common Era year, or `null` when nothing usable is there.
+ * The year exactly as it was written, or `null` when nothing usable is there.
  *
  * Takes the first four-digit run rather than the whole string, so a full date in any order still
  * yields its year.
  */
-export const parseLifeYear = (text: string): number | null => {
+export const readWrittenYear = (text: string): number | null => {
   const match = text.match(/\d{4}/);
   if (!match) return null;
 
   const year = Number(match[0]);
-  if (year < PLAUSIBLE.min || year > PLAUSIBLE.max) return null;
+  return year < PLAUSIBLE.min || year > PLAUSIBLE.max ? null : year;
+};
+
+/**
+ * The same year converted to the Common Era, for comparing two entries against each other.
+ *
+ * Used for sorting and nothing else. Displaying this was a mistake: someone types 2470 and the
+ * diagram answers 1927 — a number they never wrote, in a calendar they were not using. The
+ * conversion belongs where two dates are compared, not where one is shown.
+ */
+export const parseLifeYear = (text: string): number | null => {
+  const year = readWrittenYear(text);
+  if (year === null) return null;
 
   return year >= BUDDHIST_THRESHOLD ? year - BUDDHIST_OFFSET : year;
 };
@@ -45,8 +57,9 @@ export const parseLifeYear = (text: string): number | null => {
  * for, and "d." says the same thing without one.
  */
 export const formatLifespan = (birth: string, death: string): string => {
-  const born = parseLifeYear(birth);
-  const died = parseLifeYear(death);
+  // As written, not as converted. See `parseLifeYear` for why those are two different questions.
+  const born = readWrittenYear(birth);
+  const died = readWrittenYear(death);
 
   if (born !== null && died !== null) return `${born}–${died}`;
   if (born !== null) return `b. ${born}`;

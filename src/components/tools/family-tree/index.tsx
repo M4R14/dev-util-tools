@@ -181,15 +181,13 @@ const FamilyTree: React.FC = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            {/* A tree past a screenful cannot be scanned by eye; selecting also scrolls to them. */}
-            <MemberSearch members={members} onSelect={setSelectedId} />
-
             {/*
               Clicking someone in the diagram opens an editor on them, so the common edits never
-              leave the picture. The list underneath keeps what the diagram has no room for —
-              re-parenting, re-partnering, and a reading order that works without a mouse.
+              leave the picture. Search rides in the toolbar rather than on a line of its own: on
+              its own it pushed the first person half a screen down.
             */}
             <FamilyDiagram
+              search={<MemberSearch members={members} onSelect={setSelectedId} />}
               roots={visibleRoots}
               selectedId={selectedId}
               onSelect={setSelectedId}
@@ -210,20 +208,34 @@ const FamilyTree: React.FC = () => {
               focusNewId={focusNewId}
             />
 
-            <TreeView
-              nodes={hierarchy.roots}
-              members={members}
-              orphanedIds={hierarchy.orphanedIds}
-              cycleIds={hierarchy.cycleIds}
-              selectedId={selectedId}
-              onSelect={setSelectedId}
-              onUpdate={updateMember}
-              onRemove={removeMember}
-              onReparent={reparentMember}
-              onLinkSpouse={linkSpouse}
-              onUnlinkSpouse={unlinkSpouse}
-              onAddChild={setPendingParentId}
-            />
+            {/*
+              Folded away by default. It was a second full copy of the tree — 498px of a 1030px
+              page restating what the diagram had just said — and it is only needed for the two
+              things the diagram cannot do, so the summary names them rather than saying "list".
+            */}
+            <details className="rounded-xl border border-border/70 px-3 py-2">
+              <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground">
+                Everyone as a list — for moving someone to a different parent, changing partners,
+                and reading the tree without a mouse
+              </summary>
+
+              <div className="mt-3">
+                <TreeView
+                  nodes={hierarchy.roots}
+                  members={members}
+                  orphanedIds={hierarchy.orphanedIds}
+                  cycleIds={hierarchy.cycleIds}
+                  selectedId={selectedId}
+                  onSelect={setSelectedId}
+                  onUpdate={updateMember}
+                  onRemove={removeMember}
+                  onReparent={reparentMember}
+                  onLinkSpouse={linkSpouse}
+                  onUnlinkSpouse={unlinkSpouse}
+                  onAddChild={setPendingParentId}
+                />
+              </div>
+            </details>
           </div>
         )}
       </ToolLayout.Panel>

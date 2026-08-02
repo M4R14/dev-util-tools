@@ -110,10 +110,17 @@ photographs — "2510", "ราวๆ 2495", "12 มี.ค. 2503" — and a dat
 turns "some time in the sixties" into a blank.
 
 `lifeDates.ts` reads a year out of whatever is there, and nothing else depends on it, so a value it
-cannot parse costs the owner only the sorting. It takes the first four-digit run, rejects anything
-outside 1000–2999 so a phone number in the wrong field is not read as a year, and treats anything at
-or above **2300 as Buddhist** — the boundary is CE 1757, which no Common Era entry in a family tree
-can reach and no Buddhist one can fall below.
+cannot parse costs the owner only the sorting. It takes the first four-digit run and rejects anything
+outside 1000–2999, so a phone number in the wrong field is not read as a year.
+
+**Two questions, two functions.** `readWrittenYear` gives the year exactly as typed and is what the
+diagram shows. `parseLifeYear` converts anything at or above **2300** to the Common Era — the
+boundary is CE 1757, which no Common Era entry in a family tree can reach and no Buddhist one can
+fall below — and exists only so two dates can be compared.
+
+Showing the converted value was a mistake: someone types 2470 and the diagram answers 1927, a number
+they never wrote in a calendar they were not using. Thai records are written in BE and this tool is
+for Thai families. The conversion belongs where two dates are compared, not where one is displayed.
 
 `death` holding anything at all means the person is gone, whether or not it carries a year; the
 label then reads "deceased". No dagger — it carries a religious reading that does not fit every
@@ -251,6 +258,20 @@ the layout never learns that folding exists — it lays out whatever tree it is 
 shows the number of hidden people because a bare chevron hides how much is behind it. The fold
 control sits *below* the box: inside it, it landed exactly on the detail line and the two drew over
 each other.
+
+### Keeping the picture near the top
+
+The tool exists to draw a picture, and measured on a 1030px screen the first person sat **507px
+down** — half the window spent on everything except the tree. Two things moved:
+
+- **Search rides in the toolbar row**, not a line of its own.
+- **The list folds away.** It had been a second full copy of the tree, 498px of a 1030px page
+  restating what the diagram had just said. It is still there for the two things the diagram cannot
+  do, and the summary names them rather than saying "list" — a fold labelled with its contents is
+  worth opening, one labelled with its format is not.
+
+That is 459px now, most of what remains being the app-wide page header rather than anything this
+tool controls.
 
 ### Editing from the diagram
 

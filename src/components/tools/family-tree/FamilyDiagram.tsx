@@ -27,6 +27,8 @@ interface FamilyDiagramProps {
   partnersOfParent: (member: FamilyMember) => FamilyMember[];
   /** Set when the selected member was just created, so the editor can focus their name. */
   focusNewId: string | null;
+  /** Rendered inside the toolbar row rather than above it, to keep the diagram near the top. */
+  search?: React.ReactNode;
 }
 
 /** Width of the editor card, needed to keep it from hanging off either edge of the diagram. */
@@ -54,6 +56,7 @@ export const FamilyDiagram: React.FC<FamilyDiagramProps> = ({
   onSortChildren,
   partnersOfParent,
   focusNewId,
+  search,
 }) => {
   const layout = useMemo(() => layoutFamilyTree2D(roots), [roots]);
   const { nodeWidth } = layout.metrics;
@@ -123,6 +126,7 @@ export const FamilyDiagram: React.FC<FamilyDiagramProps> = ({
         onZoomOut={() => viewport.zoomBy(-ZOOM_STEP)}
         onFit={viewport.fit}
         onExport={exportImage}
+        search={search}
       />
 
       <div
