@@ -1,7 +1,8 @@
 import React from 'react';
 import { Trash2 } from 'lucide-react';
 import { ToolLayout } from '../ui/ToolLayout';
-import { CodeInput } from '../ui/CodeInput';
+import { CodeEditor } from '../ui/CodeEditor';
+import { CodeHighlight } from '../ui/CodeHighlight';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { CopyButton } from '../ui/CopyButton';
@@ -64,9 +65,9 @@ const JsonPath: React.FC = () => {
           <p className="text-sm text-muted-foreground">No match for that path.</p>
         ) : (
           <>
-            <pre className="max-h-80 overflow-auto rounded-lg border border-border/60 bg-muted/30 p-3 font-mono text-xs">
-              {output}
-            </pre>
+            <div className="max-h-80 overflow-auto rounded-lg border border-border/60 bg-muted/30 p-3">
+              <CodeHighlight code={output} language="json" className="text-xs" />
+            </div>
             {/*
               The values are already above; listing every resolved path again doubled the page
               height for one dataset shown twice. Kept behind a toggle for when the path itself is
@@ -105,9 +106,10 @@ const JsonPath: React.FC = () => {
           </Button>
         }
       >
-        <CodeInput
+        <CodeEditor
           value={json}
-          onChange={(e) => setJson(e.target.value)}
+          onChange={setJson}
+          language="json"
           data-testid="jsonpath-input"
           placeholder='{"data": {"items": [{"id": 1}, {"id": 2}]}}'
         />

@@ -143,6 +143,8 @@ src/
 │       ├── Button.tsx          # CVA variants: default/destructive/outline/secondary/ghost/link
 │       ├── Card.tsx            # Card + CardHeader + CardTitle + CardDescription + CardContent + CardFooter
 │       ├── CodeHighlight.tsx   # Syntax-highlighted code display
+│       ├── CodeInput.tsx       # Monospace textarea + line/char counter
+│       ├── CodeEditor.tsx      # CodeInput/CodeHighlight toggle
 │       ├── CopyButton.tsx      # Icon button over useCopyToClipboard; use successMessage, not onCopy
 │       ├── FavoriteButton.tsx  # Favourite toggle; pass itemName so list items name themselves
 │       ├── FavoriteIcon.tsx    # Reusable star icon with active fill state

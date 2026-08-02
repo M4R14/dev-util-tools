@@ -1,7 +1,8 @@
 import React from 'react';
 import { AlertTriangle, Trash2 } from 'lucide-react';
 import { ToolLayout } from '../ui/ToolLayout';
-import { CodeInput } from '../ui/CodeInput';
+import { CodeEditor } from '../ui/CodeEditor';
+import { CodeHighlight } from '../ui/CodeHighlight';
 import { Button } from '../ui/Button';
 import { CopyButton } from '../ui/CopyButton';
 import { SendToToolButton } from '../ui/SendToToolButton';
@@ -43,9 +44,10 @@ const CurlParser: React.FC = () => {
           </Button>
         }
       >
-        <CodeInput
+        <CodeEditor
           value={command}
-          onChange={(e) => setCommand(e.target.value)}
+          onChange={setCommand}
+          language="bash"
           data-testid="curl-input"
           initialHeightClassName="h-28"
           placeholder="Paste a command from DevTools → Network → Copy as cURL"
@@ -95,9 +97,14 @@ const CurlParser: React.FC = () => {
                 </>
               }
             >
-              <pre className="max-h-80 overflow-auto rounded-lg border border-border/60 bg-muted/30 p-3 font-mono text-xs">
-                {body.text}
-              </pre>
+              <div className="max-h-80 overflow-auto rounded-lg border border-border/60 bg-muted/30 p-3">
+                {/* A form body is not JSON; highlighting it as JSON would paint it wrong. */}
+                <CodeHighlight
+                  code={body.text}
+                  language={body.isJson ? 'json' : 'plaintext'}
+                  className="text-xs"
+                />
+              </div>
             </ToolLayout.Section>
           )}
           {parsed.headers.length > 0 && (

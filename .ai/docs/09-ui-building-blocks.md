@@ -322,6 +322,65 @@ import { CodeHighlight } from '../ui/CodeHighlight';
 <CodeHighlight code={script} language="bash" />
 ```
 
+Read-only. Highlighting is computed with `hljs.highlight()` and set as HTML, not applied to a
+mounted node with `hljs.highlightElement()` — that had React and highlight.js writing the same
+element, and hljs warned "the element with unescaped HTML" on every re-highlight. `hljs.highlight()`
+escapes its input, and unhighlightable text (`plaintext`, unregistered languages) renders as a React
+text child, so neither branch can inject markup from user input.
+
+Registered languages are `bash`, `javascript`, `json`, `xml`. Anything else falls back to plain text
+rather than failing.
+
+---
+
+## `CodeInput` — Monospace Text Entry
+
+A resizable `<textarea>` with a line/character counter, for pasted documents.
+
+```ts
+import { CodeInput } from '../ui/CodeInput';
+```
+
+Takes the usual `<textarea>` props plus `initialHeightClassName` (default `h-40`); the user can drag
+it taller from there.
+
+---
+
+## `CodeEditor` — Edit or Read Highlighted
+
+Pairs `CodeInput` with `CodeHighlight` behind a toggle: type in a textarea, or read the same text
+highlighted. Clicking the highlighted text returns to editing.
+
+```ts
+import { CodeEditor } from '../ui/CodeEditor';
+```
+
+### Props
+
+| Prop | Type | Description |
+|---|---|---|
+| `value` | `string` | Current text |
+| `onChange` | `(value: string) => void` | Receives the new text, not the event |
+| `language` | same union as `CodeHighlight` | Syntax language for the preview |
+| `placeholder?` | `string` | Shown while editing |
+| `initialHeightClassName?` | `string` | Default `h-40` |
+| `className?` | `string` | Additional classes |
+
+```tsx
+<CodeEditor value={left} onChange={setLeft} language="json" placeholder="Paste JSON…" />
+```
+
+A `<textarea>` renders plain text and nothing else, so highlighting *while typing* would need a
+transparent overlay kept in sync with a `<pre>` behind it, or an editor dependency. The overlay
+drifts on line height, scroll position and selection colour, and re-highlights on every keystroke of
+documents this app routinely receives at three thousand lines. Toggling avoids both.
+
+The toggle only appears once there is something to preview. JSON Formatter keeps its own version of
+this pattern on purpose — its toggle sits in the panel header beside an indent selector and a clear
+button, and it carries an error overlay this does not.
+
+Used by JSON Compare (both panes), JSONPath Extractor, and cURL Parser.
+
 ---
 
 ## `Toaster` — Toast Provider

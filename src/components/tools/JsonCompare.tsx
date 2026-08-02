@@ -1,7 +1,7 @@
 import React from 'react';
 import { ArrowLeftRight, Check, Minus, Plus, Trash2, Type } from 'lucide-react';
 import { ToolLayout } from '../ui/ToolLayout';
-import { CodeInput } from '../ui/CodeInput';
+import { CodeEditor } from '../ui/CodeEditor';
 import { Button } from '../ui/Button';
 import { CopyButton } from '../ui/CopyButton';
 import { SendToToolButton } from '../ui/SendToToolButton';
@@ -196,9 +196,10 @@ const JsonCompare: React.FC = () => {
           title="Expected"
           actions={<SendToToolButton value={left} valueName="expected JSON" />}
         >
-          <CodeInput
+          <CodeEditor
             value={left}
-            onChange={(e) => setLeft(e.target.value)}
+            onChange={setLeft}
+            language="json"
             data-testid="json-compare-left"
             placeholder='{"id": 1, "name": "a"}'
           />
@@ -209,9 +210,10 @@ const JsonCompare: React.FC = () => {
           actions={<SendToToolButton value={right} valueName="actual JSON" />}
           className={error ? 'border-destructive/50' : ''}
         >
-          <CodeInput
+          <CodeEditor
             value={right}
-            onChange={(e) => setRight(e.target.value)}
+            onChange={setRight}
+            language="json"
             data-testid="json-compare-right"
             placeholder='{"name": "a", "id": 1}'
           />
