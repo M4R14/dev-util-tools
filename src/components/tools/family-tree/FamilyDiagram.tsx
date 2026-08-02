@@ -61,7 +61,7 @@ export const FamilyDiagram: React.FC<FamilyDiagramProps> = ({
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
-  const [viewportWidth, setViewportWidth] = useState(0);
+  const [viewport, setViewport] = useState({ width: 0, height: 0 });
   /** `null` means "fit the panel"; a number is an explicit zoom the reader chose. */
   const [zoom, setZoom] = useState<number | null>(null);
 
@@ -69,16 +69,32 @@ export const FamilyDiagram: React.FC<FamilyDiagramProps> = ({
     const element = scrollRef.current;
     if (!element) return;
 
-    const observer = new ResizeObserver(([entry]) => setViewportWidth(entry.contentRect.width));
+    const observer = new ResizeObserver(([entry]) =>
+      setViewport({ width: entry.contentRect.width, height: entry.contentRect.height }),
+    );
     observer.observe(element);
     return () => observer.disconnect();
   }, []);
 
+  /**
+   * The largest scale that still shows the whole tree, within what stays readable.
+   *
+   * This used to be capped at 1, which made Fit a permanently dead button for any tree narrower
+   * than the panel — which is most of them. Fitting means filling the box, so it scales up as well
+   * as down. Both axes count, or a tall tree "fits" the width and runs off the bottom.
+   */
   const fitScale =
-    viewportWidth === 0 || layout.width === 0
+    viewport.width === 0 || layout.width === 0 || layout.height === 0
       ? 1
-      : Math.min(1, Math.max(MIN_FIT_SCALE, viewportWidth / layout.width));
+      : Math.min(
+          ZOOM_RANGE.max,
+          Math.max(
+            MIN_FIT_SCALE,
+            Math.min(viewport.width / layout.width, viewport.height / layout.height),
+          ),
+        );
   const scale = zoom ?? fitScale;
+  const isFitted = zoom === null;
 
   /**
    * Labels are truncated against a real measurement of the font they will be drawn in.
@@ -227,11 +243,15 @@ export const FamilyDiagram: React.FC<FamilyDiagramProps> = ({
           <Plus className="h-4 w-4" />
         </Button>
         <Button
-          variant="ghost"
+          variant={isFitted ? 'secondary' : 'ghost'}
           size="sm"
           onClick={() => setZoom(null)}
           className="h-8 px-2 text-xs"
           aria-label="Fit the diagram to the panel"
+          aria-pressed={isFitted}
+          // Says which mode it is in. Zooming leaves fit mode, so the button lighting up on return
+          // is the feedback that the click landed even when the scale happens not to change.
+          title={isFitted ? 'Following the panel size' : 'Fit the whole tree in the panel'}
         >
           <Maximize2 className="mr-1.5 h-3.5 w-3.5" />
           Fit
@@ -265,7 +285,13 @@ export const FamilyDiagram: React.FC<FamilyDiagramProps> = ({
         onPointerMove={handlePointerMove}
         onPointerUp={endDrag}
         onPointerCancel={endDrag}
-        className="w-full cursor-grab overflow-auto rounded-xl border border-border/60 bg-muted/10 p-2 active:cursor-grabbing"
+        /*
+         * A fixed height, not one that grows with the tree. Fit reads this box to decide the
+         * scale, so a height that followed the content would feed back into the number that
+         * produced it. It also keeps a deep tree scrolling inside its own frame instead of
+         * stretching the page.
+         */
+        className="h-[60vh] max-h-[560px] min-h-[300px] w-full cursor-grab overflow-auto rounded-xl border border-border/60 bg-muted/10 p-2 active:cursor-grabbing"
       >
         {/*
           The editor is positioned inside this wrapper rather than over the scroll port, so it

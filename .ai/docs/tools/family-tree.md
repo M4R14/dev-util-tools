@@ -115,8 +115,19 @@ strands a combining mark and renders a dotted circle. Anything cut keeps its ful
 `<title>`. Before this, notes were cut at 22 characters and names were not cut at all — two Thai
 names at 140px in a 116px slot overlapped into a smear.
 
-**Zoom, pan and fit.** Buttons step the zoom; dragging the background pans. `Fit` returns to
-following the panel width. Pointer-down on a member is left alone so panning does not eat clicks.
+**Zoom, pan and fit.** Buttons step the zoom; dragging the background pans. Pointer-down on a member
+is left alone so panning does not eat clicks.
+
+`Fit` scales **up as well as down**, against both axes. It was capped at 1 first, which made it a
+permanently dead button for any tree narrower than the panel — which is most of them: the user
+pressed it and nothing happened, correctly reporting it as broken. The readability floor still
+applies, so on a tree too wide to fit, `Fit` means "as close as stays legible" and the diagram
+scrolls. The button carries `aria-pressed` and lights up in fit mode, so the click has visible
+feedback even when the scale it lands on is unchanged.
+
+**The scroll box has a fixed height** (`60vh`, clamped). Not a stylistic choice: `Fit` reads this
+box to pick a scale, so a height that grew with the content would feed back into the number that
+produced it. It also keeps a deep tree scrolling in its own frame instead of stretching the page.
 
 **Selection scrolls the diagram.** Selection is shared with the list, and on a wide tree the person
 picked there was routinely off-screen with nothing to say so. Honours `prefers-reduced-motion`.
