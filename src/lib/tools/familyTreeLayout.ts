@@ -1,144 +1,179 @@
-import { flattenHierarchy, type FamilyMember, type FamilyNode } from './familyTree';
+import type { FamilyMember, FamilyNode } from './familyTree';
 
 /**
- * Positions for a family tree drawn in three dimensions.
+ * Coordinates for the conventional family-tree diagram: partners side by side joined by a bar,
+ * children hanging from the middle of that bar on square elbows.
  *
- * Generations stack downward on Y, and each generation wraps onto a circle in the X–Z plane
- * instead of running off to the sides. That is the reason to render this in 3D at all: a flat tree
- * grows as wide as its widest generation, so eight cousins push their grandparents off the screen,
- * while a ring of the same eight stays the same size from every angle.
- *
- * Angles come from a single ordering shared by every generation, so a parent sits directly above
- * the arc its children occupy and the edges stay short.
+ * Pure, so the geometry is tested without rendering anything. The renderer only turns these numbers
+ * into SVG.
  */
-export interface PositionedMember {
+export interface LaidOutMember {
   member: FamilyMember;
-  depth: number;
+  /** Centre of the box horizontally, top of the box vertically. */
   x: number;
   y: number;
-  z: number;
+  depth: number;
+  /** True for the partner who married in and shares the slot. */
+  isSpouse: boolean;
 }
 
-export interface LayoutEdge {
-  from: string;
-  to: string;
+export interface Connector {
+  kind: 'spouse' | 'descent';
+  /** Points of a polyline, already on square corners. */
+  points: { x: number; y: number }[];
 }
 
-export interface FamilyLayout3D {
-  nodes: PositionedMember[];
-  edges: LayoutEdge[];
-  /** Radius of the widest ring, for framing the camera. */
-  radius: number;
-  /** Distance from the top generation to the bottom, for framing the camera. */
+export interface FamilyLayout2D {
+  boxes: LaidOutMember[];
+  connectors: Connector[];
+  width: number;
   height: number;
+  metrics: Required<Layout2DOptions>;
 }
 
-export interface Layout3DOptions {
-  /** Vertical distance between one generation and the next. */
-  levelHeight?: number;
-  /** Arc length reserved for each member on a ring. Larger values push crowded rings outward. */
-  arcSpacing?: number;
-  /** How much wider each generation's ring is than the one above it. */
-  ringGap?: number;
+export interface Layout2DOptions {
+  nodeWidth?: number;
+  nodeHeight?: number;
+  avatarSize?: number;
+  /** Gap between two partners, which is also the length of the bar joining them. */
+  spouseGap?: number;
+  siblingGap?: number;
+  /** Vertical gap between the bottom of one generation and the top of the next. */
+  levelGap?: number;
+  padding?: number;
 }
 
-const DEFAULTS: Required<Layout3DOptions> = {
-  levelHeight: 2.4,
-  arcSpacing: 2.8,
-  ringGap: 2.6,
+const DEFAULTS: Required<Layout2DOptions> = {
+  nodeWidth: 116,
+  nodeHeight: 96,
+  avatarSize: 60,
+  spouseGap: 44,
+  siblingGap: 28,
+  levelGap: 76,
+  padding: 24,
 };
 
-/**
- * Gives every leaf its own slot and centres each parent over the slots of its children.
- *
- * Slots are fractional for parents on purpose — rounding a parent to a whole slot would drag it
- * off the middle of its children whenever it had an even number of them.
- */
-const assignSlots = (roots: FamilyNode[]): { slots: Map<string, number>; total: number } => {
-  const slots = new Map<string, number>();
-  let nextLeaf = 0;
-
-  const place = (node: FamilyNode): number => {
-    if (node.children.length === 0) {
-      const slot = nextLeaf;
-      nextLeaf += 1;
-      slots.set(node.member.id, slot);
-      return slot;
-    }
-
-    const childSlots = node.children.map(place);
-    const slot = (childSlots[0] + childSlots[childSlots.length - 1]) / 2;
-    slots.set(node.member.id, slot);
-    return slot;
-  };
-
-  roots.forEach(place);
-
-  return { slots, total: nextLeaf };
-};
-
-export const layoutFamilyTree3D = (
+export const layoutFamilyTree2D = (
   roots: FamilyNode[],
-  options: Layout3DOptions = {},
-): FamilyLayout3D => {
-  const { levelHeight, arcSpacing, ringGap } = { ...DEFAULTS, ...options };
-  const flat = flattenHierarchy(roots);
+  options: Layout2DOptions = {},
+): FamilyLayout2D => {
+  const metrics = { ...DEFAULTS, ...options };
+  const { nodeWidth, nodeHeight, avatarSize, spouseGap, siblingGap, levelGap, padding } = metrics;
 
-  if (flat.length === 0) {
-    return { nodes: [], edges: [], radius: 0, height: 0 };
-  }
-
-  const { slots, total } = assignSlots(roots);
-
-  const countAtDepth = new Map<number, number>();
-  for (const node of flat) {
-    countAtDepth.set(node.depth, (countAtDepth.get(node.depth) ?? 0) + 1);
-  }
+  const unitWidth = (node: FamilyNode) =>
+    node.spouse ? nodeWidth * 2 + spouseGap : nodeWidth;
 
   /**
-   * Rings widen with each generation, so the tree is a cone rather than a cylinder.
+   * Width of everything under a node, measured bottom-up before anything is placed.
    *
-   * The first version gave every generation the same radius. It rendered, but the oldest ancestor
-   * ended up standing on the same ring as their own children — visually just another member of the
-   * crowd, distinguishable only by being slightly higher. Fanning outward puts the ancestor at the
-   * apex, which is what the diagram is supposed to say.
-   *
-   * A crowded generation still overrides the cone: enough members on one ring need the
-   * circumference regardless of how near the apex they are.
+   * A parent can be wider than its children — a married couple with one child — or narrower, with
+   * six children under a single person. Taking the larger of the two and centring the smaller
+   * inside it handles both without a second pass to push overlapping subtrees apart.
    */
-  const radiusAt = (depth: number): number => {
-    // A single branch has nothing to spread apart; it stands straight up the axis.
-    if (total <= 1) return 0;
-    if (depth === 0 && (countAtDepth.get(0) ?? 0) === 1) return 0;
+  const widthOf = (node: FamilyNode): number => {
+    const childrenWidth = node.children.reduce(
+      (total, child, index) => total + widthOf(child) + (index > 0 ? siblingGap : 0),
+      0,
+    );
 
-    const crowding = ((countAtDepth.get(depth) ?? 1) * arcSpacing) / (2 * Math.PI);
-    return Math.max(depth * ringGap, crowding);
+    return Math.max(unitWidth(node), childrenWidth);
   };
 
-  // Generations descend from here. Subtracting rather than negating also keeps the top row at
-  // `+0`: `-(0 * levelHeight)` is `-0`, which is the same point but shows up in any `toEqual` a
-  // caller writes later and reads like a bug.
-  const TOP_Y = 0;
+  const boxes: LaidOutMember[] = [];
+  const connectors: Connector[] = [];
+  const rowY = (depth: number) => padding + depth * (nodeHeight + levelGap);
 
-  const nodes = flat.map((node) => {
-    const angle = total <= 1 ? 0 : (2 * Math.PI * (slots.get(node.member.id) ?? 0)) / total;
-    const radius = radiusAt(node.depth);
+  const place = (node: FamilyNode, left: number, depth: number) => {
+    const width = widthOf(node);
+    const centreX = left + width / 2;
+    const y = rowY(depth);
 
-    return {
-      member: node.member,
-      depth: node.depth,
-      x: radius * Math.cos(angle),
-      y: TOP_Y - node.depth * levelHeight,
-      z: radius * Math.sin(angle),
-    };
-  });
+    if (node.spouse) {
+      const offset = (nodeWidth + spouseGap) / 2;
+      boxes.push({ member: node.member, x: centreX - offset, y, depth, isSpouse: false });
+      boxes.push({ member: node.spouse, x: centreX + offset, y, depth, isSpouse: true });
 
-  const edges: LayoutEdge[] = flat.flatMap((node) =>
-    node.children.map((child) => ({ from: node.member.id, to: child.member.id })),
-  );
+      // The bar sits at the avatars' height, so the drop to the children passes between the two
+      // names rather than through them.
+      const barY = y + avatarSize / 2;
+      connectors.push({
+        kind: 'spouse',
+        points: [
+          { x: centreX - offset, y: barY },
+          { x: centreX + offset, y: barY },
+        ],
+      });
+    } else {
+      boxes.push({ member: node.member, x: centreX, y, depth, isSpouse: false });
+    }
 
-  const deepest = flat.reduce((max, node) => Math.max(max, node.depth), 0);
-  const widest = Math.max(...Array.from(countAtDepth.keys()).map(radiusAt), 0);
+    if (node.children.length === 0) return;
 
-  return { nodes, edges, radius: widest, height: deepest * levelHeight };
+    const childrenWidth = node.children.reduce(
+      (total, child, index) => total + widthOf(child) + (index > 0 ? siblingGap : 0),
+      0,
+    );
+
+    let cursor = left + (width - childrenWidth) / 2;
+    const childCentres: number[] = [];
+
+    for (const child of node.children) {
+      const childWidth = widthOf(child);
+      place(child, cursor, depth + 1);
+      childCentres.push(cursor + childWidth / 2);
+      cursor += childWidth + siblingGap;
+    }
+
+    // A couple drops from the bar between them; a single parent from under their own name.
+    const dropFromY = node.spouse ? y + avatarSize / 2 : y + nodeHeight;
+    const busY = y + nodeHeight + levelGap / 2;
+    const childTopY = rowY(depth + 1);
+
+    connectors.push({
+      kind: 'descent',
+      points: [
+        { x: centreX, y: dropFromY },
+        { x: centreX, y: busY },
+      ],
+    });
+
+    // One horizontal run across the children, then a drop into each. A single child needs no run,
+    // and drawing a zero-length one leaves a visible dot at the join.
+    if (childCentres.length > 1) {
+      connectors.push({
+        kind: 'descent',
+        points: [
+          { x: Math.min(...childCentres), y: busY },
+          { x: Math.max(...childCentres), y: busY },
+        ],
+      });
+    }
+
+    for (const childCentre of childCentres) {
+      connectors.push({
+        kind: 'descent',
+        points: [
+          { x: childCentre, y: busY },
+          { x: childCentre, y: childTopY },
+        ],
+      });
+    }
+  };
+
+  let cursor = padding;
+  for (const root of roots) {
+    place(root, cursor, 0);
+    cursor += widthOf(root) + siblingGap * 2;
+  }
+
+  const deepest = boxes.reduce((max, box) => Math.max(max, box.depth), 0);
+  const right = boxes.reduce((max, box) => Math.max(max, box.x + nodeWidth / 2), 0);
+
+  return {
+    boxes,
+    connectors,
+    width: boxes.length === 0 ? 0 : right + padding,
+    height: boxes.length === 0 ? 0 : rowY(deepest) + nodeHeight + padding,
+    metrics,
+  };
 };

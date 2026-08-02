@@ -6,6 +6,7 @@ import {
   countGenerations,
   familyMembersSchema,
   isFamilyFailure,
+  linkSpouse as linkSpouseInList,
   normalizeMembers,
   parseFamily,
   removeMember as removeFromList,
@@ -84,6 +85,19 @@ export const useFamilyTree = () => {
     });
   }, []);
 
+  const linkSpouse = useCallback((id: string, spouseId: string | null) => {
+    setMembers((previous) => {
+      const result = linkSpouseInList(previous, id, spouseId);
+
+      if (isFamilyFailure(result)) {
+        toast.error(result.reason);
+        return previous;
+      }
+
+      return result.members;
+    });
+  }, []);
+
   const clearAll = useCallback(() => {
     setMembers([]);
     toast.success('Family tree cleared');
@@ -112,6 +126,7 @@ export const useFamilyTree = () => {
     updateMember,
     removeMember,
     reparentMember,
+    linkSpouse,
     clearAll,
     importJson,
     asJson,

@@ -4,10 +4,10 @@ Build a family tree from `{ name, parent, relationship }` and keep it in the bro
 
 - Route: `/family-tree`
 - Component: `src/components/tools/family-tree/index.tsx` (+ `AddMemberForm.tsx`, `TreeView.tsx`,
-  `FamilyScene.tsx`)
+  `FamilyDiagram.tsx`)
 - Hook: `src/hooks/tools/useFamilyTree.ts`
 - Lib: `src/lib/tools/familyTree.ts`, `src/lib/tools/familyTreeLayout.ts`
-- Package: `three`
+- No packages: the diagram is hand-written SVG
 
 ## Data model
 
@@ -16,6 +16,7 @@ interface FamilyMember {
   id: string;
   name: string;
   parentId: string | null; // null = a root
+  spouseId: string | null; // the partner drawn beside them
   relationship: string;    // free text; how they relate to their parent
   note: string;
 }
@@ -55,51 +56,47 @@ button. `useFamilyTree` uses `persistedState`, not `useShareableState`, for this
 Clearing the tree removes the storage key rather than writing `[]`, so an empty tree does not come
 back on the next visit.
 
-## The 3D view
+## Partners
 
-`familyTreeLayout.ts` is a pure function from the hierarchy to coordinates, so the geometry is
-tested without a WebGL context. `FamilyScene.tsx` only turns those coordinates into objects.
+`spouseId` is symmetric — every write sets both sides, or the pair renders from one side only and
+unlinking from the other does nothing.
 
-**Generations are rings on a widening cone.** Stacking generations on Y and wrapping each onto a
-circle means eight cousins do not push their grandparents off the screen the way a flat tree does.
-The first version gave every ring the same radius and it read badly — the oldest ancestor stood on
-the same circle as their own children, just slightly higher. Radius now grows with depth, so the
-ancestor is at the apex. A crowded generation overrides the cone and takes the circumference it
-needs.
+**Only a partner with no parent of their own gives up their slot.** `buildHierarchy.isMarriedIn`
+decides this. Someone who is themselves a descendant belongs under their own parent, and no tree can
+draw one person twice; that partner stays where they are and the pair is simply not joined. When
+neither has a parent, whichever was added first keeps the slot — without that tie-break the two
+would each attach to the other and both vanish from the diagram.
 
-Angles come from one slot ordering shared by every generation, so a parent sits above the arc its
-children occupy and edges stay short. Parent slots are fractional on purpose; rounding would drag a
-parent off centre whenever it had an even number of children.
+A married-in partner has no node in the hierarchy, so `TreeView` renders them as an extra row under
+the member holding the slot. Without it they would appear in the picture and be impossible to
+rename, re-link or delete.
 
-**Labels are canvas textures on sprites, not `TextGeometry`.** The names here are usually Thai, and
-`TextGeometry` needs a typeface JSON with the glyphs baked in — a Thai font covering the combining
-vowels and tone marks is larger than the rest of this bundle. A 2D canvas uses the font the browser
-already has and gets shaping for free. Sprites also face the camera, which keeps the tree readable
-while orbiting.
+`linkSpouse` releases a previous partner before taking a new one, refuses self-marriage, and refuses
+a parent marrying their own child. `removeMember` clears the link so no bar is drawn to somebody who
+is gone.
 
-**Selection repaints two labels; it does not rebuild the scene.** Keying the build effect on
-`selectedId` was the obvious thing to write and it made the tool unusable — every click tore down
-the renderer and reset the camera, throwing away whatever angle the user had orbited to.
+## The diagram
 
-**No animation loop while idle.** `OrbitControls` damping is off, so the scene renders on the
-`change` event instead of a permanent `requestAnimationFrame`. A loop runs only while auto-rotate
-is on, and the first deliberate interaction stops it. Auto-rotate respects `prefers-reduced-motion`.
+`familyTreeLayout.ts` is a pure function from the hierarchy to coordinates and connector polylines,
+tested without rendering anything. `FamilyDiagram.tsx` only turns those numbers into SVG.
 
-**Everything is disposed on unmount.** three.js holds GPU memory that garbage collection cannot
-reach. Textures are read off each sprite rather than from a list captured at build time, because
-selection swaps in a fresh one. Verified by bouncing in and out of the route 13 times: one canvas
-in the DOM, no context-loss warnings.
+**Widths are measured bottom-up before anything is placed.** A parent can be wider than its children
+(a couple with one child) or narrower (six children under one person). `widthOf` takes the larger and
+the placement centres the smaller inside it, which avoids a second pass to push overlapping subtrees
+apart.
 
-**The list is not decorative.** A WebGL canvas offers nothing to a keyboard or a screen reader, so
-the tree stays operable from the list underneath, and selection is shared both ways.
+**Children hang from the partner bar, not from under a name.** For a couple the drop starts at the
+bar's height so it passes between the two names; for a single parent it starts below the box. A lone
+child gets no horizontal run — drawing a zero-length one leaves a visible dot at the join.
 
-### Bundle cost
+**SVG, not canvas or WebGL.** A few dozen rectangles and straight lines stay crisp at any zoom or
+pixel density for free, and each member can be a real focusable element with a label — which is what
+lets the diagram be operated from the keyboard rather than being an image with a list bolted on
+beside it. It also costs no dependency: an earlier version of this tool drew the same tree with
+three.js and carried 136 kB gzipped to do it.
 
-three.js is ~541 kB raw / ~136 kB gzipped, in its own `FamilyScene-*.js` chunk behind `React.lazy`,
-so no other page pays for it and the main bundle is unchanged. Switching from `import * as THREE`
-to named imports changed that chunk by **zero bytes** — same size, same hash. `WebGLRenderer`
-reaches most of the library, so there is nothing to tree-shake; the lazy boundary is the only lever
-that matters. This is what trips the "chunks larger than 500 kB" build warning.
+The diagram scales down to fit its panel, never up past natural size, and stops shrinking at 55% —
+below that the names stop being readable, so scrolling is the better trade.
 
 ## Type notes
 

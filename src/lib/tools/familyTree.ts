@@ -13,6 +13,14 @@ export interface FamilyMember {
   name: string;
   /** `null` marks a root. Ids that point at nobody are surfaced by `buildHierarchy`, not dropped. */
   parentId: string | null;
+  /**
+   * The partner drawn beside this member, with their children hanging from the pair.
+   *
+   * Symmetric — both sides carry the link. Only a partner who has no parent of their own is drawn
+   * beside someone; a partner who is themselves a descendant stays under their own parent, because
+   * a tree cannot put one person in two places at once.
+   */
+  spouseId: string | null;
   /** How this member relates to their parent — "ลูกชาย", "ภรรยา". Free text; presets are a UI concern. */
   relationship: string;
   /** Birth year, occupation, anything the owner wants to remember. */
@@ -21,6 +29,8 @@ export interface FamilyMember {
 
 export interface FamilyNode {
   member: FamilyMember;
+  /** The married-in partner sharing this node's slot, if any. Has no children of their own. */
+  spouse: FamilyMember | null;
   depth: number;
   children: FamilyNode[];
 }
@@ -60,6 +70,7 @@ const memberSchema = z.object({
   name: z.string(),
   // Optional as well as nullable: a hand-written import that simply omits the key means a root.
   parentId: z.string().nullable().optional(),
+  spouseId: z.string().nullable().optional(),
   relationship: z.string(),
   note: z.string(),
 });
@@ -77,6 +88,7 @@ const toMembers = (parsed: z.infer<typeof familyMembersSchema>): FamilyMember[] 
     id: entry.id,
     name: entry.name,
     parentId: entry.parentId ?? null,
+    spouseId: entry.spouseId ?? null,
     relationship: entry.relationship,
     note: entry.note,
   }));
@@ -92,6 +104,8 @@ export const normalizeMembers = (parsed: unknown): FamilyMember[] => {
 export interface CreateMemberInput {
   name: string;
   parentId?: string | null;
+  /** Marries the new member to this one, so the pair is drawn together. */
+  spouseId?: string | null;
   relationship?: string;
   note?: string;
 }
@@ -100,14 +114,21 @@ export const createMember = (input: CreateMemberInput): FamilyMember => ({
   id: randomUUID(),
   name: input.name.trim(),
   parentId: input.parentId ?? null,
+  spouseId: input.spouseId ?? null,
   relationship: input.relationship?.trim() ?? '',
   note: input.note?.trim() ?? '',
 });
 
-export const addMember = (members: FamilyMember[], input: CreateMemberInput): FamilyMember[] => [
-  ...members,
-  createMember(input),
-];
+export const addMember = (members: FamilyMember[], input: CreateMemberInput): FamilyMember[] => {
+  const created = createMember(input);
+  const withMember = [...members, created];
+
+  // The link is symmetric, so the partner has to learn about it too — otherwise the pair renders
+  // from one side only and unlinking from the other side silently does nothing.
+  return created.spouseId
+    ? updateMember(withMember, created.spouseId, { spouseId: created.id })
+    : withMember;
+};
 
 export const updateMember = (
   members: FamilyMember[],
@@ -128,7 +149,57 @@ export const removeMember = (members: FamilyMember[], id: string): FamilyMember[
 
   return members
     .filter((member) => member.id !== id)
-    .map((member) => (member.parentId === id ? { ...member, parentId: removed.parentId } : member));
+    .map((member) => {
+      const lifted = member.parentId === id ? removed.parentId : member.parentId;
+      // A dangling spouseId would draw a partner bar to somebody who is no longer there.
+      const stillMarried = member.spouseId === id ? null : member.spouseId;
+
+      return { ...member, parentId: lifted, spouseId: stillMarried };
+    });
+};
+
+/**
+ * Marries two members, or with `null` ends a marriage.
+ *
+ * Both sides are written every time. Someone can only be drawn beside one partner, so marrying an
+ * already-married member first releases the previous one rather than leaving a half-link pointing
+ * at a partner who has moved on.
+ */
+export const linkSpouse = (
+  members: FamilyMember[],
+  id: string,
+  spouseId: string | null,
+): ReparentResult => {
+  const member = members.find((entry) => entry.id === id);
+  if (!member) return { ok: false, reason: 'That member is no longer in the tree.' };
+
+  if (spouseId === id) return { ok: false, reason: 'Someone cannot marry themselves.' };
+
+  const clearOldLinks = (list: FamilyMember[]) =>
+    list.map((entry) => {
+      if (entry.id === member.spouseId && entry.id !== spouseId) return { ...entry, spouseId: null };
+      return entry;
+    });
+
+  if (spouseId === null) {
+    return { ok: true, members: updateMember(clearOldLinks(members), id, { spouseId: null }) };
+  }
+
+  const partner = members.find((entry) => entry.id === spouseId);
+  if (!partner) return { ok: false, reason: 'That partner is no longer in the tree.' };
+
+  if (partner.parentId === id || member.parentId === spouseId) {
+    return { ok: false, reason: 'A parent and their child cannot be partners.' };
+  }
+
+  const released = clearOldLinks(members).map((entry) =>
+    entry.id === partner.spouseId && entry.id !== id ? { ...entry, spouseId: null } : entry,
+  );
+
+  return {
+    ok: true,
+    members: updateMember(updateMember(released, id, { spouseId }), spouseId, { spouseId: id }),
+  };
 };
 
 /** Every id on the parent chain above `id`, nearest first. Stops on a cycle rather than hanging. */
@@ -249,10 +320,32 @@ export const buildHierarchy = (members: FamilyMember[]): Hierarchy => {
     return false;
   };
 
+  const indexOf = new Map(members.map((member, index) => [member.id, index]));
+
+  /**
+   * True for the partner who gives up their own slot and is drawn beside the other.
+   *
+   * Only someone with no parent in the tree can do this — a partner who is themselves a descendant
+   * belongs under their own parent, and no tree can draw one person in two places. When neither
+   * partner has a parent, whichever was added first keeps the slot; without that tie-break the two
+   * would each attach to the other and both disappear from the diagram.
+   */
+  const isMarriedIn = (member: FamilyMember): boolean => {
+    if (member.parentId !== null || !member.spouseId) return false;
+
+    const partner = byId.get(member.spouseId);
+    if (!partner || partner.spouseId !== member.id) return false;
+
+    if (partner.parentId !== null) return true;
+    return (indexOf.get(partner.id) ?? 0) < (indexOf.get(member.id) ?? 0);
+  };
+
   const childrenOf = new Map<string, FamilyMember[]>();
   const rootMembers: FamilyMember[] = [];
 
   for (const member of members) {
+    if (isMarriedIn(member)) continue;
+
     if (isRoot(member)) {
       rootMembers.push(member);
       continue;
@@ -263,10 +356,18 @@ export const buildHierarchy = (members: FamilyMember[]): Hierarchy => {
     childrenOf.set(member.parentId as string, siblings);
   }
 
+  const spouseOf = (member: FamilyMember): FamilyMember | null => {
+    if (!member.spouseId) return null;
+
+    const partner = byId.get(member.spouseId);
+    return partner && isMarriedIn(partner) ? partner : null;
+  };
+
   // No visited-set needed: every member is either a root or the child of exactly one member that
   // is not below them, so the descent is a forest and cannot revisit.
   const toNode = (member: FamilyMember, depth: number): FamilyNode => ({
     member,
+    spouse: spouseOf(member),
     depth,
     children: (childrenOf.get(member.id) ?? []).map((child) => toNode(child, depth + 1)),
   });

@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, useState } from 'react';
+import React, { useState } from 'react';
 import { Trash2, Users } from 'lucide-react';
 import { ToolLayout } from '../../ui/ToolLayout';
 import { Button } from '../../ui/Button';
@@ -6,13 +6,8 @@ import { CopyButton } from '../../ui/CopyButton';
 import { CodeInput } from '../../ui/CodeInput';
 import { AddMemberForm, RelationshipPresets } from './AddMemberForm';
 import { TreeView } from './TreeView';
+import { FamilyDiagram } from './FamilyDiagram';
 import { useFamilyTree } from '../../../hooks/tools/useFamilyTree';
-
-/**
- * three.js is far larger than the rest of this tool put together, so the list renders and becomes
- * usable while WebGL is still on the wire.
- */
-const FamilyScene = lazy(() => import('./FamilyScene'));
 
 const FamilyTree: React.FC = () => {
   const {
@@ -23,6 +18,7 @@ const FamilyTree: React.FC = () => {
     updateMember,
     removeMember,
     reparentMember,
+    linkSpouse,
     clearAll,
     importJson,
     asJson,
@@ -96,23 +92,14 @@ const FamilyTree: React.FC = () => {
         ) : (
           <div className="space-y-4">
             {/*
-              The canvas shows the shape; the list below is where the tree is actually operated.
-              Keeping both means the tool stays usable from a keyboard and readable to a screen
-              reader, neither of which a WebGL canvas offers.
+              The diagram is the picture; the list underneath is where members are edited, moved
+              and removed. Selection is shared, so clicking a face finds the row that edits it.
             */}
-            <Suspense
-              fallback={
-                <div className="flex h-[420px] items-center justify-center rounded-xl border border-border/60 text-sm text-muted-foreground">
-                  Loading the 3D view…
-                </div>
-              }
-            >
-              <FamilyScene
-                roots={hierarchy.roots}
-                selectedId={selectedId}
-                onSelect={setSelectedId}
-              />
-            </Suspense>
+            <FamilyDiagram
+              roots={hierarchy.roots}
+              selectedId={selectedId}
+              onSelect={setSelectedId}
+            />
 
             <TreeView
               nodes={hierarchy.roots}
@@ -124,6 +111,7 @@ const FamilyTree: React.FC = () => {
               onUpdate={updateMember}
               onRemove={removeMember}
               onReparent={reparentMember}
+              onLinkSpouse={linkSpouse}
               onAddChild={setPendingParentId}
             />
           </div>

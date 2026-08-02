@@ -30,13 +30,14 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
   const [name, setName] = useState('');
   const [relationship, setRelationship] = useState('');
   const [note, setNote] = useState('');
-  const [parentId, setParentId] = useState<string | null>(defaultParentId);
+  /** `''`, `child:<id>` or `spouse:<id>` — who to attach to and how, in one value. */
+  const [attachment, setAttachment] = useState(defaultParentId ? `child:${defaultParentId}` : '');
 
   // The row's "add child" button sets the parent; reflect it without stranding a typed-in choice.
   const [lastDefault, setLastDefault] = useState(defaultParentId);
   if (defaultParentId !== lastDefault) {
     setLastDefault(defaultParentId);
-    setParentId(defaultParentId);
+    setAttachment(defaultParentId ? `child:${defaultParentId}` : '');
   }
 
   const canSubmit = name.trim().length > 0;
@@ -45,11 +46,22 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
     event.preventDefault();
     if (!canSubmit) return;
 
-    onAdd({ name, relationship, note, parentId });
+    const [kind, id] = attachment.split(':');
+
+    onAdd({
+      name,
+      relationship,
+      note,
+      parentId: kind === 'child' ? id : null,
+      spouseId: kind === 'spouse' ? id : null,
+    });
+
     setName('');
     setRelationship('');
     setNote('');
-    // The parent stays put: adding four children to one person is the common run.
+    // A partner slot is filled once, so drop back to root; a parent stays put because adding four
+    // children to the same person is the common run.
+    if (kind === 'spouse') setAttachment('');
   };
 
   return (
@@ -75,20 +87,35 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
         />
       </label>
 
+      {/*
+        One control rather than a Parent select beside a Partner select. Two would let someone pick
+        both, and the tree would then have to refuse a combination the form had just offered.
+      */}
       <label className="space-y-1.5">
-        <span className="text-xs font-medium text-muted-foreground">Parent</span>
+        <span className="text-xs font-medium text-muted-foreground">Attach to</span>
         <select
-          value={parentId ?? ''}
-          onChange={(event) => setParentId(event.target.value || null)}
+          value={attachment}
+          onChange={(event) => setAttachment(event.target.value)}
           className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         >
-          <option value="">— no parent (root)</option>
-          {members.map((member) => (
-            <option key={member.id} value={member.id}>
-              {member.name || 'Untitled'}
-              {member.relationship ? ` (${member.relationship})` : ''}
-            </option>
-          ))}
+          <option value="">— nobody (start a new root)</option>
+          <optgroup label="Child of">
+            {members.map((member) => (
+              <option key={member.id} value={`child:${member.id}`}>
+                {member.name || 'Untitled'}
+              </option>
+            ))}
+          </optgroup>
+          <optgroup label="Partner of">
+            {members
+              // Someone already drawn beside a partner has no second slot to offer.
+              .filter((member) => !member.spouseId)
+              .map((member) => (
+                <option key={member.id} value={`spouse:${member.id}`}>
+                  {member.name || 'Untitled'}
+                </option>
+              ))}
+          </optgroup>
         </select>
       </label>
 
