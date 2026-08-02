@@ -1,5 +1,6 @@
 import React from 'react';
 import { cn } from '../../lib/utils';
+import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
 import { Card, CardContent, CardHeader, CardTitle } from './Card';
 import { Check, LucideIcon } from 'lucide-react';
 
@@ -48,45 +49,24 @@ const getAnchorUrl = (anchorId: string) => {
   return `${window.location.origin}${window.location.pathname}${window.location.search}#${anchorId}`;
 };
 
-const copyAnchorLink = async (anchorId: string) => {
-  if (typeof window === 'undefined') return;
+/**
+ * Anchor links give inline "Copied" feedback rather than a toast, and stay quiet on failure
+ * because updating the address bar — the primary action — still succeeded.
+ */
+const useAnchorCopy = () => {
+  const { copied, copy } = useCopyToClipboard({ resetAfterMs: 1200, success: null, error: null });
 
-  const hash = `#${anchorId}`;
-  const url = getAnchorUrl(anchorId);
-  window.history.replaceState(null, '', hash);
+  const copyAnchorLink = React.useCallback(
+    async (anchorId: string) => {
+      if (typeof window === 'undefined') return;
 
-  try {
-    await navigator.clipboard.writeText(url);
-  } catch {
-    // no-op: keep anchor update even if clipboard is unavailable
-  }
-};
+      window.history.replaceState(null, '', `#${anchorId}`);
+      await copy(getAnchorUrl(anchorId));
+    },
+    [copy],
+  );
 
-const useCopyState = () => {
-  const [copied, setCopied] = React.useState(false);
-  const timeoutRef = React.useRef<number | null>(null);
-
-  React.useEffect(() => {
-    return () => {
-      if (timeoutRef.current !== null && typeof window !== 'undefined') {
-        window.clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
-
-  const markCopied = React.useCallback(() => {
-    setCopied(true);
-
-    if (typeof window === 'undefined') return;
-
-    if (timeoutRef.current !== null) {
-      window.clearTimeout(timeoutRef.current);
-    }
-
-    timeoutRef.current = window.setTimeout(() => setCopied(false), 1200);
-  }, []);
-
-  return { copied, markCopied };
+  return { copied, copyAnchorLink };
 };
 
 const AnchorButton: React.FC<AnchorButtonProps> = ({
@@ -133,15 +113,13 @@ const AnchorButton: React.FC<AnchorButtonProps> = ({
   </button>
 );
 
-const ToolLayout = ({ children, className, title, description, icon: Icon }: ToolLayoutProps) => {
+export const ToolLayout = ({ children, className, title, description, icon: Icon }: ToolLayoutProps) => {
   const titleId = title ? `tool-${toAnchorId(title)}` : undefined;
-  const titleCopy = useCopyState();
+  const { copied, copyAnchorLink } = useAnchorCopy();
 
   const handleCopyTitleLink = async () => {
     if (!titleId) return;
-
     await copyAnchorLink(titleId);
-    titleCopy.markCopied();
   };
 
   return (
@@ -163,7 +141,7 @@ const ToolLayout = ({ children, className, title, description, icon: Icon }: Too
               <h1 id={titleId} className="text-2xl md:text-3xl font-bold tracking-tight text-foreground leading-tight">
                 <AnchorButton
                   label={title}
-                  copied={titleCopy.copied}
+                  copied={copied}
                   onClick={handleCopyTitleLink}
                   variant="title"
                 />
@@ -180,12 +158,11 @@ const ToolLayout = ({ children, className, title, description, icon: Icon }: Too
 
 const Section = ({ title, children, actions, className }: ToolSectionProps) => {
   const sectionId = title ? `section-${toAnchorId(title)}` : undefined;
-  const sectionCopy = useCopyState();
+  const { copied, copyAnchorLink } = useAnchorCopy();
 
   const handleCopyLink = async () => {
     if (!sectionId) return;
     await copyAnchorLink(sectionId);
-    sectionCopy.markCopied();
   };
 
   return (
@@ -197,7 +174,7 @@ const Section = ({ title, children, actions, className }: ToolSectionProps) => {
               <h3 id={sectionId} className="text-sm font-semibold uppercase tracking-wider">
                 <AnchorButton
                   label={title}
-                  copied={sectionCopy.copied}
+                  copied={copied}
                   onClick={handleCopyLink}
                 />
               </h3>
@@ -235,4 +212,3 @@ const Panel = ({ title, children, actions, className }: ToolPanelProps) => {
 ToolLayout.Section = Section;
 ToolLayout.Panel = Panel;
 
-export default ToolLayout;

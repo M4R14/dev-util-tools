@@ -1,6 +1,6 @@
 import React from 'react';
 import { Eraser, Hash, Rows3, Type, Wand2 } from 'lucide-react';
-import ToolLayout from '../ui/ToolLayout';
+import { ToolLayout } from '../ui/ToolLayout';
 import { Textarea } from '../ui/Textarea';
 import { Card, CardHeader, CardContent } from '../ui/Card';
 import { CopyButton } from '../ui/CopyButton';

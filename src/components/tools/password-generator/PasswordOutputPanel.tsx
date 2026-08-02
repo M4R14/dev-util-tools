@@ -1,7 +1,6 @@
 import React from 'react';
 import { Eye, EyeOff, RefreshCw, Shield, ShieldAlert, ShieldCheck } from 'lucide-react';
-import { toast } from 'sonner';
-import ToolLayout from '../../ui/ToolLayout';
+import { ToolLayout } from '../../ui/ToolLayout';
 import { Button } from '../../ui/Button';
 import { CopyButton } from '../../ui/CopyButton';
 import { cn } from '../../../lib/utils';
@@ -59,7 +58,7 @@ const PasswordOutputPanel: React.FC<PasswordOutputPanelProps> = ({
           <CopyButton
             value={password}
             disabled={!password}
-            onCopy={() => toast.success('Password copied')}
+            successMessage="Password copied"
           />
         </div>
       }

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import { Calendar, RotateCcw } from 'lucide-react';
-import ToolLayout from '../../ui/ToolLayout';
+import { ToolLayout } from '../../ui/ToolLayout';
 import { Card, CardContent } from '../../ui/Card';
 import { CopyButton } from '../../ui/CopyButton';
 

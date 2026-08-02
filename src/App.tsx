@@ -27,6 +27,7 @@ const TOOL_COMPONENTS: Record<ToolID, React.LazyExoticComponent<ComponentType>> 
   [ToolID.WORD_COUNTER]: lazy(() => import('./components/tools/WordCounterTool')),
   [ToolID.WHEEL_RANDOM]: lazy(() => import('./components/tools/WheelRandomTool')),
   [ToolID.DUMMY_IMAGE]: lazy(() => import('./components/tools/DummyImageTool')),
+  [ToolID.VIN_TOOL]: lazy(() => import('./components/tools/VinTool')),
   [ToolID.UUID_GENERATOR]: lazy(() => import('./components/tools/UUIDGenerator')),
   [ToolID.URL_PARSER]: lazy(() => import('./components/tools/UrlParser')),
   [ToolID.DIFF_VIEWER]: lazy(() => import('./components/tools/DiffViewer')),

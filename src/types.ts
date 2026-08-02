@@ -25,6 +25,7 @@ export enum ToolID {
   WHEEL_RANDOM = 'wheel-random',
   CRONTAB = 'crontab-guru',
   WORD_COUNTER = 'word-counter',
+  VIN_TOOL = 'vin-tool',
 }
 
 import type { LucideIcon } from 'lucide-react';
@@ -35,4 +36,6 @@ export interface ToolMetadata {
   description: string;
   icon: LucideIcon;
   tags?: string[];
+  /** Curated related tools, shown first on the tool page (order is preserved). */
+  related?: ToolID[];
 }

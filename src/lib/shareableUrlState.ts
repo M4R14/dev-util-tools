@@ -16,6 +16,27 @@ const queryStringSchema = z.string();
 
 const normalizeValue = (value: string | null | undefined) => value ?? '';
 
+/** Query-string codecs shared by tool hooks that seed state from the URL. */
+
+export const readBooleanParam = (raw: string | null, fallback: boolean): boolean =>
+  raw === null ? fallback : raw === '1' || raw === 'true';
+
+export const serializeBooleanParam = (value: boolean): string => (value ? '1' : '0');
+
+export const readNumberParam = (
+  raw: string | null,
+  fallback: number,
+  bounds?: { min: number; max: number },
+): number => {
+  if (!raw) return fallback;
+
+  const parsed = Number(raw);
+  if (!Number.isFinite(parsed)) return fallback;
+  if (!bounds) return parsed;
+
+  return Math.min(bounds.max, Math.max(bounds.min, parsed));
+};
+
 export const buildShareableSearchParams = (
   currentQuery: string,
   params: ShareableQueryParam[],

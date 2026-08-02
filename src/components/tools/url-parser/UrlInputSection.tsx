@@ -7,7 +7,7 @@ import {
   RotateCcw,
   Trash2,
 } from 'lucide-react';
-import ToolLayout from '../../ui/ToolLayout';
+import { ToolLayout } from '../../ui/ToolLayout';
 import { Button } from '../../ui/Button';
 import { Textarea } from '../../ui/Textarea';
 import { CopyButton } from '../../ui/CopyButton';

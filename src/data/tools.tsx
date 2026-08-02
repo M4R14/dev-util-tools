@@ -16,6 +16,7 @@ import {
   FileBraces,
   FileText,
   RotateCw,
+  Car,
 } from 'lucide-react';
 import { ToolID, ToolMetadata } from '../types';
 
@@ -26,6 +27,7 @@ export const TOOLS: ToolMetadata[] = [
     description: 'Parse URLs into their components, encode/decode, and manage query parameters.',
     icon: Link2,
     tags: ['url', 'parse', 'encode', 'decode', 'query', 'uri'],
+    related: [ToolID.BASE64_TOOL, ToolID.CASE_CONVERTER, ToolID.JSON_FORMATTER, ToolID.DUMMY_IMAGE],
   },
   {
     id: ToolID.UUID_GENERATOR,
@@ -33,6 +35,7 @@ export const TOOLS: ToolMetadata[] = [
     description: 'Generate version 4 UUIDs (GUIDs).',
     icon: Fingerprint,
     tags: ['uuid', 'guid', 'random', 'id', 'generate'],
+    related: [ToolID.PASSWORD_GEN, ToolID.THAI_ID, ToolID.VIN_TOOL, ToolID.WHEEL_RANDOM],
   },
   {
     id: ToolID.JSON_FORMATTER,
@@ -40,6 +43,7 @@ export const TOOLS: ToolMetadata[] = [
     description: 'Prettify, minify, and validate JSON data.',
     icon: Code2,
     tags: ['json', 'format', 'prettify', 'minify', 'validate'],
+    related: [ToolID.XML_TO_JSON, ToolID.XML_FORMATTER, ToolID.DIFF_VIEWER, ToolID.BASE64_TOOL],
   },
   {
     id: ToolID.BASE64_TOOL,
@@ -47,6 +51,12 @@ export const TOOLS: ToolMetadata[] = [
     description: 'Encode and decode strings to Base64 format.',
     icon: Binary,
     tags: ['base64', 'encode', 'decode', 'binary', 'string'],
+    related: [
+      ToolID.URL_PARSER,
+      ToolID.JSON_FORMATTER,
+      ToolID.CASE_CONVERTER,
+      ToolID.UUID_GENERATOR,
+    ],
   },
   {
     id: ToolID.CASE_CONVERTER,
@@ -54,6 +64,7 @@ export const TOOLS: ToolMetadata[] = [
     description: 'Switch between camelCase, PascalCase, and more.',
     icon: Type,
     tags: ['case', 'camel', 'pascal', 'snake', 'kebab', 'text', 'convert'],
+    related: [ToolID.REGEX_TESTER, ToolID.URL_PARSER, ToolID.WORD_COUNTER, ToolID.DIFF_VIEWER],
   },
   {
     id: ToolID.PASSWORD_GEN,
@@ -61,6 +72,7 @@ export const TOOLS: ToolMetadata[] = [
     description: 'Create secure, random passwords instantly.',
     icon: Lock,
     tags: ['password', 'generate', 'random', 'security', 'strong'],
+    related: [ToolID.UUID_GENERATOR, ToolID.BASE64_TOOL, ToolID.WHEEL_RANDOM, ToolID.VIN_TOOL],
   },
   {
     id: ToolID.TIMEZONE_CONVERTER,
@@ -68,6 +80,7 @@ export const TOOLS: ToolMetadata[] = [
     description: 'Convert date and time across different timezones.',
     icon: Globe,
     tags: ['timezone', 'time', 'date', 'convert', 'utc', 'zone'],
+    related: [ToolID.THAI_DATE_CONVERTER, ToolID.CRONTAB, ToolID.THAI_ID, ToolID.UUID_GENERATOR],
   },
   {
     id: ToolID.THAI_DATE_CONVERTER,
@@ -75,6 +88,7 @@ export const TOOLS: ToolMetadata[] = [
     description: 'Convert dates to various Thai formats (BE 25xx).',
     icon: CalendarDays,
     tags: ['thai', 'date', 'buddhist', 'calendar', 'convert', 'พ.ศ.'],
+    related: [ToolID.TIMEZONE_CONVERTER, ToolID.THAI_ID, ToolID.CRONTAB, ToolID.CASE_CONVERTER],
   },
   {
     id: ToolID.THAI_ID,
@@ -82,6 +96,12 @@ export const TOOLS: ToolMetadata[] = [
     description: 'Decode Thai national ID digits and validate checksum correctness.',
     icon: IdCard,
     tags: ['thai id', 'id card', 'decode', 'checksum', 'validator', 'บัตรประชาชน'],
+    related: [
+      ToolID.VIN_TOOL,
+      ToolID.THAI_DATE_CONVERTER,
+      ToolID.UUID_GENERATOR,
+      ToolID.PASSWORD_GEN,
+    ],
   },
   {
     id: ToolID.CRONTAB,
@@ -89,6 +109,12 @@ export const TOOLS: ToolMetadata[] = [
     description: 'The quick and simple editor for cron schedule expressions.',
     icon: Clock,
     tags: ['cron', 'crontab', 'schedule', 'job', 'timer', 'external tool'],
+    related: [
+      ToolID.TIMEZONE_CONVERTER,
+      ToolID.REGEX_TESTER,
+      ToolID.THAI_DATE_CONVERTER,
+      ToolID.AI_ASSISTANT,
+    ],
   },
   {
     id: ToolID.WORD_COUNTER,
@@ -96,6 +122,7 @@ export const TOOLS: ToolMetadata[] = [
     description: 'Count words, characters, and readability metrics (opens wordcounter.net).',
     icon: FileText,
     tags: ['word', 'counter', 'text', 'writing', 'seo', 'external tool'],
+    related: [ToolID.CASE_CONVERTER, ToolID.DIFF_VIEWER, ToolID.REGEX_TESTER, ToolID.AI_ASSISTANT],
   },
   {
     id: ToolID.WHEEL_RANDOM,
@@ -103,6 +130,7 @@ export const TOOLS: ToolMetadata[] = [
     description: 'Spin a random decision wheel for names, tasks, and giveaways.',
     icon: RotateCw,
     tags: ['wheel', 'random', 'picker', 'spin', 'decision', 'external tool'],
+    related: [ToolID.UUID_GENERATOR, ToolID.PASSWORD_GEN, ToolID.DUMMY_IMAGE, ToolID.VIN_TOOL],
   },
   {
     id: ToolID.DUMMY_IMAGE,
@@ -110,6 +138,16 @@ export const TOOLS: ToolMetadata[] = [
     description: 'Generate placeholder images instantly (opens dummyimage.com).',
     icon: ImageIcon,
     tags: ['dummy image', 'placeholder', 'image', 'mockup', 'design', 'external tool'],
+    related: [ToolID.URL_PARSER, ToolID.BASE64_TOOL, ToolID.WHEEL_RANDOM, ToolID.UUID_GENERATOR],
+  },
+  {
+    id: ToolID.VIN_TOOL,
+    name: 'VIN Generator & Decoder',
+    description:
+      'Generate and validate ISO 3779 vehicle identification numbers (opens tetono.com).',
+    icon: Car,
+    tags: ['vin', 'vehicle', 'car', 'chassis', 'iso 3779', 'external tool'],
+    related: [ToolID.THAI_ID, ToolID.UUID_GENERATOR, ToolID.PASSWORD_GEN, ToolID.WHEEL_RANDOM],
   },
   {
     id: ToolID.DIFF_VIEWER,
@@ -117,6 +155,12 @@ export const TOOLS: ToolMetadata[] = [
     description: 'Compare two texts side-by-side to find differences (diff).',
     icon: FileDiff,
     tags: ['diff', 'compare', 'text', 'code', 'difference'],
+    related: [
+      ToolID.JSON_FORMATTER,
+      ToolID.XML_FORMATTER,
+      ToolID.WORD_COUNTER,
+      ToolID.CASE_CONVERTER,
+    ],
   },
   {
     id: ToolID.REGEX_TESTER,
@@ -124,6 +168,7 @@ export const TOOLS: ToolMetadata[] = [
     description: 'Create, test, debug and explain Regular Expressions (redirects to regex101.com).',
     icon: Code2, // Fallback icon
     tags: ['regex', 'regexp', 'regular expression', 'match', 'replace', 'find', 'external tool'],
+    related: [ToolID.CASE_CONVERTER, ToolID.DIFF_VIEWER, ToolID.CRONTAB, ToolID.AI_ASSISTANT],
   },
   {
     id: ToolID.AI_ASSISTANT,
@@ -131,6 +176,7 @@ export const TOOLS: ToolMetadata[] = [
     description: 'Analyze code snippets and solve dev problems with Gemini.',
     icon: Sparkles,
     tags: ['ai', 'gemini', 'code', 'assistant', 'analyze', 'chat'],
+    related: [ToolID.JSON_FORMATTER, ToolID.REGEX_TESTER, ToolID.DIFF_VIEWER, ToolID.CRONTAB],
   },
   {
     id: ToolID.XML_FORMATTER,
@@ -138,6 +184,7 @@ export const TOOLS: ToolMetadata[] = [
     description: 'Prettify, minify, and validate XML data.',
     icon: FileCode2,
     tags: ['xml', 'format', 'prettify', 'minify', 'validate', 'markup'],
+    related: [ToolID.XML_TO_JSON, ToolID.JSON_FORMATTER, ToolID.DIFF_VIEWER, ToolID.BASE64_TOOL],
   },
   {
     id: ToolID.XML_TO_JSON,
@@ -145,6 +192,12 @@ export const TOOLS: ToolMetadata[] = [
     description: 'Convert XML documents into structured JSON output.',
     icon: FileBraces,
     tags: ['xml', 'json', 'convert', 'transform', 'parser', 'attributes'],
+    related: [
+      ToolID.XML_FORMATTER,
+      ToolID.JSON_FORMATTER,
+      ToolID.CASE_CONVERTER,
+      ToolID.DIFF_VIEWER,
+    ],
   },
 ];
 

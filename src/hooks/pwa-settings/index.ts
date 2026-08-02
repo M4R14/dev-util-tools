@@ -17,6 +17,7 @@ export {
   attachServiceWorkerMessageListener,
 } from './events';
 export { formatPwaBytes, formatPwaLastUpdated } from './formatters';
+export { checkForServiceWorkerUpdate, clearOfflineCache } from './operations';
 export { getServiceWorkerRegistration, promptServiceWorkerUpdate } from './serviceWorker';
 export type {
   BeforeInstallPromptEvent,

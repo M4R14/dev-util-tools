@@ -29,6 +29,7 @@ enum ToolID {
   REGEX_TESTER = 'regex-tester',
   WHEEL_RANDOM = 'wheel-random',
   WORD_COUNTER = 'word-counter',
+  VIN_TOOL = 'vin-tool',
 }
 
 interface ToolMetadata {
@@ -37,7 +38,19 @@ interface ToolMetadata {
   description: string;
   icon: LucideIcon;
   tags?: string[];
+  /** Curated related tools, shown first on the tool page (order is preserved). */
+  related?: ToolID[];
 }
+```
+
+```ts
+// src/lib/relatedTools.ts — curated `related` first, MiniSearch auto-query for the rest
+const RELATED_TOOLS_LIMIT = 4;
+const getRelatedTools: (
+  tool: ToolMetadata,
+  tools: ToolMetadata[],
+  limit?: number,
+) => ToolMetadata[];
 ```
 
 ```ts
@@ -51,6 +64,17 @@ interface DiffStats { additions: number; deletions: number; unchanged: number }
 // src/lib/passwordStrength.ts
 interface PasswordStrength { label: 'Weak' | 'Medium' | 'Strong'; color: string; textColor: string; percent: number; message: string }
 interface PasswordOptions { length: number; includeUpper: boolean; includeLower: boolean; includeNumbers: boolean; includeSymbols: boolean }
+```
+
+```ts
+// src/lib/randomUtils.ts — all credential randomness; throws if Web Crypto is unavailable
+const randomInt: (maxExclusive: number) => number;      // uniform, rejection-sampled
+const randomString: (charset: string, length: number) => string;
+const randomUUID: () => string;                          // RFC 4122 v4
+
+// src/lib/passwordGenerator.ts
+const getPasswordCharset: (options: PasswordOptions) => string;
+const generatePassword: (options: PasswordOptions) => string;
 ```
 
 ```ts

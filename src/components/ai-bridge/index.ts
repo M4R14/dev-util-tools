@@ -4,3 +4,4 @@ export { default as ExecutionModesCard } from './ExecutionModesCard';
 export { default as LiveResponseCard } from './LiveResponseCard';
 export { default as QuickstartCard } from './QuickstartCard';
 export { default as RunQueryCard } from './RunQueryCard';
+export { SnippetCard } from './SnippetCard';

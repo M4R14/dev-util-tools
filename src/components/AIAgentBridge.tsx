@@ -1,8 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { BookOpen, Braces, TerminalSquare } from 'lucide-react';
-import ToolLayout from './ui/ToolLayout';
-import SnippetCard from './ui/SnippetCard';
+import { ToolLayout } from './ui/ToolLayout';
 import {
   getAIToolSnapshot,
   AI_BRIDGE_SCHEMA,
@@ -28,6 +27,7 @@ import {
   LiveResponseCard,
   QuickstartCard,
   RunQueryCard,
+  SnippetCard,
 } from './ai-bridge';
 
 interface AIBridgeWindow {

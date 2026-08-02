@@ -1,6 +1,5 @@
 import React from 'react';
-import { toast } from 'sonner';
-import ToolLayout from '../../ui/ToolLayout';
+import { ToolLayout } from '../../ui/ToolLayout';
 import { Textarea } from '../../ui/Textarea';
 import { CopyButton } from '../../ui/CopyButton';
 import type { TextMetrics } from './types';
@@ -30,7 +29,7 @@ const DiffInputPanels: React.FC<DiffInputPanelsProps> = ({
           value={original}
           data-action="copy-diff-original"
           data-testid="diff-copy-original-button"
-          onCopy={() => toast.success('Original text copied')}
+          successMessage="Original text copied"
         />
       }
     >
@@ -51,7 +50,7 @@ const DiffInputPanels: React.FC<DiffInputPanelsProps> = ({
           value={modified}
           data-action="copy-diff-modified"
           data-testid="diff-copy-modified-button"
-          onCopy={() => toast.success('Modified text copied')}
+          successMessage="Modified text copied"
         />
       }
     >

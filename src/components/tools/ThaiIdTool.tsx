@@ -9,7 +9,7 @@ import {
   Info,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import ToolLayout from '../ui/ToolLayout';
+import { ToolLayout } from '../ui/ToolLayout';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { CopyButton } from '../ui/CopyButton';

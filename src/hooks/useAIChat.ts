@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { askGemini } from '../services/gemini';
-import { encrypt, decrypt } from '../lib/crypto';
+import { obfuscate, deobfuscate } from '../lib/obfuscation';
 import { toast } from 'sonner';
 
 const STORAGE_KEY = 'devpulse_secure_config';
@@ -36,14 +36,14 @@ const getErrorMessage = (err: unknown): string =>
 const loadApiKey = (): string => {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? decrypt(saved) : '';
+    return saved ? deobfuscate(saved) : '';
   } catch {
     return '';
   }
 };
 
 const persistApiKey = (apiKey: string): void => {
-  localStorage.setItem(STORAGE_KEY, encrypt(apiKey));
+  localStorage.setItem(STORAGE_KEY, obfuscate(apiKey));
 };
 
 export const useAIChat = () => {

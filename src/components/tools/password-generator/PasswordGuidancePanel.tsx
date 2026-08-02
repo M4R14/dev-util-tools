@@ -1,5 +1,5 @@
 import React from 'react';
-import ToolLayout from '../../ui/ToolLayout';
+import { ToolLayout } from '../../ui/ToolLayout';
 import { PASSWORD_GUIDANCE_LINES } from './constants';
 
 const PasswordGuidancePanel: React.FC = () => (

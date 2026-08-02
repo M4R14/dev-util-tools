@@ -1,35 +1,21 @@
-import { useEffect, useState } from 'react';
-import xmlFormat from 'xml-formatter';
+import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { buildShareableSearchParams } from '../lib/shareableUrlState';
+import { DEFAULT_XML_INDENT, formatXml, minifyXml } from '../lib/xmlUtils';
+import { useShareableUrlState } from './useShareableUrlState';
 
 export const useXmlFormatter = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [input, setInput] = useState(() => searchParams.get('input') ?? '');
   const [error, setError] = useState<string | null>(null);
-  const [indentSize, setIndentSize] = useState(2);
-  const currentQuery = searchParams.toString();
+  const [indentSize, setIndentSize] = useState(DEFAULT_XML_INDENT);
 
-  useEffect(() => {
-    const nextParams = buildShareableSearchParams(currentQuery, [{ key: 'input', value: input }]);
+  useShareableUrlState([{ key: 'input', value: input }]);
 
-    const nextQuery = nextParams.toString();
-    if (nextQuery !== currentQuery) {
-      setSearchParams(nextParams, { replace: true });
-    }
-  }, [input, currentQuery, setSearchParams]);
-
-  const format = (): boolean => {
+  const applyTransform = (transform: (raw: string) => string): boolean => {
     if (!input.trim()) return false;
 
     try {
-      const formatted = xmlFormat(input, {
-        indentation: ' '.repeat(indentSize),
-        collapseContent: true,
-        lineSeparator: '\n',
-        throwOnFailure: true,
-      });
-      setInput(formatted);
+      setInput(transform(input));
       setError(null);
       return true;
     } catch (e: unknown) {
@@ -38,22 +24,9 @@ export const useXmlFormatter = () => {
     }
   };
 
-  const minify = (): boolean => {
-    if (!input.trim()) return false;
+  const format = (): boolean => applyTransform((raw) => formatXml(raw, indentSize));
 
-    try {
-      const minified = xmlFormat.minify(input, {
-        collapseContent: true,
-        throwOnFailure: true,
-      });
-      setInput(minified);
-      setError(null);
-      return true;
-    } catch (e: unknown) {
-      setError(e instanceof Error ? e.message : 'Invalid XML');
-      return false;
-    }
-  };
+  const minify = (): boolean => applyTransform(minifyXml);
 
   const clear = () => {
     setInput('');

@@ -3,7 +3,7 @@ import { Menu, Search, Sun, Moon, X, Newspaper, Settings2 } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
 import { Button } from './ui/Button';
-import FavoriteButton from './ui/FavoriteButton';
+import { FavoriteButton } from './ui/FavoriteButton';
 import { Input } from './ui/Input';
 import { cn } from '../lib/utils';
 

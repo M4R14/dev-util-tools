@@ -1,4 +1,4 @@
-import xmlFormat from 'xml-formatter';
+import { DEFAULT_XML_INDENT, assertValidXml, formatXml, minifyXml } from '../../xmlUtils';
 import { assertOptionType, assertSupportedOperation, asString } from '../validators';
 import type { ToolRunner } from './types';
 
@@ -6,29 +6,16 @@ export const runXmlFormatter: ToolRunner = (operation, input, context, options) 
   assertSupportedOperation(context.tool, operation, context.supportedOperations);
   assertOptionType(options?.indent, 'number', 'indent');
   const raw = asString(input, 'input');
-  const indent = typeof options?.indent === 'number' ? options.indent : 2;
+  const indent = typeof options?.indent === 'number' ? options.indent : DEFAULT_XML_INDENT;
 
   if (operation === 'format') {
-    return xmlFormat(raw, {
-      indentation: ' '.repeat(indent),
-      collapseContent: true,
-      lineSeparator: '\n',
-      throwOnFailure: true,
-    });
+    return formatXml(raw, indent);
   }
   if (operation === 'minify') {
-    return xmlFormat.minify(raw, {
-      collapseContent: true,
-      throwOnFailure: true,
-    });
+    return minifyXml(raw);
   }
   if (operation === 'validate') {
-    xmlFormat(raw, {
-      indentation: ' '.repeat(indent),
-      collapseContent: true,
-      lineSeparator: '\n',
-      throwOnFailure: true,
-    });
+    assertValidXml(raw, indent);
     return { valid: true };
   }
 

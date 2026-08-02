@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Trash2, AlignLeft, Minimize2, Pencil, Eye } from 'lucide-react';
-import ToolLayout from '../ui/ToolLayout';
+import { ToolLayout } from '../ui/ToolLayout';
 import { Button } from '../ui/Button';
 import { Textarea } from '../ui/Textarea';
 import { useXmlFormatter } from '../../hooks/useXmlFormatter';
@@ -70,7 +70,7 @@ const XMLFormatter: React.FC = () => {
                   {isEditing ? <Eye className="w-4 h-4" /> : <Pencil className="w-4 h-4" />}
                 </Button>
               )}
-              <CopyButton value={input} onCopy={() => toast.success('XML content copied')} />
+              <CopyButton value={input} successMessage="XML content copied" />
               <Button
                 variant="ghost"
                 size="icon"

@@ -1,74 +1,53 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { buildShareableSearchParams } from '../lib/shareableUrlState';
+import {
+  readBooleanParam,
+  readNumberParam,
+  serializeBooleanParam,
+} from '../lib/shareableUrlState';
+import { generatePassword as buildPassword } from '../lib/passwordGenerator';
+import { useShareableUrlState } from './useShareableUrlState';
 
-const MIN_LENGTH = 4;
-const MAX_LENGTH = 64;
-const clampLength = (value: number) => Math.min(MAX_LENGTH, Math.max(MIN_LENGTH, value));
-const parseBoolean = (value: string | null, fallback: boolean) =>
-  value === null ? fallback : value === '1' || value === 'true';
-const parseLength = (value: string | null) => {
-  if (!value) return 16;
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? clampLength(parsed) : 16;
-};
+const DEFAULT_LENGTH = 16;
+const LENGTH_BOUNDS = { min: 4, max: 64 };
+const clampLength = (value: number) =>
+  Math.min(LENGTH_BOUNDS.max, Math.max(LENGTH_BOUNDS.min, value));
+const parseLength = (value: string | null) => readNumberParam(value, DEFAULT_LENGTH, LENGTH_BOUNDS);
 
 export const usePasswordGenerator = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [length, setLength] = useState(() => parseLength(searchParams.get('len')));
-  const [includeUpper, setIncludeUpper] = useState(() => parseBoolean(searchParams.get('u'), true));
-  const [includeLower, setIncludeLower] = useState(() => parseBoolean(searchParams.get('l'), true));
-  const [includeNumbers, setIncludeNumbers] = useState(() => parseBoolean(searchParams.get('n'), true));
-  const [includeSymbols, setIncludeSymbols] = useState(() => parseBoolean(searchParams.get('s'), true));
+  const [includeUpper, setIncludeUpper] = useState(() =>
+    readBooleanParam(searchParams.get('u'), true),
+  );
+  const [includeLower, setIncludeLower] = useState(() =>
+    readBooleanParam(searchParams.get('l'), true),
+  );
+  const [includeNumbers, setIncludeNumbers] = useState(() =>
+    readBooleanParam(searchParams.get('n'), true),
+  );
+  const [includeSymbols, setIncludeSymbols] = useState(() =>
+    readBooleanParam(searchParams.get('s'), true),
+  );
   const [password, setPassword] = useState('');
-  const currentQuery = searchParams.toString();
+
+  useShareableUrlState([
+    { key: 'len', value: String(length), defaultValue: String(DEFAULT_LENGTH) },
+    { key: 'u', value: serializeBooleanParam(includeUpper), defaultValue: '1' },
+    { key: 'l', value: serializeBooleanParam(includeLower), defaultValue: '1' },
+    { key: 'n', value: serializeBooleanParam(includeNumbers), defaultValue: '1' },
+    { key: 's', value: serializeBooleanParam(includeSymbols), defaultValue: '1' },
+  ]);
 
   const generatePassword = useCallback(() => {
-    let charset = '';
-    if (includeUpper) charset += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    if (includeLower) charset += 'abcdefghijklmnopqrstuvwxyz';
-    if (includeNumbers) charset += '0123456789';
-    if (includeSymbols) charset += '!@#$%^&*()_+-=[]{}|;:,.<>?';
-
-    if (!charset) {
-      setPassword('');
-      return;
-    }
-
-    let generated = '';
-    const charsetLength = charset.length;
-    for (let i = 0; i < length; i++) {
-      generated += charset.charAt(Math.floor(Math.random() * charsetLength));
-    }
-    setPassword(generated);
+    setPassword(
+      buildPassword({ length, includeUpper, includeLower, includeNumbers, includeSymbols }),
+    );
   }, [length, includeUpper, includeLower, includeNumbers, includeSymbols]);
 
   useEffect(() => {
     generatePassword();
   }, [generatePassword]);
-
-  useEffect(() => {
-    const nextParams = buildShareableSearchParams(currentQuery, [
-      { key: 'len', value: String(length), defaultValue: '16' },
-      { key: 'u', value: includeUpper ? '1' : '0', defaultValue: '1' },
-      { key: 'l', value: includeLower ? '1' : '0', defaultValue: '1' },
-      { key: 'n', value: includeNumbers ? '1' : '0', defaultValue: '1' },
-      { key: 's', value: includeSymbols ? '1' : '0', defaultValue: '1' },
-    ]);
-
-    const nextQuery = nextParams.toString();
-    if (nextQuery !== currentQuery) {
-      setSearchParams(nextParams, { replace: true });
-    }
-  }, [
-    length,
-    includeUpper,
-    includeLower,
-    includeNumbers,
-    includeSymbols,
-    currentQuery,
-    setSearchParams,
-  ]);
 
   return {
     length,

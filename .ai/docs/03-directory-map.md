@@ -10,13 +10,14 @@ src/
 │
 ├── components/
 │   ├── MainLayout.tsx          # Shell: sidebar + header + cmd palette + content area + footer
-│   ├── main-layout/            # Main layout sub-modules (page meta, command actions, shell fragments)
+│   ├── main-layout/            # Main layout sub-modules (command actions, shell fragments)
+│   │   │                       # Page-meta logic lives in src/lib/pageMeta.ts — it is pure
 │   │   ├── BackgroundDecor.tsx
 │   │   ├── MainContentWrapper.tsx
 │   │   ├── SkipToMainContentLink.tsx
-│   │   ├── meta.ts
-│   │   ├── useCommandPaletteActions.ts
-│   │   ├── useCommandPaletteHotkey.ts
+│   │   ├── useCommandPaletteActions.ts # Palette actions; PWA ones delegate to hooks/pwa-settings
+│   │   ├── useCommandPaletteHotkey.ts  # Cmd/Ctrl+K listener + exported isEditableTarget
+│   │   ├── useCommandPaletteHotkey.test.ts # Unit tests for the editable-target predicate
 │   │   ├── useMainLayoutRouteEffects.ts
 │   │   ├── useMainLayoutState.ts
 │   │   ├── MainFooter.tsx
@@ -44,7 +45,8 @@ src/
 │   │   ├── items.ts
 │   │   ├── types.ts
 │   │   └── index.ts            # Barrel exports for command palette module
-│   ├── ToolPageLayout.tsx      # Tool page wrapper: icon, name, favorite + share actions, description, clickable tags
+│   ├── ToolPageLayout.tsx      # Tool page wrapper: icon, name, favorite + share actions, description, clickable tags, related tools
+│   ├── RelatedTools.tsx        # "Related Tools" grid rendered on every tool page
 │   ├── ErrorBoundary.tsx       # Class component error boundary with recovery UI
 │   ├── ToolLinkItem.tsx        # Sidebar NavLink item with active/selected states
 │   ├── AIAgentBridge.tsx       # AI Agent Bridge route page (orchestrates AI bridge UI + state)
@@ -55,8 +57,9 @@ src/
 │   │    ├── QuickstartCard.tsx
 │   │    ├── RunQueryCard.tsx
 │   │    ├── LiveResponseCard.tsx
+│   │    ├── SnippetCard.tsx    # Code snippet card (moved from ui/: only the bridge uses it)
 │   │    └── index.ts           # Barrel exports for ai-bridge module
-│   ├── tools/                  # One component per tool (18 tools)
+│   ├── tools/                  # One component per tool (19 tools)
 │   │   ├── JSONFormatter.tsx
 │   │   ├── Base64Tool.tsx
 │   │   ├── CaseConverter.tsx
@@ -82,7 +85,9 @@ src/
 │   │   ├── CrontabTool.tsx
 │   │   ├── WordCounterTool.tsx
 │   │   ├── WheelRandomTool.tsx
-│   │   ├── DummyImageTool.tsx
+│   │   ├── ExternalToolPage.tsx  # Shared data-driven landing page for external tools
+│   │   ├── DummyImageTool.tsx    # (external tools below are one-line adapters over it)
+│   │   ├── VinTool.tsx
 │   │   ├── AIAssistant.tsx     # AI Smart Assistant page composition
 │   │   ├── ai/                 # AI Smart Assistant sub-components
 │   │   │   ├── AssistantHeader.tsx
@@ -132,14 +137,13 @@ src/
 │   │   ├── useSidebarNavigation.ts # Keyboard nav hook for sidebar items
 │   │   ├── useSidebarSections.ts # Sidebar section config builder hook
 │   │   └── index.ts            # Barrel exports for sidebar module
-│   └── ui/                     # Shared UI primitives
+│   └── ui/                     # Shared UI primitives — all named exports, no default exports
 │       ├── Button.tsx          # CVA variants: default/destructive/outline/secondary/ghost/link
 │       ├── Card.tsx            # Card + CardHeader + CardTitle + CardDescription + CardContent + CardFooter
 │       ├── CodeHighlight.tsx   # Syntax-highlighted code display
-│       ├── CopyButton.tsx      # Clipboard copy with toast feedback
-│       ├── FavoriteButton.tsx  # Reusable toggle favorite icon button
+│       ├── CopyButton.tsx      # Icon button over useCopyToClipboard; use successMessage, not onCopy
+│       ├── FavoriteButton.tsx  # Favourite toggle; pass itemName so list items name themselves
 │       ├── FavoriteIcon.tsx    # Reusable star icon with active fill state
-│       ├── SnippetCard.tsx     # Reusable code snippet card (title + copy + highlight)
 │       ├── Input.tsx           # Styled HTML input
 │       ├── Textarea.tsx        # Styled HTML textarea
 │       ├── Slider.tsx          # Radix UI Slider wrapper
@@ -147,7 +151,10 @@ src/
 │       ├── ToolLayout.tsx      # Layout + Section + Panel compound component
 │       └── sonner.tsx          # Sonner toast provider (theme-aware)
 │
-├── hooks/                      # One hook per tool (business logic)
+├── hooks/                      # One hook per tool (business logic) + shared behaviour hooks
+│   ├── useCopyToClipboard.ts   # Clipboard write + toast + copied flag; the app's only copy path
+│   ├── useCopyToClipboard.test.ts # Unit tests for the message-resolution rules
+│   ├── useShareableUrlState.ts # Mirrors tool state into the query string (one write per tool)
 │   ├── useAIChat.ts            # AI Assistant chat logic
 │   ├── useBase64.ts
 │   ├── useCaseConverter.ts
@@ -161,12 +168,13 @@ src/
 │   ├── useUrlParser.ts
 │   ├── useUUIDGenerator.ts
 │   ├── usePwaSettings.ts       # Shared PWA/offline hook entry (exports hook + format helpers)
-│   ├── pwa-settings/           # Internal modules used by usePwaSettings
+│   ├── pwa-settings/           # PWA helpers shared by usePwaSettings, the command palette, and main.tsx
 │   │   ├── cache.ts
-│   │   ├── constants.ts
+│   │   ├── constants.ts        # Single source for the cache prefix and toast/storage keys
 │   │   ├── environment.ts
 │   │   ├── events.ts
 │   │   ├── formatters.ts
+│   │   ├── operations.ts       # checkForServiceWorkerUpdate / clearOfflineCache incl. their toasts
 │   │   ├── serviceWorker.ts
 │   │   ├── types.ts
 │   │   └── index.ts            # Barrel exports for pwa-settings module
@@ -179,7 +187,8 @@ src/
 │   └── UserPreferencesContext.tsx # { favorites, recents, toggleFavorite, addRecent }
 │
 ├── data/
-│   ├── tools.tsx               # TOOLS array (18 entries) + getToolById()
+│   ├── tools.tsx               # TOOLS array (19 entries) + getToolById()
+│   ├── externalTools.ts        # Hero + section content for every external-tool landing page
 │   ├── blogPosts.ts            # Markdown loader/parser for blog posts (frontmatter + markdown-to-HTML)
 │   └── aiBridge.ts             # AI Bridge endpoint specs + query templates/snippets
 │
@@ -195,12 +204,33 @@ src/
 │       ├── 2026-02-17-ai-bridge-output-mode.md
 │       └── auto-release-notes.md # Auto-generated mini release notes from git history
 │
-├── lib/                        # Pure utility functions (no React)
+├── lib/                        # Framework-free logic (no React, no react-router)
+│   │                           # Most modules are pure functions. Two exceptions, both deliberate:
+│   │                           #   relatedTools.ts caches its MiniSearch index in a WeakMap
+│   │                           #   randomUtils.ts + obfuscation.ts read platform globals (crypto, btoa)
 │   ├── utils.ts                # cn() — clsx + tailwind-merge
 │   ├── caseUtils.ts            # toSnakeCase, toKebabCase, toCamelCase, toPascalCase
 │   ├── caseUtils.test.ts       # Unit tests for case conversion utilities
 │   ├── diffUtils.ts            # computeDiff, getDiffStats, toUnifiedDiff (uses `diff` lib)
 │   ├── diffUtils.test.ts       # Unit tests for diff utility helpers
+│   ├── randomUtils.ts          # randomInt/randomString/randomUUID on crypto.getRandomValues
+│   ├── randomUtils.test.ts     # Unit tests incl. the no-native-randomUUID and no-crypto paths
+│   ├── passwordGenerator.ts    # Password charsets + generatePassword (uses randomUtils)
+│   ├── passwordGenerator.test.ts
+│   ├── obfuscation.ts          # obfuscate/deobfuscate for localStorage — encoding, NOT encryption
+│   ├── obfuscation.test.ts     # Unit tests for the obfuscation round-trip
+│   ├── jsonUtils.ts            # formatJson/minifyJson/assertValidJson (shared with the AI bridge)
+│   ├── jsonUtils.test.ts       # Unit tests for JSON transforms
+│   ├── xmlUtils.ts             # formatXml/minifyXml/assertValidXml (shared with the AI bridge)
+│   ├── xmlUtils.test.ts        # Unit tests incl. xml-formatter's lenient validation
+│   ├── base64Utils.ts          # Unicode-safe encode/decode (shared with the AI bridge)
+│   ├── base64Utils.test.ts     # Unit tests incl. Thai text and emoji round-trips
+│   ├── xmlToJson.ts            # convertXmlToJson (uses `simple-xml-to-json` + DOMParser)
+│   ├── xmlToJson.test.ts       # Unit tests; DOMParser is stubbed because jsdom cannot boot here
+│   ├── pageMeta.ts             # resolvePageMeta — pathname to title/description/documentTitle
+│   ├── pageMeta.test.ts        # Table tests across tool, blog, settings, ai-bridge, dashboard routes
+│   ├── relatedTools.ts         # getRelatedTools — curated `related` IDs then MiniSearch auto-query fallback
+│   ├── relatedTools.test.ts    # Unit tests for related-tool resolution
 │   ├── aiBridgeQuery.ts        # Parse/normalize AI bridge query parameters into AIToolRequest (zod-validated)
 │   ├── aiBridgeQuery.test.ts   # Unit tests for AI bridge query parsing/normalization
 │   ├── aiToolBridge.ts         # Public facade for AI bridge exports (backward-compatible import path)
@@ -219,10 +249,6 @@ src/
 │   │   ├── snapshot.ts
 │   │   ├── runners.ts
 │   │   ├── runners.test.ts
-│   │   ├── core/
-│   │   │   └── index.ts
-│   │   ├── policy/
-│   │   │   └── index.ts
 │   │   ├── handlers/
 │   │   │   ├── index.ts
 │   │   │   ├── types.ts
@@ -233,10 +259,7 @@ src/
 │   │   │   ├── urlParser.ts
 │   │   │   ├── diffViewer.ts
 │   │   │   └── thaiDateConverter.ts
-│   │   └── transforms/
-│   │       ├── index.ts
-│   │       └── base64.ts
-│   ├── passwordStrength.ts     # getPasswordStrength() (zod-validated options)
+│   ├── passwordStrength.ts     # getPasswordStrength() + PasswordOptions (zod-validated)
 │   ├── passwordStrength.test.ts # Unit tests for password strength scoring
 │   ├── thaiId.ts               # Thai ID decode/validation helpers (zod-validated IDs)
 │   ├── thaiId.test.ts          # Unit tests for Thai ID utility helpers
@@ -245,10 +268,7 @@ src/
 │   ├── shareableUrlState.ts    # Shared helper for shareable URL query sync rules
 │   ├── shareableUrlState.test.ts # Unit tests for query sync helper behavior
 │   ├── urlUtils.ts             # parseUrl, updateUrlParam (zod-validated param mutations)
-│   ├── urlUtils.test.ts        # Unit tests for URL parsing and param helpers
-│   ├── xmlToJson.ts            # XML document to JSON conversion logic (zod-validated options/input)
-│   ├── crypto.ts               # encrypt/decrypt (Base64 obfuscation for API key storage, zod input guard)
-│   └── crypto.test.ts          # Unit tests for crypto helper behavior
+│   └── urlUtils.test.ts        # Unit tests for URL parsing and param helpers
 │
 ├── services/
 │   └── gemini.ts               # askGemini(prompt, codeContext?, apiKey?) — Google Gemini API

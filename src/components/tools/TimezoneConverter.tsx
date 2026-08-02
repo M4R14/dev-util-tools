@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowLeftRight, Calendar, ChevronDown, Clock, Globe, MapPin } from 'lucide-react';
-import ToolLayout from '../ui/ToolLayout';
+import { ToolLayout } from '../ui/ToolLayout';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { CopyButton } from '../ui/CopyButton';

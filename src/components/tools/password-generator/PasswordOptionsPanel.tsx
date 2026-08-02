@@ -1,6 +1,6 @@
 import React from 'react';
 import { RefreshCw } from 'lucide-react';
-import ToolLayout from '../../ui/ToolLayout';
+import { ToolLayout } from '../../ui/ToolLayout';
 import { Button } from '../../ui/Button';
 import { Slider } from '../../ui/Slider';
 import { Switch } from '../../ui/Switch';

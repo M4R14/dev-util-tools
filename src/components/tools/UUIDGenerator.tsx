@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import ToolLayout from '../ui/ToolLayout';
+import { ToolLayout } from '../ui/ToolLayout';
 import { useUUIDGenerator } from '../../hooks/useUUIDGenerator';
 import {
   getUUIDFormatPreview,
@@ -15,7 +15,6 @@ const UUIDGenerator: React.FC = () => {
     options,
     setOptions,
     setQuantity,
-    hasSecureUUID,
     generateUUID,
     clear,
     copyAll,
@@ -58,7 +57,6 @@ const UUIDGenerator: React.FC = () => {
         <div className="lg:col-span-2 flex flex-col h-full gap-4">
           <UUIDResultsHeader
             count={uuids.length}
-            hasSecureUUID={hasSecureUUID}
             onDownload={download}
             onClear={clear}
             onCopyAll={copyAll}

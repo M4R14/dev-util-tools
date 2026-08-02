@@ -1,7 +1,10 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import { buildShareableSearchParams } from '../lib/shareableUrlState';
+import { readBooleanParam, readNumberParam, serializeBooleanParam } from '../lib/shareableUrlState';
+import { randomUUID } from '../lib/randomUtils';
+import { useShareableUrlState } from './useShareableUrlState';
+import { useCopyToClipboard } from './useCopyToClipboard';
 
 export interface UUIDOptions {
   version: 'v4';
@@ -10,60 +13,35 @@ export interface UUIDOptions {
   uppercase: boolean;
 }
 
-const MIN_QUANTITY = 1;
-const MAX_QUANTITY = 100;
-
-const clampQuantity = (value: number) => Math.min(MAX_QUANTITY, Math.max(MIN_QUANTITY, value));
-const parseBoolean = (value: string | null, fallback: boolean) =>
-  value === null ? fallback : value === '1' || value === 'true';
-const parseQuantity = (value: string | null) => {
-  if (!value) return 1;
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? clampQuantity(parsed) : 1;
-};
+const DEFAULT_QUANTITY = 1;
+const QUANTITY_BOUNDS = { min: 1, max: 100 };
+const clampQuantity = (value: number) =>
+  Math.min(QUANTITY_BOUNDS.max, Math.max(QUANTITY_BOUNDS.min, value));
+const parseQuantity = (value: string | null) =>
+  readNumberParam(value, DEFAULT_QUANTITY, QUANTITY_BOUNDS);
 
 export const useUUIDGenerator = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [uuids, setUuids] = useState<string[]>([]);
+  const { copy } = useCopyToClipboard();
   const [options, setOptions] = useState<UUIDOptions>({
     version: 'v4',
     quantity: parseQuantity(searchParams.get('q')),
-    hyphens: parseBoolean(searchParams.get('hy'), true),
-    uppercase: parseBoolean(searchParams.get('up'), false),
+    hyphens: readBooleanParam(searchParams.get('hy'), true),
+    uppercase: readBooleanParam(searchParams.get('up'), false),
   });
-  const currentQuery = searchParams.toString();
 
-  const hasSecureUUID = typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function';
-
-  useEffect(() => {
-    const nextParams = buildShareableSearchParams(currentQuery, [
-      { key: 'q', value: String(options.quantity), defaultValue: '1' },
-      { key: 'hy', value: options.hyphens ? '1' : '0', defaultValue: '1' },
-      { key: 'up', value: options.uppercase ? '1' : '0', defaultValue: '0' },
-    ]);
-
-    const nextQuery = nextParams.toString();
-    if (nextQuery !== currentQuery) {
-      setSearchParams(nextParams, { replace: true });
-    }
-  }, [options.quantity, options.hyphens, options.uppercase, currentQuery, setSearchParams]);
+  useShareableUrlState([
+    { key: 'q', value: String(options.quantity), defaultValue: String(DEFAULT_QUANTITY) },
+    { key: 'hy', value: serializeBooleanParam(options.hyphens), defaultValue: '1' },
+    { key: 'up', value: serializeBooleanParam(options.uppercase), defaultValue: '0' },
+  ]);
 
   const generateUUID = useCallback(() => {
     const newUuids: string[] = [];
 
     for (let i = 0; i < options.quantity; i++) {
-      let uuid: string;
-
-      if (hasSecureUUID) {
-        uuid = crypto.randomUUID();
-      } else {
-        // Fallback
-        uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-          const r = (Math.random() * 16) | 0;
-          const v = c === 'x' ? r : (r & 0x3) | 0x8;
-          return v.toString(16);
-        });
-      }
+      let uuid = randomUUID();
 
       if (!options.hyphens) {
         uuid = uuid.replace(/-/g, '');
@@ -77,7 +55,7 @@ export const useUUIDGenerator = () => {
     }
 
     setUuids(newUuids);
-  }, [hasSecureUUID, options]);
+  }, [options]);
 
   const setQuantity = useCallback((quantity: number) => {
     setOptions((prev) => ({ ...prev, quantity: clampQuantity(quantity) }));
@@ -88,11 +66,8 @@ export const useUUIDGenerator = () => {
   }, []);
 
   const copyAll = useCallback(() => {
-    if (uuids.length > 0) {
-      navigator.clipboard.writeText(uuids.join('\n'));
-      toast.success('Copied all UUIDs to clipboard');
-    }
-  }, [uuids]);
+    void copy(uuids.join('\n'), { success: 'Copied all UUIDs to clipboard' });
+  }, [copy, uuids]);
 
   const download = useCallback(() => {
     if (uuids.length === 0) return;
@@ -113,12 +88,11 @@ export const useUUIDGenerator = () => {
     options,
     setOptions,
     setQuantity,
-    hasSecureUUID,
     generateUUID,
     clear,
     copyAll,
     download,
-    minQuantity: MIN_QUANTITY,
-    maxQuantity: MAX_QUANTITY,
+    minQuantity: QUANTITY_BOUNDS.min,
+    maxQuantity: QUANTITY_BOUNDS.max,
   };
 };

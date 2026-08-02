@@ -1,6 +1,11 @@
 import { useEffect, useRef } from 'react';
 
-const isEditableTarget = (target: EventTarget | null) => {
+/**
+ * True when the keystroke belongs to whatever the user is typing in, so Cmd+K does not steal
+ * focus mid-edit. Exported for tests: it is the branching part of this module, while the effect
+ * wrapped around it needs a real DOM that this project's test setup cannot currently provide.
+ */
+export const isEditableTarget = (target: EventTarget | null) => {
   if (!(target instanceof HTMLElement)) {
     return false;
   }

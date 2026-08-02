@@ -1,9 +1,8 @@
 import React from 'react';
-import ToolLayout from '../ui/ToolLayout';
+import { ToolLayout } from '../ui/ToolLayout';
 import { Textarea } from '../ui/Textarea';
 import { useBase64 } from '../../hooks/useBase64';
 import { CopyButton } from '../ui/CopyButton';
-import { toast } from 'sonner';
 
 const Base64Tool: React.FC = () => {
   const { text, base64, error, handleTextChange, handleBase64Change } = useBase64();
@@ -19,7 +18,7 @@ const Base64Tool: React.FC = () => {
               value={text}
               data-action="copy-base64-plain-text"
               data-testid="base64-copy-plain-button"
-              onCopy={() => toast.success('Original text copied')}
+              successMessage="Original text copied"
             />
           }
         >
@@ -41,7 +40,7 @@ const Base64Tool: React.FC = () => {
               value={base64}
               data-action="copy-base64-output"
               data-testid="base64-copy-output-button"
-              onCopy={() => toast.success('Base64 copied')}
+              successMessage="Base64 copied"
             />
           }
           className={error ? 'border-destructive/50 box-border' : ''}

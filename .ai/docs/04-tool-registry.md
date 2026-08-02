@@ -101,6 +101,10 @@ The registry below groups tools by responsibility to make discovery easier for c
   - Component: `src/components/tools/DummyImageTool.tsx`
   - Doc: [.ai doc](./tools/dummy-image.md)
 
+- `vin-tool` — `/vin-tool`
+  - Component: `src/components/tools/VinTool.tsx`
+  - Doc: [.ai doc](./tools/vin-tool.md)
+
 ## AI
 
 - `ai-assistant` — `/ai-assistant`

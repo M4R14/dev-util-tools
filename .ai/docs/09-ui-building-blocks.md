@@ -21,7 +21,7 @@ Compound component that provides the standard tool page structure with optional 
 Tool titles/section titles support copyable anchor links (`#...`) for deep-linking.
 
 ```ts
-import ToolLayout from '../ui/ToolLayout';
+import { ToolLayout } from '../ui/ToolLayout';
 ```
 
 ### Props
@@ -208,9 +208,17 @@ import { CopyButton } from '../ui/CopyButton';
 | Prop | Type | Description |
 |---|---|---|
 | `value` | `string` | **Required.** Text to copy |
+| `successMessage?` | `string \| null` | Toast text; `null` stays silent. Defaults to "Copied to clipboard" |
 | `className?` | `string` | Button wrapper classes |
 | `iconClassName?` | `string` | Icon size/color classes |
-| + all `ButtonProps` | | Passed through to inner `Button` |
+| + all `ButtonProps` except `onCopy` | | Passed through to inner `Button` |
+
+> `onCopy` is intentionally rejected by the type. It is a native clipboard DOM event, so passing
+> it looks like a "copied" callback but only fires when the user copies a text selection inside
+> the button. Use `successMessage` for custom feedback.
+
+Copy behaviour itself lives in `src/hooks/useCopyToClipboard.ts` — reach for that hook directly
+when the trigger is not a plain icon button (code blocks, share links, copy-all actions).
 
 ```tsx
 <CopyButton value={result} />

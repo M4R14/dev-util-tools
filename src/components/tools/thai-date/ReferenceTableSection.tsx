@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Languages, RotateCcw, Table2 } from 'lucide-react';
-import ToolLayout from '../../ui/ToolLayout';
+import { ToolLayout } from '../../ui/ToolLayout';
 import { Card, CardContent } from '../../ui/Card';
 import { cn } from '../../../lib/utils';
 import type { ReferenceRow } from './referenceData';

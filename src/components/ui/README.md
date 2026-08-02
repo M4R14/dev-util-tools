@@ -12,7 +12,7 @@ The main layout wrapper for all tools. It provides a consistent header with icon
 
 ```tsx
 import { Link2 } from 'lucide-react';
-import ToolLayout from '../ui/ToolLayout';
+import { ToolLayout } from '../ui/ToolLayout';
 
 <ToolLayout title="My Tool" description="A short description of what this tool does." icon={Link2}>
   {/* Content goes here */}

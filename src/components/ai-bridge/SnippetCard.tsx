@@ -1,7 +1,7 @@
 import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './Card';
-import { CopyButton } from './CopyButton';
-import { CodeHighlight } from './CodeHighlight';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/Card';
+import { CopyButton } from '../ui/CopyButton';
+import { CodeHighlight } from '../ui/CodeHighlight';
 
 export type SnippetLanguage = 'json' | 'xml' | 'javascript' | 'bash' | 'plaintext';
 
@@ -13,7 +13,13 @@ interface SnippetCardProps {
   language: SnippetLanguage;
 }
 
-const SnippetCard: React.FC<SnippetCardProps> = ({ icon, title, description, code, language }) => {
+export const SnippetCard: React.FC<SnippetCardProps> = ({
+  icon,
+  title,
+  description,
+  code,
+  language,
+}) => {
   return (
     <Card className="bg-muted/20">
       <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0">
@@ -34,5 +40,3 @@ const SnippetCard: React.FC<SnippetCardProps> = ({ icon, title, description, cod
     </Card>
   );
 };
-
-export default SnippetCard;

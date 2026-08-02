@@ -1,16 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { buildShareableSearchParams } from '../lib/shareableUrlState';
+import { decodeUnicodeFromBase64, encodeUnicodeToBase64 } from '../lib/base64Utils';
+import { useShareableUrlState } from './useShareableUrlState';
 
 const encodeTextToBase64 = (value: string) => {
   try {
-    // Use encodeURIComponent to handle Unicode characters (like Thai)
-    // btoa only supports ASCII
-    const escaped = encodeURIComponent(value).replace(/%([0-9A-F]{2})/g, (_, p1) =>
-      String.fromCharCode(parseInt(p1, 16)),
-    );
     return {
-      base64: btoa(escaped),
+      base64: encodeUnicodeToBase64(value),
       error: null as string | null,
     };
   } catch {
@@ -23,15 +19,8 @@ const encodeTextToBase64 = (value: string) => {
 
 const decodeBase64ToText = (value: string) => {
   try {
-    const decoded = atob(value);
-    const unescaped = decodeURIComponent(
-      decoded
-        .split('')
-        .map((char) => '%' + ('00' + char.charCodeAt(0).toString(16)).slice(-2))
-        .join(''),
-    );
     return {
-      text: unescaped,
+      text: decodeUnicodeFromBase64(value),
       error: null as string | null,
     };
   } catch {
@@ -43,7 +32,7 @@ const decodeBase64ToText = (value: string) => {
 };
 
 export const useBase64 = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [initialState] = useState(() => {
     const initialTextParam = searchParams.get('text') ?? '';
     const initialBase64Param = searchParams.get('b64') ?? '';
@@ -76,7 +65,11 @@ export const useBase64 = () => {
   const [text, setText] = useState(initialState.text);
   const [base64, setBase64] = useState(initialState.base64);
   const [error, setError] = useState<string | null>(initialState.error);
-  const currentQuery = searchParams.toString();
+
+  useShareableUrlState([
+    { key: 'text', value: text },
+    { key: 'b64', value: base64 },
+  ]);
 
   const handleTextChange = (val: string) => {
     setText(val);
@@ -97,18 +90,6 @@ export const useBase64 = () => {
     setText(decoded);
     setError(nextError);
   };
-
-  useEffect(() => {
-    const nextParams = buildShareableSearchParams(currentQuery, [
-      { key: 'text', value: text },
-      { key: 'b64', value: base64 },
-    ]);
-
-    const nextQuery = nextParams.toString();
-    if (nextQuery !== currentQuery) {
-      setSearchParams(nextParams, { replace: true });
-    }
-  }, [text, base64, currentQuery, setSearchParams]);
 
   return {
     text,

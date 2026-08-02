@@ -2,9 +2,10 @@ import React from 'react';
 import dayjs from 'dayjs';
 import { CalendarDays, Copy, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
-import ToolLayout from '../../ui/ToolLayout';
+import { ToolLayout } from '../../ui/ToolLayout';
 import { Button } from '../../ui/Button';
 import { Input } from '../../ui/Input';
+import { useCopyToClipboard } from '../../../hooks/useCopyToClipboard';
 import DateFormatCard, { type DateFormatItem } from './DateFormatCard';
 
 interface DateConverterSectionProps {
@@ -20,6 +21,7 @@ const QUICK_PRESETS = [
 ];
 
 const DateConverterSection: React.FC<DateConverterSectionProps> = ({ date, setDate, formats }) => {
+  const { copy } = useCopyToClipboard();
   const parsedDate = dayjs(date);
   const isValidDate = Boolean(date) && parsedDate.isValid();
   const adYear = isValidDate ? parsedDate.year() : '-';
@@ -38,12 +40,10 @@ const DateConverterSection: React.FC<DateConverterSectionProps> = ({ date, setDa
 
     const payload = formats.map((format) => `${format.label}: ${format.value}`).join('\n');
 
-    try {
-      await navigator.clipboard.writeText(payload);
-      toast.success('Copied all date formats');
-    } catch {
-      toast.error('Unable to copy all date formats');
-    }
+    await copy(payload, {
+      success: 'Copied all date formats',
+      error: 'Unable to copy all date formats',
+    });
   };
 
   return (

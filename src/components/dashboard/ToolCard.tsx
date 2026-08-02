@@ -1,8 +1,8 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { ArrowRight, Star } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { ToolID, ToolMetadata } from '../../types';
-import FavoriteIcon from '../ui/FavoriteIcon';
+import { FavoriteButton } from '../ui/FavoriteButton';
 
 interface ToolCardProps {
   tool: ToolMetadata;
@@ -19,21 +19,21 @@ const ToolCard: React.FC<ToolCardProps> = React.memo(({ tool, isFavorite, onTogg
 
   return (
     <div className="group relative h-full">
-      <div className="absolute top-2 right-2 z-10">
-        <button
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            onToggleFavorite(tool.id);
-          }}
-          className={`p-1 rounded-full bg-background/80 border border-border hover:bg-muted transition-colors ${isFavorite ? 'text-amber-500' : 'text-muted-foreground'}`}
-          aria-label={
-            isFavorite ? `Remove ${tool.name} from favorites` : `Add ${tool.name} to favorites`
-          }
-          aria-pressed={isFavorite}
-        >
-           <FavoriteIcon className={`w-3.5 h-3.5`} isFavorite={isFavorite} />
-        </button>
+      <div
+        className="absolute top-2 right-2 z-10"
+        onClick={(event) => {
+          // The whole card is a NavLink; keep the toggle from navigating.
+          event.preventDefault();
+          event.stopPropagation();
+        }}
+      >
+        <FavoriteButton
+          isFavorite={isFavorite}
+          onToggle={() => onToggleFavorite(tool.id)}
+          itemName={tool.name}
+          className="h-7 w-7 bg-background/80 border border-border hover:bg-muted"
+          iconClassName="w-3.5 h-3.5"
+        />
       </div>
 
       <NavLink

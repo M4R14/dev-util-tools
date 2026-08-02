@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Trash2, AlignLeft, Minimize2, Pencil, Eye } from 'lucide-react';
-import ToolLayout from '../ui/ToolLayout';
+import { ToolLayout } from '../ui/ToolLayout';
 import { Button } from '../ui/Button';
 import { Textarea } from '../ui/Textarea';
 import { useJsonFormatter } from '../../hooks/useJsonFormatter';
@@ -95,7 +95,7 @@ const JSONFormatter: React.FC = () => {
                   {isEditing ? <Eye className="w-4 h-4" /> : <Pencil className="w-4 h-4" />}
                 </Button>
               )}
-              <CopyButton value={input} onCopy={() => toast.success('JSON content copied')} />
+              <CopyButton value={input} successMessage="JSON content copied" />
               <Button
                 variant="ghost"
                 size="icon"

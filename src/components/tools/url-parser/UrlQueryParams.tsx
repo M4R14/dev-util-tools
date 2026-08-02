@@ -1,6 +1,6 @@
 import React from 'react';
 import { Plus, Search, Trash2 } from 'lucide-react';
-import ToolLayout from '../../ui/ToolLayout';
+import { ToolLayout } from '../../ui/ToolLayout';
 import { Button } from '../../ui/Button';
 import { CopyButton } from '../../ui/CopyButton';
 import { Input } from '../../ui/Input';

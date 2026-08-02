@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Copy, Check } from 'lucide-react';
 import { Button } from '../../ui/Button';
 import { Card } from '../../ui/Card';
-import { toast } from 'sonner';
+import { useCopyToClipboard } from '../../../hooks/useCopyToClipboard';
 
 interface CodeBlockProps {
   language: string;
@@ -10,13 +10,10 @@ interface CodeBlockProps {
 }
 
 const CodeBlock: React.FC<CodeBlockProps> = ({ language, code }) => {
-  const [copied, setCopied] = useState(false);
+  const { copied, copy } = useCopyToClipboard();
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(code);
-    setCopied(true);
-    toast.success('Code snippet copied');
-    setTimeout(() => setCopied(false), 2000);
+    void copy(code, { success: 'Code snippet copied' });
   };
 
   return (

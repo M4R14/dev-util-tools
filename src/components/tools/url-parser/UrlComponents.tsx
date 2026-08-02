@@ -9,7 +9,7 @@ import {
   ShieldAlert,
   FileText,
 } from 'lucide-react';
-import ToolLayout from '../../ui/ToolLayout';
+import { ToolLayout } from '../../ui/ToolLayout';
 import { Input } from '../../ui/Input';
 import UrlComponentInput from './UrlComponentInput';
 

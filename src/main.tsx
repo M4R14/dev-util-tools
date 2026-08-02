@@ -1,30 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { toast } from 'sonner';
 import App from './App';
 import './index.css';
-
-const SW_UPDATE_TOAST_ID = 'sw-update-available';
-const PWA_LAST_UPDATED_STORAGE_KEY = 'devpulse-last-updated-at';
-
-const promptServiceWorkerUpdate = (registration: ServiceWorkerRegistration) => {
-  if (!registration.waiting) {
-    return;
-  }
-
-  toast.info('New version available', {
-    id: SW_UPDATE_TOAST_ID,
-    description: 'Refresh to update the app.',
-    duration: Infinity,
-    action: {
-      label: 'Refresh',
-      onClick: () => {
-        registration.waiting?.postMessage({ type: 'SKIP_WAITING' });
-      },
-    },
-  });
-};
+import { PWA_LAST_UPDATED_STORAGE_KEY, promptServiceWorkerUpdate } from './hooks/pwa-settings';
 
 const registerServiceWorker = () => {
   if (!import.meta.env.PROD || !('serviceWorker' in navigator)) {

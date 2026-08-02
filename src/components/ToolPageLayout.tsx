@@ -1,13 +1,14 @@
 import React from 'react';
 import { Share2 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
 import { cn } from '../lib/utils';
 import { ToolMetadata } from '../types';
 import { useSearch } from '../context/SearchContext';
 import { useUserPreferences } from '../context/UserPreferencesContext';
 import { Button } from './ui/Button';
-import FavoriteButton from './ui/FavoriteButton';
+import { FavoriteButton } from './ui/FavoriteButton';
+import RelatedTools from './RelatedTools';
+import { useCopyToClipboard } from '../hooks/useCopyToClipboard';
 
 interface ToolPageLayoutProps {
   tool: ToolMetadata;
@@ -20,6 +21,7 @@ const ToolPageLayout: React.FC<ToolPageLayoutProps> = ({ tool, children, classNa
   const location = useLocation();
   const { setSearchTerm } = useSearch();
   const { favorites, toggleFavorite } = useUserPreferences();
+  const { copy } = useCopyToClipboard();
   const isFavorite = favorites.includes(tool.id);
 
   const handleTagClick = (tag: string) => {
@@ -32,12 +34,10 @@ const ToolPageLayout: React.FC<ToolPageLayoutProps> = ({ tool, children, classNa
       ? `${location.pathname}${location.search}${location.hash}`
       : `${window.location.origin}${location.pathname}${location.search}${location.hash}`;
 
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      toast.success('Shareable link copied');
-    } catch {
-      toast.error('Unable to copy shareable link');
-    }
+    await copy(shareUrl, {
+      success: 'Shareable link copied',
+      error: 'Unable to copy shareable link',
+    });
   };
 
   return (
@@ -105,6 +105,8 @@ const ToolPageLayout: React.FC<ToolPageLayoutProps> = ({ tool, children, classNa
       >
         {children}
       </div>
+
+      <RelatedTools tool={tool} />
     </div>
   );
 };

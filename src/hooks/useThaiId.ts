@@ -1,23 +1,15 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { analyzeThaiId, formatThaiId, generateThaiId, ThaiIdAnalysis } from '../lib/thaiId';
-import { buildShareableSearchParams } from '../lib/shareableUrlState';
+import { useShareableUrlState } from './useShareableUrlState';
 
 export const useThaiId = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [input, setInput] = useState(() => formatThaiId(searchParams.get('input') ?? ''));
   const [analysis, setAnalysis] = useState<ThaiIdAnalysis | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const currentQuery = searchParams.toString();
 
-  useEffect(() => {
-    const nextParams = buildShareableSearchParams(currentQuery, [{ key: 'input', value: input }]);
-
-    const nextQuery = nextParams.toString();
-    if (nextQuery !== currentQuery) {
-      setSearchParams(nextParams, { replace: true });
-    }
-  }, [input, currentQuery, setSearchParams]);
+  useShareableUrlState([{ key: 'input', value: input }]);
 
   const handleInputChange = useCallback((value: string) => {
     const normalized = formatThaiId(value);

@@ -1,7 +1,7 @@
 import React from 'react';
 import { ArrowRightLeft, Braces, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
-import ToolLayout from '../ui/ToolLayout';
+import { ToolLayout } from '../ui/ToolLayout';
 import { Button } from '../ui/Button';
 import { CopyButton } from '../ui/CopyButton';
 import { Switch } from '../ui/Switch';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { BookOpenText, ShieldAlert, ShieldCheck } from 'lucide-react';
-import ToolLayout from '../ui/ToolLayout';
+import { ToolLayout } from '../ui/ToolLayout';
 import { Card } from '../ui/Card';
 import { useAIChat } from '../../hooks/useAIChat';
 import { AssistantHeader, ChatPanel, Composer, SettingsModal } from './ai';

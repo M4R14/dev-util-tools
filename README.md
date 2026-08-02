@@ -1,6 +1,6 @@
 # ⚡ DevPulse — Developer Utility Suite
 
-> **18 developer tools + AI assistant** in a single, fast, keyboard-driven web app.
+> **19 developer tools + AI assistant** in a single, fast, keyboard-driven web app.
 
 <p align="center">
   <a href="https://m4r14.github.io/dev-util-tools/">
@@ -10,7 +10,7 @@
 
 ---
 
-## 🛠️ Tools (18)
+## 🛠️ Tools (19)
 
 | #  | Tool | Description |
 |----|------|-------------|
@@ -32,6 +32,7 @@
 | 16 | 🖼️ **Dummy Image** | Generate placeholder images via dummyimage.com |
 | 17 | 📄 **XML Formatter** | Prettify and minify XML data |
 | 18 | 🔁 **XML to JSON** | Convert XML documents into structured JSON |
+| 19 | 🚗 **VIN Generator & Decoder** | Random ISO 3779 VINs with valid check digit, via tetono.com |
 
 ---
 
@@ -86,7 +87,7 @@
 ```
 src/
 ├── components/
-│   ├── tools/              # 18 tool components
+│   ├── tools/              # 19 tool components
 │   │   ├── thai-date/      #   └ sub-components (6 files)
 │   │   ├── ai/             #   └ sub-components
 │   │   ├── diff-viewer/    #   └ sub-components

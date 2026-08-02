@@ -7,13 +7,12 @@ import ToolPageLayout from './ToolPageLayout';
 import { useUserPreferences } from '../context/UserPreferencesContext';
 import { useSearch } from '../context/SearchContext';
 import { Toaster } from './ui/sonner';
+import { resolvePageMeta } from '../lib/pageMeta';
 import {
   BackgroundDecor,
-  getMainLayoutDocumentTitle,
   MainContentWrapper,
   MainFooter,
   MobileCommandPaletteButton,
-  resolveMainLayoutPageMeta,
   SkipToMainContentLink,
   useCommandPaletteActions,
   useCommandPaletteHotkey,
@@ -36,7 +35,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const commandActions = useCommandPaletteActions();
   useCommandPaletteHotkey(commandPalette.toggle);
 
-  const pageMeta = useMemo(() => resolveMainLayoutPageMeta(location.pathname), [location.pathname]);
+  const pageMeta = useMemo(() => resolvePageMeta(location.pathname), [location.pathname]);
   const activeTool = pageMeta.activeTool;
   const handleToggleFavorite = useCallback(() => {
     if (!activeTool) {
@@ -46,8 +45,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   }, [activeTool, toggleFavorite]);
 
   useEffect(() => {
-    document.title = getMainLayoutDocumentTitle(pageMeta);
-  }, [pageMeta]);
+    document.title = pageMeta.documentTitle;
+  }, [pageMeta.documentTitle]);
 
   useMainLayoutRouteEffects({
     pathname: pageMeta.normalizedPathname,

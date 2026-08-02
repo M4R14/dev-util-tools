@@ -2,14 +2,13 @@ import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import {
   calculatePwaCacheSizeBytes,
-  clearPwaCaches,
+  checkForServiceWorkerUpdate,
+  clearOfflineCache as runClearOfflineCache,
   getOnlineStatus,
   getPwaCacheKeysByPrefix,
-  getServiceWorkerRegistration,
   getStandaloneStatus,
   getStoredLastUpdatedAt,
   PWA_CACHE_PREFIX,
-  promptServiceWorkerUpdate,
   attachInstallPromptListeners,
   attachLastUpdatedStorageListener,
   attachOnlineStatusListeners,
@@ -65,47 +64,21 @@ export const usePwaSettings = (options: UsePwaSettingsOptions = {}) => {
   }, []);
 
   const checkForUpdates = useCallback(async () => {
-    if (!('serviceWorker' in navigator)) {
-      toast.error('Service worker is not available');
-      return;
-    }
-
     setIsCheckingUpdates(true);
     try {
-      const registration = await getServiceWorkerRegistration(import.meta.env.BASE_URL);
-
-      if (!registration) {
-        toast.info('Service worker is not ready yet');
-        return;
-      }
-
-      await registration.update();
-      if (registration.waiting) {
-        promptServiceWorkerUpdate(registration);
-      } else {
-        toast.success('You are on the latest version');
-      }
-    } catch {
-      toast.error('Failed to check for updates');
+      await checkForServiceWorkerUpdate();
     } finally {
       setIsCheckingUpdates(false);
     }
   }, []);
 
   const clearOfflineCache = useCallback(async () => {
-    if (!('caches' in window)) {
-      toast.error('Cache API is not available');
-      return;
-    }
-
     setIsClearingCache(true);
     try {
-      const targetCaches = await getPwaCacheKeysByPrefix(PWA_CACHE_PREFIX);
-      await clearPwaCaches(targetCaches);
-      toast.success('Offline cache cleared');
-      await refreshCacheStats();
-    } catch {
-      toast.error('Failed to clear offline cache');
+      const cleared = await runClearOfflineCache();
+      if (cleared) {
+        await refreshCacheStats();
+      }
     } finally {
       setIsClearingCache(false);
     }

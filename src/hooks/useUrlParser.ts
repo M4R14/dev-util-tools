@@ -1,17 +1,18 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { UrlParam, addUrlParam, parseUrl, removeUrlParam, updateUrlParam } from '../lib/urlUtils';
-import { buildShareableSearchParams } from '../lib/shareableUrlState';
+import { useShareableUrlState } from './useShareableUrlState';
 
 export { type UrlParam };
 
 export const useUrlParser = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [input, setInput] = useState(() => searchParams.get('input') ?? '');
   const [parsedUrl, setParsedUrl] = useState<URL | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [params, setParams] = useState<UrlParam[]>([]);
-  const currentQuery = searchParams.toString();
+
+  useShareableUrlState([{ key: 'input', value: input }]);
 
   useEffect(() => {
     const result = parseUrl(input);
@@ -19,15 +20,6 @@ export const useUrlParser = () => {
     setError(result.error);
     setParams(result.params);
   }, [input]);
-
-  useEffect(() => {
-    const nextParams = buildShareableSearchParams(currentQuery, [{ key: 'input', value: input }]);
-
-    const nextQuery = nextParams.toString();
-    if (nextQuery !== currentQuery) {
-      setSearchParams(nextParams, { replace: true });
-    }
-  }, [input, currentQuery, setSearchParams]);
 
   const getEncoded = useCallback(() => {
     try {

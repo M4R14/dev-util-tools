@@ -1,20 +1,21 @@
 import React from 'react';
 import { Link2 } from 'lucide-react';
-import ToolLayout from '../ui/ToolLayout';
+import { ToolLayout } from '../ui/ToolLayout';
 import { CopyButton } from '../ui/CopyButton';
 import { useUrlParser } from '../../hooks/useUrlParser';
+import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
 import { toast } from 'sonner';
 import { UrlComponents, UrlInputSection, UrlQueryParams } from './url-parser';
 
 const UrlParser: React.FC = () => {
   const { input, setInput, parsedUrl, error, params, getEncoded, decodeUrl, updateParam, addParam, removeParam } =
     useUrlParser();
+  const { copy } = useCopyToClipboard();
 
   const handleEncode = () => {
     const encoded = getEncoded();
     if (encoded) {
-      navigator.clipboard.writeText(encoded);
-      toast.success('URL encoded and copied to clipboard');
+      void copy(encoded, { success: 'URL encoded and copied to clipboard' });
     } else {
       toast.error('Failed to encode URL');
     }

@@ -138,6 +138,13 @@ export const convertXmlToJson = (xml: string, options: XmlToJsonOptions = {}): X
   }
 
   const mergedOptions = { ...DEFAULT_OPTIONS, ...parsedOptions.data };
+
+  // `convertXML` throws an opaque "Cannot convert undefined or null to object" on blank input,
+  // which used to reach the UI as-is and left the check below unreachable.
+  if (!xml.trim()) {
+    throw new Error('XML document has no root element');
+  }
+
   validateXml(xml);
 
   const rawJson = convertXML(xml) as Record<string, unknown>;

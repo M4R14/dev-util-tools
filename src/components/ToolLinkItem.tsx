@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { ToolID, ToolMetadata } from '../types';
 import { cn } from '../lib/utils';
-import FavoriteIcon from './ui/FavoriteIcon';
+import { FavoriteButton } from './ui/FavoriteButton';
 
 interface ToolLinkItemProps {
   tool: ToolMetadata;
@@ -81,24 +81,26 @@ const ToolLinkItem: React.FC<ToolLinkItemProps> = ({
         </>
       </NavLink>
 
-      <button
-        type="button"
+      <span
+        className="absolute right-2 top-1/2 -translate-y-1/2"
         onClick={(event) => {
+          // The row is a NavLink; keep the toggle from navigating.
           event.preventDefault();
           event.stopPropagation();
-          onToggleFavorite(tool.id);
         }}
-        className={cn(
-          'absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded text-muted-foreground hover:text-amber-500 hover:bg-muted transition-all',
-          isFavorite
-            ? 'opacity-100 text-amber-500'
-            : 'opacity-0 group-hover:opacity-100 group-focus-within:opacity-100',
-        )}
-        aria-label={isFavorite ? `Remove ${tool.name} from favorites` : `Add ${tool.name} to favorites`}
-        aria-pressed={isFavorite}
       >
-        <FavoriteIcon isFavorite={isFavorite} />
-      </button>
+        <FavoriteButton
+          isFavorite={isFavorite}
+          onToggle={() => onToggleFavorite(tool.id)}
+          itemName={tool.name}
+          className={cn(
+            'h-6 w-6 rounded hover:bg-muted transition-all',
+            isFavorite
+              ? 'opacity-100'
+              : 'opacity-0 group-hover:opacity-100 group-focus-within:opacity-100',
+          )}
+        />
+      </span>
     </div>
   );
 };

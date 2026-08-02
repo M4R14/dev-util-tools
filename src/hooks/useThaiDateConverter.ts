@@ -2,14 +2,14 @@ import { useState, useMemo, useEffect } from 'react';
 import dayjs from 'dayjs';
 import { useSearchParams } from 'react-router-dom';
 import { formatThaiDate, parseThaiDate, THAI_MONTHS, THAI_SHORT_MONTHS } from '../lib/thaiDate';
-import { buildShareableSearchParams } from '../lib/shareableUrlState';
+import { useShareableUrlState } from './useShareableUrlState';
 
 export type ParserMonthFormat = 'short' | 'long';
 const parseMonthFormat = (value: string | null): ParserMonthFormat =>
   value === 'long' ? 'long' : 'short';
 
 export const useThaiDateConverter = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const defaultDate = useMemo(() => dayjs().format('YYYY-MM-DD'), []);
   const [date, setDate] = useState(() => searchParams.get('date') ?? defaultDate);
   const [parseInput, setParseInput] = useState(() => searchParams.get('parse') ?? '');
@@ -22,7 +22,6 @@ export const useThaiDateConverter = () => {
   const [pickerMonthFormat, setPickerMonthFormat] = useState<ParserMonthFormat>(() =>
     parseMonthFormat(searchParams.get('pmf')),
   );
-  const currentQuery = searchParams.toString();
 
   const monthOptions = useMemo(() => {
     const list = pickerMonthFormat === 'short' ? THAI_SHORT_MONTHS : THAI_MONTHS;
@@ -65,30 +64,13 @@ export const useThaiDateConverter = () => {
     setParseResult(result);
   }, [parseInput]);
 
-  useEffect(() => {
-    const nextParams = buildShareableSearchParams(currentQuery, [
-      { key: 'date', value: date, defaultValue: defaultDate },
-      { key: 'parse', value: parseInput },
-      { key: 'pd', value: pickerDay },
-      { key: 'pm', value: pickerMonth },
-      { key: 'py', value: pickerYear },
-      { key: 'pmf', value: pickerMonthFormat, defaultValue: 'short' },
-    ]);
-
-    const nextQuery = nextParams.toString();
-    if (nextQuery !== currentQuery) {
-      setSearchParams(nextParams, { replace: true });
-    }
-  }, [
-    date,
-    parseInput,
-    pickerDay,
-    pickerMonth,
-    pickerYear,
-    pickerMonthFormat,
-    defaultDate,
-    currentQuery,
-    setSearchParams,
+  useShareableUrlState([
+    { key: 'date', value: date, defaultValue: defaultDate },
+    { key: 'parse', value: parseInput },
+    { key: 'pd', value: pickerDay },
+    { key: 'pm', value: pickerMonth },
+    { key: 'py', value: pickerYear },
+    { key: 'pmf', value: pickerMonthFormat, defaultValue: 'short' },
   ]);
 
   // Formatted outputs from the parsed result

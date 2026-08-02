@@ -1,17 +1,9 @@
 import React from 'react';
-import {
-  Copy,
-  Download,
-  Fingerprint,
-  ShieldCheck,
-  Trash2,
-  TriangleAlert,
-} from 'lucide-react';
+import { Copy, Download, Fingerprint, ShieldCheck, Trash2 } from 'lucide-react';
 import { Button } from '../../ui/Button';
 
 interface UUIDResultsHeaderProps {
   count: number;
-  hasSecureUUID: boolean;
   onDownload: () => void;
   onClear: () => void;
   onCopyAll: () => void;
@@ -19,7 +11,6 @@ interface UUIDResultsHeaderProps {
 
 const UUIDResultsHeader: React.FC<UUIDResultsHeaderProps> = ({
   count,
-  hasSecureUUID,
   onDownload,
   onClear,
   onCopyAll,
@@ -36,24 +27,11 @@ const UUIDResultsHeader: React.FC<UUIDResultsHeaderProps> = ({
           <span className="inline-flex items-center rounded-full border border-border px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
             {count} items
           </span>
-          <span
-            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${
-              hasSecureUUID
-                ? 'border border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
-                : 'border border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300'
-            }`}
-          >
-            {hasSecureUUID ? (
-              <>
-                <ShieldCheck className="h-3 w-3" />
-                Secure randomUUID
-              </>
-            ) : (
-              <>
-                <TriangleAlert className="h-3 w-3" />
-                Fallback random
-              </>
-            )}
+          {/* Both the native and the manual path draw from crypto.getRandomValues, so there is
+              no longer an insecure variant to warn about. See src/lib/randomUtils.ts. */}
+          <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-700 dark:text-emerald-300">
+            <ShieldCheck className="h-3 w-3" />
+            Secure random
           </span>
         </div>
       </div>

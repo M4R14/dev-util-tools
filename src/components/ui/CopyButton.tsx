@@ -1,35 +1,36 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Copy, Check } from 'lucide-react';
 import { Button, ButtonProps } from './Button';
-import { toast } from 'sonner';
+import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
 import { cn } from '../../lib/utils';
 
-interface CopyButtonProps extends ButtonProps {
+/**
+ * `onCopy` is deliberately excluded: it is a native clipboard DOM event, so callers who passed
+ * it expecting a "copied" callback silently got a handler that only fires when the user copies a
+ * text selection inside the button — never on click. Use `successMessage` instead.
+ */
+interface CopyButtonProps extends Omit<ButtonProps, 'onCopy'> {
   value: string;
   className?: string;
   iconClassName?: string;
+  /** Toast text on success. Pass `null` to stay silent. */
+  successMessage?: string | null;
 }
 
-export const CopyButton = ({ value, className, iconClassName, ...props }: CopyButtonProps) => {
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = async () => {
-    if (!value) return;
-    try {
-      await navigator.clipboard.writeText(value);
-      setCopied(true);
-      toast.success('Copied to clipboard');
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      toast.error('Failed to copy');
-    }
-  };
+export const CopyButton = ({
+  value,
+  className,
+  iconClassName,
+  successMessage,
+  ...props
+}: CopyButtonProps) => {
+  const { copied, copy } = useCopyToClipboard();
 
   return (
     <Button
       variant="ghost"
       size="icon"
-      onClick={handleCopy}
+      onClick={() => copy(value, { success: successMessage })}
       className={cn('h-8 w-8 text-muted-foreground hover:text-foreground', className)}
       title="Copy to clipboard"
       aria-label={copied ? 'Copied to clipboard' : 'Copy to clipboard'}

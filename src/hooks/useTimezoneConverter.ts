@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { useSearchParams } from 'react-router-dom';
-import { buildShareableSearchParams } from '../lib/shareableUrlState';
+import { useShareableUrlState } from './useShareableUrlState';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -30,7 +30,7 @@ const COMMON_TIMEZONES = [
 const DEFAULT_TARGET_TZ = 'UTC';
 
 export const useTimezoneConverter = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const defaultDate = useMemo(() => dayjs().format('YYYY-MM-DDTHH:mm'), []);
   const defaultSourceTz = useMemo(
     () => Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
@@ -46,7 +46,6 @@ export const useTimezoneConverter = () => {
   const [resultDatePart, setResultDatePart] = useState<string>('');
   const [resultTimePart, setResultTimePart] = useState<string>('');
   const [resultTzAbbr, setResultTzAbbr] = useState<string>('');
-  const currentQuery = searchParams.toString();
 
   const convertTime = useCallback(() => {
     try {
@@ -80,25 +79,10 @@ export const useTimezoneConverter = () => {
     convertTime();
   }, [convertTime]);
 
-  useEffect(() => {
-    const nextParams = buildShareableSearchParams(currentQuery, [
-      { key: 'date', value: date, defaultValue: defaultDate },
-      { key: 'from', value: sourceTz, defaultValue: defaultSourceTz },
-      { key: 'to', value: targetTz, defaultValue: DEFAULT_TARGET_TZ },
-    ]);
-
-    const nextQuery = nextParams.toString();
-    if (nextQuery !== currentQuery) {
-      setSearchParams(nextParams, { replace: true });
-    }
-  }, [
-    date,
-    sourceTz,
-    targetTz,
-    defaultDate,
-    defaultSourceTz,
-    currentQuery,
-    setSearchParams,
+  useShareableUrlState([
+    { key: 'date', value: date, defaultValue: defaultDate },
+    { key: 'from', value: sourceTz, defaultValue: defaultSourceTz },
+    { key: 'to', value: targetTz, defaultValue: DEFAULT_TARGET_TZ },
   ]);
 
   const swapTimezones = () => {

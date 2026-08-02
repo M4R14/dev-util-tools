@@ -1,5 +1,4 @@
 import React from 'react';
-import { toast } from 'sonner';
 import { ArrowLeftRight, Trash2 } from 'lucide-react';
 import { Button } from '../../ui/Button';
 import { CopyButton } from '../../ui/CopyButton';
@@ -121,7 +120,7 @@ const DiffToolbar: React.FC<DiffToolbarProps> = ({
           data-action="copy-diff-unified"
           data-testid="diff-copy-unified-button"
           disabled={!hasChanges}
-          onCopy={() => toast.success('Unified diff copied')}
+          successMessage="Unified diff copied"
           title={hasChanges ? 'Copy unified diff' : 'No changes to copy'}
         />
       </div>
