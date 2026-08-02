@@ -37,6 +37,7 @@ const TOOL_COMPONENTS: Record<ToolID, React.LazyExoticComponent<ComponentType>> 
   [ToolID.JSON_COMPARE]: lazy(() => import('./components/tools/JsonCompare')),
   [ToolID.CURL_PARSER]: lazy(() => import('./components/tools/CurlParser')),
   [ToolID.JSON_PATH]: lazy(() => import('./components/tools/JsonPath')),
+  [ToolID.FAMILY_TREE]: lazy(() => import('./components/tools/family-tree')),
   [ToolID.REGEX_TESTER]: lazy(() => import('./components/tools/RegexTester')),
   [ToolID.XML_FORMATTER]: lazy(() => import('./components/tools/XMLFormatter')),
   [ToolID.XML_TO_JSON]: lazy(() => import('./components/tools/XMLToJson')),

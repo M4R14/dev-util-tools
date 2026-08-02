@@ -6,6 +6,7 @@ export enum ToolID {
   JSON_COMPARE = 'json-compare',
   CURL_PARSER = 'curl-parser',
   JSON_PATH = 'json-path',
+  FAMILY_TREE = 'family-tree',
 
   // generator
   UUID_GENERATOR = 'uuid-generator',

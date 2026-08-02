@@ -93,6 +93,12 @@ The registry below groups tools by responsibility to make discovery easier for c
   - Lib: `src/lib/tools/diffUtils.ts`
   - Doc: [.ai doc](./tools/diff-viewer.md)
 
+- `family-tree` — `/family-tree`
+  - Component: `src/components/tools/family-tree/index.tsx` (+ subcomponents)
+  - Hook: `src/hooks/tools/useFamilyTree.ts`
+  - Lib: `src/lib/tools/familyTree.ts`
+  - Doc: [.ai doc](./tools/family-tree.md)
+
 - `regex-tester` — `/regex-tester`
   - Component: `src/components/tools/RegexTester.tsx`
   - Doc: [.ai doc](./tools/regex-tester.md)

@@ -1,5 +1,6 @@
 import {
   Crosshair,
+  Network,
   TerminalSquare,
   Clock4,
   FlaskConical,
@@ -215,6 +216,22 @@ export const TOOLS: ToolMetadata[] = [
     icon: TerminalSquare,
     tags: ['curl', 'http', 'request', 'api', 'header', 'devtools', 'qa'],
     related: [ToolID.URL_PARSER, ToolID.JSON_FORMATTER, ToolID.JWT_DECODER, ToolID.JSON_COMPARE],
+  },
+  {
+    id: ToolID.FAMILY_TREE,
+    name: 'Family Tree',
+    description: 'Build your family tree — name, parent and relationship, saved in this browser.',
+    icon: Network,
+    tags: ['family', 'tree', 'genealogy', 'ครอบครัว', 'ญาติ', 'เครือญาติ', 'hierarchy'],
+    // Pinned because the automatic suggestions come back empty: no other tool here shares this
+    // vocabulary. These are the ones a tree actually sends you to — birth years written in
+    // BE, and the JSON the export produces.
+    related: [
+      ToolID.THAI_DATE_CONVERTER,
+      ToolID.JSON_FORMATTER,
+      ToolID.THAI_ID,
+      ToolID.TEST_DATA_GENERATOR,
+    ],
   },
   {
     id: ToolID.JSON_PATH,
