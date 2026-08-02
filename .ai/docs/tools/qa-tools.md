@@ -11,6 +11,24 @@ logs, unpacking a request, pulling one value from a large payload, and filling f
 | Unix Timestamp      | `/timestamp-converter` | `lib/tools/timestamp.ts`         | ✅ `parse`       |
 | Test Data Generator | `/test-data-generator` | `lib/tools/testDataGenerator.ts` | ❌ random output |
 
+## Layout rule for these tools
+
+The result comes before the input, or as close to the top as the content allows. These tools are
+paste-once, read-many: someone pastes a response and then reads the findings repeatedly, so putting
+the findings under two full-height input boxes meant scrolling on every look.
+
+Measured on a twelve-user API response at a 1030px fold:
+
+|                            | Before | After     |
+| -------------------------- | ------ | --------- |
+| JSON Compare — Differences | 720px  | **277px** |
+| JSONPath — Result          | 770px  | **455px** |
+| cURL Parser — Body         | 1382px | **839px** |
+
+Inputs use `ui/CodeInput`: `resize-y` rather than a fixed height, plus an `NL / NC` counter in the
+same shape the Diff Viewer uses. The fixed boxes showed 256px of a 3,360px document — about 155
+lines hidden — with nothing on screen to say so.
+
 ## JSON Compare
 
 Compares **parsed values**, not text. The Diff Viewer answers a different question and gets this
@@ -22,12 +40,18 @@ changed, and a real one-field difference inside two hundred lines is left for th
   difference, not a false positive.
 - `"1"` vs `1` is reported as `type-changed`, not `changed`. In API testing that distinction is
   usually the bug.
-- Every difference carries a path: `$.data.items[3].price`.
+- Every difference carries a path: `$.data.items[3].price`. **Clicking it copies it** — that path
+  is what gets pasted into a test assertion or a bug report. Scrolling the input to the matching
+  line was considered and dropped: pasted JSON is often minified onto one line, where it would
+  silently do nothing.
 
 ## JSONPath Extractor
 
 A deliberate subset: property access, array indexing (including negative indexes), and `*`
 wildcards over both objects and arrays.
+
+Matched paths are listed behind a "Show N matched paths" toggle. Rendering the values and then
+every resolved path doubled the page height for one dataset shown twice.
 
 **Filters and recursive descent are not supported and are rejected explicitly** rather than
 silently returning nothing — `$..id` and `$.data[?(@.id>1)]` both raise a named error. Supporting
@@ -43,6 +67,15 @@ understood is listed under "Not interpreted" rather than dropped, so nothing dis
 
 Follows curl's own rule that a body implies `POST` unless `-X` says otherwise, and joins repeated
 `-d` flags with `&`.
+
+**Headers are triaged.** `triageHeaders` splits off the browser boilerplate — `sec-*`, `priority`,
+`user-agent`, `accept-encoding` and friends — behind a toggle, leaving auth, content type, cookies
+and custom `x-` headers in view. A real copy-as-cURL carries fifteen or more, and listing them in
+order buried the body. Nothing is dropped; the tests assert the two halves still account for every
+header.
+
+**Body is shown before Headers**, because when a request is being debugged the question is usually
+what was sent, not which `sec-fetch-*` values the browser attached.
 
 ## Unix Timestamp
 

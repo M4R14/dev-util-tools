@@ -1,7 +1,7 @@
 import React from 'react';
 import { Trash2 } from 'lucide-react';
 import { ToolLayout } from '../ui/ToolLayout';
-import { Textarea } from '../ui/Textarea';
+import { CodeInput } from '../ui/CodeInput';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { CopyButton } from '../ui/CopyButton';
@@ -15,31 +15,7 @@ const JsonPath: React.FC = () => {
 
   return (
     <ToolLayout>
-      <ToolLayout.Panel
-        title="JSON"
-        actions={
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={clear}
-            disabled={!json}
-            className="h-8 w-8 text-muted-foreground hover:text-destructive"
-            aria-label="Clear"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        }
-      >
-        <Textarea
-          value={json}
-          onChange={(e) => setJson(e.target.value)}
-          data-testid="jsonpath-input"
-          placeholder='{"data": {"items": [{"id": 1}, {"id": 2}]}}'
-          className="h-48 w-full resize-none border-none bg-transparent p-0 font-mono text-sm shadow-none focus-visible:ring-0"
-        />
-      </ToolLayout.Panel>
-
-      <ToolLayout.Panel title="Path" className="mt-4">
+      <ToolLayout.Panel title="Path">
         <Input
           value={path}
           onChange={(e) => setPath(e.target.value)}
@@ -91,18 +67,51 @@ const JsonPath: React.FC = () => {
             <pre className="max-h-80 overflow-auto rounded-lg border border-border/60 bg-muted/30 p-3 font-mono text-xs">
               {output}
             </pre>
+            {/*
+              The values are already above; listing every resolved path again doubled the page
+              height for one dataset shown twice. Kept behind a toggle for when the path itself is
+              what you are after.
+            */}
             {matches.length > 1 && (
-              <ul className="mt-3 space-y-1 font-mono text-[11px] text-muted-foreground">
-                {matches.map((match) => (
-                  <li key={match.path} className="break-all">
-                    {match.path}
-                  </li>
-                ))}
-              </ul>
+              <details className="mt-3">
+                <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground">
+                  Show {matches.length} matched paths
+                </summary>
+                <ul className="mt-2 space-y-1 font-mono text-[11px] text-muted-foreground">
+                  {matches.map((match) => (
+                    <li key={match.path} className="break-all">
+                      {match.path}
+                    </li>
+                  ))}
+                </ul>
+              </details>
             )}
           </>
         )}
       </ToolLayout.Section>
+      <ToolLayout.Panel
+        className="mt-6"
+        title="JSON"
+        actions={
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={clear}
+            disabled={!json}
+            className="h-8 w-8 text-muted-foreground hover:text-destructive"
+            aria-label="Clear"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        }
+      >
+        <CodeInput
+          value={json}
+          onChange={(e) => setJson(e.target.value)}
+          data-testid="jsonpath-input"
+          placeholder='{"data": {"items": [{"id": 1}, {"id": 2}]}}'
+        />
+      </ToolLayout.Panel>
     </ToolLayout>
   );
 };

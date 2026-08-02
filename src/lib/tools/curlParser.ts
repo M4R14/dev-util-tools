@@ -198,6 +198,42 @@ export const parseCurl = (command: string): ParsedCurl => {
   return { method: resolvedMethod, url: cleanUrl, query, headers, body, flags, unrecognized };
 };
 
+/**
+ * Headers a browser attaches that nobody debugging a request reads.
+ *
+ * A real "Copy as cURL" carries fifteen or more headers, and the handful that matter —
+ * authorization, content-type — get buried among `sec-ch-ua`, `sec-fetch-*` and `priority`. Listing
+ * them all in order pushed the request body 1,382px down the page.
+ */
+const NOISE_HEADER_PATTERNS = [
+  /^sec-/i,
+  /^pragma$/i,
+  /^priority$/i,
+  /^user-agent$/i,
+  /^accept-language$/i,
+  /^accept-encoding$/i,
+  /^cache-control$/i,
+  /^dnt$/i,
+  /^upgrade-insecure-requests$/i,
+  /^connection$/i,
+  /^te$/i,
+];
+
+export const isBrowserNoiseHeader = (key: string): boolean =>
+  NOISE_HEADER_PATTERNS.some((pattern) => pattern.test(key.trim()));
+
+export interface TriagedHeaders {
+  /** What someone is actually looking for: auth, content type, cookies, custom `x-` headers. */
+  significant: { key: string; value: string }[];
+  /** Kept, not dropped — hidden behind a toggle so it can still be checked. */
+  noise: { key: string; value: string }[];
+}
+
+export const triageHeaders = (headers: { key: string; value: string }[]): TriagedHeaders => ({
+  significant: headers.filter((header) => !isBrowserNoiseHeader(header.key)),
+  noise: headers.filter((header) => isBrowserNoiseHeader(header.key)),
+});
+
 /** Pretty-prints the body when it is JSON, leaving anything else exactly as sent. */
 export const formatCurlBody = (body: string | null): { text: string; isJson: boolean } => {
   if (body === null) return { text: '', isJson: false };

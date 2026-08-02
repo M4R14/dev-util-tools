@@ -1,11 +1,12 @@
 import React from 'react';
 import { AlertTriangle, Trash2 } from 'lucide-react';
 import { ToolLayout } from '../ui/ToolLayout';
-import { Textarea } from '../ui/Textarea';
+import { CodeInput } from '../ui/CodeInput';
 import { Button } from '../ui/Button';
 import { CopyButton } from '../ui/CopyButton';
 import { SendToToolButton } from '../ui/SendToToolButton';
 import { useCurlParser } from '../../hooks/tools/useCurlParser';
+import { triageHeaders } from '../../lib/tools/curlParser';
 
 const KeyValueTable: React.FC<{ rows: { key: string; value: string }[] }> = ({ rows }) => (
   <dl className="divide-y divide-border/50">
@@ -22,6 +23,7 @@ const KeyValueTable: React.FC<{ rows: { key: string; value: string }[] }> = ({ r
 
 const CurlParser: React.FC = () => {
   const { command, setCommand, parsed, body, error, clear } = useCurlParser();
+  const headers = React.useMemo(() => triageHeaders(parsed?.headers ?? []), [parsed?.headers]);
 
   return (
     <ToolLayout>
@@ -41,12 +43,12 @@ const CurlParser: React.FC = () => {
           </Button>
         }
       >
-        <Textarea
+        <CodeInput
           value={command}
           onChange={(e) => setCommand(e.target.value)}
           data-testid="curl-input"
+          initialHeightClassName="h-28"
           placeholder="Paste a command from DevTools → Network → Copy as cURL"
-          className="h-40 w-full resize-none border-none bg-transparent p-0 font-mono text-sm shadow-none focus-visible:ring-0"
         />
       </ToolLayout.Panel>
 
@@ -82,12 +84,6 @@ const CurlParser: React.FC = () => {
             </ToolLayout.Section>
           )}
 
-          {parsed.headers.length > 0 && (
-            <ToolLayout.Section title={`Headers (${parsed.headers.length})`} className="mt-6">
-              <KeyValueTable rows={parsed.headers} />
-            </ToolLayout.Section>
-          )}
-
           {parsed.body !== null && (
             <ToolLayout.Section
               title={body.isJson ? 'Body (JSON)' : 'Body'}
@@ -104,7 +100,27 @@ const CurlParser: React.FC = () => {
               </pre>
             </ToolLayout.Section>
           )}
+          {parsed.headers.length > 0 && (
+            <ToolLayout.Section title={`Headers (${parsed.headers.length})`} className="mt-6">
+              <KeyValueTable rows={headers.significant} />
 
+              {/*
+                A real copy-as-cURL carries fifteen or more headers, most of them sec-fetch-*,
+                priority and user-agent that nobody debugging a request reads. Listing them in
+                order pushed the body — the thing people come for — 1,382px down the page.
+              */}
+              {headers.noise.length > 0 && (
+                <details className="mt-2">
+                  <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground">
+                    Show {headers.noise.length} browser headers
+                  </summary>
+                  <div className="mt-2">
+                    <KeyValueTable rows={headers.noise} />
+                  </div>
+                </details>
+              )}
+            </ToolLayout.Section>
+          )}
           {parsed.unrecognized.length > 0 && (
             <ToolLayout.Section title="Not interpreted" className="mt-6">
               <p className="mb-2 inline-flex items-start gap-2 text-xs text-muted-foreground">

@@ -1,10 +1,11 @@
 import React from 'react';
 import { ArrowLeftRight, Check, Minus, Plus, Trash2, Type } from 'lucide-react';
 import { ToolLayout } from '../ui/ToolLayout';
-import { Textarea } from '../ui/Textarea';
+import { CodeInput } from '../ui/CodeInput';
 import { Button } from '../ui/Button';
 import { CopyButton } from '../ui/CopyButton';
 import { SendToToolButton } from '../ui/SendToToolButton';
+import { useCopyToClipboard } from '../../hooks/ui/useCopyToClipboard';
 import { useJsonCompare } from '../../hooks/tools/useJsonCompare';
 import type { JsonDifference, JsonDifferenceKind } from '../../lib/tools/jsonCompare';
 import { cn } from '../../lib/utils';
@@ -39,7 +40,10 @@ const KIND_META: Record<
 const preview = (value: unknown): string =>
   value === undefined ? '—' : (JSON.stringify(value) ?? String(value));
 
-const DifferenceRow: React.FC<{ difference: JsonDifference }> = ({ difference }) => {
+const DifferenceRow: React.FC<{
+  difference: JsonDifference;
+  onCopyPath: (path: string) => void;
+}> = ({ difference, onCopyPath }) => {
   const meta = KIND_META[difference.kind];
   const Icon = meta.icon;
 
@@ -56,7 +60,20 @@ const DifferenceRow: React.FC<{ difference: JsonDifference }> = ({ difference })
       </span>
 
       <div className="min-w-0 flex-1">
-        <code className="block break-all font-mono text-xs text-foreground">{difference.path}</code>
+        {/*
+          The path is the useful part of a finding — it is what gets pasted into a test assertion
+          or a bug report — so clicking it copies it. Scrolling the input to the matching line was
+          considered and dropped: pasted JSON is often minified onto one line, where it would
+          silently do nothing.
+        */}
+        <button
+          type="button"
+          onClick={() => onCopyPath(difference.path)}
+          title={`Copy ${difference.path}`}
+          className="block max-w-full break-all rounded text-left font-mono text-xs text-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+        >
+          {difference.path}
+        </button>
 
         <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-xs text-muted-foreground">
           {difference.kind === 'added' ? (
@@ -99,6 +116,7 @@ const JsonCompare: React.FC = () => {
     swap,
     clear,
   } = useJsonCompare();
+  const { copy } = useCopyToClipboard();
 
   const report = differences
     .map((d) =>
@@ -112,49 +130,9 @@ const JsonCompare: React.FC = () => {
 
   return (
     <ToolLayout>
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <ToolLayout.Panel
-          title="Expected"
-          actions={<SendToToolButton value={left} valueName="expected JSON" />}
-        >
-          <Textarea
-            value={left}
-            onChange={(e) => setLeft(e.target.value)}
-            data-testid="json-compare-left"
-            placeholder='{"id": 1, "name": "a"}'
-            className="h-64 w-full resize-none border-none bg-transparent p-0 font-mono text-sm shadow-none focus-visible:ring-0"
-          />
-        </ToolLayout.Panel>
-
-        <ToolLayout.Panel
-          title="Actual"
-          actions={<SendToToolButton value={right} valueName="actual JSON" />}
-          className={error ? 'border-destructive/50' : ''}
-        >
-          <Textarea
-            value={right}
-            onChange={(e) => setRight(e.target.value)}
-            data-testid="json-compare-right"
-            placeholder='{"name": "a", "id": 1}'
-            className="h-64 w-full resize-none border-none bg-transparent p-0 font-mono text-sm shadow-none focus-visible:ring-0"
-          />
-        </ToolLayout.Panel>
-      </div>
-
-      <div className="mt-4 flex flex-wrap items-center gap-2">
-        <Button variant="outline" size="sm" onClick={swap} disabled={!left && !right}>
-          <ArrowLeftRight className="mr-2 h-4 w-4" />
-          Swap
-        </Button>
-        <Button variant="outline" size="sm" onClick={clear} disabled={!left && !right}>
-          <Trash2 className="mr-2 h-4 w-4" />
-          Clear
-        </Button>
-      </div>
-
       <ToolLayout.Section
         title="Differences"
-        className="mt-6"
+        className="mb-6"
         actions={
           differences.length > 0 ? (
             <CopyButton value={report} successMessage="Difference report copied" />
@@ -205,12 +183,51 @@ const JsonCompare: React.FC = () => {
                 <DifferenceRow
                   key={`${difference.kind}-${difference.path}`}
                   difference={difference}
+                  onCopyPath={(path) => void copy(path, { success: `Copied ${path}` })}
                 />
               ))}
             </ul>
           </>
         )}
       </ToolLayout.Section>
+
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        <ToolLayout.Panel
+          title="Expected"
+          actions={<SendToToolButton value={left} valueName="expected JSON" />}
+        >
+          <CodeInput
+            value={left}
+            onChange={(e) => setLeft(e.target.value)}
+            data-testid="json-compare-left"
+            placeholder='{"id": 1, "name": "a"}'
+          />
+        </ToolLayout.Panel>
+
+        <ToolLayout.Panel
+          title="Actual"
+          actions={<SendToToolButton value={right} valueName="actual JSON" />}
+          className={error ? 'border-destructive/50' : ''}
+        >
+          <CodeInput
+            value={right}
+            onChange={(e) => setRight(e.target.value)}
+            data-testid="json-compare-right"
+            placeholder='{"name": "a", "id": 1}'
+          />
+        </ToolLayout.Panel>
+      </div>
+
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        <Button variant="outline" size="sm" onClick={swap} disabled={!left && !right}>
+          <ArrowLeftRight className="mr-2 h-4 w-4" />
+          Swap
+        </Button>
+        <Button variant="outline" size="sm" onClick={clear} disabled={!left && !right}>
+          <Trash2 className="mr-2 h-4 w-4" />
+          Clear
+        </Button>
+      </div>
     </ToolLayout>
   );
 };

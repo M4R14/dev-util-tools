@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { formatCurlBody, parseCurl, tokenizeCurl } from './curlParser';
+import {
+  formatCurlBody,
+  isBrowserNoiseHeader,
+  parseCurl,
+  tokenizeCurl,
+  triageHeaders,
+} from './curlParser';
 
 describe('tokenizeCurl', () => {
   it('keeps a quoted string with spaces as one token', () => {
@@ -98,6 +104,65 @@ describe('parseCurl', () => {
 
     expect(result.url).toBe('https://x.test/path');
     expect(result.query).toEqual([]);
+  });
+});
+
+describe('triageHeaders', () => {
+  const headers = [
+    { key: 'accept', value: 'application/json' },
+    { key: 'authorization', value: 'Bearer abc' },
+    { key: 'sec-ch-ua', value: '"Chromium";v="140"' },
+    { key: 'sec-fetch-mode', value: 'cors' },
+    { key: 'user-agent', value: 'Mozilla/5.0' },
+    { key: 'priority', value: 'u=1, i' },
+    { key: 'x-request-id', value: 'abc-123' },
+    { key: 'content-type', value: 'application/json' },
+  ];
+
+  it('keeps auth, content type and custom headers up front', () => {
+    expect(triageHeaders(headers).significant.map((h) => h.key)).toEqual([
+      'accept',
+      'authorization',
+      'x-request-id',
+      'content-type',
+    ]);
+  });
+
+  it('sets browser boilerplate aside without dropping it', () => {
+    const { significant, noise } = triageHeaders(headers);
+
+    expect(noise.map((h) => h.key)).toEqual(['sec-ch-ua', 'sec-fetch-mode', 'user-agent', 'priority']);
+    // Nothing may go missing — the two halves must still account for every header.
+    expect(significant.length + noise.length).toBe(headers.length);
+  });
+
+  it('returns empty halves for no headers', () => {
+    expect(triageHeaders([])).toEqual({ significant: [], noise: [] });
+  });
+});
+
+describe('isBrowserNoiseHeader', () => {
+  it.each(['sec-ch-ua', 'sec-fetch-dest', 'pragma', 'priority', 'user-agent', 'accept-encoding'])(
+    'treats %s as boilerplate',
+    (key) => {
+      expect(isBrowserNoiseHeader(key)).toBe(true);
+    },
+  );
+
+  it.each(['authorization', 'content-type', 'accept', 'cookie', 'x-api-key'])(
+    'keeps %s',
+    (key) => {
+      expect(isBrowserNoiseHeader(key)).toBe(false);
+    },
+  );
+
+  it('does not mistake a custom header that merely starts with the same letters', () => {
+    // `security-token` is not a `sec-` fetch metadata header.
+    expect(isBrowserNoiseHeader('security-token')).toBe(false);
+  });
+
+  it('ignores case and surrounding space', () => {
+    expect(isBrowserNoiseHeader('  User-Agent ')).toBe(true);
   });
 });
 
