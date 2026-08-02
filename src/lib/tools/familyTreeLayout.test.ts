@@ -11,6 +11,7 @@ const member = (
   name: id,
   parentId,
   spouseId,
+  gender: 'unknown',
   relationship: '',
   note: '',
 });

@@ -15,6 +15,10 @@ export interface LaidOutMember {
   depth: number;
   /** True for the partner who married in and shares the slot. */
   isSpouse: boolean;
+  /** Drawn children. Zero for a collapsed node even when it has descendants. */
+  childCount: number;
+  /** People folded away under this node, from `collapseHierarchy`. */
+  hiddenDescendants: number;
 }
 
 export interface Connector {
@@ -88,10 +92,19 @@ export const layoutFamilyTree2D = (
     const centreX = left + width / 2;
     const y = rowY(depth);
 
+    const own = {
+      depth,
+      childCount: node.children.length,
+      hiddenDescendants: node.hiddenDescendants ?? 0,
+    };
+    // The married-in partner shares the slot but owns none of the children, so a fold control on
+    // their side would claim a branch that is not theirs.
+    const partner = { depth, childCount: 0, hiddenDescendants: 0 };
+
     if (node.spouse) {
       const offset = (nodeWidth + spouseGap) / 2;
-      boxes.push({ member: node.member, x: centreX - offset, y, depth, isSpouse: false });
-      boxes.push({ member: node.spouse, x: centreX + offset, y, depth, isSpouse: true });
+      boxes.push({ member: node.member, x: centreX - offset, y, isSpouse: false, ...own });
+      boxes.push({ member: node.spouse, x: centreX + offset, y, isSpouse: true, ...partner });
 
       // The bar sits at the avatars' height, so the drop to the children passes between the two
       // names rather than through them.
@@ -104,7 +117,7 @@ export const layoutFamilyTree2D = (
         ],
       });
     } else {
-      boxes.push({ member: node.member, x: centreX, y, depth, isSpouse: false });
+      boxes.push({ member: node.member, x: centreX, y, isSpouse: false, ...own });
     }
 
     if (node.children.length === 0) return;

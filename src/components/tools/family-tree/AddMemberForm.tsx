@@ -2,7 +2,12 @@ import React, { useState } from 'react';
 import { UserPlus } from 'lucide-react';
 import { Button } from '../../ui/Button';
 import { Input } from '../../ui/Input';
-import { RELATIONSHIP_PRESETS, type CreateMemberInput, type FamilyMember } from '../../../lib/tools/familyTree';
+import {
+  RELATIONSHIP_PRESETS,
+  type CreateMemberInput,
+  type FamilyMember,
+  type Gender,
+} from '../../../lib/tools/familyTree';
 
 interface AddMemberFormProps {
   members: FamilyMember[];
@@ -30,6 +35,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
   const [name, setName] = useState('');
   const [relationship, setRelationship] = useState('');
   const [note, setNote] = useState('');
+  const [gender, setGender] = useState<Gender>('unknown');
   /** `''`, `child:<id>` or `spouse:<id>` — who to attach to and how, in one value. */
   const [attachment, setAttachment] = useState(defaultParentId ? `child:${defaultParentId}` : '');
 
@@ -52,6 +58,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
       name,
       relationship,
       note,
+      gender,
       parentId: kind === 'child' ? id : null,
       spouseId: kind === 'spouse' ? id : null,
     });
@@ -59,6 +66,7 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
     setName('');
     setRelationship('');
     setNote('');
+    setGender('unknown');
     // A partner slot is filled once, so drop back to root; a parent stays put because adding four
     // children to the same person is the common run.
     if (kind === 'spouse') setAttachment('');
@@ -121,13 +129,26 @@ export const AddMemberForm: React.FC<AddMemberFormProps> = ({
 
       <label className="space-y-1.5">
         <span className="text-xs font-medium text-muted-foreground">Note</span>
+        <Input
+          value={note}
+          onChange={(event) => setNote(event.target.value)}
+          placeholder="เกิด 2510"
+          autoComplete="off"
+        />
+      </label>
+
+      <label className="space-y-1.5">
+        <span className="text-xs font-medium text-muted-foreground">Gender</span>
         <div className="flex gap-2">
-          <Input
-            value={note}
-            onChange={(event) => setNote(event.target.value)}
-            placeholder="เกิด 2510"
-            autoComplete="off"
-          />
+          <select
+            value={gender}
+            onChange={(event) => setGender(event.target.value as Gender)}
+            className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          >
+            <option value="unknown">Not set</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
           <Button type="submit" disabled={!canSubmit} className="shrink-0">
             <UserPlus className="mr-1.5 h-4 w-4" aria-hidden="true" />
             Add

@@ -8,6 +8,10 @@ import { randomUUID } from '../platform/randomUtils';
  * re-parent, delete, import — is a lookup by id, and a nested shape turns each of those into a
  * recursive rewrite. The nesting is derived on read by `buildHierarchy`.
  */
+export type Gender = 'male' | 'female' | 'unknown';
+
+export const GENDERS: readonly Gender[] = ['unknown', 'male', 'female'];
+
 export interface FamilyMember {
   id: string;
   name: string;
@@ -21,6 +25,14 @@ export interface FamilyMember {
    * a tree cannot put one person in two places at once.
    */
   spouseId: string | null;
+  /**
+   * Drives the shape and colour in the diagram.
+   *
+   * A field rather than a guess from `relationship`: that is free text, and reading "ลูกสาว" out
+   * of it works right up until someone writes "ลูก" or "ลูกคนโต", at which point the diagram is
+   * confidently wrong with nothing on screen to explain why.
+   */
+  gender: Gender;
   /** How this member relates to their parent — "ลูกชาย", "ภรรยา". Free text; presets are a UI concern. */
   relationship: string;
   /** Birth year, occupation, anything the owner wants to remember. */
@@ -33,6 +45,8 @@ export interface FamilyNode {
   spouse: FamilyMember | null;
   depth: number;
   children: FamilyNode[];
+  /** Set by `collapseHierarchy` when this node's branch is folded away. */
+  hiddenDescendants?: number;
 }
 
 export interface Hierarchy {
@@ -71,6 +85,8 @@ const memberSchema = z.object({
   // Optional as well as nullable: a hand-written import that simply omits the key means a root.
   parentId: z.string().nullable().optional(),
   spouseId: z.string().nullable().optional(),
+  // Anything unrecognised reads as unknown rather than failing the whole import for one bad cell.
+  gender: z.enum(['male', 'female', 'unknown']).catch('unknown').optional(),
   relationship: z.string(),
   note: z.string(),
 });
@@ -89,6 +105,7 @@ const toMembers = (parsed: z.infer<typeof familyMembersSchema>): FamilyMember[] 
     name: entry.name,
     parentId: entry.parentId ?? null,
     spouseId: entry.spouseId ?? null,
+    gender: entry.gender ?? 'unknown',
     relationship: entry.relationship,
     note: entry.note,
   }));
@@ -106,6 +123,7 @@ export interface CreateMemberInput {
   parentId?: string | null;
   /** Marries the new member to this one, so the pair is drawn together. */
   spouseId?: string | null;
+  gender?: Gender;
   relationship?: string;
   note?: string;
 }
@@ -115,6 +133,7 @@ export const createMember = (input: CreateMemberInput): FamilyMember => ({
   name: input.name.trim(),
   parentId: input.parentId ?? null,
   spouseId: input.spouseId ?? null,
+  gender: input.gender ?? 'unknown',
   relationship: input.relationship?.trim() ?? '',
   note: input.note?.trim() ?? '',
 });
@@ -374,6 +393,23 @@ export const buildHierarchy = (members: FamilyMember[]): Hierarchy => {
 
   return { roots: rootMembers.map((member) => toNode(member, 0)), orphanedIds, cycleIds };
 };
+
+/**
+ * Prunes the branches the reader has folded away, recording how many people went with each.
+ *
+ * A pure transform over the hierarchy rather than a flag the renderer checks, so the layout never
+ * has to know that collapsing exists — it lays out whatever tree it is handed. The count comes back
+ * on the node because "12 more" is the only thing that tells the reader a fold is worth opening; a
+ * bare chevron hides how much is behind it.
+ */
+export const collapseHierarchy = (nodes: FamilyNode[], collapsedIds: Set<string>): FamilyNode[] =>
+  nodes.map((node) => {
+    if (collapsedIds.has(node.member.id) && node.children.length > 0) {
+      return { ...node, children: [], hiddenDescendants: countDescendants(node) };
+    }
+
+    return { ...node, children: collapseHierarchy(node.children, collapsedIds) };
+  });
 
 /** Total members under a node, the node itself excluded. */
 export const countDescendants = (node: FamilyNode): number =>

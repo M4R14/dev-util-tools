@@ -17,10 +17,15 @@ interface FamilyMember {
   name: string;
   parentId: string | null; // null = a root
   spouseId: string | null; // the partner drawn beside them
+  gender: 'male' | 'female' | 'unknown';
   relationship: string;    // free text; how they relate to their parent
   note: string;
 }
 ```
+
+`gender` is a field rather than a guess from `relationship`. Reading "ลูกสาว" out of free text works
+right up until somebody writes "ลูก" or "ลูกคนโต", at which point the diagram is confidently wrong
+with nothing on screen to explain why.
 
 Stored **flat**, not nested. Every operation the tool offers — rename, re-parent, delete, import —
 is a lookup by id, and a nested shape turns each of those into a recursive rewrite. `buildHierarchy`
@@ -95,8 +100,42 @@ lets the diagram be operated from the keyboard rather than being an image with a
 beside it. It also costs no dependency: an earlier version of this tool drew the same tree with
 three.js and carried 136 kB gzipped to do it.
 
-The diagram scales down to fit its panel, never up past natural size, and stops shrinking at 55% —
-below that the names stop being readable, so scrolling is the better trade.
+### Reading a big tree
+
+**The fit floor is 85%, and that number was measured.** It was 55% first, which turned out to be the
+worst of both worlds: a fourteen-sibling generation rendered its names at 7.1px — unreadable — and
+*still* needed horizontal scrolling. At 85% the same tree draws at 11px and scrolls. Below the
+floor, scrolling at a legible size beats shrinking past it.
+
+**Labels are truncated against a real measurement, not a character count.** `svgText.ts` takes a
+`measure` function so the fitting logic is testable without a canvas, and `createCanvasMeasurer`
+supplies the real one. It splits on grapheme clusters via `Intl.Segmenter`: Thai writes vowels and
+tone marks as separate code points that attach to the consonant before them, so a code-point slice
+strands a combining mark and renders a dotted circle. Anything cut keeps its full text in a
+`<title>`. Before this, notes were cut at 22 characters and names were not cut at all — two Thai
+names at 140px in a 116px slot overlapped into a smear.
+
+**Zoom, pan and fit.** Buttons step the zoom; dragging the background pans. `Fit` returns to
+following the panel width. Pointer-down on a member is left alone so panning does not eat clicks.
+
+**Selection scrolls the diagram.** Selection is shared with the list, and on a wide tree the person
+picked there was routinely off-screen with nothing to say so. Honours `prefers-reduced-motion`.
+
+**Members the list flags amber are flagged in the diagram too.** An orphan drawn as a plain second
+root looks like a deliberate one, and the diagram is what people actually look at.
+
+**Folding is view state, not tree data.** `collapseHierarchy` is a pure prune over the hierarchy, so
+the layout never learns that folding exists — it lays out whatever tree it is handed. The badge
+shows the number of hidden people because a bare chevron hides how much is behind it. The fold
+control sits *below* the box: inside it, it landed exactly on the detail line and the two drew over
+each other.
+
+### Export
+
+`svgExport.ts` copies the computed value of the painted properties onto each element before
+serialising. Without that the file is styled entirely by CSS classes that travel with nothing, and
+opens anywhere else as black shapes on nothing. PNG rasterises at 2× and paints the background
+explicitly, since SVG has none and a transparent PNG on a dark surface is dark text on dark.
 
 ## Type notes
 

@@ -60,6 +60,7 @@ const MemberRow: React.FC<MemberRowProps> = ({ member, isSpouse, members, ...res
       name: draft.name.trim(),
       relationship: draft.relationship.trim(),
       note: draft.note.trim(),
+      gender: draft.gender,
     });
 
     if (draft.parentId !== member.parentId) onReparent(member.id, draft.parentId);
@@ -111,6 +112,21 @@ const MemberRow: React.FC<MemberRowProps> = ({ member, isSpouse, members, ...res
                   {candidate.name || 'Untitled'}
                 </option>
               ))}
+            </select>
+          </label>
+          <label className="space-y-1">
+            <span className="text-[11px] text-muted-foreground">Gender</span>
+            <select
+              value={draft.gender}
+              onChange={(event) =>
+                setDraft({ ...draft, gender: event.target.value as FamilyMember['gender'] })
+              }
+              aria-label="Gender"
+              className={selectClassName}
+            >
+              <option value="unknown">Not set</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
             </select>
           </label>
           <label className="space-y-1">

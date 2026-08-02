@@ -3,6 +3,7 @@ import {
   addMember,
   ancestorIdsOf,
   buildHierarchy,
+  collapseHierarchy,
   countDescendants,
   countGenerations,
   createMember,
@@ -26,6 +27,7 @@ const member = (
   name: id,
   parentId,
   spouseId: null,
+  gender: 'unknown',
   relationship: '',
   note: '',
   ...overrides,
@@ -328,6 +330,61 @@ describe('spouses', () => {
 
     expect(result.ok).toBe(true);
     if (result.ok) expect(result.members[0].spouseId).toBe('gm');
+  });
+});
+
+describe('collapseHierarchy', () => {
+  it('leaves an uncollapsed tree exactly as it was', () => {
+    const { roots } = buildHierarchy(family());
+
+    expect(collapseHierarchy(roots, new Set())).toEqual(roots);
+  });
+
+  it('drops the children of a folded node and counts who went with them', () => {
+    const { roots } = buildHierarchy(family());
+    const folded = collapseHierarchy(roots, new Set(['dad']));
+    const dad = folded[0].children.find((node) => node.member.id === 'dad');
+
+    expect(dad?.children).toEqual([]);
+    expect(dad?.hiddenDescendants).toBe(2);
+    // The fold is local: the uncle beside them is untouched.
+    expect(folded[0].children.map((node) => node.member.id)).toEqual(['dad', 'uncle']);
+  });
+
+  it('counts the whole branch, not just the first generation', () => {
+    const deep = [
+      member('a', null),
+      member('b', 'a'),
+      member('c', 'b'),
+      member('d', 'c'),
+    ];
+    const folded = collapseHierarchy(buildHierarchy(deep).roots, new Set(['a']));
+
+    expect(folded[0].hiddenDescendants).toBe(3);
+  });
+
+  it('ignores a fold on someone with no children rather than marking them folded', () => {
+    const { roots } = buildHierarchy(family());
+    const folded = collapseHierarchy(roots, new Set(['uncle']));
+    const uncle = folded[0].children.find((node) => node.member.id === 'uncle');
+
+    // A count of zero beside a leaf invites a click that does nothing.
+    expect(uncle?.hiddenDescendants).toBeUndefined();
+  });
+
+  it('folds nested branches independently', () => {
+    const { roots } = buildHierarchy(family());
+    const folded = collapseHierarchy(roots, new Set(['grandpa', 'dad']));
+
+    expect(folded[0].children).toEqual([]);
+    expect(folded[0].hiddenDescendants).toBe(4);
+  });
+
+  it('does not mutate the hierarchy it was given', () => {
+    const { roots } = buildHierarchy(family());
+    collapseHierarchy(roots, new Set(['dad']));
+
+    expect(roots[0].children[0].children).toHaveLength(2);
   });
 });
 

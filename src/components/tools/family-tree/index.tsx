@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Trash2, Users } from 'lucide-react';
+import { collapseHierarchy } from '../../../lib/tools/familyTree';
 import { ToolLayout } from '../../ui/ToolLayout';
 import { Button } from '../../ui/Button';
 import { CopyButton } from '../../ui/CopyButton';
@@ -27,6 +28,23 @@ const FamilyTree: React.FC = () => {
   const [pendingParentId, setPendingParentId] = useState<string | null>(null);
   const [importText, setImportText] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  /**
+   * View state, not tree data — a fold is how someone is reading right now, and persisting it
+   * would mean opening the tool to a tree with branches mysteriously missing.
+   */
+  const [collapsedIds, setCollapsedIds] = useState<Set<string>>(() => new Set());
+
+  const toggleCollapse = (id: string) =>
+    setCollapsedIds((previous) => {
+      const next = new Set(previous);
+      if (!next.delete(id)) next.add(id);
+      return next;
+    });
+
+  const visibleRoots = useMemo(
+    () => collapseHierarchy(hierarchy.roots, collapsedIds),
+    [hierarchy.roots, collapsedIds],
+  );
 
   const handleImport = () => {
     if (importJson(importText)) setImportText('');
@@ -96,9 +114,13 @@ const FamilyTree: React.FC = () => {
               and removed. Selection is shared, so clicking a face finds the row that edits it.
             */}
             <FamilyDiagram
-              roots={hierarchy.roots}
+              roots={visibleRoots}
               selectedId={selectedId}
               onSelect={setSelectedId}
+              orphanedIds={hierarchy.orphanedIds}
+              cycleIds={hierarchy.cycleIds}
+              collapsedIds={collapsedIds}
+              onToggleCollapse={toggleCollapse}
             />
 
             <TreeView
