@@ -6,12 +6,15 @@ import {
   generateTestDataSet,
   generateThaiBankAccount,
   generateThaiMobile,
+  generateThaiAddress,
+  generateThaiAddressParts,
   generateThaiName,
   generateThaiNationalId,
   generateThaiTaxId,
   isLuhnValid,
 } from './testDataGenerator';
 import { analyzeThaiId } from './thaiId';
+import { THAI_ADDRESSES } from '../../data/thaiAddresses';
 
 /** Generators are random; a single sample proves nothing about the ones a user will get. */
 const samples = (fn: () => string, count = 60) => Array.from({ length: count }, fn);
@@ -99,6 +102,79 @@ describe('generateEmail', () => {
 describe('generateThaiBankAccount', () => {
   it('matches the xxx-x-xxxxx-x layout', () => {
     expect(generateThaiBankAccount()).toMatch(/^\d{3}-\d-\d{5}-\d$/);
+  });
+});
+
+describe('generateThaiAddress', () => {
+  it('pairs every postcode with the province it belongs to', () => {
+    // The point of switching to real data: the previous version drew province and postcode
+    // independently, producing addresses that look Thai and fail every postcode check.
+    //
+    // Parsed by position rather than by searching for a province name anywhere in the string —
+    // ถ.เพชรบุรี is a real Bangkok road and also a province, so a substring match reads the street
+    // as the province and reports a false failure.
+    const known = new Set(THAI_ADDRESSES.map((row) => `${row.province}|${row.zipcode}`));
+
+    for (const address of samples(generateThaiAddress)) {
+      const match = address.match(/(?:จ\.(\S+)|(กรุงเทพมหานคร)) (\d{5})$/);
+
+      expect(match, address).toBeTruthy();
+      const province = match![1] ?? match![2];
+      expect(known.has(`${province}|${match![3]}`), address).toBe(true);
+    }
+  });
+
+  it('uses แขวง/เขต for Bangkok and ต./อ. elsewhere', () => {
+    const bangkok = THAI_ADDRESSES.filter((r) => r.province === 'กรุงเทพมหานคร');
+    expect(bangkok.length, 'dataset should contain Bangkok rows').toBeGreaterThan(0);
+
+    for (const address of samples(generateThaiAddress, 200)) {
+      if (address.includes('กรุงเทพมหานคร')) {
+        expect(address, address).toMatch(/แขวง/);
+        expect(address, address).toMatch(/เขต/);
+      } else {
+        expect(address, address).toMatch(/ต\./);
+        expect(address, address).toMatch(/จ\./);
+      }
+    }
+  });
+
+  it('includes a house number and a street', () => {
+    expect(generateThaiAddress()).toMatch(/^\d+\/\d+ ถ\./);
+  });
+});
+
+describe('generateThaiAddressParts', () => {
+  it('returns a row that exists in the dataset', () => {
+    for (let i = 0; i < 30; i += 1) {
+      const parts = generateThaiAddressParts();
+      const match = THAI_ADDRESSES.find(
+        (r) =>
+          r.district === parts.district &&
+          r.amphoe === parts.amphoe &&
+          r.province === parts.province &&
+          r.zipcode === parts.zipcode,
+      );
+      expect(match, JSON.stringify(parts)).toBeTruthy();
+    }
+  });
+});
+
+describe('THAI_ADDRESSES dataset', () => {
+  it('covers every province', () => {
+    expect(new Set(THAI_ADDRESSES.map((r) => r.province)).size).toBe(77);
+  });
+
+  it('has a five-digit postcode on every row', () => {
+    for (const row of THAI_ADDRESSES) {
+      expect(row.zipcode, JSON.stringify(row)).toMatch(/^\d{5}$/);
+    }
+  });
+
+  it('has no blank fields', () => {
+    for (const row of THAI_ADDRESSES) {
+      expect(row.district && row.amphoe && row.province, JSON.stringify(row)).toBeTruthy();
+    }
   });
 });
 

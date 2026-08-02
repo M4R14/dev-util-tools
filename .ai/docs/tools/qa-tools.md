@@ -66,8 +66,31 @@ libraries miss, since Thai-looking strings get rejected by Thai check digits.
 - Mobile numbers use prefixes actually issued in Thailand (06/08/09).
 - Card numbers satisfy Luhn by construction.
 - Emails use reserved example domains so a stray send cannot reach a real inbox.
+- **Addresses use real tambon/amphoe/province/postcode rows** from
+  [Sellsuki/thai-address-database](https://github.com/Sellsuki/thai-address-database). Bangkok gets
+  แขวง/เขต, everywhere else ต./อ./จ.
 
 Values come from `platform/randomUtils`, so there is one random source in the codebase.
+
+### Why the address data is generated, not imported
+
+`thai-address-database` is a **devDependency**, and `src/data/thaiAddresses.ts` is generated from it
+by `npm run thai-addresses:generate`.
+
+The package declares its build tooling — `@babel/cli`, `mocha`, `eslint-plugin-*`, `rimraf` — under
+`dependencies` rather than `devDependencies`, so installing it as a runtime dependency pulls **181
+packages** into every production install for what is ultimately one JSON file. Generating instead
+keeps the real data and leaves the app's 22 runtime dependencies alone; nothing from the package
+reaches the bundle.
+
+385 rows covering all 77 provinces, sampled with an even stride so no province is represented by a
+single amphoe. A fake-data generator needs _valid_ combinations, not all 7,420 of them.
+
+**The house number and street are invented** — only the administrative part and postcode are real.
+A generic street name can therefore land in an upcountry address.
+
+Rerun the generator if Thailand's postcodes change; the output file says it is generated and should
+not be hand-edited.
 
 **These are fictitious but valid by construction, so a value can collide with a real one by
 chance.** The UI says so; keep it there.

@@ -1,5 +1,6 @@
 import { randomInt } from '../platform/randomUtils';
 import { calculateThaiIdChecksum } from './thaiId';
+import { THAI_ADDRESSES, type ThaiAddressRow } from '../../data/thaiAddresses';
 
 /**
  * Fake Thai data that passes the validation it will be typed into.
@@ -80,19 +81,6 @@ const LAST_NAMES = [
 
 export const generateThaiName = (): string => `${pick(FIRST_NAMES)} ${pick(LAST_NAMES)}`;
 
-const PROVINCES = [
-  'กรุงเทพมหานคร',
-  'เชียงใหม่',
-  'ขอนแก่น',
-  'ภูเก็ต',
-  'ชลบุรี',
-  'นครราชสีมา',
-  'สงขลา',
-  'อุดรธานี',
-  'สุราษฎร์ธานี',
-  'นนทบุรี',
-] as const;
-
 const STREETS = [
   'สุขุมวิท',
   'พหลโยธิน',
@@ -103,8 +91,35 @@ const STREETS = [
   'พระราม 4',
 ] as const;
 
-export const generateThaiAddress = (): string =>
-  `${randomInt(999) + 1}/${randomInt(99) + 1} ถ.${pick(STREETS)} ${pick(PROVINCES)} ${digits(5)}`;
+/**
+ * A real tambon/amphoe/province/postcode row, with a fictitious house number and street in front.
+ *
+ * The earlier version drew a province and a five-digit number independently, which produced
+ * addresses that look Thai and fail every postcode check — the exact failure this tool exists to
+ * avoid. Bangkok uses แขวง/เขต rather than ตำบล/อำเภอ, so the labels switch with the province.
+ */
+export const generateThaiAddress = (): string => {
+  const row = pick(THAI_ADDRESSES);
+  const isBangkok = row.province === 'กรุงเทพมหานคร';
+  const districtLabel = isBangkok ? 'แขวง' : 'ต.';
+  const amphoeLabel = isBangkok ? 'เขต' : 'อ.';
+  const provinceLabel = isBangkok ? '' : 'จ.';
+
+  return `${randomInt(999) + 1}/${randomInt(99) + 1} ถ.${pick(STREETS)} ${districtLabel}${row.district} ${amphoeLabel}${row.amphoe} ${provinceLabel}${row.province} ${row.zipcode}`;
+};
+
+/** The parts behind `generateThaiAddress`, for callers that want fields rather than one line. */
+export const generateThaiAddressParts = (): ThaiAddressRow & {
+  houseNumber: string;
+  street: string;
+} => {
+  const row = pick(THAI_ADDRESSES);
+  return {
+    ...row,
+    houseNumber: `${randomInt(999) + 1}/${randomInt(99) + 1}`,
+    street: pick(STREETS),
+  };
+};
 
 const EMAIL_DOMAINS = ['example.com', 'example.co.th', 'test.local', 'mail.example.org'] as const;
 
