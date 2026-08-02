@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { Clock3, ExternalLink, LayoutDashboard, SearchX, Star } from 'lucide-react';
 import type { ToolMetadata } from '../../types';
-import type { SidebarSectionKey, SidebarToolSection } from './navigationLayout';
+import { NOT_NAVIGABLE, type SidebarSectionKey, type SidebarToolSection } from './navigationLayout';
 
 export interface UseSidebarSectionsOptions {
   hasSearchTerm: boolean;
@@ -10,6 +10,8 @@ export interface UseSidebarSectionsOptions {
   recentTools: ToolMetadata[];
   internalTools: ToolMetadata[];
   externalTools: ToolMetadata[];
+  /** Sections the reader folded away. Their items render hidden and leave the keyboard order. */
+  collapsedSections?: Set<SidebarSectionKey>;
 }
 
 type StaticSidebarSectionKey = Exclude<SidebarSectionKey, 'search'>;
@@ -17,7 +19,8 @@ type StaticSidebarSectionKey = Exclude<SidebarSectionKey, 'search'>;
 const PRIMARY_SECTION_CLASS = 'pt-1';
 const DIVIDER_SECTION_CLASS = 'pt-2 border-t border-border/60';
 
-type SidebarSectionMeta = Omit<SidebarToolSection, 'key' | 'tools' | 'items'>;
+/** The static half of a section. `isCollapsed` is runtime state, not metadata. */
+type SidebarSectionMeta = Omit<SidebarToolSection, 'key' | 'tools' | 'items' | 'isCollapsed'>;
 
 const SIDEBAR_SECTION_META: Record<SidebarSectionKey, SidebarSectionMeta> = {
   search: {
@@ -58,16 +61,28 @@ export const buildSidebarSections = ({
   recentTools,
   internalTools,
   externalTools,
+  collapsedSections,
 }: UseSidebarSectionsOptions): SidebarToolSection[] => {
   let runningOffset = 0;
-  const toSectionItems = (tools: ToolMetadata[]) => {
-    const items = tools.map((tool, itemIndex) => ({
-      tool,
-      indexOffset: runningOffset + itemIndex,
-    }));
-    runningOffset += tools.length;
-    return items;
-  };
+  const indexed = new Set<ToolMetadata['id']>();
+
+  /**
+   * The single source of the keyboard order. `visibleTools` is derived from these indices rather
+   * than rebuilt alongside them — when the two were computed separately, any rule that changed one
+   * (skipping repeats, hiding a collapsed section) had to be mirrored exactly in the other or
+   * ArrowDown would highlight a different row than the one Enter opened.
+   *
+   * A tool listed twice, or sitting inside a collapsed section, is rendered but not reachable.
+   */
+  const toSectionItems = (tools: ToolMetadata[], navigable: boolean) =>
+    tools.map((tool) => {
+      if (!navigable || indexed.has(tool.id)) {
+        return { tool, indexOffset: NOT_NAVIGABLE };
+      }
+
+      indexed.add(tool.id);
+      return { tool, indexOffset: runningOffset++ };
+    });
 
   if (hasSearchTerm) {
     return [
@@ -75,7 +90,8 @@ export const buildSidebarSections = ({
         key: 'search',
         ...SIDEBAR_SECTION_META.search,
         tools: filteredTools,
-        items: toSectionItems(filteredTools),
+        items: toSectionItems(filteredTools, true),
+        isCollapsed: false,
       },
     ];
   }
@@ -93,13 +109,25 @@ export const buildSidebarSections = ({
 
   return staticSectionConfigs
     .filter((config) => config.when)
-    .map((config) => ({
-      key: config.key,
-      ...SIDEBAR_SECTION_META[config.key],
-      tools: config.tools,
-      items: toSectionItems(config.tools),
-    }));
+    .map((config) => {
+      const isCollapsed = collapsedSections?.has(config.key) ?? false;
+
+      return {
+        key: config.key,
+        ...SIDEBAR_SECTION_META[config.key],
+        tools: config.tools,
+        items: toSectionItems(config.tools, !isCollapsed),
+        isCollapsed,
+      };
+    });
 };
+
+/** The keyboard traversal order, in the order the sections render. */
+export const toVisibleTools = (sections: SidebarToolSection[]): ToolMetadata[] =>
+  sections
+    .flatMap((section) => section.items)
+    .filter((item) => item.indexOffset !== NOT_NAVIGABLE)
+    .map((item) => item.tool);
 
 export const useSidebarSections = ({
   hasSearchTerm,
@@ -108,6 +136,7 @@ export const useSidebarSections = ({
   recentTools,
   internalTools,
   externalTools,
+  collapsedSections,
 }: UseSidebarSectionsOptions) =>
   useMemo<SidebarToolSection[]>(
     () =>
@@ -118,6 +147,15 @@ export const useSidebarSections = ({
         recentTools,
         internalTools,
         externalTools,
+        collapsedSections,
       }),
-    [externalTools, favoriteTools, filteredTools, hasSearchTerm, internalTools, recentTools],
+    [
+      collapsedSections,
+      externalTools,
+      favoriteTools,
+      filteredTools,
+      hasSearchTerm,
+      internalTools,
+      recentTools,
+    ],
   );

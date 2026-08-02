@@ -1,5 +1,6 @@
 export const AI_BRIDGE_TOOL_METADATA = {
   'json-formatter': {
+    reliability: 'llm-can-approximate',
     description: 'Prettify, minify, or validate JSON strings.',
     usageTips: [
       'Provide JSON as string input.',
@@ -7,6 +8,7 @@ export const AI_BRIDGE_TOOL_METADATA = {
     ],
   },
   'xml-formatter': {
+    reliability: 'llm-can-approximate',
     description: 'Prettify, minify, or validate XML strings.',
     usageTips: [
       'Provide raw XML text in input.',
@@ -14,13 +16,12 @@ export const AI_BRIDGE_TOOL_METADATA = {
     ],
   },
   'base64-tool': {
+    reliability: 'exact',
     description: 'Encode plain text to Base64 or decode Base64 to plain text.',
-    usageTips: [
-      'Use encode for raw text input.',
-      'Use decode only when input is valid Base64.',
-    ],
+    usageTips: ['Use encode for raw text input.', 'Use decode only when input is valid Base64.'],
   },
   'case-converter': {
+    reliability: 'llm-can-approximate',
     description: 'Convert input text into snake/kebab/camel/pascal case.',
     usageTips: [
       'Set options.target to snake|kebab|camel|pascal.',
@@ -28,6 +29,7 @@ export const AI_BRIDGE_TOOL_METADATA = {
     ],
   },
   'url-parser': {
+    reliability: 'llm-can-approximate',
     description: 'Parse URL into components and query parameters.',
     usageTips: [
       'Include protocol for strict parsing.',
@@ -35,6 +37,7 @@ export const AI_BRIDGE_TOOL_METADATA = {
     ],
   },
   'diff-viewer': {
+    reliability: 'exact',
     description: 'Compare two texts and return stats with optional line-level diff.',
     usageTips: [
       'Pass input as object { original, modified }.',
@@ -42,25 +45,76 @@ export const AI_BRIDGE_TOOL_METADATA = {
     ],
   },
   'thai-date-converter': {
+    reliability: 'exact',
     description: 'Format or parse Thai date values.',
     usageTips: [
       'Use format with ISO-like date strings.',
       'Use parse with Thai Buddhist-era date strings.',
     ],
   },
+  'thai-id': {
+    reliability: 'exact',
+    description: 'Analyze, validate, format, or generate a 13-digit Thai national ID.',
+    usageTips: [
+      'validate returns { valid } from the checksum digit; analyze returns the full breakdown.',
+      'generate takes no input and returns a checksum-valid sample ID, for test data only.',
+    ],
+  },
+  'jwt-decoder': {
+    reliability: 'exact',
+    description:
+      'Decode a JWT into header, payload, and time claims. Never verifies the signature.',
+    usageTips: [
+      'Every response includes signatureVerified: false — decoding proves nothing about authenticity.',
+      'Use claims when only the payload matters; use decode for header, algorithm, and expiry.',
+    ],
+  },
+  'xml-to-json': {
+    reliability: 'llm-can-approximate',
+    description: 'Convert an XML document into structured JSON.',
+    usageTips: [
+      'Set options.includeAttributes=false to drop @attributes keys.',
+      'Repeated sibling elements collapse into arrays.',
+    ],
+  },
+  'uuid-generator': {
+    reliability: 'exact',
+    description: 'Generate version 4 UUIDs. Output is random, so repeated calls differ.',
+    usageTips: [
+      'Use options.quantity (1-100); options.hyphens and options.uppercase shape the format.',
+      'input is ignored for this tool.',
+    ],
+  },
+  'password-gen': {
+    reliability: 'exact',
+    description: 'Generate a secure random password. Output is random, so repeated calls differ.',
+    usageTips: [
+      'Use options.length (4-64) and the includeUpper/Lower/Numbers/Symbols flags.',
+      'Returns poolSize and strength alongside the password; input is ignored.',
+    ],
+  },
 } as const;
 
 export const REQUEST_SHAPE_SNIPPET = `{
-  tool: 'json-formatter' | 'xml-formatter' | 'base64-tool' | 'case-converter' | 'url-parser' | 'diff-viewer' | 'thai-date-converter',
+  tool: 'json-formatter' | 'xml-formatter' | 'base64-tool' | 'case-converter' | 'url-parser'
+      | 'diff-viewer' | 'thai-date-converter' | 'thai-id' | 'jwt-decoder' | 'xml-to-json'
+      | 'uuid-generator' | 'password-gen',
   operation: string,
   input?: unknown,
   options?: Record<string, unknown>
 }`;
 
-export const WINDOW_API_SNIPPET = `// Important: open /ai-bridge first so window.DevPulseAI is initialized.
-const catalog = window.DevPulseAI.catalog();
+export const WINDOW_API_SNIPPET = `// Available on every page, not just /ai-bridge, and it survives navigation.
+// Methods are async: the tool runners are loaded on first call.
+if (!window.DevPulseAI) {
+  await new Promise((resolve) =>
+    window.addEventListener('devpulse-ai-ready', resolve, { once: true })
+  );
+}
 
-const response = window.DevPulseAI.run({
+const catalog = await window.DevPulseAI.catalog();
+
+const response = await window.DevPulseAI.run({
   tool: 'url-parser',
   operation: 'parse',
   input: 'https://example.com/path?a=1'
@@ -72,14 +126,18 @@ if (response.ok) {
   console.error(response.error, response.errorDetails);
 }
 
-const snapshot = window.DevPulseAI.getSnapshot();
-console.log(snapshot);
+// One tool instead of the whole catalog — cheaper on context.
+const tool = await window.DevPulseAI.describe('thai-id');
+// reliability === 'exact' means: do not attempt this in your head, call the tool.
 
-const batch = window.DevPulseAI.runBatch([
-  { tool: 'base64-tool', operation: 'decode', input: 'eyJhIjoxfQ==' },
-  { tool: 'json-formatter', operation: 'format', input: '{"a":1}', options: { indent: 2 } }
-]);
-console.log(batch);`;
+// Each response carries its index; stopOnError halts at the first failure.
+const batch = await window.DevPulseAI.runBatch(
+  [
+    { tool: 'base64-tool', operation: 'decode', input: 'eyJhIjoxfQ==' },
+    { tool: 'json-formatter', operation: 'format', input: '{"a":1}', options: { indent: 2 } }
+  ],
+  { stopOnError: true }
+);`;
 
 export const QUERY_EXAMPLE_SNIPPET = `/ai-bridge?tool=json-formatter&op=format&input={"a":1}
 /ai-bridge?tool=case-converter&op=convert&input=hello%20world&options={"target":"snake"}

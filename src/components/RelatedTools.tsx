@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { ToolMetadata } from '../types';
 import { TOOLS } from '../data/tools';
-import { getRelatedTools } from '../lib/relatedTools';
+import { getRelatedTools } from '../lib/search/relatedTools';
 import { cn } from '../lib/utils';
 
 interface RelatedToolsProps {

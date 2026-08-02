@@ -64,7 +64,10 @@ export const getClosestMatch = (input: string, candidates: readonly string[]) =>
   ).value;
 };
 
-export const getOperationSuggestion = (operation: string, supportedOperations: readonly string[]) => {
+export const getOperationSuggestion = (
+  operation: string,
+  supportedOperations: readonly string[],
+) => {
   const lower = operation.toLowerCase();
   return (
     supportedOperations.find((op) => op.startsWith(lower)) ||

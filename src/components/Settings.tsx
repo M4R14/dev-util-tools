@@ -11,6 +11,7 @@ import {
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/Card';
 import { Button } from './ui/Button';
 import { formatPwaBytes, formatPwaLastUpdated, usePwaSettings } from '../hooks/usePwaSettings';
+import { AppearanceSettings, DataSettings } from './settings/index';
 
 const Settings: React.FC = () => {
   const {
@@ -40,7 +41,7 @@ const Settings: React.FC = () => {
               Settings
             </h1>
             <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-              Manage offline availability, app installation, and service-worker updates from one
+              Appearance, the data this browser has stored, and offline availability — all in one
               place.
             </p>
           </div>
@@ -48,6 +49,15 @@ const Settings: React.FC = () => {
       </section>
 
       <section className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+        <AppearanceSettings />
+        <DataSettings />
+      </section>
+
+      <h2 className="mt-8 text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+        Offline &amp; Installation
+      </h2>
+
+      <section className="mt-3 grid grid-cols-1 gap-4 md:grid-cols-2">
         <Card className="border-border/70 bg-background/70">
           <CardHeader className="pb-3">
             <CardTitle className="inline-flex items-center gap-2 text-base">
@@ -112,7 +122,9 @@ const Settings: React.FC = () => {
               <CloudCog className="h-4 w-4 text-primary" />
               Last App Update
             </CardTitle>
-            <CardDescription>Recorded when the active service worker finishes activation.</CardDescription>
+            <CardDescription>
+              Recorded when the active service worker finishes activation.
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm font-semibold text-foreground">

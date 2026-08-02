@@ -3,21 +3,31 @@ export enum ToolID {
   AI_ASSISTANT = 'ai-assistant',
   URL_PARSER = 'url-parser',
   DIFF_VIEWER = 'diff-viewer',
+  JSON_COMPARE = 'json-compare',
+  CURL_PARSER = 'curl-parser',
+  JSON_PATH = 'json-path',
+  FAMILY_TREE = 'family-tree',
 
   // generator
   UUID_GENERATOR = 'uuid-generator',
   PASSWORD_GEN = 'password-gen',
+  TEST_DATA_GENERATOR = 'test-data-generator',
 
   // converter
   THAI_DATE_CONVERTER = 'thai-date-converter',
   THAI_ID = 'thai-id',
   TIMEZONE_CONVERTER = 'timezone-converter',
+  TIMESTAMP_CONVERTER = 'timestamp-converter',
   CASE_CONVERTER = 'case-converter',
   XML_TO_JSON = 'xml-to-json',
-  
+
   // formatter
   JSON_FORMATTER = 'json-formatter',
   XML_FORMATTER = 'xml-formatter',
+
+  // inspector
+  JWT_DECODER = 'jwt-decoder',
+  JWT_ENCODER = 'jwt-encoder',
 
   // external tool
   DUMMY_IMAGE = 'dummy-image',
@@ -38,4 +48,14 @@ export interface ToolMetadata {
   tags?: string[];
   /** Curated related tools, shown first on the tool page (order is preserved). */
   related?: ToolID[];
+  /**
+   * Query param that seeds this tool's primary text input — `input` for the JSON Formatter,
+   * `token` for the JWT Decoder, and so on.
+   *
+   * Presence is what makes a tool a valid "send output to…" target: generators (Password, UUID)
+   * and link-out tools have nothing to receive. The names are not uniform — six tools use `input`
+   * and the rest use their own — which is why the mapping is recorded here rather than guessed at
+   * the call site.
+   */
+  inputParam?: string;
 }

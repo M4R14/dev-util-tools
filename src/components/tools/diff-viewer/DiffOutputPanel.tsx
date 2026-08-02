@@ -1,8 +1,8 @@
 import React from 'react';
 import { ToolLayout } from '../../ui/ToolLayout';
 import { Button } from '../../ui/Button';
-import type { DiffLine } from '../../../lib/diffUtils';
-import type { DiffViewMode } from '../../../hooks/useDiffViewer';
+import type { DiffLine } from '../../../lib/tools/diffUtils';
+import type { DiffViewMode } from '../../../hooks/tools/useDiffViewer';
 import type { SplitRow } from './types';
 import { DiffLineRow, SplitLineRow } from './DiffLineRows';
 

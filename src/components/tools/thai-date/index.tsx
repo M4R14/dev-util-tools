@@ -10,8 +10,8 @@ import {
 } from 'lucide-react';
 import { ToolLayout } from '../../ui/ToolLayout';
 import { Card, CardContent } from '../../ui/Card';
-import { useThaiDateConverter } from '../../../hooks/useThaiDateConverter';
-import { BUDDHIST_YEAR_OFFSET } from '../../../lib/thaiDate';
+import { useThaiDateConverter } from '../../../hooks/tools/useThaiDateConverter';
+import { BUDDHIST_YEAR_OFFSET } from '../../../lib/tools/thaiDate';
 import { cn } from '../../../lib/utils';
 import CurrentTimeSection from './CurrentTimeSection';
 import DateConverterSection from './DateConverterSection';

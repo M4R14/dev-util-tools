@@ -3,14 +3,11 @@ import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { BookOpen, Braces, TerminalSquare } from 'lucide-react';
 import { ToolLayout } from './ui/ToolLayout';
 import {
-  getAIToolSnapshot,
   AI_BRIDGE_SCHEMA,
   AI_TOOL_CATALOG,
   AI_TOOL_OPERATIONS,
-  AIToolRequest,
   AIToolResponse,
   runAITool,
-  runAIToolBatch,
 } from '../lib/aiToolBridge';
 import {
   QUERY_EXAMPLE_SNIPPET,
@@ -30,19 +27,6 @@ import {
   SnippetCard,
 } from './ai-bridge';
 
-interface AIBridgeWindow {
-  catalog: () => typeof AI_TOOL_CATALOG;
-  run: (request: AIToolRequest) => AIToolResponse;
-  runBatch: (requests: AIToolRequest[]) => AIToolResponse[];
-  getSnapshot: () => ReturnType<typeof getAIToolSnapshot>;
-}
-
-declare global {
-  interface Window {
-    DevPulseAI?: AIBridgeWindow;
-  }
-}
-
 const AIAgentBridge: React.FC = () => {
   const [params] = useSearchParams();
   const location = useLocation();
@@ -61,17 +45,7 @@ const AIAgentBridge: React.FC = () => {
   const isExecuteEndpoint = location.pathname === '/ai-bridge';
   const isResultOnlyExecute = isExecuteEndpoint && mode === 'result-only';
 
-  useEffect(() => {
-    window.DevPulseAI = {
-      catalog: () => AI_TOOL_CATALOG,
-      run: (toolRequest: AIToolRequest) => runAITool(toolRequest),
-      runBatch: (toolRequests: AIToolRequest[]) => runAIToolBatch(toolRequests),
-      getSnapshot: () => getAIToolSnapshot(),
-    };
-    return () => {
-      delete window.DevPulseAI;
-    };
-  }, []);
+  // `window.DevPulseAI` is installed app-wide in App.tsx so it survives navigation.
 
   useEffect(() => {
     if (isCatalogEndpoint || isSpecEndpoint || !request) {
@@ -109,7 +83,11 @@ const AIAgentBridge: React.FC = () => {
       return JSON.stringify(
         response?.ok
           ? { ok: true, result: response.result }
-          : { ok: false, error: response?.error ?? 'No request provided', errorDetails: response?.errorDetails },
+          : {
+              ok: false,
+              error: response?.error ?? 'No request provided',
+              errorDetails: response?.errorDetails,
+            },
         null,
         2,
       );
@@ -165,18 +143,16 @@ const AIAgentBridge: React.FC = () => {
   };
 
   if (isResultOnlyExecute) {
+    // No heading, no chrome: an agent reading document.body.innerText should get the response
+    // and nothing else. App.tsx also skips MainLayout for this mode.
     return (
-      <ToolLayout title="AI Agent Bridge">
-        <div className="max-w-5xl mx-auto">
-          <pre
-            id="ai-bridge-output"
-            data-testid="ai-bridge-output"
-            className="rounded-md border border-border/80 bg-background/70 p-4 text-xs overflow-auto whitespace-pre-wrap break-words"
-          >
-            {responseText}
-          </pre>
-        </div>
-      </ToolLayout>
+      <pre
+        id="ai-bridge-output"
+        data-testid="ai-bridge-output"
+        className="m-0 p-4 text-xs whitespace-pre-wrap break-words"
+      >
+        {responseText}
+      </pre>
     );
   }
 
@@ -187,7 +163,10 @@ const AIAgentBridge: React.FC = () => {
 
         <div className="grid gap-4 xl:grid-cols-12">
           <div className="xl:col-span-4 space-y-4">
-            <EndpointNavigatorCard currentPath={location.pathname} onSwitch={handleSwitchEndpoint} />
+            <EndpointNavigatorCard
+              currentPath={location.pathname}
+              onSwitch={handleSwitchEndpoint}
+            />
             <ExecutionModesCard
               mode={mode}
               includeCatalog={includeCatalog}

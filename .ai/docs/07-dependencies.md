@@ -16,6 +16,8 @@
 | `minisearch` | Fuzzy full-text search index |
 | `marked` | Markdown parsing for blog post rendering |
 | `xml-formatter` | XML prettify/minify |
+| `jwt-decode` | JWT base64url + JSON parsing. Deliberately not used on its own: it skips segment-count and claim-shape checks, so `src/lib/tools/jwt.ts` keeps that validation. Verifies nothing. |
+| `jose` | JWT signing and HMAC verification over Web Crypto (`src/lib/tools/jwtSign.ts`). Splits into its own lazy chunk (~21 kB raw) loaded only by the two JWT tools; never reaches the eager bundle. Secure contexts only. |
 | `zod` | Runtime schema validation for tool/lib inputs and query payloads |
 | `@google/genai` | Google Gemini AI API client |
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { ToolLayout } from '../ui/ToolLayout';
-import { useUUIDGenerator } from '../../hooks/useUUIDGenerator';
+import { useUUIDGenerator } from '../../hooks/tools/useUUIDGenerator';
 import {
   getUUIDFormatPreview,
   QUICK_QUANTITY_PRESETS,

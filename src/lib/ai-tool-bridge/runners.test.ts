@@ -1,7 +1,80 @@
 import { AI_TOOL_CATALOG } from './catalog';
-import { runAITool, TOOL_RUNNERS } from './runners';
+import { describeAITool, runAITool, runAIToolBatch, TOOL_RUNNERS } from './runners';
 import { assertToolRegistryConsistency, getToolRegistryDiagnostics } from './registry';
 import type { AIToolRequest } from './types';
+
+describe('catalog reliability', () => {
+  it('labels every tool', () => {
+    for (const item of AI_TOOL_CATALOG) {
+      expect(['exact', 'llm-can-approximate']).toContain(item.reliability);
+    }
+  });
+
+  it('marks the algorithmic tools as exact — these are the ones a model must not do unaided', () => {
+    const exact = AI_TOOL_CATALOG.filter((item) => item.reliability === 'exact').map((i) => i.id);
+
+    expect(exact).toEqual(
+      expect.arrayContaining([
+        'thai-id',
+        'base64-tool',
+        'diff-viewer',
+        'jwt-decoder',
+        'uuid-generator',
+        'password-gen',
+      ]),
+    );
+  });
+});
+
+describe('describeAITool', () => {
+  it('returns a single catalog entry', () => {
+    const entry = describeAITool('thai-id');
+
+    expect(entry.id).toBe('thai-id');
+    expect(entry.operations).toContain('validate');
+    expect(entry.reliability).toBe('exact');
+  });
+
+  it('throws with the supported list and a suggestion for an unknown tool', () => {
+    expect(() => describeAITool('thai-idd')).toThrow(/Supported tools/);
+  });
+});
+
+describe('runAIToolBatch', () => {
+  const OK: AIToolRequest = {
+    tool: 'case-converter',
+    operation: 'convert',
+    input: 'a b',
+    options: { target: 'snake' },
+  };
+  const BAD: AIToolRequest = { tool: 'case-converter', operation: 'nope', input: 'x' };
+
+  it('tags every response with its request index', () => {
+    const responses = runAIToolBatch([OK, OK, OK]);
+
+    expect(responses.map((r) => r.index)).toEqual([0, 1, 2]);
+    expect(responses.every((r) => r.ok)).toBe(true);
+  });
+
+  it('runs every request by default, even after a failure', () => {
+    const responses = runAIToolBatch([OK, BAD, OK]);
+
+    expect(responses).toHaveLength(3);
+    expect(responses.map((r) => r.ok)).toEqual([true, false, true]);
+  });
+
+  it('stops at the first failure when asked, keeping indices meaningful', () => {
+    const responses = runAIToolBatch([OK, BAD, OK], { stopOnError: true });
+
+    expect(responses).toHaveLength(2);
+    expect(responses[1].index).toBe(1);
+    expect(responses[1].ok).toBe(false);
+  });
+
+  it('returns an empty array for no requests', () => {
+    expect(runAIToolBatch([])).toEqual([]);
+  });
+});
 
 describe('ai-tool-bridge runners registry', () => {
   it('has a runner for every tool id in catalog', () => {

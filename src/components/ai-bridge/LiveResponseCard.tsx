@@ -14,7 +14,9 @@ const LiveResponseCard: React.FC<LiveResponseCardProps> = ({ responseText, respo
       <CardHeader className="pb-3 flex flex-row items-center justify-between space-y-0">
         <div>
           <CardTitle className="text-sm">Live Response</CardTitle>
-          <CardDescription className="text-xs">JSON output ตาม endpoint/query ปัจจุบัน</CardDescription>
+          <CardDescription className="text-xs">
+            JSON output ตาม endpoint/query ปัจจุบัน
+          </CardDescription>
         </div>
         <CopyButton
           value={responseText}
@@ -24,7 +26,12 @@ const LiveResponseCard: React.FC<LiveResponseCardProps> = ({ responseText, respo
       </CardHeader>
       <CardContent className="pt-0">
         <div className="rounded-md border border-border/80 bg-background/70 p-3 min-h-[380px]">
-          <CodeHighlight code={responseText} language="json" className="text-xs" key={responseKey} />
+          <CodeHighlight
+            code={responseText}
+            language="json"
+            className="text-xs"
+            key={responseKey}
+          />
         </div>
       </CardContent>
     </Card>

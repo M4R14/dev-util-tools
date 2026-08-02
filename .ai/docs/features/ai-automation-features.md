@@ -1,8 +1,14 @@
 # AI & Automation Features
 
-Last updated: 2026-02-20
+Last updated: 2026-08-02
 
 This file describes AI-facing capabilities: user assistant and machine automation bridge.
+
+> **Execution needs a browser.** DevPulse is hosted on GitHub Pages, so discovery
+> (`catalog.json` / `spec.json`) is fetchable over plain HTTP but tool execution is not — the
+> result is produced by JavaScript in the page. Agents that only speak HTTP can read the catalog
+> and nothing more. See [AI Bridge → Hosting Limits](../tools/ai-bridge.md) for the full table and
+> for why there is no MCP server.
 
 ## AI Smart Assistant
 
@@ -37,14 +43,21 @@ Static endpoints:
 
 - Deterministic, machine-readable tool execution for browser-controlled agents.
 - Discovery-first pattern through catalog and schema endpoints.
-- Catalog payload includes per-tool `description`, `usageTips`, and `examples` to reduce trial-and-error planning for agents.
+- Catalog payload includes per-tool `description`, `reliability`, `usageTips`, and `examples` to reduce trial-and-error planning for agents.
+- `reliability: 'exact'` marks the tools an agent should not attempt in its head (checksums, unicode base64, diffing, base64url).
 
 ### Browser API Surface
 
+- `window.DevPulseAI.version` — currently `2`
 - `window.DevPulseAI.catalog()`
+- `window.DevPulseAI.describe(toolId)`
 - `window.DevPulseAI.run(request)`
-- `window.DevPulseAI.runBatch(requests[])`
-- `window.DevPulseAI.getSnapshot()`
+- `window.DevPulseAI.runBatch(requests[], { stopOnError? })`
+
+All methods are async (the runner is lazy-loaded). The object is installed app-wide, so it is
+available on every route, and `devpulse-ai-ready` is dispatched on `window` once it exists.
+`index.html` advertises the bridge via `<meta name="devpulse-ai-bridge">` so an agent can discover
+it without prior knowledge. `getSnapshot()` was removed in version 2 — it always returned `{}`.
 
 ### Semantic UI Targeting
 

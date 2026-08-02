@@ -1,16 +1,23 @@
 import React, { useMemo } from 'react';
-import { CalendarClock, Newspaper, Timer } from 'lucide-react';
+import { CalendarClock, Newspaper, SearchX, Timer } from 'lucide-react';
 import { BLOG_POSTS } from '../data/blogPosts';
-import { BlogPostCard } from './blog/index';
+import { useBlogFilters } from '../hooks/useBlogFilters';
+import { BlogFilters, BlogPostCard } from './blog/index';
 
 const Blog: React.FC = () => {
+  const { language, setLanguage, category, setCategory, search, setSearch, visiblePosts, counts } =
+    useBlogFilters();
+
   const latestPostDate = useMemo(() => {
     if (BLOG_POSTS.length === 0) return '-';
 
+    // timeZone: 'UTC' because the frontmatter date is a calendar date, not an instant — see
+    // BlogPostCard for the same reason.
     return new Date(BLOG_POSTS[0].date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
+      timeZone: 'UTC',
     });
   }, []);
 
@@ -41,12 +48,36 @@ const Blog: React.FC = () => {
             </div>
           </div>
         </div>
+
+        <div className="mt-6 border-t border-border/60 pt-4">
+          <BlogFilters
+            category={category}
+            onCategoryChange={setCategory}
+            language={language}
+            onLanguageChange={setLanguage}
+            search={search}
+            onSearchChange={setSearch}
+            counts={counts}
+          />
+        </div>
       </section>
 
       <section className="mt-6 space-y-4">
-        {BLOG_POSTS.map((post) => (
-          <BlogPostCard key={post.id} post={post} />
+        {visiblePosts.map((post) => (
+          <BlogPostCard key={post.id} post={post} language={language} />
         ))}
+
+        {visiblePosts.length === 0 && (
+          <div className="rounded-xl border border-dashed border-border bg-card/40 p-10 text-center">
+            <SearchX className="w-8 h-8 mx-auto text-muted-foreground" aria-hidden="true" />
+            <p className="mt-3 text-sm font-medium text-foreground">
+              No updates match your filters
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Try a different category, or clear the search box.
+            </p>
+          </div>
+        )}
       </section>
     </div>
   );

@@ -1,0 +1,416 @@
+import { describe, expect, it } from 'vitest';
+import {
+  addMember,
+  ancestorIdsOf,
+  createMember,
+  linkSpouse,
+  moveMember,
+  removeMember,
+  reparentMember,
+  sortChildrenByBirth,
+  unlinkSpouse,
+  updateMember,
+} from './members';
+import { buildHierarchy } from './hierarchy';
+import type { FamilyMember } from './types';
+
+/** Fixed ids keep the assertions readable — `createMember` would hand out random ones. */
+const member = (
+  id: string,
+  parentId: string | null,
+  overrides: Partial<FamilyMember> = {},
+): FamilyMember => ({
+  id,
+  name: id,
+  parentId,
+  spouseIds: [],
+  otherParentId: null,
+  gender: 'unknown',
+  relationship: '',
+  birth: '',
+  death: '',
+  note: '',
+  ...overrides,
+});
+
+/**
+ *   grandpa
+ *   ├── dad
+ *   │   ├── me
+ *   │   └── sister
+ *   └── uncle
+ */
+const family = (): FamilyMember[] => [
+  member('grandpa', null),
+  member('dad', 'grandpa', { relationship: 'ลูกชาย' }),
+  member('me', 'dad', { relationship: 'ลูกชาย' }),
+  member('sister', 'dad', { relationship: 'ลูกสาว' }),
+  member('uncle', 'grandpa', { relationship: 'ลูกชาย' }),
+];
+
+describe('createMember', () => {
+  it('trims what the form hands over', () => {
+    const created = createMember({ name: '  สมชาย  ', relationship: ' พ่อ ', note: ' 2500 ' });
+
+    expect(created.name).toBe('สมชาย');
+    expect(created.relationship).toBe('พ่อ');
+    expect(created.note).toBe('2500');
+  });
+
+  it('defaults to a root with no relationship', () => {
+    const created = createMember({ name: 'ฉัน' });
+
+    expect(created.parentId).toBeNull();
+    expect(created.relationship).toBe('');
+    expect(created.id).not.toHaveLength(0);
+  });
+
+  it('gives each member a distinct id', () => {
+    const ids = new Set([createMember({ name: 'a' }).id, createMember({ name: 'a' }).id]);
+
+    expect(ids.size).toBe(2);
+  });
+});
+
+describe('addMember and updateMember', () => {
+  it('appends without touching the existing list', () => {
+    const before = family();
+    const after = addMember(before, { name: 'baby', parentId: 'me' });
+
+    expect(before).toHaveLength(5);
+    expect(after).toHaveLength(6);
+    expect(after[5].name).toBe('baby');
+  });
+
+  it('patches one member and leaves the rest alone', () => {
+    const after = updateMember(family(), 'me', { name: 'renamed' });
+
+    expect(after.find((entry) => entry.id === 'me')?.name).toBe('renamed');
+    expect(after.find((entry) => entry.id === 'sister')?.name).toBe('sister');
+  });
+});
+
+describe('removeMember', () => {
+  it('lifts the children of the removed member to their grandparent', () => {
+    const after = removeMember(family(), 'dad');
+
+    expect(after.map((entry) => entry.id)).not.toContain('dad');
+    expect(after.find((entry) => entry.id === 'me')?.parentId).toBe('grandpa');
+    expect(after.find((entry) => entry.id === 'sister')?.parentId).toBe('grandpa');
+  });
+
+  it('turns the children of a removed root into roots rather than losing them', () => {
+    const after = removeMember(family(), 'grandpa');
+
+    expect(after).toHaveLength(4);
+    expect(after.find((entry) => entry.id === 'dad')?.parentId).toBeNull();
+  });
+
+  it('ignores an id that is not in the tree', () => {
+    expect(removeMember(family(), 'nobody')).toHaveLength(5);
+  });
+});
+
+describe('ancestorIdsOf', () => {
+  it('walks up to the root, nearest first', () => {
+    expect(ancestorIdsOf(family(), 'me')).toEqual(['dad', 'grandpa']);
+  });
+
+  it('returns nothing for a root', () => {
+    expect(ancestorIdsOf(family(), 'grandpa')).toEqual([]);
+  });
+
+  it('stops on a cycle instead of hanging', () => {
+    const looped = [member('a', 'b'), member('b', 'a')];
+
+    expect(ancestorIdsOf(looped, 'a')).toEqual(['b']);
+  });
+});
+
+describe('reparentMember', () => {
+  it('moves a member under a new parent', () => {
+    const result = reparentMember(family(), 'me', 'uncle');
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.members.find((entry) => entry.id === 'me')?.parentId).toBe('uncle');
+  });
+
+  it('promotes a member to a root', () => {
+    const result = reparentMember(family(), 'dad', null);
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.members.find((entry) => entry.id === 'dad')?.parentId).toBeNull();
+  });
+
+  it('refuses to make someone their own parent', () => {
+    const result = reparentMember(family(), 'me', 'me');
+
+    expect(result.ok).toBe(false);
+  });
+
+  it('refuses a move that would put a member below their own descendant', () => {
+    expect(reparentMember(family(), 'grandpa', 'me')).toEqual({
+      ok: false,
+      reason: 'That would put someone below their own descendant.',
+    });
+  });
+
+  it('refuses a parent that is not in the tree', () => {
+    const result = reparentMember(family(), 'me', 'ghost');
+
+    expect(result.ok).toBe(false);
+  });
+});
+
+describe('moveMember', () => {
+  it('swaps a member with the sibling before them', () => {
+    const after = moveMember(family(), 'sister', -1);
+    const dadsChildren = after.filter((entry) => entry.parentId === 'dad').map((e) => e.id);
+
+    expect(dadsChildren).toEqual(['sister', 'me']);
+  });
+
+  it('swaps a member with the sibling after them', () => {
+    const after = moveMember(family(), 'me', 1);
+
+    expect(after.filter((e) => e.parentId === 'dad').map((e) => e.id)).toEqual(['sister', 'me']);
+  });
+
+  it('does nothing at either end of the sibling set', () => {
+    expect(moveMember(family(), 'me', -1)).toEqual(family());
+    expect(moveMember(family(), 'sister', 1)).toEqual(family());
+  });
+
+  it('steps over people who are not siblings', () => {
+    // 'uncle' sits after 'sister' in the flat list but belongs to grandpa, not dad.
+    const after = moveMember(family(), 'uncle', -1);
+
+    expect(after.filter((e) => e.parentId === 'grandpa').map((e) => e.id)).toEqual([
+      'uncle',
+      'dad',
+    ]);
+    // Dad's own children are untouched by a move two levels up.
+    expect(after.filter((e) => e.parentId === 'dad').map((e) => e.id)).toEqual(['me', 'sister']);
+  });
+
+  it('moves roots among themselves', () => {
+    const roots = [member('a', null), member('b', null)];
+
+    expect(moveMember(roots, 'b', -1).map((e) => e.id)).toEqual(['b', 'a']);
+  });
+
+  it('ignores an id that is not in the tree', () => {
+    expect(moveMember(family(), 'nobody', 1)).toEqual(family());
+  });
+});
+
+describe('sortChildrenByBirth', () => {
+  const withBirths = (): FamilyMember[] => [
+    member('dad', null),
+    member('c', 'dad', { birth: '2510' }),
+    member('a', 'dad', { birth: '2495' }),
+    member('b', 'dad', { birth: '2502' }),
+  ];
+
+  it('puts one parent’s children oldest first', () => {
+    const after = sortChildrenByBirth(withBirths(), 'dad');
+
+    expect(after.filter((e) => e.parentId === 'dad').map((e) => e.id)).toEqual(['a', 'b', 'c']);
+  });
+
+  it('leaves the slots of everyone else alone', () => {
+    const after = sortChildrenByBirth(withBirths(), 'dad');
+
+    // The parent keeps position 0; only the children's slots are rewritten.
+    expect(after[0].id).toBe('dad');
+    expect(after).toHaveLength(4);
+  });
+
+  it('trails children with no readable birth, in the order they were entered', () => {
+    const mixed = [
+      member('dad', null),
+      member('unknown1', 'dad'),
+      member('young', 'dad', { birth: '2510' }),
+      member('unknown2', 'dad'),
+      member('old', 'dad', { birth: '2490' }),
+    ];
+    const after = sortChildrenByBirth(mixed, 'dad');
+
+    expect(after.filter((e) => e.parentId === 'dad').map((e) => e.id)).toEqual([
+      'old',
+      'young',
+      'unknown1',
+      'unknown2',
+    ]);
+  });
+
+  it('compares Buddhist and Common Era entries against each other', () => {
+    const mixedEras = [
+      member('dad', null),
+      member('be', 'dad', { birth: '2510' }),
+      member('ce', 'dad', { birth: '1950' }),
+    ];
+
+    expect(
+      sortChildrenByBirth(mixedEras, 'dad')
+        .filter((e) => e.parentId === 'dad')
+        .map((e) => e.id),
+    ).toEqual(['ce', 'be']);
+  });
+
+  it('sorts the roots when asked for null', () => {
+    const roots = [member('b', null, { birth: '2510' }), member('a', null, { birth: '2490' })];
+
+    expect(sortChildrenByBirth(roots, null).map((e) => e.id)).toEqual(['a', 'b']);
+  });
+});
+
+describe('spouses', () => {
+  const married = (): FamilyMember[] => [
+    member('gp', null, { spouseIds: ['gm'] }),
+    member('gm', null, { spouseIds: ['gp'] }),
+    member('dad', 'gp'),
+  ];
+
+  it('writes both sides when a member is added as a partner', () => {
+    const after = addMember([member('gp', null)], { name: 'gm', spouseId: 'gp' });
+    const gm = after.find((entry) => entry.name === 'gm');
+
+    expect(gm?.spouseIds).toEqual(['gp']);
+    expect(after.find((entry) => entry.id === 'gp')?.spouseIds).toEqual([gm?.id]);
+  });
+
+  it('hangs the partner off the node instead of giving them their own root', () => {
+    const { roots } = buildHierarchy(married());
+
+    expect(roots).toHaveLength(1);
+    expect(roots[0].member.id).toBe('gp');
+    expect(roots[0].spouses.map((entry) => entry.id)).toEqual(['gm']);
+  });
+
+  it('keeps the partner who has a parent in their own place', () => {
+    // A descendant cannot give up their slot — the tree would have to draw them twice.
+    const withDescendant = [
+      member('gp', null),
+      member('dad', 'gp', { spouseIds: ['mum'] }),
+      member('mum', null, { spouseIds: ['dad'] }),
+    ];
+    const { roots } = buildHierarchy(withDescendant);
+
+    expect(roots).toHaveLength(1);
+    expect(roots[0].children[0].member.id).toBe('dad');
+    expect(roots[0].children[0].spouses.map((entry) => entry.id)).toEqual(['mum']);
+  });
+
+  it('gives the slot to whoever was added first when neither partner has a parent', () => {
+    const { roots } = buildHierarchy(married());
+
+    // Without a tie-break both would attach to the other and neither would be drawn.
+    expect(roots.map((node) => node.member.id)).toEqual(['gp']);
+  });
+
+  it('ignores a one-sided link rather than drawing half a couple', () => {
+    const lopsided = [member('gp', null), member('gm', null, { spouseIds: ['gp'] })];
+    const { roots } = buildHierarchy(lopsided);
+
+    expect(roots).toHaveLength(2);
+    expect(roots[0].spouses).toEqual([]);
+  });
+
+  it('children of a couple hang from the partner holding the slot', () => {
+    const { roots } = buildHierarchy(married());
+
+    expect(roots[0].children.map((child) => child.member.id)).toEqual(['dad']);
+  });
+
+  it('links both sides and refuses a parent marrying their own child', () => {
+    const linked = linkSpouse([member('a', null), member('b', null)], 'a', 'b');
+
+    expect(linked.ok).toBe(true);
+    if (linked.ok) {
+      expect(linked.members.find((entry) => entry.id === 'b')?.spouseIds).toEqual(['a']);
+    }
+
+    expect(linkSpouse([member('a', null), member('kid', 'a')], 'a', 'kid')).toEqual({
+      ok: false,
+      reason: 'A parent and their child cannot be partners.',
+    });
+  });
+
+  it('refuses to marry someone to themselves, or twice to the same person', () => {
+    expect(linkSpouse([member('a', null)], 'a', 'a')).toEqual({
+      ok: false,
+      reason: 'Someone cannot marry themselves.',
+    });
+
+    expect(linkSpouse(married(), 'gp', 'gm')).toEqual({
+      ok: false,
+      reason: 'They are already partners.',
+    });
+  });
+
+  it('keeps the first marriage when a second is added', () => {
+    /*
+     * The whole point of the list. A single slot forced a remarriage to drop the previous partner,
+     * which quietly rewrote history: the children of the first marriage were left attributed to a
+     * couple that no longer existed.
+     */
+    const remarried = linkSpouse([...married(), member('second', null)], 'gp', 'second');
+
+    expect(remarried.ok).toBe(true);
+    if (!remarried.ok) return;
+
+    expect(remarried.members.find((entry) => entry.id === 'gp')?.spouseIds).toEqual([
+      'gm',
+      'second',
+    ]);
+    expect(remarried.members.find((entry) => entry.id === 'gm')?.spouseIds).toEqual(['gp']);
+    expect(remarried.members.find((entry) => entry.id === 'second')?.spouseIds).toEqual(['gp']);
+  });
+
+  it('refuses a partner who is not in the tree', () => {
+    expect(linkSpouse(married(), 'gp', 'nobody')).toEqual({
+      ok: false,
+      reason: 'That partner is no longer in the tree.',
+    });
+  });
+
+  it('draws both marriages beside the same person', () => {
+    const twice = [
+      member('gp', null, { spouseIds: ['first', 'second'] }),
+      member('first', null, { spouseIds: ['gp'] }),
+      member('second', null, { spouseIds: ['gp'] }),
+    ];
+    const { roots } = buildHierarchy(twice);
+
+    expect(roots).toHaveLength(1);
+    expect(roots[0].spouses.map((entry) => entry.id)).toEqual(['first', 'second']);
+  });
+
+  it('unlinks from either side and releases children attributed to that pairing', () => {
+    const withHalfSiblings = [
+      member('gp', null, { spouseIds: ['first', 'second'] }),
+      member('first', null, { spouseIds: ['gp'] }),
+      member('second', null, { spouseIds: ['gp'] }),
+      member('childA', 'gp', { otherParentId: 'first' }),
+      member('childB', 'gp', { otherParentId: 'second' }),
+    ];
+    const after = unlinkSpouse(withHalfSiblings, 'gp', 'first');
+
+    expect(after.find((entry) => entry.id === 'gp')?.spouseIds).toEqual(['second']);
+    expect(after.find((entry) => entry.id === 'first')?.spouseIds).toEqual([]);
+    // Otherwise childA hangs off a bar that is no longer drawn, which puts them nowhere.
+    expect(after.find((entry) => entry.id === 'childA')?.otherParentId).toBeNull();
+    expect(after.find((entry) => entry.id === 'childB')?.otherParentId).toBe('second');
+  });
+
+  it('clears the partner link and any attribution when a member is removed', () => {
+    const withChild = [...married(), member('kid', 'gp', { otherParentId: 'gm' })];
+    const after = removeMember(withChild, 'gm');
+
+    expect(after.find((entry) => entry.id === 'gp')?.spouseIds).toEqual([]);
+    expect(after.find((entry) => entry.id === 'kid')?.otherParentId).toBeNull();
+  });
+});

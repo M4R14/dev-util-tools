@@ -13,8 +13,8 @@ Decode Thai national ID digits by position, validate checksum (13th digit), and 
 
 ## Files
 - `src/components/tools/ThaiIdTool.tsx`
-- `src/hooks/useThaiId.ts`
-- `src/lib/thaiId.ts`
+- `src/hooks/tools/useThaiId.ts`
+- `src/lib/tools/thaiId.ts`
 
 ## Usage Pattern
 - Input: Thai ID value (13 digits, accepts pasted formatted values)
@@ -27,7 +27,7 @@ Decode Thai national ID digits by position, validate checksum (13th digit), and 
 - Includes full reference list for person type meaning in digit 1 (`1-8`)
 
 ## Core Logic
-- `src/lib/thaiId.ts`
+- `src/lib/tools/thaiId.ts`
   - `generateThaiId()` generates a valid 13-digit Thai ID with correct checksum.
 
 ## Related

@@ -8,12 +8,13 @@
  */
 export { AI_TOOL_CATALOG, AI_TOOL_OPERATIONS } from './catalog';
 export { AI_BRIDGE_SCHEMA } from './schema';
-export { runAITool, runAIToolBatch } from './runners';
-export { getAIToolSnapshot } from './snapshot';
+export { runAITool, runAIToolBatch, describeAITool } from './runners';
 export type {
+  AIToolBatchOptions,
+  AIToolBatchResponse,
   AIToolCatalogItem,
+  AIToolReliability,
   AIToolId,
   AIToolRequest,
   AIToolResponse,
-  AIToolSnapshot,
 } from './types';

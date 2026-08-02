@@ -1,10 +1,12 @@
 import React from 'react';
-import { Bug, Rocket, Wrench } from 'lucide-react';
 import type { BlogPost } from '../../data/blogPosts';
+import { BLOG_CATEGORY_META } from '../../data/blogCategories';
+import type { BlogLanguage } from '../../lib/content/blogContent';
 import { cn } from '../../lib/utils';
 
 interface BlogPostCardProps {
   post: BlogPost;
+  language: BlogLanguage;
 }
 
 const MARKDOWN_SUMMARY_CLASS =
@@ -29,32 +31,19 @@ const MARKDOWN_CONTENT_CLASS =
   '[&_thead]:bg-muted/30 [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:text-xs [&_th]:font-semibold [&_th]:uppercase [&_th]:tracking-wide ' +
   '[&_td]:border-t [&_td]:border-border/40 [&_td]:px-3 [&_td]:py-2';
 
-const CATEGORY_META = {
-  release: {
-    label: 'Release',
-    icon: Rocket,
-    className: 'text-emerald-700 bg-emerald-500/10 border-emerald-500/20',
-  },
-  improvement: {
-    label: 'Improvement',
-    icon: Wrench,
-    className: 'text-sky-700 bg-sky-500/10 border-sky-500/20',
-  },
-  fix: {
-    label: 'Fix',
-    icon: Bug,
-    className: 'text-amber-700 bg-amber-500/10 border-amber-500/20',
-  },
-} as const;
-
-const BlogPostCard: React.FC<BlogPostCardProps> = ({ post }) => {
-  const meta = CATEGORY_META[post.category];
+export const BlogPostCard: React.FC<BlogPostCardProps> = ({ post, language }) => {
+  const meta = BLOG_CATEGORY_META[post.category];
   const Icon = meta.icon;
+  // The date is an ISO calendar date, not an instant. Without timeZone: 'UTC' it is parsed as UTC
+  // midnight and then localised, so every reader west of UTC sees the previous day.
   const formattedDate = new Date(post.date).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
+    timeZone: 'UTC',
   });
+
+  const body = post.html[language];
 
   return (
     <article className="rounded-xl border border-border bg-card/70 backdrop-blur-sm p-5">
@@ -65,7 +54,12 @@ const BlogPostCard: React.FC<BlogPostCardProps> = ({ post }) => {
 
       <div className="mt-3">
         <div className="flex flex-wrap items-center gap-2">
-          <span className={cn('inline-flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-semibold', meta.className)}>
+          <span
+            className={cn(
+              'inline-flex items-center gap-1 rounded-full border px-2 py-1 text-xs font-semibold',
+              meta.className,
+            )}
+          >
             <Icon className="w-3.5 h-3.5" />
             {meta.label}
           </span>
@@ -82,14 +76,16 @@ const BlogPostCard: React.FC<BlogPostCardProps> = ({ post }) => {
         dangerouslySetInnerHTML={{ __html: post.summaryHtml }}
       />
 
-      {post.contentHtml && (
+      {post.html.shared && (
         <div
           className={MARKDOWN_CONTENT_CLASS}
-          dangerouslySetInnerHTML={{ __html: post.contentHtml }}
+          dangerouslySetInnerHTML={{ __html: post.html.shared }}
         />
+      )}
+
+      {body && (
+        <div className={MARKDOWN_CONTENT_CLASS} dangerouslySetInnerHTML={{ __html: body }} />
       )}
     </article>
   );
 };
-
-export default BlogPostCard;

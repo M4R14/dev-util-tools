@@ -1,4 +1,4 @@
-import type { DiffLine } from '../../../lib/diffUtils';
+import type { DiffLine } from '../../../lib/tools/diffUtils';
 import type { SplitRow, TextMetrics } from './types';
 
 export const buildSplitRows = (diff: DiffLine[]): SplitRow[] => {

@@ -13,7 +13,7 @@ Prettify, minify, and validate XML data. Supports syntax highlighting and copy.
 
 ## Files
 - `src/components/tools/XMLFormatter.tsx`
-- `src/hooks/useXmlFormatter.ts`
+- `src/hooks/tools/useXmlFormatter.ts`
 
 ## Usage Pattern
 - Input: Paste or type XML in a textarea

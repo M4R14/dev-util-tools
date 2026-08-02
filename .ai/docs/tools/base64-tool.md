@@ -13,7 +13,7 @@ Encode and decode strings/files to Base64. Supports text and file input, with in
 
 ## Files
 - `src/components/tools/Base64Tool.tsx`
-- `src/hooks/useBase64.ts`
+- `src/hooks/tools/useBase64.ts`
 
 ## Usage Pattern
 - Input: Textarea or file upload

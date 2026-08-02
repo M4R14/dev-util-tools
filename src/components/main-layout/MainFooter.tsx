@@ -1,27 +1,22 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
 
+/**
+ * Rendered inside the scroll container so it scrolls away with the content.
+ *
+ * It used to be a flex sibling of `<main>`, which kept it on screen permanently: 51px — 5% of the
+ * viewport — held for a copyright line and an "App Settings" link that already existed in the
+ * header two rows up. The link is gone; the line now waits at the bottom of the page.
+ *
+ * `role="contentinfo"` is explicit because a `<footer>` nested inside `<main>` does not get the
+ * landmark implicitly, and losing it would cost screen reader users a page-level shortcut.
+ */
 const MainFooter: React.FC = () => (
-  <footer className="px-4 py-3 text-muted-foreground text-xs border-t border-border/60 bg-background/80 backdrop-blur-sm">
-    <div className="mx-auto flex max-w-full flex-col gap-2 md:flex-row md:items-center md:justify-between">
-      <p className="text-center md:text-left">
-        <span className="font-medium text-foreground/80">DevPulse</span> © {new Date().getFullYear()}{' '}
-        • Privacy-first client-side processing
-      </p>
-
-      <NavLink
-        to="/settings"
-        className={({ isActive }) =>
-          `inline-flex items-center justify-center rounded-full border px-3 py-1 text-[11px] font-medium transition-colors ${
-            isActive
-              ? 'border-primary/30 bg-primary/10 text-primary'
-              : 'border-border/70 text-muted-foreground hover:bg-muted/30 hover:text-foreground'
-          }`
-        }
-      >
-        App Settings
-      </NavLink>
-    </div>
+  <footer
+    role="contentinfo"
+    className="mt-10 border-t border-border/60 px-1 py-4 text-center text-xs text-muted-foreground"
+  >
+    <span className="font-medium text-foreground/80">DevPulse</span> © {new Date().getFullYear()} •
+    Privacy-first client-side processing
   </footer>
 );
 

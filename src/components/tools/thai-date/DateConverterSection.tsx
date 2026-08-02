@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { ToolLayout } from '../../ui/ToolLayout';
 import { Button } from '../../ui/Button';
 import { Input } from '../../ui/Input';
-import { useCopyToClipboard } from '../../../hooks/useCopyToClipboard';
+import { useCopyToClipboard } from '../../../hooks/ui/useCopyToClipboard';
 import DateFormatCard, { type DateFormatItem } from './DateFormatCard';
 
 interface DateConverterSectionProps {

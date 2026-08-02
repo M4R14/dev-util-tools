@@ -11,7 +11,7 @@ src/
 ├── components/
 │   ├── MainLayout.tsx          # Shell: sidebar + header + cmd palette + content area + footer
 │   ├── main-layout/            # Main layout sub-modules (command actions, shell fragments)
-│   │   │                       # Page-meta logic lives in src/lib/pageMeta.ts — it is pure
+│   │   │                       # Page-meta logic lives in src/lib/platform/pageMeta.ts — it is pure
 │   │   ├── BackgroundDecor.tsx
 │   │   ├── MainContentWrapper.tsx
 │   │   ├── SkipToMainContentLink.tsx
@@ -59,7 +59,7 @@ src/
 │   │    ├── LiveResponseCard.tsx
 │   │    ├── SnippetCard.tsx    # Code snippet card (moved from ui/: only the bridge uses it)
 │   │    └── index.ts           # Barrel exports for ai-bridge module
-│   ├── tools/                  # One component per tool (19 tools)
+│   ├── tools/                  # One component per tool (21 tools)
 │   │   ├── JSONFormatter.tsx
 │   │   ├── Base64Tool.tsx
 │   │   ├── CaseConverter.tsx
@@ -126,7 +126,9 @@ src/
 │   │   │   └── index.ts        # Barrel exports for diff-viewer module
 │   │   ├── RegexTester.tsx
 │   │   ├── XMLFormatter.tsx
-│   │   └── XMLToJson.tsx
+│   │   ├── XMLToJson.tsx
+│   │   ├── JwtDecoder.tsx
+│   │   └── JwtEncoder.tsx
 │   ├── sidebar/                # Sidebar sub-components
 │   │   ├── SidebarBrand.tsx    # Logo and app name
 │   │   ├── SidebarEmptyState.tsx # Empty result message for sidebar search
@@ -141,6 +143,8 @@ src/
 │       ├── Button.tsx          # CVA variants: default/destructive/outline/secondary/ghost/link
 │       ├── Card.tsx            # Card + CardHeader + CardTitle + CardDescription + CardContent + CardFooter
 │       ├── CodeHighlight.tsx   # Syntax-highlighted code display
+│       ├── CodeInput.tsx       # Monospace textarea + line/char counter
+│       ├── CodeEditor.tsx      # CodeInput/CodeHighlight toggle
 │       ├── CopyButton.tsx      # Icon button over useCopyToClipboard; use successMessage, not onCopy
 │       ├── FavoriteButton.tsx  # Favourite toggle; pass itemName so list items name themselves
 │       ├── FavoriteIcon.tsx    # Reusable star icon with active fill state
@@ -151,35 +155,49 @@ src/
 │       ├── ToolLayout.tsx      # Layout + Section + Panel compound component
 │       └── sonner.tsx          # Sonner toast provider (theme-aware)
 │
-├── hooks/                      # One hook per tool (business logic) + shared behaviour hooks
-│   ├── useCopyToClipboard.ts   # Clipboard write + toast + copied flag; the app's only copy path
-│   ├── useCopyToClipboard.test.ts # Unit tests for the message-resolution rules
+├── hooks/                      # Grouped by reach: ui/ is portable, tools/ backs one route each,
+│                               # and anything at the root knows this app's domain.
+│   ├── tools/                  # One hook per tool page — state, validation, and URL sync
+│   │   ├── useJsonFormatter.ts
+│   │   ├── useXmlFormatter.ts
+│   │   ├── useXmlToJson.ts
+│   │   ├── useBase64.ts
+│   │   ├── useCaseConverter.ts
+│   │   ├── useDiffViewer.ts
+│   │   ├── useUrlParser.ts
+│   │   ├── useUUIDGenerator.ts
+│   │   ├── usePasswordGenerator.ts
+│   │   ├── useThaiId.ts
+│   │   ├── useThaiDateConverter.ts
+│   │   ├── useTimezoneConverter.ts
+│   │   ├── useJwtDecoder.ts    # JWT input state + shareable token param
+│   │   ├── useJwtEncoder.ts    # Payload/secret state; secret deliberately not shareable
+│   │   └── useAIChat.ts        # AI Assistant chat logic
+│   ├── ui/                     # Interaction behaviour with no knowledge of this app — liftable
+│   │   ├── useFocusTrap.ts     # Focus containment + restore for modal surfaces
+│   │   ├── focusTrapTargets.ts # What Tab can actually reach, and when to restore focus
+│   │   ├── focusTrapTargets.test.ts
+│   │   ├── useCopyToClipboard.ts # Clipboard write + toast + copied flag; the app's only copy path
+│   │   ├── useCopyToClipboard.test.ts # Unit tests for the message-resolution rules
+│   │   ├── useScrollLock.ts    # Freezes a named scroll container (body never scrolls in this shell)
+│   │   ├── useScrolledPast.ts  # Threshold flag driving the header title handover
+│   │   └── useMediaQuery.ts    # Reactive breakpoint + useIsDesktopViewport
 │   ├── useShareableUrlState.ts # Mirrors tool state into the query string (one write per tool)
-│   ├── useAIChat.ts            # AI Assistant chat logic
-│   ├── useBase64.ts
-│   ├── useCaseConverter.ts
-│   ├── useDiffViewer.ts
-│   ├── useJsonFormatter.ts
-│   ├── usePasswordGenerator.ts
-│   ├── useThaiId.ts
-│   ├── useThaiDateConverter.ts
-│   ├── useTimezoneConverter.ts
-│   ├── useToolSearch.ts        # MiniSearch-powered fuzzy search
-│   ├── useUrlParser.ts
-│   ├── useUUIDGenerator.ts
+│   ├── useToolSearch.ts        # Tool search over the shared index in lib/search
+│   ├── useBlogFilters.ts       # Blog category, language and search state
+│   ├── useGeminiApiKey.ts      # Sole owner of the stored Gemini key (obfuscated, not encrypted)
+│   ├── useSidebarCollapsed.ts  # Desktop-only sidebar hide, persisted
 │   ├── usePwaSettings.ts       # Shared PWA/offline hook entry (exports hook + format helpers)
-│   ├── pwa-settings/           # PWA helpers shared by usePwaSettings, the command palette, and main.tsx
-│   │   ├── cache.ts
-│   │   ├── constants.ts        # Single source for the cache prefix and toast/storage keys
-│   │   ├── environment.ts
-│   │   ├── events.ts
-│   │   ├── formatters.ts
-│   │   ├── operations.ts       # checkForServiceWorkerUpdate / clearOfflineCache incl. their toasts
-│   │   ├── serviceWorker.ts
-│   │   ├── types.ts
-│   │   └── index.ts            # Barrel exports for pwa-settings module
-│   ├── useXmlFormatter.ts
-│   └── useXmlToJson.ts
+│   └── pwa-settings/           # PWA helpers shared by usePwaSettings, the command palette, and main.tsx
+│       ├── cache.ts
+│       ├── constants.ts        # Single source for the cache prefix and toast/storage keys
+│       ├── environment.ts
+│       ├── events.ts
+│       ├── formatters.ts
+│       ├── operations.ts       # checkForServiceWorkerUpdate / clearOfflineCache incl. their toasts
+│       ├── serviceWorker.ts
+│       ├── types.ts
+│       └── index.ts            # Barrel exports for pwa-settings module
 │
 ├── context/
 │   ├── ThemeContext.tsx         # { theme, toggleTheme } — persists to localStorage
@@ -187,7 +205,7 @@ src/
 │   └── UserPreferencesContext.tsx # { favorites, recents, toggleFavorite, addRecent }
 │
 ├── data/
-│   ├── tools.tsx               # TOOLS array (19 entries) + getToolById()
+│   ├── tools.tsx               # TOOLS array (21 entries) + getToolById()
 │   ├── externalTools.ts        # Hero + section content for every external-tool landing page
 │   ├── blogPosts.ts            # Markdown loader/parser for blog posts (frontmatter + markdown-to-HTML)
 │   └── aiBridge.ts             # AI Bridge endpoint specs + query templates/snippets
@@ -205,70 +223,52 @@ src/
 │       └── auto-release-notes.md # Auto-generated mini release notes from git history
 │
 ├── lib/                        # Framework-free logic (no React, no react-router)
-│   │                           # Most modules are pure functions. Two exceptions, both deliberate:
-│   │                           #   relatedTools.ts caches its MiniSearch index in a WeakMap
-│   │                           #   randomUtils.ts + obfuscation.ts read platform globals (crypto, btoa)
-│   ├── utils.ts                # cn() — clsx + tailwind-merge
-│   ├── caseUtils.ts            # toSnakeCase, toKebabCase, toCamelCase, toPascalCase
-│   ├── caseUtils.test.ts       # Unit tests for case conversion utilities
-│   ├── diffUtils.ts            # computeDiff, getDiffStats, toUnifiedDiff (uses `diff` lib)
-│   ├── diffUtils.test.ts       # Unit tests for diff utility helpers
-│   ├── randomUtils.ts          # randomInt/randomString/randomUUID on crypto.getRandomValues
-│   ├── randomUtils.test.ts     # Unit tests incl. the no-native-randomUUID and no-crypto paths
-│   ├── passwordGenerator.ts    # Password charsets + generatePassword (uses randomUtils)
-│   ├── passwordGenerator.test.ts
-│   ├── obfuscation.ts          # obfuscate/deobfuscate for localStorage — encoding, NOT encryption
-│   ├── obfuscation.test.ts     # Unit tests for the obfuscation round-trip
-│   ├── jsonUtils.ts            # formatJson/minifyJson/assertValidJson (shared with the AI bridge)
-│   ├── jsonUtils.test.ts       # Unit tests for JSON transforms
-│   ├── xmlUtils.ts             # formatXml/minifyXml/assertValidXml (shared with the AI bridge)
-│   ├── xmlUtils.test.ts        # Unit tests incl. xml-formatter's lenient validation
-│   ├── base64Utils.ts          # Unicode-safe encode/decode (shared with the AI bridge)
-│   ├── base64Utils.test.ts     # Unit tests incl. Thai text and emoji round-trips
-│   ├── xmlToJson.ts            # convertXmlToJson (uses `simple-xml-to-json` + DOMParser)
-│   ├── xmlToJson.test.ts       # Unit tests; DOMParser is stubbed because jsdom cannot boot here
-│   ├── pageMeta.ts             # resolvePageMeta — pathname to title/description/documentTitle
-│   ├── pageMeta.test.ts        # Table tests across tool, blog, settings, ai-bridge, dashboard routes
-│   ├── relatedTools.ts         # getRelatedTools — curated `related` IDs then MiniSearch auto-query fallback
-│   ├── relatedTools.test.ts    # Unit tests for related-tool resolution
-│   ├── aiBridgeQuery.ts        # Parse/normalize AI bridge query parameters into AIToolRequest (zod-validated)
-│   ├── aiBridgeQuery.test.ts   # Unit tests for AI bridge query parsing/normalization
-│   ├── aiToolBridge.ts         # Public facade for AI bridge exports (backward-compatible import path)
-│   ├── ai-tool-bridge/         # Internal AI bridge modules (catalog/schema/runners/snapshot/types)
-│   │   ├── index.ts
-│   │   ├── types.ts
-│   │   ├── catalog.ts
-│   │   ├── contracts.ts
-│   │   ├── schema.ts
-│   │   ├── errors.ts
-│   │   ├── validators.ts
-│   │   ├── registry.ts
-│   │   ├── errorTaxonomy.ts
-│   │   ├── errorResponse.ts
-│   │   ├── snapshotPolicy.ts
-│   │   ├── snapshot.ts
-│   │   ├── runners.ts
-│   │   ├── runners.test.ts
-│   │   ├── handlers/
-│   │   │   ├── index.ts
-│   │   │   ├── types.ts
-│   │   │   ├── jsonFormatter.ts
-│   │   │   ├── xmlFormatter.ts
-│   │   │   ├── base64Tool.ts
-│   │   │   ├── caseConverter.ts
-│   │   │   ├── urlParser.ts
-│   │   │   ├── diffViewer.ts
-│   │   │   └── thaiDateConverter.ts
-│   ├── passwordStrength.ts     # getPasswordStrength() + PasswordOptions (zod-validated)
-│   ├── passwordStrength.test.ts # Unit tests for password strength scoring
-│   ├── thaiId.ts               # Thai ID decode/validation helpers (zod-validated IDs)
-│   ├── thaiId.test.ts          # Unit tests for Thai ID utility helpers
-│   ├── thaiDate.ts             # Thai date formatting/parsing (uses `dayjs`, zod-validated parse input)
-│   ├── thaiDate.test.ts        # Unit tests for Thai date utilities
-│   ├── shareableUrlState.ts    # Shared helper for shareable URL query sync rules
-│   ├── shareableUrlState.test.ts # Unit tests for query sync helper behavior
-│   ├── urlUtils.ts             # parseUrl, updateUrlParam (zod-validated param mutations)
-│   └── urlUtils.test.ts        # Unit tests for URL parsing and param helpers
+│   │                           # Grouped by what the module is for. Anything cross-cutting that is
+│   │                           # not tool-specific belongs in platform/; a transform that backs one
+│   │                           # tool page belongs in tools/.
+│   │                           # Most modules are pure. The deliberate exceptions:
+│   │                           #   search/ caches MiniSearch indexes in a WeakMap
+│   │                           #   platform/ reads globals (crypto, btoa, localStorage, matchMedia)
+│   ├── utils.ts                # cn() — clsx + tailwind-merge. Used everywhere, so it stays at root
+│   ├── tools/                  # Pure logic behind one tool page each; several shared with the AI bridge
+│   │   ├── jsonUtils.ts        # formatJson/minifyJson/assertValidJson
+│   │   ├── xmlUtils.ts         # formatXml/minifyXml/assertValidXml (xml-formatter repairs silently)
+│   │   ├── xmlToJson.ts        # convertXmlToJson (simple-xml-to-json + DOMParser)
+│   │   ├── base64Utils.ts      # Unicode-safe encode/decode
+│   │   ├── caseUtils.ts        # toSnakeCase, toKebabCase, toCamelCase, toPascalCase
+│   │   ├── diffUtils.ts        # computeDiff, getDiffStats, toUnifiedDiff
+│   │   ├── urlUtils.ts         # parseUrl, updateUrlParam
+│   │   ├── thaiDate.ts         # Thai date formatting/parsing (dayjs)
+│   │   ├── thaiId.ts           # Thai national ID decode/validation
+│   │   ├── jwt.ts              # decodeJwt — parses, never verifies
+│   │   ├── jwtSign.ts          # encodeJwt/verifyJwt via jose; throws without crypto.subtle
+│   │   ├── passwordGenerator.ts # Charsets + generatePassword (uses platform/randomUtils)
+│   │   ├── passwordStrength.ts # getPasswordStrength() + PasswordOptions
+│   │   └── *.test.ts           # One test file per module
+│   ├── search/                 # Every search in the app goes through here — see search-features.md
+│   │   ├── search.ts           # createSearchIndex: the tokeniser, defaults and cache in one place
+│   │   ├── searchTokenizer.ts  # Intl.Segmenter — Thai has no spaces between words
+│   │   ├── relatedTools.ts     # getRelatedTools; overrides the defaults with recorded reasons
+│   │   └── *.test.ts
+│   ├── content/                # Rendering authored markdown
+│   │   ├── markdown.ts         # marked configured to escape raw HTML + restrict link protocols
+│   │   ├── blogContent.ts      # Splits a post into ## TH / ## EN sections
+│   │   └── *.test.ts
+│   ├── platform/               # Cross-cutting app concerns and platform-global wrappers
+│   │   ├── persistedState.ts   # Validated localStorage; never throws — see platform-ux-features.md
+│   │   ├── pageMeta.ts         # resolvePageMeta — pathname to title/description/documentTitle
+│   │   ├── shareableUrlState.ts # Query-sync rules shared by every tool hook
+│   │   ├── theme.ts            # light/dark/system vocabulary, kept out of ThemeContext
+│   │   ├── motion.ts           # One prefers-reduced-motion check
+│   │   ├── randomUtils.ts      # randomInt/randomString/randomUUID on crypto.getRandomValues
+│   │   ├── obfuscation.ts      # obfuscate/deobfuscate — encoding, NOT encryption
+│   │   └── *.test.ts           # (motion.ts has none — it is a single matchMedia read)
+│   ├── aiToolBridge.ts         # Public facade for AI bridge exports (documented import path)
+│   ├── aiBridgeGlobal.ts       # Installs window.DevPulseAI app-wide (lazy-loads the runner)
+│   ├── aiBridgeQuery.ts        # Parse/normalize AI bridge query params into AIToolRequest
+│   ├── aiBridgeQuery.test.ts
+│   └── ai-tool-bridge/         # Internal AI bridge modules (catalog/schema/runners/handlers)
+│                               # Left where it is: vite.config.ts and the docs name these paths
 │
 ├── services/
 │   └── gemini.ts               # askGemini(prompt, codeContext?, apiKey?) — Google Gemini API

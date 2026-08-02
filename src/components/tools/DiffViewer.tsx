@@ -1,7 +1,7 @@
 import React from 'react';
 import { toast } from 'sonner';
 import { ToolLayout } from '../ui/ToolLayout';
-import { useDiffViewer } from '../../hooks/useDiffViewer';
+import { useDiffViewer } from '../../hooks/tools/useDiffViewer';
 import {
   buildSplitRows,
   DiffInputPanels,

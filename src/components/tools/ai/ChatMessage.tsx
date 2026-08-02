@@ -1,7 +1,7 @@
 import React from 'react';
 import { Sparkles } from 'lucide-react';
 import { cn } from '../../../lib/utils';
-import type { Message } from '../../../hooks/useAIChat';
+import type { Message } from '../../../hooks/tools/useAIChat';
 import MessageContent from './MessageContent';
 
 interface ChatMessageProps {

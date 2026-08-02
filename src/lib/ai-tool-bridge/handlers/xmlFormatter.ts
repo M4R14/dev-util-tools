@@ -1,4 +1,4 @@
-import { DEFAULT_XML_INDENT, assertValidXml, formatXml, minifyXml } from '../../xmlUtils';
+import { DEFAULT_XML_INDENT, assertValidXml, formatXml, minifyXml } from '../../tools/xmlUtils';
 import { assertOptionType, assertSupportedOperation, asString } from '../validators';
 import type { ToolRunner } from './types';
 

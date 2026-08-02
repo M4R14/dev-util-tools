@@ -7,7 +7,7 @@ import { CopyButton } from '../ui/CopyButton';
 import { Switch } from '../ui/Switch';
 import { Textarea } from '../ui/Textarea';
 import { CodeHighlight } from '../ui/CodeHighlight';
-import { useXmlToJson } from '../../hooks/useXmlToJson';
+import { useXmlToJson } from '../../hooks/tools/useXmlToJson';
 
 const XMLToJson: React.FC = () => {
   const {

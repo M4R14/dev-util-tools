@@ -1,4 +1,4 @@
-import { decodeUnicodeFromBase64, encodeUnicodeToBase64 } from '../../base64Utils';
+import { decodeUnicodeFromBase64, encodeUnicodeToBase64 } from '../../tools/base64Utils';
 import { assertSupportedOperation, asString } from '../validators';
 import type { ToolRunner } from './types';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { cn } from '../../lib/utils';
-import { useCopyToClipboard } from '../../hooks/useCopyToClipboard';
+import { useCopyToClipboard } from '../../hooks/ui/useCopyToClipboard';
 import { Card, CardContent, CardHeader, CardTitle } from './Card';
 import { Check, LucideIcon } from 'lucide-react';
 

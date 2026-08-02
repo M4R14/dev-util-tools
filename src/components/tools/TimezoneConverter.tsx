@@ -5,7 +5,7 @@ import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { CopyButton } from '../ui/CopyButton';
 import { cn } from '../../lib/utils';
-import { useTimezoneConverter } from '../../hooks/useTimezoneConverter';
+import { useTimezoneConverter } from '../../hooks/tools/useTimezoneConverter';
 
 const QUICK_TARGET_ZONE_IDS = [
   'UTC',
