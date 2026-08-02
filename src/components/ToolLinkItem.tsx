@@ -7,6 +7,12 @@ import { FavoriteButton } from './ui/FavoriteButton';
 interface ToolLinkItemProps {
   tool: ToolMetadata;
   indexOffset: number;
+  /**
+   * False for a repeat listing of a tool shown higher up. Repeats render, but they do not take the
+   * keyboard selection and they do not claim to be the current page — the active tool used to be
+   * highlighted twice at once, under Recent and again under Apps.
+   */
+  isCanonical?: boolean;
   selectedIndex: number;
   onClose: () => void;
   searchTerm: string;
@@ -17,16 +23,19 @@ interface ToolLinkItemProps {
 const ToolLinkItem: React.FC<ToolLinkItemProps> = ({
   tool,
   indexOffset,
+  isCanonical = true,
   selectedIndex,
   onClose,
   searchTerm,
   isFavorite,
   onToggleFavorite,
 }) => {
-  const isSelected = selectedIndex === indexOffset;
+  // indexOffset is NOT_NAVIGABLE (-1) on a repeat listing, and selectedIndex is -1 before the first
+  // arrow key — without the lower bound those two match and every repeat lights up at once.
+  const isSelected = indexOffset >= 0 && selectedIndex === indexOffset;
   const linkRef = React.useRef<HTMLAnchorElement>(null);
   const location = useLocation();
-  const isActive = location.pathname === `/${tool.id}`;
+  const isActive = isCanonical && location.pathname === `/${tool.id}`;
 
   useEffect(() => {
     if (isSelected && linkRef.current) {

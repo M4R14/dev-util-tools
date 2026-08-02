@@ -1,32 +1,55 @@
 import React from 'react';
-import { Menu, Search, Sun, Moon, X, Newspaper, Settings2 } from 'lucide-react';
+import {
+  Menu,
+  Sun,
+  Moon,
+  Monitor,
+  Newspaper,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Settings2,
+} from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
+import { nextThemePreference } from '../lib/theme';
 import { Button } from './ui/Button';
 import { FavoriteButton } from './ui/FavoriteButton';
-import { Input } from './ui/Input';
 import { cn } from '../lib/utils';
 
 interface HeaderProps {
   title: string;
-  searchTerm?: string;
-  onSearch?: (term: string) => void;
   isFavorite?: boolean;
   onToggleFavorite?: () => void;
   onToggleSidebar?: () => void;
-  showSearch?: boolean;
+  /** Desktop-only: hides or restores the permanent sidebar column. */
+  onToggleSidebarCollapsed?: () => void;
+  sidebarCollapsed?: boolean;
+  /**
+   * True once the page's own heading has scrolled out of the content area.
+   *
+   * The title and its favourite toggle were previously rendered here at all times, duplicating the
+   * page heading sixty pixels below — two identical stars, both labelled only "Add to Favorites".
+   * Deferring to the scrolled state keeps the orientation a sticky bar is for and shows each
+   * control once.
+   */
+  showTitle?: boolean;
 }
 
 const Header: React.FC<HeaderProps> = ({
   title,
   onToggleSidebar,
-  searchTerm,
-  onSearch,
+  onToggleSidebarCollapsed,
+  sidebarCollapsed = false,
   isFavorite,
   onToggleFavorite,
-  showSearch = true,
+  showTitle = true,
 }) => {
   const { theme, toggleTheme } = useTheme();
+
+  // The button cycles light → dark → system, so its label names the destination, not the state.
+  const THEME_ICONS = { light: Sun, dark: Moon, system: Monitor };
+  const ThemeIcon = THEME_ICONS[theme];
+  const nextTheme = nextThemePreference(theme);
 
   return (
     <header className="h-16 border-b border-border bg-background/80 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between px-4 md:px-8 transition-colors">
@@ -41,41 +64,43 @@ const Header: React.FC<HeaderProps> = ({
           <Menu className="w-6 h-6" aria-hidden="true" />
         </Button>
 
-        <h2 className="flex items-center gap-2 min-w-0 text-base md:text-xl font-semibold text-foreground">
-          <span className="truncate">{title}</span>
-          {onToggleFavorite && (
-            <FavoriteButton isFavorite={!!isFavorite} onToggle={onToggleFavorite} />
-          )}
-        </h2>
-      </div>
-
-      <div className="flex-1 max-w-xl px-8 hidden md:block">
-        {showSearch && onSearch && (
-          <div className="relative group">
-            <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors z-10"
-              aria-hidden="true"
-            />
-            <Input
-              type="text"
-              placeholder="Search tools (Cmd+K)..."
-              value={searchTerm}
-              onChange={(e) => onSearch(e.target.value)}
-              className="pl-10 pr-9 bg-muted border-transparent focus-visible:ring-primary/20"
-              aria-label="Search tools"
-            />
-            {searchTerm && (
-              <button
-                onClick={() => onSearch('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted-foreground/10 transition-colors z-10"
-                aria-label="Clear search"
-              >
-                <X className="w-4 h-4" />
-              </button>
+        {onToggleSidebarCollapsed && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={onToggleSidebarCollapsed}
+            className="hidden md:inline-flex text-muted-foreground h-8 w-8"
+            aria-pressed={sidebarCollapsed}
+            title={sidebarCollapsed ? 'Show sidebar' : 'Hide sidebar'}
+            aria-label={sidebarCollapsed ? 'Show sidebar' : 'Hide sidebar'}
+          >
+            {sidebarCollapsed ? (
+              <PanelLeftOpen className="w-4 h-4" aria-hidden="true" />
+            ) : (
+              <PanelLeftClose className="w-4 h-4" aria-hidden="true" />
             )}
-          </div>
+          </Button>
+        )}
+
+        {showTitle && (
+          <h2 className="flex items-center gap-2 min-w-0 text-base md:text-xl font-semibold text-foreground">
+            <span className="truncate">{title}</span>
+            {onToggleFavorite && (
+              <FavoriteButton
+                isFavorite={!!isFavorite}
+                onToggle={onToggleFavorite}
+                itemName={title}
+              />
+            )}
+          </h2>
         )}
       </div>
+
+      {/*
+        A second "Search tools" input used to sit here, bound to the same value as the sidebar's
+        and visible only at md and up — exactly the widths where the sidebar's own search box is
+        already on screen. Below about 1100px it also collapsed to 78px, roughly six characters.
+      */}
 
       <div className="flex items-center gap-1.5 shrink-0">
         <NavLink
@@ -115,14 +140,10 @@ const Header: React.FC<HeaderProps> = ({
           size="icon"
           onClick={toggleTheme}
           className="text-muted-foreground rounded-full h-8 w-8"
-          title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-          aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+          title={`Theme: ${theme}. Switch to ${nextTheme}.`}
+          aria-label={`Theme: ${theme}. Switch to ${nextTheme}.`}
         >
-          {theme === 'dark' ? (
-            <Sun className="w-4 h-4" aria-hidden="true" />
-          ) : (
-            <Moon className="w-4 h-4" aria-hidden="true" />
-          )}
+          <ThemeIcon className="w-4 h-4" aria-hidden="true" />
         </Button>
 
         <Button

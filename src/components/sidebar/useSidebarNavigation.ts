@@ -1,11 +1,14 @@
 import { useState, useEffect, useMemo } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ToolMetadata } from '../../types';
 import { TOOLS } from '../../data/tools';
 import { useUserPreferences } from '../../context/UserPreferencesContext';
 import { useSearch } from '../../context/SearchContext';
 import { useToolSearch } from '../../hooks/useToolSearch';
+import { resolvePageMeta } from '../../lib/pageMeta';
+import { toVisibleTools, useSidebarSections } from './useSidebarSections';
+import { useCollapsedSections } from './useCollapsedSections';
 
 const LIMIT_RECENTS = 3;
 const EXTERNAL_TOOL_TAG = 'external tool';
@@ -105,36 +108,57 @@ export const useSidebarNavigation = (onClose: () => void) => {
   const { searchTerm, setSearchTerm } = useSearch();
   const filteredTools = useToolSearch(searchTerm);
   const navigate = useNavigate();
+  const location = useLocation();
+  const { collapsedSections, toggleSection } = useCollapsedSections();
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const hasSearchTerm = searchTerm.trim().length > 0;
   const favoriteToolIds = useMemo(() => new Set(favorites), [favorites]);
 
-  const favoriteTools = useMemo(() => TOOLS.filter((tool) => favoriteToolIds.has(tool.id)), [favoriteToolIds]);
+  const favoriteTools = useMemo(
+    () => TOOLS.filter((tool) => favoriteToolIds.has(tool.id)),
+    [favoriteToolIds],
+  );
+
+  /**
+   * The tool being viewed is dropped as well as the favourites: "recent" is a way back to what you
+   * were doing before, and the page you are already on is neither a way back nor news. It also
+   * showed the active highlight in Recent while the same row sat highlighted again under Apps.
+   *
+   * Filtered before the slice so the list still offers three genuinely previous tools.
+   */
+  const { activeTool } = resolvePageMeta(location.pathname);
 
   const recentTools = useMemo(
     () =>
       recents
         .map((id) => TOOL_BY_ID.get(id))
-        .filter((tool): tool is ToolMetadata => !!tool && !favoriteToolIds.has(tool.id))
+        .filter(
+          (tool): tool is ToolMetadata =>
+            !!tool && !favoriteToolIds.has(tool.id) && tool.id !== activeTool?.id,
+        )
         .slice(0, LIMIT_RECENTS),
-    [recents, favoriteToolIds],
+    [recents, favoriteToolIds, activeTool?.id],
   );
 
   const internalTools = useMemo(() => TOOLS.filter((tool) => !isExternalTool(tool)), []);
   const externalTools = useMemo(() => TOOLS.filter((tool) => isExternalTool(tool)), []);
-  const groupedTools = useMemo(() => [...internalTools, ...externalTools], [internalTools, externalTools]);
 
-  const visibleTools = useMemo<ToolMetadata[]>(() => {
-    if (hasSearchTerm) {
-      return filteredTools;
-    }
+  const sections = useSidebarSections({
+    hasSearchTerm,
+    filteredTools,
+    favoriteTools,
+    recentTools,
+    internalTools,
+    externalTools,
+    collapsedSections,
+  });
 
-    return [
-      ...favoriteTools,
-      ...recentTools,
-      ...groupedTools,
-    ];
-  }, [filteredTools, favoriteTools, groupedTools, hasSearchTerm, recentTools]);
+  /**
+   * Derived from the sections rather than assembled separately. These two used to be built side by
+   * side from the same arrays, which meant every rule about what is reachable — skip repeats, skip
+   * collapsed sections — had to be written twice and kept identical by hand.
+   */
+  const visibleTools = useMemo(() => toVisibleTools(sections), [sections]);
 
   // Reset selection when search changes
   useEffect(() => {
@@ -152,14 +176,14 @@ export const useSidebarNavigation = (onClose: () => void) => {
   return {
     searchTerm,
     setSearchTerm,
-    filteredTools,
-    favoriteTools,
-    recentTools,
+    searchActive: hasSearchTerm,
+    sections,
     selectedIndex,
     favorites,
     toggleFavorite,
-    internalTools,
-    externalTools,
+    toggleSection,
+    /** Keyboard traversal order — `selectedIndex` indexes into this. */
+    visibleTools,
   };
 };
 

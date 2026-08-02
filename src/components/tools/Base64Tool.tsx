@@ -3,6 +3,7 @@ import { ToolLayout } from '../ui/ToolLayout';
 import { Textarea } from '../ui/Textarea';
 import { useBase64 } from '../../hooks/useBase64';
 import { CopyButton } from '../ui/CopyButton';
+import { SendToToolButton } from '../ui/SendToToolButton';
 
 const Base64Tool: React.FC = () => {
   const { text, base64, error, handleTextChange, handleBase64Change } = useBase64();
@@ -36,12 +37,15 @@ const Base64Tool: React.FC = () => {
         <ToolLayout.Panel
           title="Base64 Output"
           actions={
-            <CopyButton
-              value={base64}
-              data-action="copy-base64-output"
-              data-testid="base64-copy-output-button"
-              successMessage="Base64 copied"
-            />
+            <>
+              <SendToToolButton value={base64} valueName="Base64 output" />
+              <CopyButton
+                value={base64}
+                data-action="copy-base64-output"
+                data-testid="base64-copy-output-button"
+                successMessage="Base64 copied"
+              />
+            </>
           }
           className={error ? 'border-destructive/50 box-border' : ''}
         >

@@ -5,6 +5,7 @@ import { Button } from '../ui/Button';
 import { Textarea } from '../ui/Textarea';
 import { useJsonFormatter } from '../../hooks/useJsonFormatter';
 import { CopyButton } from '../ui/CopyButton';
+import { SendToToolButton } from '../ui/SendToToolButton';
 import { CodeHighlight } from '../ui/CodeHighlight';
 import { toast } from 'sonner';
 
@@ -95,6 +96,7 @@ const JSONFormatter: React.FC = () => {
                   {isEditing ? <Eye className="w-4 h-4" /> : <Pencil className="w-4 h-4" />}
                 </Button>
               )}
+              <SendToToolButton value={input} valueName="JSON" />
               <CopyButton value={input} successMessage="JSON content copied" />
               <Button
                 variant="ghost"

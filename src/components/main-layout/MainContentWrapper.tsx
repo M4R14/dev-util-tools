@@ -6,6 +6,8 @@ interface MainContentWrapperProps {
   pageTitle: string;
   pageDescription: string;
   children: React.ReactNode;
+  /** Rendered after the content, inside the scroll container, so it scrolls out of the way. */
+  footer?: React.ReactNode;
 }
 
 const MainContentWrapper: React.FC<MainContentWrapperProps> = ({
@@ -14,6 +16,7 @@ const MainContentWrapper: React.FC<MainContentWrapperProps> = ({
   pageTitle,
   pageDescription,
   children,
+  footer,
 }) => (
   <main
     id={contentId}
@@ -23,7 +26,13 @@ const MainContentWrapper: React.FC<MainContentWrapperProps> = ({
     aria-label={pageTitle}
     aria-description={pageDescription}
   >
-    <div className="max-w-7xl mx-auto min-h-full animate-in fade-in duration-300">{children}</div>
+    {/*
+      min-h-full was dropped from the content wrapper: with the footer now inside this container,
+      forcing the content to fill the viewport pushed the footer permanently below the fold on
+      short pages, which is the opposite of scrolling it into reach.
+    */}
+    <div className="max-w-7xl mx-auto animate-in fade-in duration-300">{children}</div>
+    {footer && <div className="max-w-7xl mx-auto">{footer}</div>}
   </main>
 );
 
