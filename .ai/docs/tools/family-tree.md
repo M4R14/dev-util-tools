@@ -3,8 +3,10 @@
 Build a family tree from `{ name, parent, relationship }` and keep it in the browser.
 
 - Route: `/family-tree`
-- Component: `src/components/tools/family-tree/index.tsx` (+ `AddMemberForm.tsx`, `TreeView.tsx`,
-  `FamilyDiagram.tsx`)
+- Component: `src/components/tools/family-tree/` — `index.tsx` composes; the diagram is
+  `FamilyDiagram.tsx` (composition only) over `MemberNode.tsx`, `DiagramToolbar.tsx`,
+  `MemberEditor.tsx`, `useDiagramViewport.ts` and `diagramLabels.ts`; the list is `TreeView.tsx`
+  and the form `AddMemberForm.tsx`
 - Hook: `src/hooks/tools/useFamilyTree.ts`
 - Lib: `src/lib/tools/familyTree/` — see below
 - No packages: the diagram is hand-written SVG
@@ -105,7 +107,19 @@ is gone.
 ## The diagram
 
 `layout.ts` is a pure function from the hierarchy to coordinates and connector polylines,
-tested without rendering anything. `FamilyDiagram.tsx` only turns those numbers into SVG.
+tested without rendering anything. The rendering is split the same way the work is:
+
+| File | Holds |
+|---|---|
+| `FamilyDiagram.tsx` | composition only — layout in, the pieces below arranged |
+| `MemberNode.tsx` | one person: outline, silhouette, labels, warning badge, fold control |
+| `DiagramToolbar.tsx` | zoom, fit and export chrome |
+| `useDiagramViewport.ts` | what is on screen: zoom, fit, drag-to-pan, scroll-to-reveal |
+| `diagramLabels.ts` | cutting each label to the width of its slot |
+
+`useDiagramViewport` is one hook rather than four because zoom, fit, panning and revealing all
+read or write the same two numbers — the scroll offsets of one element. Splitting them would mean
+four things fighting over the same ref.
 
 **Widths are measured bottom-up before anything is placed.** A parent can be wider than its children
 (a couple with one child) or narrower (six children under one person). `widthOf` takes the larger and
