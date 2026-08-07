@@ -157,9 +157,7 @@ export const MemberEditor: React.FC<MemberEditorProps> = ({
           <span className="text-[11px] text-muted-foreground">Second parent</span>
           <select
             value={member.otherParentId ?? ''}
-            onChange={(event) =>
-              onUpdate(member.id, { otherParentId: event.target.value || null })
-            }
+            onChange={(event) => onUpdate(member.id, { otherParentId: event.target.value || null })}
             aria-label="Second parent"
             className={selectClassName}
           >

@@ -5,12 +5,7 @@ import { cn } from '../../lib/utils';
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 
-const Toaster = ({
-  className,
-  toastOptions,
-  icons,
-  ...props
-}: ToasterProps) => {
+const Toaster = ({ className, toastOptions, icons, ...props }: ToasterProps) => {
   return (
     <Sonner
       theme="system"
@@ -29,7 +24,9 @@ const Toaster = ({
         info: <Info className="size-4 text-sky-500" aria-hidden="true" />,
         warning: <AlertTriangle className="size-4 text-amber-500" aria-hidden="true" />,
         error: <XCircle className="size-4 text-rose-500" aria-hidden="true" />,
-        loading: <LoaderCircle className="size-4 text-indigo-500 animate-spin" aria-hidden="true" />,
+        loading: (
+          <LoaderCircle className="size-4 text-indigo-500 animate-spin" aria-hidden="true" />
+        ),
         close: <X className="size-3.5" aria-hidden="true" />,
         ...icons,
       }}

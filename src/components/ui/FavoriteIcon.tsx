@@ -6,7 +6,16 @@ interface FavoriteIconProps extends React.ComponentProps<typeof Star> {
   isFavorite?: boolean;
 }
 
-export const FavoriteIcon: React.FC<FavoriteIconProps> = ({ isFavorite = false, className, ...props }) => {
-  return <Star className={cn('h-4 w-4', isFavorite && 'fill-current', className)} aria-hidden="true" {...props} />;
+export const FavoriteIcon: React.FC<FavoriteIconProps> = ({
+  isFavorite = false,
+  className,
+  ...props
+}) => {
+  return (
+    <Star
+      className={cn('h-4 w-4', isFavorite && 'fill-current', className)}
+      aria-hidden="true"
+      {...props}
+    />
+  );
 };
-

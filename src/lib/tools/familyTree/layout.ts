@@ -238,8 +238,7 @@ export const layoutFamilyTree2D = (
   /** Room above the first row for the raised bars of any second or later marriage. */
   const deepestMarriage = (nodes: FamilyNode[]): number =>
     nodes.reduce(
-      (most, node) =>
-        Math.max(most, node.spouses.length - 1, deepestMarriage(node.children)),
+      (most, node) => Math.max(most, node.spouses.length - 1, deepestMarriage(node.children)),
       0,
     );
   const topRoom = Math.max(0, deepestMarriage(roots)) * RAISED_BAR_STEP;

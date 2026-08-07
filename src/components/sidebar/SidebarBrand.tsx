@@ -9,9 +9,7 @@ const SidebarBrand: React.FC = () => (
         <LayoutDashboard className="w-5 h-5" />
       </div>
       <div className="flex flex-col">
-        <h1 className="text-sm font-bold text-foreground tracking-tight leading-none">
-          DevPulse
-        </h1>
+        <h1 className="text-sm font-bold text-foreground tracking-tight leading-none">DevPulse</h1>
         <p className="text-[10px] text-muted-foreground font-medium leading-none mt-0.5">
           Developer Utility
         </p>

@@ -1,28 +1,32 @@
 # Case Converter
 
-| Field | Value |
-|---|---|
-| **ToolID** | `case-converter` |
-| **Route** | `/case-converter` |
+| Field         | Value               |
+| ------------- | ------------------- |
+| **ToolID**    | `case-converter`    |
+| **Route**     | `/case-converter`   |
 | **Component** | `CaseConverter.tsx` |
-| **Hook** | `useCaseConverter` |
-| **Lib** | `caseUtils.ts` |
+| **Hook**      | `useCaseConverter`  |
+| **Lib**       | `caseUtils.ts`      |
 
 ## Description
+
 Switch between camelCase, PascalCase, snake_case, kebab-case, and more. Supports batch conversion and copy.
 
 ## Files
+
 - `src/components/tools/CaseConverter.tsx`
 - `src/hooks/tools/useCaseConverter.ts`
 - `src/lib/tools/caseUtils.ts`
 
 ## Usage Pattern
+
 - Input: Textarea for source text
 - Output: Multiple case formats (auto-generated)
 - Actions: Copy each result, Clear
 - Share: URL sync via query key `input`
 
 ## UI
+
 - Uses `ToolLayout`, `Textarea`, `CopyButton`, `Button`
 
 ## Related

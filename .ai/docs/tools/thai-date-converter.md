@@ -1,17 +1,19 @@
 # Thai Date Converter
 
-| Field | Value |
-|---|---|
-| **ToolID** | `thai-date-converter` |
-| **Route** | `/thai-date-converter` |
+| Field         | Value                                       |
+| ------------- | ------------------------------------------- |
+| **ToolID**    | `thai-date-converter`                       |
+| **Route**     | `/thai-date-converter`                      |
 | **Component** | `thai-date/index.tsx` (with sub-components) |
-| **Hook** | `useThaiDateConverter` |
-| **Lib** | `thaiDate.ts` (dayjs) |
+| **Hook**      | `useThaiDateConverter`                      |
+| **Lib**       | `thaiDate.ts` (dayjs)                       |
 
 ## Description
+
 Convert Gregorian dates to Thai Buddhist Era (BE) formats. Supports text parsing, picker, and multiple output formats.
 
 ## Files
+
 - `src/components/tools/thai-date/index.tsx`
 - `src/components/tools/thai-date/CurrentTimeSection.tsx`
 - `src/components/tools/thai-date/DateConverterSection.tsx`
@@ -23,12 +25,14 @@ Convert Gregorian dates to Thai Buddhist Era (BE) formats. Supports text parsing
 - `src/lib/tools/thaiDate.ts`
 
 ## Usage Pattern
+
 - Input: Text or picker (day/month/year)
 - Output: All Thai date formats, ISO, and parsed details
 - Actions: Switch input mode, quick date presets (yesterday/today/tomorrow), Copy, Copy all formats, Reset
 - Share: URL sync via query keys `date`, `parse`, `pd`, `pm`, `py`, `pmf`
 
 ## UI
+
 - Uses `ToolLayout`, `Input`, `Button`, `CopyButton`, `Switch`, `Card`
 - Current Time panel highlights:
   - Live badge and auto-refresh Thai date-time display (updates every second)

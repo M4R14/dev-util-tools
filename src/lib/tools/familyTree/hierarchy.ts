@@ -107,7 +107,8 @@ export const buildHierarchy = (members: FamilyMember[]): Hierarchy => {
     member.spouseIds
       .map((partnerId) => byId.get(partnerId))
       .filter(
-        (partner): partner is FamilyMember => Boolean(partner) && isMarriedIn(partner as FamilyMember),
+        (partner): partner is FamilyMember =>
+          Boolean(partner) && isMarriedIn(partner as FamilyMember),
       );
 
   // No visited-set needed: every member is either a root or the child of exactly one member that

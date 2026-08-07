@@ -5,11 +5,7 @@ import { useUserPreferences } from '../context/UserPreferencesContext';
 import { useSearch } from '../context/SearchContext';
 import { useToolSearch } from '../hooks/useToolSearch';
 import { TOOLS } from '../data/tools';
-import {
-  DashboardHero,
-  DashboardToolSection,
-  type DashboardHeroStat,
-} from './dashboard/index';
+import { DashboardHero, DashboardToolSection, type DashboardHeroStat } from './dashboard/index';
 
 const TIPS = [
   'Use Cmd+K to quickly open the command palette.',
@@ -94,7 +90,8 @@ const Dashboard: React.FC = () => {
               </span>
             </div>
             <p className="mt-2 text-sm text-muted-foreground">
-              Showing matches for <span className="font-medium text-foreground">&quot;{searchTerm}&quot;</span>.
+              Showing matches for{' '}
+              <span className="font-medium text-foreground">&quot;{searchTerm}&quot;</span>.
             </p>
           </section>
 

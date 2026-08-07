@@ -1,6 +1,12 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { computeDiff, getDiffStats, toUnifiedDiff, DiffLine, DiffStats } from '../../lib/tools/diffUtils';
+import {
+  computeDiff,
+  getDiffStats,
+  toUnifiedDiff,
+  DiffLine,
+  DiffStats,
+} from '../../lib/tools/diffUtils';
 import { useShareableUrlState } from '../useShareableUrlState';
 
 export type DiffViewMode = 'split' | 'unified';
@@ -11,7 +17,9 @@ export const useDiffViewer = () => {
   const [searchParams] = useSearchParams();
   const [original, setOriginal] = useState(() => searchParams.get('original') ?? '');
   const [modified, setModified] = useState(() => searchParams.get('modified') ?? '');
-  const [viewMode, setViewMode] = useState<DiffViewMode>(() => parseViewMode(searchParams.get('view')));
+  const [viewMode, setViewMode] = useState<DiffViewMode>(() =>
+    parseViewMode(searchParams.get('view')),
+  );
 
   useShareableUrlState([
     { key: 'original', value: original },

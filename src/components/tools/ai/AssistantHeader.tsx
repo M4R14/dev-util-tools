@@ -32,9 +32,7 @@ const AssistantHeader: React.FC<AssistantHeaderProps> = ({
         <span
           className={cn(
             'inline-flex items-center rounded-full px-2 py-0.5 font-medium',
-            hasApiKey
-              ? 'bg-emerald-500/10 text-emerald-600'
-              : 'bg-amber-500/10 text-amber-600',
+            hasApiKey ? 'bg-emerald-500/10 text-emerald-600' : 'bg-amber-500/10 text-amber-600',
           )}
         >
           {hasApiKey ? 'Connected' : 'Needs API key'}

@@ -1,27 +1,31 @@
 # Base64 Tool
 
-| Field | Value |
-|---|---|
-| **ToolID** | `base64-tool` |
-| **Route** | `/base64-tool` |
+| Field         | Value            |
+| ------------- | ---------------- |
+| **ToolID**    | `base64-tool`    |
+| **Route**     | `/base64-tool`   |
 | **Component** | `Base64Tool.tsx` |
-| **Hook** | `useBase64` |
-| **Lib** | — |
+| **Hook**      | `useBase64`      |
+| **Lib**       | —                |
 
 ## Description
+
 Encode and decode strings/files to Base64. Supports text and file input, with instant conversion.
 
 ## Files
+
 - `src/components/tools/Base64Tool.tsx`
 - `src/hooks/tools/useBase64.ts`
 
 ## Usage Pattern
+
 - Input: Textarea or file upload
 - Output: Encoded/decoded Base64 string
 - Actions: Encode, Decode, Copy, Clear
 - Share: URL sync via query keys `text` and `b64`
 
 ## UI
+
 - Uses `ToolLayout`, `Textarea`, `CopyButton`, `Input`, `Button`
 
 ## Related

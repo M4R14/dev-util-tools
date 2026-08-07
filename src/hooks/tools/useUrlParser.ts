@@ -1,6 +1,12 @@
 import { useState, useCallback, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { UrlParam, addUrlParam, parseUrl, removeUrlParam, updateUrlParam } from '../../lib/tools/urlUtils';
+import {
+  UrlParam,
+  addUrlParam,
+  parseUrl,
+  removeUrlParam,
+  updateUrlParam,
+} from '../../lib/tools/urlUtils';
 import { useShareableUrlState } from '../useShareableUrlState';
 
 export { type UrlParam };

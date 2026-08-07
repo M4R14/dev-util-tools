@@ -1,17 +1,19 @@
 # URL Parser
 
-| Field | Value |
-|---|---|
-| **ToolID** | `url-parser` |
-| **Route** | `/url-parser` |
+| Field         | Value                                 |
+| ------------- | ------------------------------------- |
+| **ToolID**    | `url-parser`                          |
+| **Route**     | `/url-parser`                         |
 | **Component** | `UrlParser.tsx` (with sub-components) |
-| **Hook** | `useUrlParser` |
-| **Lib** | `urlUtils.ts` |
+| **Hook**      | `useUrlParser`                        |
+| **Lib**       | `urlUtils.ts`                         |
 
 ## Description
+
 Parse, encode, and decode URLs with live validation, canonical preview, and interactive query param management.
 
 ## Files
+
 - `src/components/tools/UrlParser.tsx`
 - `src/components/tools/url-parser/UrlComponentInput.tsx`
 - `src/components/tools/url-parser/UrlComponents.tsx`
@@ -21,12 +23,14 @@ Parse, encode, and decode URLs with live validation, canonical preview, and inte
 - `src/lib/tools/urlUtils.ts`
 
 ## Usage Pattern
+
 - Input: URL string
 - Output: Canonical URL preview, parsed components, editable query params
 - Actions: Encode, Decode, Copy, Clear, Add param, Remove param
 - Shareability: Current URL input syncs with query string (`?input=...`) for deep-linking
 
 ## UI
+
 - Uses `ToolLayout`, `Input`, `Textarea`, `Button`, `CopyButton`, `Card`
 - Input panel shows URL status (`idle`/`valid`/`invalid`) and quick metadata (host, param count)
 - Parsed components panel includes security badge and canonical URL field

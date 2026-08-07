@@ -1,28 +1,32 @@
 # UUID Generator
 
-| Field | Value |
-|---|---|
-| **ToolID** | `uuid-generator` |
-| **Route** | `/uuid-generator` |
+| Field         | Value               |
+| ------------- | ------------------- |
+| **ToolID**    | `uuid-generator`    |
+| **Route**     | `/uuid-generator`   |
 | **Component** | `UUIDGenerator.tsx` |
-| **Hook** | `useUUIDGenerator` |
-| **Lib** | — |
+| **Hook**      | `useUUIDGenerator`  |
+| **Lib**       | —                   |
 
 ## Description
+
 Create Version 4 UUIDs (GUIDs) with a UI optimized for fast batch generation workflows.
 
 ## Files
+
 - `src/components/tools/UUIDGenerator.tsx`
 - `src/components/tools/uuid-generator/*`
 - `src/hooks/tools/useUUIDGenerator.ts`
 
 ## Usage Pattern
+
 - Options: Quantity (input + slider + quick presets), uppercase, hyphens
 - Output: List of UUIDs
 - Actions: Generate, Copy row, Copy all, Download, Clear
 - Shareability: Options sync with URL query (`?q=&hy=&up=`) for reproducible links
 
 ## UI
+
 - Uses `ToolLayout`, `Input`, `Slider`, `Switch`, `CopyButton`, `Button`, `Card`
 - UI/UX highlights:
   - Quick quantity presets (`1`, `5`, `10`, `25`, `50`, `100`)

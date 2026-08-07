@@ -139,7 +139,7 @@ The registry below groups tools by responsibility to make discovery easier for c
   - Purpose: machine-readable tool execution for browser-controlled AI agents
   - Covers 12 of the 19 tools. The remaining 7 are external link-outs or the AI assistant, which
     have no logic to run.
-  - Response *shape* is stable, but two tools are generators: `uuid-generator` and `password-gen`
+  - Response _shape_ is stable, but two tools are generators: `uuid-generator` and `password-gen`
     return fresh random values on every call by design.
   - Doc: [.ai doc](./tools/ai-bridge.md)
 

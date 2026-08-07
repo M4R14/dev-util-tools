@@ -72,7 +72,8 @@ const TimezoneConverter: React.FC = () => {
     [timezoneOptions],
   );
 
-  const hasValidResult = result !== '' && result !== 'Invalid Date' && resultDatePart && resultTimePart;
+  const hasValidResult =
+    result !== '' && result !== 'Invalid Date' && resultDatePart && resultTimePart;
   const sourceDateTime = date ? date.replace('T', ' ') : '--';
   const convertedDateTime = hasValidResult ? `${resultDatePart} ${resultTimePart}` : '--';
 
@@ -105,11 +106,16 @@ const TimezoneConverter: React.FC = () => {
               <div className="flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-muted-foreground" />
                 <h4 className="text-sm font-semibold">Source</h4>
-                <span className="text-xs text-muted-foreground">{sourceOption?.abbr ?? sourceTz}</span>
+                <span className="text-xs text-muted-foreground">
+                  {sourceOption?.abbr ?? sourceTz}
+                </span>
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="tz-date" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                <label
+                  htmlFor="tz-date"
+                  className="text-xs font-medium text-muted-foreground uppercase tracking-wide"
+                >
                   Date & Time
                 </label>
                 <div className="relative">
@@ -125,7 +131,10 @@ const TimezoneConverter: React.FC = () => {
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="source-tz" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                <label
+                  htmlFor="source-tz"
+                  className="text-xs font-medium text-muted-foreground uppercase tracking-wide"
+                >
                   Source Timezone
                 </label>
                 <div className="relative">
@@ -147,7 +156,9 @@ const TimezoneConverter: React.FC = () => {
               </div>
 
               <div className="rounded-lg border border-border/70 bg-muted/20 px-3 py-2.5">
-                <p className="text-[11px] uppercase tracking-wide text-muted-foreground mb-1">Source Preview</p>
+                <p className="text-[11px] uppercase tracking-wide text-muted-foreground mb-1">
+                  Source Preview
+                </p>
                 <p className="font-mono text-sm break-all text-foreground/90">{sourceDateTime}</p>
               </div>
             </div>
@@ -172,7 +183,10 @@ const TimezoneConverter: React.FC = () => {
               </div>
 
               <div className="space-y-1.5">
-                <label htmlFor="target-tz" className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                <label
+                  htmlFor="target-tz"
+                  className="text-xs font-medium text-muted-foreground uppercase tracking-wide"
+                >
                   Target Timezone
                 </label>
                 <div className="relative">
@@ -195,12 +209,22 @@ const TimezoneConverter: React.FC = () => {
 
               <div className="rounded-lg border border-primary/20 bg-primary/5 px-3 py-3">
                 <div className="flex items-center justify-between gap-3 mb-2">
-                  <p className="text-[11px] uppercase tracking-wide text-primary/80">Converted Result</p>
-                  <CopyButton value={hasValidResult ? result : ''} disabled={!hasValidResult} className="h-7 w-7" />
+                  <p className="text-[11px] uppercase tracking-wide text-primary/80">
+                    Converted Result
+                  </p>
+                  <CopyButton
+                    value={hasValidResult ? result : ''}
+                    disabled={!hasValidResult}
+                    className="h-7 w-7"
+                  />
                 </div>
-                <p className="font-mono text-lg sm:text-xl font-semibold text-primary break-all">{convertedDateTime}</p>
+                <p className="font-mono text-lg sm:text-xl font-semibold text-primary break-all">
+                  {convertedDateTime}
+                </p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  {hasValidResult ? `${resultTzAbbr} (${targetTz})` : 'Pick valid date and timezone values'}
+                  {hasValidResult
+                    ? `${resultTzAbbr} (${targetTz})`
+                    : 'Pick valid date and timezone values'}
                 </p>
               </div>
             </div>
@@ -232,7 +256,6 @@ const TimezoneConverter: React.FC = () => {
             Tip: use quick targets for frequent zones, then fine-tune from the full timezone list.
           </p>
         </ToolLayout.Panel>
-
       </div>
     </ToolLayout>
   );

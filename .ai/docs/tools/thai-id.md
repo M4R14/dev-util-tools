@@ -1,32 +1,37 @@
 # Thai ID Decoder
 
-| Field | Value |
-|---|---|
-| **ToolID** | `thai-id` |
-| **Route** | `/thai-id` |
+| Field         | Value            |
+| ------------- | ---------------- |
+| **ToolID**    | `thai-id`        |
+| **Route**     | `/thai-id`       |
 | **Component** | `ThaiIdTool.tsx` |
-| **Hook** | `useThaiId` |
-| **Lib** | `thaiId.ts` |
+| **Hook**      | `useThaiId`      |
+| **Lib**       | `thaiId.ts`      |
 
 ## Description
+
 Decode Thai national ID digits by position, validate checksum (13th digit), and generate sample valid IDs via `generateThaiId`.
 
 ## Files
+
 - `src/components/tools/ThaiIdTool.tsx`
 - `src/hooks/tools/useThaiId.ts`
 - `src/lib/tools/thaiId.ts`
 
 ## Usage Pattern
+
 - Input: Thai ID value (13 digits, accepts pasted formatted values)
 - Output: Decoded sections (person type, location digits, household, person order, checksum)
 - Actions: Generate (via `generateThaiId`), Analyze, Copy formatted ID, Clear
 - Share: URL sync via query key `input`
 
 ## UI
+
 - Uses `ToolLayout`, `Input`, `Button`, `CopyButton`
 - Includes full reference list for person type meaning in digit 1 (`1-8`)
 
 ## Core Logic
+
 - `src/lib/tools/thaiId.ts`
   - `generateThaiId()` generates a valid 13-digit Thai ID with correct checksum.
 

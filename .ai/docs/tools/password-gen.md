@@ -1,29 +1,33 @@
 # Password Generator
 
-| Field | Value |
-|---|---|
-| **ToolID** | `password-gen` |
-| **Route** | `/password-gen` |
+| Field         | Value                   |
+| ------------- | ----------------------- |
+| **ToolID**    | `password-gen`          |
+| **Route**     | `/password-gen`         |
 | **Component** | `PasswordGenerator.tsx` |
-| **Hook** | `usePasswordGenerator` |
-| **Lib** | `passwordStrength.ts` |
+| **Hook**      | `usePasswordGenerator`  |
+| **Lib**       | `passwordStrength.ts`   |
 
 ## Description
+
 Create secure, random passwords with customizable options, visibility controls, and a strength/entropy summary.
 
 ## Files
+
 - `src/components/tools/PasswordGenerator.tsx`
 - `src/components/tools/password-generator/*`
 - `src/hooks/tools/usePasswordGenerator.ts`
 - `src/lib/tools/passwordStrength.ts`
 
 ## Usage Pattern
+
 - Options: Length slider (+ presets), uppercase, lowercase, numbers, symbols
 - Output: Generated password with show/hide toggle and security summary (strength, pool size, entropy)
 - Actions: Generate/Regenerate, Copy, toggle character sets
 - Shareability: Generator options sync with URL query (`?len=&u=&l=&n=&s=`) for consistent setup sharing
 
 ## UI
+
 - Uses `ToolLayout`, `Button`, `CopyButton`, `Slider`, `Switch`
 - Settings are keyboard-accessible (`Switch`) and prevent disabling all character sets
 - Includes quick guidance panel for security best practices

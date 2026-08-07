@@ -31,12 +31,12 @@ Then read only relevant docs:
 
 Create a quick map for the request:
 
-| Concern | Source of truth | Target file(s) |
-|---|---|---|
+| Concern           | Source of truth          | Target file(s)                      |
+| ----------------- | ------------------------ | ----------------------------------- |
 | Route/page wiring | `App.tsx`, registry docs | `src/App.tsx`, `src/data/tools.tsx` |
-| UI layout | directory map + UI docs | `src/components/**` |
-| Data/constants | directory map | `src/data/**` |
-| Pure logic | directory map | `src/lib/**` |
+| UI layout         | directory map + UI docs  | `src/components/**`                 |
+| Data/constants    | directory map            | `src/data/**`                       |
+| Pure logic        | directory map            | `src/lib/**`                        |
 
 Rule:
 

@@ -55,7 +55,9 @@ const Composer: React.FC<ComposerProps> = ({
           {isContextOpen ? <ChevronDown className="w-3 h-3" /> : <ChevronUp className="w-3 h-3" />}
         </Button>
         {!isContextOpen && contextLines > 0 && (
-          <span className="ml-2 text-[11px] text-muted-foreground">{contextLines} lines attached</span>
+          <span className="ml-2 text-[11px] text-muted-foreground">
+            {contextLines} lines attached
+          </span>
         )}
 
         {isContextOpen && (
@@ -88,7 +90,9 @@ const Composer: React.FC<ComposerProps> = ({
             }
           }}
           placeholder={
-            hasApiKey ? 'Ask a question about your code...' : 'Configure API key to start chatting...'
+            hasApiKey
+              ? 'Ask a question about your code...'
+              : 'Configure API key to start chatting...'
           }
           className="w-full min-h-[44px] max-h-32 bg-transparent border-0 focus-visible:ring-0 focus-visible:ring-offset-0 p-2 text-sm resize-none shadow-none"
           style={{ height: 'auto' }}

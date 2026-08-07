@@ -30,11 +30,7 @@ const PasswordOutputPanel: React.FC<PasswordOutputPanelProps> = ({
   onGenerate,
 }) => {
   const StrengthIcon =
-    strength.label === 'Strong'
-      ? ShieldCheck
-      : strength.label === 'Medium'
-        ? Shield
-        : ShieldAlert;
+    strength.label === 'Strong' ? ShieldCheck : strength.label === 'Medium' ? Shield : ShieldAlert;
 
   return (
     <ToolLayout.Panel
@@ -55,11 +51,7 @@ const PasswordOutputPanel: React.FC<PasswordOutputPanelProps> = ({
             <RefreshCw className="mr-2 h-4 w-4" />
             Generate
           </Button>
-          <CopyButton
-            value={password}
-            disabled={!password}
-            successMessage="Password copied"
-          />
+          <CopyButton value={password} disabled={!password} successMessage="Password copied" />
         </div>
       }
     >

@@ -27,10 +27,7 @@ export const MemberSearch: React.FC<MemberSearchProps> = ({ members, onSelect })
 
     return members
       .filter((member) =>
-        [member.name, member.relationship, member.note]
-          .join(' ')
-          .toLowerCase()
-          .includes(needle),
+        [member.name, member.relationship, member.note].join(' ').toLowerCase().includes(needle),
       )
       .slice(0, MAX_RESULTS);
   }, [members, query]);
@@ -78,9 +75,7 @@ export const MemberSearch: React.FC<MemberSearchProps> = ({ members, onSelect })
                     'hover:bg-muted focus-visible:bg-muted focus-visible:outline-none',
                   )}
                 >
-                  <span className="font-medium text-foreground">
-                    {member.name || 'Untitled'}
-                  </span>
+                  <span className="font-medium text-foreground">{member.name || 'Untitled'}</span>
                   {member.relationship && (
                     <span className="text-muted-foreground">{member.relationship}</span>
                   )}

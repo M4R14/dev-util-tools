@@ -43,16 +43,9 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
           <label className="text-sm font-medium text-muted-foreground uppercase tracking-wider block">
             เลือกวันที่ (พ.ศ.)
           </label>
-          <p className="text-xs text-muted-foreground mt-1">
-            รองรับทั้งเดือนแบบย่อและแบบเต็ม
-          </p>
+          <p className="text-xs text-muted-foreground mt-1">รองรับทั้งเดือนแบบย่อและแบบเต็ม</p>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={onSetToday}
-          className="h-8 gap-1.5 shrink-0"
-        >
+        <Button variant="outline" size="sm" onClick={onSetToday} className="h-8 gap-1.5 shrink-0">
           <CalendarDays className="w-3.5 h-3.5" />
           วันนี้
         </Button>

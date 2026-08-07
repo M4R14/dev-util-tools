@@ -82,7 +82,7 @@ const DashboardHero: React.FC<DashboardHeroProps> = ({
         })}
       </div>
 
-      <div className='w-full flex justify-center'>
+      <div className="w-full flex justify-center">
         <div className="mt-5 inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium border border-primary/20">
           <Sparkles className="w-4 h-4" aria-hidden="true" />
           <span>Tip: {tip}</span>

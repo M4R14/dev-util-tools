@@ -46,7 +46,9 @@ const UrlQueryParams: React.FC<UrlQueryParamsProps> = ({
       <div className="h-full flex flex-col gap-4 pt-1">
         <div className="rounded-lg border border-border/60 bg-muted/20 px-3 py-2.5">
           <div className="mb-1.5 flex items-center justify-between gap-2">
-            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">Query string</p>
+            <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+              Query string
+            </p>
             <CopyButton value={queryString} disabled={!queryString} className="h-7 w-7" />
           </div>
           <p className="font-mono text-xs break-all text-foreground/90">{queryString || '--'}</p>

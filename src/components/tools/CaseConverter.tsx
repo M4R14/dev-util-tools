@@ -8,12 +8,7 @@ import { Button } from '../ui/Button';
 import { cn } from '../../lib/utils';
 import { useCaseConverter } from '../../hooks/tools/useCaseConverter';
 
-const EXAMPLE_INPUTS = [
-  'hello world',
-  'HelloWorld',
-  'hello_world',
-  'api response code',
-] as const;
+const EXAMPLE_INPUTS = ['hello world', 'HelloWorld', 'hello_world', 'api response code'] as const;
 
 const CaseConverter: React.FC = () => {
   const { input, setInput, results } = useCaseConverter();
@@ -33,7 +28,7 @@ const CaseConverter: React.FC = () => {
     <ToolLayout>
       <ToolLayout.Panel
         title="Input Text"
-        actions={(
+        actions={
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
@@ -55,7 +50,7 @@ const CaseConverter: React.FC = () => {
               className="h-7 w-7"
             />
           </div>
-        )}
+        }
       >
         <div className="space-y-4">
           <Textarea
@@ -115,11 +110,11 @@ const CaseConverter: React.FC = () => {
 
       <ToolLayout.Section
         title="Conversions"
-        actions={(
+        actions={
           <span className="text-xs text-muted-foreground px-2 py-1 rounded-md border border-border/60 bg-muted/20">
             {results.length} outputs
           </span>
-        )}
+        }
       >
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 p-4">
           {results.map((item, index) => (
@@ -148,7 +143,9 @@ const CaseConverter: React.FC = () => {
               <CardContent className="p-3 pt-2">
                 <div className="rounded-md border border-border/50 bg-muted/10 px-2.5 py-2 min-h-[56px]">
                   <div className="font-mono text-sm break-all text-foreground">
-                    {item.value || <span className="text-muted-foreground select-none">No output</span>}
+                    {item.value || (
+                      <span className="text-muted-foreground select-none">No output</span>
+                    )}
                   </div>
                 </div>
               </CardContent>

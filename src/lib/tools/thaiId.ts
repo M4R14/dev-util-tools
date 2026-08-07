@@ -112,9 +112,10 @@ export const calculateThaiIdChecksum = (firstTwelveDigits: string): number => {
 
 export const generateThaiId = (options: GenerateThaiIdOptions = {}): string => {
   const availablePersonTypes = Object.keys(PERSON_TYPE_MAP);
-  const selectedPersonType = options.personTypeDigit && availablePersonTypes.includes(options.personTypeDigit)
-    ? options.personTypeDigit
-    : availablePersonTypes[Math.floor(Math.random() * availablePersonTypes.length)];
+  const selectedPersonType =
+    options.personTypeDigit && availablePersonTypes.includes(options.personTypeDigit)
+      ? options.personTypeDigit
+      : availablePersonTypes[Math.floor(Math.random() * availablePersonTypes.length)];
 
   const firstTwelveDigits = `${selectedPersonType}${Array.from({ length: 11 }, () =>
     Math.floor(Math.random() * 10).toString(),
@@ -147,7 +148,8 @@ export const analyzeThaiId = (input: string): ThaiIdAnalysis => {
     isValid: actualChecksum === expectedChecksum,
     expectedChecksum,
     actualChecksum,
-    personTypeDescription: PERSON_TYPE_MAP[personTypeDigit] ?? 'ไม่พบคำอธิบายประเภทของบุคคลสำหรับเลขหลักแรกนี้',
+    personTypeDescription:
+      PERSON_TYPE_MAP[personTypeDigit] ?? 'ไม่พบคำอธิบายประเภทของบุคคลสำหรับเลขหลักแรกนี้',
     provinceCode: sanitized.slice(1, 3),
     districtCode: sanitized.slice(3, 5),
     householdNumber: sanitized.slice(5, 10),

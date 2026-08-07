@@ -158,9 +158,9 @@ owns the tokeniser — see [Search](./features/search-features.md).
 | `src/content/blog/*.md`              | The posts themselves                                             |
 | `src/data/blogPosts.ts`              | Frontmatter validation, language split, HTML rendering           |
 | `src/data/blogCategories.ts`         | Category labels/icons, shared by the card badge and filter chips |
-| `src/lib/content/markdown.ts`                | `marked` configuration — HTML escaping and URL allowlist         |
-| `src/lib/content/blogContent.ts`             | `## TH` / `## EN` splitting                                      |
-| `src/lib/search/searchTokenizer.ts`         | Thai-aware tokenising for search                                 |
+| `src/lib/content/markdown.ts`        | `marked` configuration — HTML escaping and URL allowlist         |
+| `src/lib/content/blogContent.ts`     | `## TH` / `## EN` splitting                                      |
+| `src/lib/search/searchTokenizer.ts`  | Thai-aware tokenising for search                                 |
 | `src/hooks/useBlogFilters.ts`        | Category, language, and search state                             |
 | `src/components/Blog.tsx`            | Page shell and empty state                                       |
 | `src/components/blog/`               | `BlogPostCard`, `BlogFilters`                                    |

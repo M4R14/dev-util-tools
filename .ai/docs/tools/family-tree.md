@@ -15,13 +15,13 @@ Build a family tree from `{ name, parent, relationship }` and keep it in the bro
 
 `src/lib/tools/familyTree/` is four modules and a layout, deliberately without a barrel:
 
-| File | Holds | Depends on |
-|---|---|---|
-| `types.ts` | `FamilyMember`, `FamilyNode`, `Hierarchy`, `Gender`, `CreateMemberInput`, `FamilyFailure`, `isFamilyFailure`, `RELATIONSHIP_PRESETS` | nothing |
-| `members.ts` | every change to the flat list — create, append, update, remove, `linkSpouse`, `reparentMember`, `ancestorIdsOf` | `types`, `randomUtils` |
-| `hierarchy.ts` | `buildHierarchy`, `collapseHierarchy`, `countDescendants`, `countGenerations`, `flattenHierarchy` | `types` |
-| `storage.ts` | the zod schema, `normalizeMembers`, `serializeFamily`, `parseFamily` | `types`, `zod` |
-| `layout.ts` | `layoutFamilyTree2D` | `types` |
+| File           | Holds                                                                                                                                | Depends on             |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ---------------------- |
+| `types.ts`     | `FamilyMember`, `FamilyNode`, `Hierarchy`, `Gender`, `CreateMemberInput`, `FamilyFailure`, `isFamilyFailure`, `RELATIONSHIP_PRESETS` | nothing                |
+| `members.ts`   | every change to the flat list — create, append, update, remove, `linkSpouse`, `reparentMember`, `ancestorIdsOf`                      | `types`, `randomUtils` |
+| `hierarchy.ts` | `buildHierarchy`, `collapseHierarchy`, `countDescendants`, `countGenerations`, `flattenHierarchy`                                    | `types`                |
+| `storage.ts`   | the zod schema, `normalizeMembers`, `serializeFamily`, `parseFamily`                                                                 | `types`, `zod`         |
+| `layout.ts`    | `layoutFamilyTree2D`                                                                                                                 | `types`                |
 
 The split follows what the callers actually ask for. Five of the six components import nothing but
 `FamilyMember` or `FamilyNode` to type a prop; only the hook wants operations. One 466-line module
@@ -42,9 +42,9 @@ interface FamilyMember {
   parentId: string | null; // null = a root
   spouseId: string | null; // the partner drawn beside them
   gender: 'male' | 'female' | 'unknown';
-  relationship: string;    // free text; how they relate to their parent
-  birth: string;           // free text, not a date — see lifeDates.ts
-  death: string;           // anything at all here means the person is gone
+  relationship: string; // free text; how they relate to their parent
+  birth: string; // free text, not a date — see lifeDates.ts
+  death: string; // anything at all here means the person is gone
   note: string;
 }
 ```
@@ -71,7 +71,7 @@ parent is missing (an import that lost a row) or the parent chain loops (a hand-
 are reported on `Hierarchy` (`orphanedIds`, `cycleIds`), rendered as roots, and flagged amber in the
 UI. A tree that silently omits people is worse than one showing a stray branch.
 
-**Only members *on* a loop are lifted, not everyone below one.** "Cannot reach a root" is also true
+**Only members _on_ a loop are lifted, not everyone below one.** "Cannot reach a root" is also true
 of every descendant of a loop, and promoting those discards a parent link that was never in
 question. `buildHierarchy.isOnCycle` tests whether the chain returns to the member itself.
 
@@ -159,7 +159,7 @@ one goes up from the parent, across above everyone's heads at its own height, an
 that partner.
 
 Two earlier attempts failed here, both found by looking at the picture rather than by a test.
-Chaining each bar to the previous box made it read as two wives married *to each other*. Putting the
+Chaining each bar to the previous box made it read as two wives married _to each other_. Putting the
 parent in the middle fixed exactly two partners and broke again at three, because the midpoint of a
 non-adjacent pair lands squarely on whoever sits between them — so that marriage's children
 descended out of another wife's head.
@@ -191,13 +191,13 @@ is gone.
 `layout.ts` is a pure function from the hierarchy to coordinates and connector polylines,
 tested without rendering anything. The rendering is split the same way the work is:
 
-| File | Holds |
-|---|---|
-| `FamilyDiagram.tsx` | composition only — layout in, the pieces below arranged |
-| `MemberNode.tsx` | one person: outline, silhouette, labels, warning badge, fold control |
-| `DiagramToolbar.tsx` | zoom, fit and export chrome |
-| `useDiagramViewport.ts` | what is on screen: zoom, fit, drag-to-pan, scroll-to-reveal |
-| `diagramLabels.ts` | cutting each label to the width of its slot |
+| File                    | Holds                                                                |
+| ----------------------- | -------------------------------------------------------------------- |
+| `FamilyDiagram.tsx`     | composition only — layout in, the pieces below arranged              |
+| `MemberNode.tsx`        | one person: outline, silhouette, labels, warning badge, fold control |
+| `DiagramToolbar.tsx`    | zoom, fit and export chrome                                          |
+| `useDiagramViewport.ts` | what is on screen: zoom, fit, drag-to-pan, scroll-to-reveal          |
+| `diagramLabels.ts`      | cutting each label to the width of its slot                          |
 
 `useDiagramViewport` is one hook rather than four because zoom, fit, panning and revealing all
 read or write the same two numbers — the scroll offsets of one element. Splitting them would mean
@@ -210,7 +210,7 @@ nearly touch, so a shallow branch can tuck under the overhang of a deep one.
 
 The rule it replaced was `width = max(own, sum of children)`, which is cheap and wrong in a specific
 way: a long chain under one child inflates the block of every ancestor, so siblings get pushed apart
-at *every* level, including levels where nothing sits between them. Measured on a realistically
+at _every_ level, including levels where nothing sits between them. Measured on a realistically
 lopsided tree — one line carried down four generations, the other children stopping — that cost 27%
 of the width at two branches and 32% at three. On a **uniform** tree the two rules agree exactly,
 which is why the first shapes I tested showed no change at all and nearly sent me looking elsewhere.
@@ -235,7 +235,7 @@ three.js and carried 136 kB gzipped to do it.
 
 **The fit floor is 85%, and that number was measured.** It was 55% first, which turned out to be the
 worst of both worlds: a fourteen-sibling generation rendered its names at 7.1px — unreadable — and
-*still* needed horizontal scrolling. At 85% the same tree draws at 11px and scrolls. Below the
+_still_ needed horizontal scrolling. At 85% the same tree draws at 11px and scrolls. Below the
 floor, scrolling at a legible size beats shrinking past it.
 
 **Labels are truncated against a real measurement, not a character count.** `svgText.ts` takes a
@@ -269,7 +269,7 @@ root looks like a deliberate one, and the diagram is what people actually look a
 **Folding is view state, not tree data.** `collapseHierarchy` is a pure prune over the hierarchy, so
 the layout never learns that folding exists — it lays out whatever tree it is handed. The badge
 shows the number of hidden people because a bare chevron hides how much is behind it. The fold
-control sits *below* the box: inside it, it landed exactly on the detail line and the two drew over
+control sits _below_ the box: inside it, it landed exactly on the detail line and the two drew over
 each other.
 
 ### Keeping the picture near the top

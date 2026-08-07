@@ -4,16 +4,16 @@
 
 **Live:** [https://m4r14.github.io/dev-util-tools/](https://m4r14.github.io/dev-util-tools/)
 
-| Aspect | Detail |
-|---|---|
-| **Framework** | React 19 + TypeScript 5.8 + Vite 6 |
-| **Styling** | Tailwind CSS 3 + Radix UI primitives |
-| **Routing** | React Router DOM 7 (hash-free, path-based) |
-| **State** | React Context (theme, search, user preferences) — no Redux/Zustand |
-| **Content** | Blog updates sourced from local Markdown files (`src/content/blog/*.md`), including auto-generated mini release notes from git history |
-| **Offline/PWA** | Service worker + web manifest; local tools available offline after initial cache warmup |
-| **Hosting** | GitHub Pages (auto-deploy on push to `main`) |
-| **Testing** | Vitest + React Testing Library + jsdom (baseline lib unit tests + tool route smoke tests) |
+| Aspect          | Detail                                                                                                                                 |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| **Framework**   | React 19 + TypeScript 5.8 + Vite 6                                                                                                     |
+| **Styling**     | Tailwind CSS 3 + Radix UI primitives                                                                                                   |
+| **Routing**     | React Router DOM 7 (hash-free, path-based)                                                                                             |
+| **State**       | React Context (theme, search, user preferences) — no Redux/Zustand                                                                     |
+| **Content**     | Blog updates sourced from local Markdown files (`src/content/blog/*.md`), including auto-generated mini release notes from git history |
+| **Offline/PWA** | Service worker + web manifest; local tools available offline after initial cache warmup                                                |
+| **Hosting**     | GitHub Pages (auto-deploy on push to `main`)                                                                                           |
+| **Testing**     | Vitest + React Testing Library + jsdom (baseline lib unit tests + tool route smoke tests)                                              |
 
 ---
 

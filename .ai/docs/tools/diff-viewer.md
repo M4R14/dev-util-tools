@@ -1,29 +1,33 @@
 # Diff Viewer
 
-| Field | Value |
-|---|---|
-| **ToolID** | `diff-viewer` |
-| **Route** | `/diff-viewer` |
-| **Component** | `DiffViewer.tsx` |
-| **Hook** | `useDiffViewer` |
-| **Lib** | `diffUtils.ts` (diff lib) |
+| Field         | Value                     |
+| ------------- | ------------------------- |
+| **ToolID**    | `diff-viewer`             |
+| **Route**     | `/diff-viewer`            |
+| **Component** | `DiffViewer.tsx`          |
+| **Hook**      | `useDiffViewer`           |
+| **Lib**       | `diffUtils.ts` (diff lib) |
 
 ## Description
+
 Compare two texts side-by-side and view differences. Supports unified/split view, change filtering, line wrapping toggle, copy, and inline stats.
 
 ## Files
+
 - `src/components/tools/DiffViewer.tsx`
 - `src/components/tools/diff-viewer/*`
 - `src/hooks/tools/useDiffViewer.ts`
 - `src/lib/tools/diffUtils.ts`
 
 ## Usage Pattern
+
 - Input: Two textareas (A, B)
 - Output: Highlighted diff (split or unified) with optional "changes only" filtering
 - Actions: Load sample, Swap, Clear, Toggle view, Toggle line wrap, Copy unified diff
 - Shareability: Original/modified text and view mode sync via URL query (`?original=&modified=&view=`)
 
 ## UI
+
 - Uses `ToolLayout`, `Textarea`, `CopyButton`, `Button`
 - Input panels show line/character metrics
 - Toolbar includes quick controls and diff change summary

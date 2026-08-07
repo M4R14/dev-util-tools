@@ -32,7 +32,7 @@ const ReferenceTableSection: React.FC<ReferenceTableSectionProps> = ({
   return (
     <ToolLayout.Section
       title={title}
-      actions={(
+      actions={
         <div className="flex items-center gap-2">
           <span className="hidden md:inline text-xs text-muted-foreground">
             คลิกคอลัมน์เพื่อไฮไลต์
@@ -48,7 +48,7 @@ const ReferenceTableSection: React.FC<ReferenceTableSectionProps> = ({
             </button>
           )}
         </div>
-      )}
+      }
     >
       <Card className="border-border shadow-sm">
         <CardContent className="p-0">
@@ -84,10 +84,7 @@ const ReferenceTableSection: React.FC<ReferenceTableSectionProps> = ({
                     {numberLabel}
                   </th>
                   {rows.map((row) => (
-                    <th
-                      key={`header-${row.id}`}
-                      className="px-2 py-2 min-w-[110px]"
-                    >
+                    <th key={`header-${row.id}`} className="px-2 py-2 min-w-[110px]">
                       <button
                         type="button"
                         onClick={() => toggleRow(row.id)}

@@ -1,28 +1,32 @@
 # XML to JSON
 
-| Field | Value |
-|---|---|
-| **ToolID** | `xml-to-json` |
-| **Route** | `/xml-to-json` |
+| Field         | Value           |
+| ------------- | --------------- |
+| **ToolID**    | `xml-to-json`   |
+| **Route**     | `/xml-to-json`  |
 | **Component** | `XMLToJson.tsx` |
-| **Hook** | `useXmlToJson` |
-| **Lib** | `xmlToJson.ts` |
+| **Hook**      | `useXmlToJson`  |
+| **Lib**       | `xmlToJson.ts`  |
 
 ## Description
+
 Convert XML documents into structured JSON with optional attribute preservation and JSON syntax highlighting via `highlight.js`.
 
 ## Files
+
 - `src/components/tools/XMLToJson.tsx`
 - `src/hooks/tools/useXmlToJson.ts`
 - `src/lib/tools/xmlToJson.ts`
 
 ## Usage Pattern
+
 - Input: Paste XML text
 - Output: JSON preview (syntax highlighted by `highlight.js`)
 - Actions: Convert, Copy, Clear, Include/Exclude attributes
 - Share: URL sync via query keys `input` and `attrs`
 
 ## UI
+
 - Uses `ToolLayout`, `Textarea`, `Switch`, `CopyButton`, `CodeHighlight`, `Button`
 - `CodeHighlight` renders JSON output using `highlight.js`
 

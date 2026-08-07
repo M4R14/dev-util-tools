@@ -47,12 +47,15 @@ export const useXmlToJson = () => {
     setIncludeAttributes(true);
   }, []);
 
-  const handleXmlChange = useCallback((value: string) => {
-    setXmlInput(value);
-    if (error) {
-      setError(null);
-    }
-  }, [error]);
+  const handleXmlChange = useCallback(
+    (value: string) => {
+      setXmlInput(value);
+      if (error) {
+        setError(null);
+      }
+    },
+    [error],
+  );
 
   return {
     xmlInput,

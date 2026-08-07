@@ -38,7 +38,9 @@ export const useTimezoneConverter = () => {
   );
   const [date, setDate] = useState<string>(() => searchParams.get('date') ?? defaultDate);
 
-  const [sourceTz, setSourceTz] = useState<string>(() => searchParams.get('from') ?? defaultSourceTz);
+  const [sourceTz, setSourceTz] = useState<string>(
+    () => searchParams.get('from') ?? defaultSourceTz,
+  );
   const [targetTz, setTargetTz] = useState<string>(
     () => searchParams.get('to') ?? DEFAULT_TARGET_TZ,
   );
@@ -57,12 +59,13 @@ export const useTimezoneConverter = () => {
       const converted = sourceDate.tz(targetTz);
 
       // Get timezone abbreviation via Intl (dayjs doesn't expose this directly)
-      const tzAbbr = new Intl.DateTimeFormat('en-US', {
-        timeZone: targetTz,
-        timeZoneName: 'short',
-      })
-        .formatToParts(converted.toDate())
-        .find((p) => p.type === 'timeZoneName')?.value || targetTz;
+      const tzAbbr =
+        new Intl.DateTimeFormat('en-US', {
+          timeZone: targetTz,
+          timeZoneName: 'short',
+        })
+          .formatToParts(converted.toDate())
+          .find((p) => p.type === 'timeZoneName')?.value || targetTz;
 
       const isoString = converted.format('YYYY-MM-DDTHH:mm');
       setResult(`${isoString} ${tzAbbr}`);

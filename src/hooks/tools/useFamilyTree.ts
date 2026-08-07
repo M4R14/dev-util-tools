@@ -178,18 +178,13 @@ export const useFamilyTree = () => {
       toast.success(message, {
         duration: UNDO_MS,
         action:
-          previous.length > 0
-            ? { label: 'Undo', onClick: () => setMembers(previous) }
-            : undefined,
+          previous.length > 0 ? { label: 'Undo', onClick: () => setMembers(previous) } : undefined,
       });
     },
     [members],
   );
 
-  const clearAll = useCallback(
-    () => replaceAll([], 'Family tree cleared'),
-    [replaceAll],
-  );
+  const clearAll = useCallback(() => replaceAll([], 'Family tree cleared'), [replaceAll]);
 
   const importJson = useCallback(
     (raw: string) => {

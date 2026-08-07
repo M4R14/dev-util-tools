@@ -29,7 +29,13 @@ export const DiagramToolbar: React.FC<DiagramToolbarProps> = ({
   search,
 }) => (
   <div className="flex flex-wrap items-center gap-1">
-    <Button variant="outline" size="icon" onClick={onZoomOut} className="h-8 w-8" aria-label="Zoom out">
+    <Button
+      variant="outline"
+      size="icon"
+      onClick={onZoomOut}
+      className="h-8 w-8"
+      aria-label="Zoom out"
+    >
       <Minus className="h-4 w-4" />
     </Button>
 
@@ -37,7 +43,13 @@ export const DiagramToolbar: React.FC<DiagramToolbarProps> = ({
       {Math.round(scale * 100)}%
     </span>
 
-    <Button variant="outline" size="icon" onClick={onZoomIn} className="h-8 w-8" aria-label="Zoom in">
+    <Button
+      variant="outline"
+      size="icon"
+      onClick={onZoomIn}
+      className="h-8 w-8"
+      aria-label="Zoom in"
+    >
       <Plus className="h-4 w-4" />
     </Button>
 
@@ -59,11 +71,21 @@ export const DiagramToolbar: React.FC<DiagramToolbarProps> = ({
     {search && <div className="ml-2 w-48 min-w-32 flex-1 sm:max-w-64">{search}</div>}
 
     <div className="ml-auto flex items-center gap-1">
-      <Button variant="ghost" size="sm" onClick={() => onExport('svg')} className="h-8 px-2 text-xs">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => onExport('svg')}
+        className="h-8 px-2 text-xs"
+      >
         <Download className="mr-1.5 h-3.5 w-3.5" />
         SVG
       </Button>
-      <Button variant="ghost" size="sm" onClick={() => onExport('png')} className="h-8 px-2 text-xs">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => onExport('png')}
+        className="h-8 px-2 text-xs"
+      >
         <Download className="mr-1.5 h-3.5 w-3.5" />
         PNG
       </Button>

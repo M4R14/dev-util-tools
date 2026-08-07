@@ -35,14 +35,14 @@ Coverage and query-key details are documented in [Shareable URL State Features](
 
 ## Feature Docs Map
 
-| File | Focus |
-|---|---|
-| `tool-features.md` | Tool-by-tool capabilities, routes, and usage scope |
-| `command-palette-features.md` | Command palette triggers, keyboard flow, and action/tool execution behavior |
-| `shareable-url-state-features.md` | Query-state sharing coverage and URL key contracts |
-| `platform-ux-features.md` | Navigation, search, personalization, accessibility, resilience |
-| `ai-automation-features.md` | AI Smart Assistant and AI Bridge endpoints/capabilities |
-| `delivery-ops-features.md` | Build, performance, deployment, environment, and quality workflow |
+| File                              | Focus                                                                       |
+| --------------------------------- | --------------------------------------------------------------------------- |
+| `tool-features.md`                | Tool-by-tool capabilities, routes, and usage scope                          |
+| `command-palette-features.md`     | Command palette triggers, keyboard flow, and action/tool execution behavior |
+| `shareable-url-state-features.md` | Query-state sharing coverage and URL key contracts                          |
+| `platform-ux-features.md`         | Navigation, search, personalization, accessibility, resilience              |
+| `ai-automation-features.md`       | AI Smart Assistant and AI Bridge endpoints/capabilities                     |
+| `delivery-ops-features.md`        | Build, performance, deployment, environment, and quality workflow           |
 
 ## Category Summary
 
@@ -61,13 +61,13 @@ Coverage and query-key details are documented in [Shareable URL State Features](
 
 ## Behavior Source Map
 
-| Concern | File |
-|---|---|
-| Sidebar keyboard handling and selection lifecycle | `src/components/sidebar/useSidebarNavigation.ts` |
-| Sidebar section ordering and index offsets | `src/components/sidebar/useSidebarSections.ts` |
-| Sidebar section/view rendering | `src/components/sidebar/SidebarNavigation.tsx` |
-| Global command-palette hotkey lifecycle | `src/components/main-layout/useCommandPaletteHotkey.ts` |
-| Route-close + scroll reset effects | `src/components/main-layout/useMainLayoutRouteEffects.ts` |
+| Concern                                           | File                                                      |
+| ------------------------------------------------- | --------------------------------------------------------- |
+| Sidebar keyboard handling and selection lifecycle | `src/components/sidebar/useSidebarNavigation.ts`          |
+| Sidebar section ordering and index offsets        | `src/components/sidebar/useSidebarSections.ts`            |
+| Sidebar section/view rendering                    | `src/components/sidebar/SidebarNavigation.tsx`            |
+| Global command-palette hotkey lifecycle           | `src/components/main-layout/useCommandPaletteHotkey.ts`   |
+| Route-close + scroll reset effects                | `src/components/main-layout/useMainLayoutRouteEffects.ts` |
 
 ## Related
 

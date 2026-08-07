@@ -1,11 +1,11 @@
 # AI Agent Bridge
 
-| Field | Value |
-|---|---|
-| **ToolID** | `ai-bridge` |
-| **Route** | `/ai-bridge` |
-| **Component** | `AIAgentBridge.tsx` |
-| **Runner** | `src/lib/aiToolBridge.ts` |
+| Field         | Value                     |
+| ------------- | ------------------------- |
+| **ToolID**    | `ai-bridge`               |
+| **Route**     | `/ai-bridge`              |
+| **Component** | `AIAgentBridge.tsx`       |
+| **Runner**    | `src/lib/aiToolBridge.ts` |
 
 ## Overview
 
@@ -13,13 +13,13 @@ Machine-readable bridge that allows AI/browser agents to execute selected DevPul
 
 ## Endpoints
 
-| Endpoint | Purpose |
-|---|---|
-| `/ai-bridge` | Execute tool requests and return result/error payload |
-| `/ai-bridge/catalog` | Discovery endpoint: tools + operations + description + usage tips + examples |
-| `/ai-bridge/spec` | JSON schema endpoint for request/response validation |
-| `/ai-bridge/catalog.json` | Static discovery JSON (curl-friendly) |
-| `/ai-bridge/spec.json` | Static schema JSON (curl-friendly) |
+| Endpoint                  | Purpose                                                                      |
+| ------------------------- | ---------------------------------------------------------------------------- |
+| `/ai-bridge`              | Execute tool requests and return result/error payload                        |
+| `/ai-bridge/catalog`      | Discovery endpoint: tools + operations + description + usage tips + examples |
+| `/ai-bridge/spec`         | JSON schema endpoint for request/response validation                         |
+| `/ai-bridge/catalog.json` | Static discovery JSON (curl-friendly)                                        |
+| `/ai-bridge/spec.json`    | Static schema JSON (curl-friendly)                                           |
 
 ## Hosting Limits — read this before planning an integration
 
@@ -27,10 +27,10 @@ DevPulse deploys to **GitHub Pages** (`.github/workflows/deploy.yml` → `upload
 That is static file hosting: there is no server process, so **the bridge cannot execute anything
 over plain HTTP**. This is a property of the deployment, not a gap in the code.
 
-| Capability | HTTP-only agent (curl/fetch) | Browser-driving agent |
-|---|---|---|
-| Discovery — `catalog.json`, `spec.json` | ✅ works | ✅ works |
-| Execution — `run`, `runBatch` | ❌ **impossible** | ✅ works |
+| Capability                              | HTTP-only agent (curl/fetch) | Browser-driving agent |
+| --------------------------------------- | ---------------------------- | --------------------- |
+| Discovery — `catalog.json`, `spec.json` | ✅ works                     | ✅ works              |
+| Execution — `run`, `runBatch`           | ❌ **impossible**            | ✅ works              |
 
 `curl /ai-bridge?tool=...` returns the SPA's HTML shell, never a result: the response is produced
 by JavaScript after the page boots. Verified against a production build, not assumed.
@@ -112,12 +112,12 @@ empty object while the docs advertised it as a resume/handoff feature.
 
 Each catalog entry carries `reliability`:
 
-| Value | Meaning |
-|---|---|
-| `exact` | The answer depends on an algorithm a language model reproduces unreliably — checksums, unicode-safe base64, diffing, base64url. **Call the tool.** |
-| `llm-can-approximate` | A capable model usually gets this right unaided; the tool is a convenience and a consistency guarantee. |
+| Value                 | Meaning                                                                                                                                            |
+| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `exact`               | The answer depends on an algorithm a language model reproduces unreliably — checksums, unicode-safe base64, diffing, base64url. **Call the tool.** |
+| `llm-can-approximate` | A capable model usually gets this right unaided; the tool is a convenience and a consistency guarantee.                                            |
 
-This is the field that tells an agent *why* the bridge is worth calling at all. `thai-id`,
+This is the field that tells an agent _why_ the bridge is worth calling at all. `thai-id`,
 `base64-tool`, `diff-viewer`, `jwt-decoder`, `uuid-generator`, `password-gen` and
 `thai-date-converter` are `exact`.
 
@@ -134,20 +134,20 @@ This is the field that tells an agent *why* the bridge is worth calling at all. 
 }
 ```
 
-| Tool | Operations |
-|---|---|
-| `json-formatter` | format, minify, validate |
-| `xml-formatter` | format, minify, validate |
-| `xml-to-json` | convert |
-| `base64-tool` | encode, decode |
-| `case-converter` | convert |
-| `url-parser` | parse |
-| `diff-viewer` | compare |
-| `thai-date-converter` | format, parse |
-| `thai-id` | analyze, validate, format, generate |
-| `jwt-decoder` | decode, claims |
-| `uuid-generator` | generate |
-| `password-gen` | generate |
+| Tool                  | Operations                          |
+| --------------------- | ----------------------------------- |
+| `json-formatter`      | format, minify, validate            |
+| `xml-formatter`       | format, minify, validate            |
+| `xml-to-json`         | convert                             |
+| `base64-tool`         | encode, decode                      |
+| `case-converter`      | convert                             |
+| `url-parser`          | parse                               |
+| `diff-viewer`         | compare                             |
+| `thai-date-converter` | format, parse                       |
+| `thai-id`             | analyze, validate, format, generate |
+| `jwt-decoder`         | decode, claims                      |
+| `uuid-generator`      | generate                            |
+| `password-gen`        | generate                            |
 
 `uuid-generator` and `password-gen` ignore `input` and take their configuration from `options`.
 
@@ -160,7 +160,7 @@ const response = await window.DevPulseAI.run({
   tool: 'json-formatter',
   operation: 'format',
   input: '{"name":"devpulse","ok":true}',
-  options: { indent: 2 }
+  options: { indent: 2 },
 });
 
 if (response.ok) {
@@ -178,7 +178,7 @@ await window.DevPulseAI.run({
   tool: 'case-converter',
   operation: 'convert',
   input: 'Hello World',
-  options: { target: 'snake' }
+  options: { target: 'snake' },
 });
 ```
 
@@ -225,17 +225,17 @@ that would rather listen can wait for the `devpulse-ai-ready` CustomEvent on `wi
 
 ## Internal Module Responsibilities
 
-| File/Module | Responsibility |
-|---|---|
-| `src/lib/ai-tool-bridge/contracts.ts` | Shared runtime/schema constants (required fields, defaults, storage namespace) |
-| `src/lib/ai-tool-bridge/schema.ts` | JSON schema generated from shared contracts + catalog enum |
-| `src/lib/ai-tool-bridge/validators.ts` | Request/option/input validation + request normalization (zod-backed) |
-| `src/lib/aiBridgeQuery.ts` | Query-string to request parser + URL query normalization (zod-guarded parsing) |
-| `src/lib/ai-tool-bridge/registry.ts` | Tool runner registry, execution context builder, registry diagnostics |
-| `src/lib/ai-tool-bridge/handlers/*` | Tool-specific execution logic |
-| `src/lib/ai-tool-bridge/errorTaxonomy.ts` | Stable error code -> problem metadata mapping |
-| `src/lib/ai-tool-bridge/errorResponse.ts` | Convert thrown errors to API response envelope |
-| `src/lib/ai-tool-bridge/index.ts` | Public exports + sub-level barrels (`BridgeCore`, `BridgePolicy`) |
+| File/Module                               | Responsibility                                                                 |
+| ----------------------------------------- | ------------------------------------------------------------------------------ |
+| `src/lib/ai-tool-bridge/contracts.ts`     | Shared runtime/schema constants (required fields, defaults, storage namespace) |
+| `src/lib/ai-tool-bridge/schema.ts`        | JSON schema generated from shared contracts + catalog enum                     |
+| `src/lib/ai-tool-bridge/validators.ts`    | Request/option/input validation + request normalization (zod-backed)           |
+| `src/lib/aiBridgeQuery.ts`                | Query-string to request parser + URL query normalization (zod-guarded parsing) |
+| `src/lib/ai-tool-bridge/registry.ts`      | Tool runner registry, execution context builder, registry diagnostics          |
+| `src/lib/ai-tool-bridge/handlers/*`       | Tool-specific execution logic                                                  |
+| `src/lib/ai-tool-bridge/errorTaxonomy.ts` | Stable error code -> problem metadata mapping                                  |
+| `src/lib/ai-tool-bridge/errorResponse.ts` | Convert thrown errors to API response envelope                                 |
+| `src/lib/ai-tool-bridge/index.ts`         | Public exports + sub-level barrels (`BridgeCore`, `BridgePolicy`)              |
 
 ## Change-Safe Checklist
 
@@ -250,7 +250,7 @@ Use this checklist before/after changes under `src/lib/ai-tool-bridge/*`:
 4. Keep error contract stable:
    - Use `errorTaxonomy.ts` and `errorResponse.ts` for new error codes/classes.
 5. If request/response shape changes, update `contracts.ts` and `schema.ts` together.
-7. Add/update table-driven tests in `runners.test.ts` for success and invalid paths.
-8. Run validation:
+6. Add/update table-driven tests in `runners.test.ts` for success and invalid paths.
+7. Run validation:
    - `npm run typecheck`
    - `npm run lint`

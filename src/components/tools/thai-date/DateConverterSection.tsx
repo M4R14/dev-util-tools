@@ -103,11 +103,15 @@ const DateConverterSection: React.FC<DateConverterSectionProps> = ({ date, setDa
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="rounded-xl border border-border/60 bg-card p-3">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">A.D. Year</p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                A.D. Year
+              </p>
               <p className="mt-1 font-semibold text-foreground tabular-nums">{adYear}</p>
             </div>
             <div className="rounded-xl border border-border/60 bg-card p-3">
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">B.E. Year</p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                B.E. Year
+              </p>
               <p className="mt-1 font-semibold text-foreground tabular-nums">{beYear}</p>
             </div>
           </div>
@@ -132,7 +136,9 @@ const DateConverterSection: React.FC<DateConverterSectionProps> = ({ date, setDa
           ) : (
             <div className="rounded-xl border border-dashed border-border bg-muted/10 px-4 py-6 text-center">
               <p className="text-sm font-medium text-foreground">ยังไม่มีรูปแบบวันที่ให้แสดง</p>
-              <p className="mt-1 text-xs text-muted-foreground">เลือกวันที่ก่อนเพื่อดูผลลัพธ์การแปลง</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                เลือกวันที่ก่อนเพื่อดูผลลัพธ์การแปลง
+              </p>
             </div>
           )}
         </div>

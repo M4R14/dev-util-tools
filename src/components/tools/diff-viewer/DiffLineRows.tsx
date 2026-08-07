@@ -27,7 +27,10 @@ export const DiffLineRow: React.FC<DiffLineRowProps> = ({ line, wrapLines }) => 
       </span>
       <span className="w-5 shrink-0 text-center select-none opacity-60">{prefix}</span>
       <span
-        className={cn('flex-1 pr-4', wrapLines ? 'whitespace-pre-wrap break-words' : 'whitespace-pre')}
+        className={cn(
+          'flex-1 pr-4',
+          wrapLines ? 'whitespace-pre-wrap break-words' : 'whitespace-pre',
+        )}
       >
         {line.value}
       </span>

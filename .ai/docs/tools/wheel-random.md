@@ -1,25 +1,29 @@
 # Wheel Random
 
-| Field | Value |
-|---|---|
-| **ToolID** | `wheel-random` |
-| **Route** | `/wheel-random` |
+| Field         | Value                 |
+| ------------- | --------------------- |
+| **ToolID**    | `wheel-random`        |
+| **Route**     | `/wheel-random`       |
 | **Component** | `WheelRandomTool.tsx` |
-| **Hook** | _(none)_ |
-| **Lib** | _(none)_ |
+| **Hook**      | _(none)_              |
+| **Lib**       | _(none)_              |
 
 ## Description
+
 External helper page for quick access to [wheelrandom.com](https://wheelrandom.com/) with copy-ready wheel item lists and usage ideas.
 
 ## Files
+
 - `src/components/tools/WheelRandomTool.tsx`
 
 ## Usage Pattern
+
 - Input: Open external wheel + optional sample item list copy
 - Output: Random spin result (computed by external service)
 - Actions: Open external tool, Copy sample wheel items
 
 ## UI
+
 - Uses `ToolLayout`, `Card`, `Button`, `CopyButton`
 
 ## Related

@@ -26,24 +26,24 @@ import { ToolLayout } from '../ui/ToolLayout';
 
 ### Props
 
-| Prop | Type | Description |
-|---|---|---|
-| `children` | `ReactNode` | Page content |
-| `className?` | `string` | Additional classes (e.g. `max-w-5xl mx-auto`) |
-| `title?` | `string` | Page heading (h1) |
-| `description?` | `string` | Subtitle text |
-| `icon?` | `LucideIcon` | Icon displayed beside the title |
+| Prop           | Type         | Description                                   |
+| -------------- | ------------ | --------------------------------------------- |
+| `children`     | `ReactNode`  | Page content                                  |
+| `className?`   | `string`     | Additional classes (e.g. `max-w-5xl mx-auto`) |
+| `title?`       | `string`     | Page heading (h1)                             |
+| `description?` | `string`     | Subtitle text                                 |
+| `icon?`        | `LucideIcon` | Icon displayed beside the title               |
 
 ### `ToolLayout.Section` — Titled Section
 
 Wraps content inside a `Card`. Used for logical groupings (Input, Output, etc.)
 
-| Prop | Type | Description |
-|---|---|---|
-| `title?` | `string` | Uppercase section label |
-| `actions?` | `ReactNode` | Buttons/controls aligned right |
-| `children` | `ReactNode` | Content (rendered inside `CardContent` with `p-0`) |
-| `className?` | `string` | Additional classes |
+| Prop         | Type        | Description                                        |
+| ------------ | ----------- | -------------------------------------------------- |
+| `title?`     | `string`    | Uppercase section label                            |
+| `actions?`   | `ReactNode` | Buttons/controls aligned right                     |
+| `children`   | `ReactNode` | Content (rendered inside `CardContent` with `p-0`) |
+| `className?` | `string`    | Additional classes                                 |
 
 When `title` is provided, ToolLayout generates a section anchor id and the heading can copy a deep link.
 
@@ -51,12 +51,12 @@ When `title` is provided, ToolLayout generates a section anchor id and the headi
 
 Standalone card with optional header bar. Useful for split layouts (side-by-side panels).
 
-| Prop | Type | Description |
-|---|---|---|
-| `title?` | `string` | Panel header label |
-| `actions?` | `ReactNode` | Header-right actions |
-| `children` | `ReactNode` | Content (rendered with `p-4`) |
-| `className?` | `string` | Additional classes |
+| Prop         | Type        | Description                   |
+| ------------ | ----------- | ----------------------------- |
+| `title?`     | `string`    | Panel header label            |
+| `actions?`   | `ReactNode` | Header-right actions          |
+| `children`   | `ReactNode` | Content (rendered with `p-4`) |
+| `className?` | `string`    | Additional classes            |
 
 ### Usage Pattern
 
@@ -65,7 +65,7 @@ Standalone card with optional header bar. Useful for split layouts (side-by-side
   {/* Simple section */}
   <ToolLayout.Section title="Input" actions={<Button onClick={clear}>Clear</Button>}>
     <div className="p-4">
-      <Textarea value={input} onChange={e => setInput(e.target.value)} />
+      <Textarea value={input} onChange={(e) => setInput(e.target.value)} />
     </div>
   </ToolLayout.Section>
 
@@ -93,23 +93,23 @@ import { Button } from '../ui/Button';
 
 ### Variants
 
-| Variant | Appearance |
-|---|---|
-| `default` | Primary solid (blue/accent) |
-| `destructive` | Red solid |
-| `outline` | Border + transparent bg |
-| `secondary` | Muted solid |
-| `ghost` | No border, hover highlight |
-| `link` | Text with underline on hover |
+| Variant       | Appearance                   |
+| ------------- | ---------------------------- |
+| `default`     | Primary solid (blue/accent)  |
+| `destructive` | Red solid                    |
+| `outline`     | Border + transparent bg      |
+| `secondary`   | Muted solid                  |
+| `ghost`       | No border, hover highlight   |
+| `link`        | Text with underline on hover |
 
 ### Sizes
 
-| Size | Dimensions |
-|---|---|
-| `default` | `h-9 px-4` |
-| `sm` | `h-8 px-3 text-xs` |
-| `lg` | `h-10 px-8` |
-| `icon` | `h-9 w-9` (square, for icon-only buttons) |
+| Size      | Dimensions                                |
+| --------- | ----------------------------------------- |
+| `default` | `h-9 px-4`                                |
+| `sm`      | `h-8 px-3 text-xs`                        |
+| `lg`      | `h-10 px-8`                               |
+| `icon`    | `h-9 w-9` (square, for icon-only buttons) |
 
 ### Examples
 
@@ -132,14 +132,14 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 
 ### Sub-components
 
-| Component | Default padding | Purpose |
-|---|---|---|
-| `Card` | — | Outer container (`rounded-xl border shadow-sm`) |
-| `CardHeader` | `p-6` | Top section |
-| `CardTitle` | — | Heading (`h3`, `font-semibold`) |
-| `CardDescription` | — | Subtitle (`text-sm text-muted-foreground`) |
-| `CardContent` | `p-6 pt-0` | Main body |
-| `CardFooter` | `p-6 pt-0` | Bottom actions row (`flex items-center`) |
+| Component         | Default padding | Purpose                                         |
+| ----------------- | --------------- | ----------------------------------------------- |
+| `Card`            | —               | Outer container (`rounded-xl border shadow-sm`) |
+| `CardHeader`      | `p-6`           | Top section                                     |
+| `CardTitle`       | —               | Heading (`h3`, `font-semibold`)                 |
+| `CardDescription` | —               | Subtitle (`text-sm text-muted-foreground`)      |
+| `CardContent`     | `p-6 pt-0`      | Main body                                       |
+| `CardFooter`      | `p-6 pt-0`      | Bottom actions row (`flex items-center`)        |
 
 ### Example
 
@@ -149,9 +149,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
     <CardTitle>Configuration</CardTitle>
     <CardDescription>Adjust settings below</CardDescription>
   </CardHeader>
-  <CardContent className="space-y-4">
-    {/* form fields */}
-  </CardContent>
+  <CardContent className="space-y-4">{/* form fields */}</CardContent>
   <CardFooter>
     <Button>Save</Button>
   </CardFooter>
@@ -188,7 +186,7 @@ import { Textarea } from '../ui/Textarea';
   rows={10}
   placeholder="Paste your text here..."
   value={input}
-  onChange={e => setInput(e.target.value)}
+  onChange={(e) => setInput(e.target.value)}
   className="font-mono text-sm"
 />
 ```
@@ -205,13 +203,13 @@ import { CopyButton } from '../ui/CopyButton';
 
 ### Props
 
-| Prop | Type | Description |
-|---|---|---|
-| `value` | `string` | **Required.** Text to copy |
-| `successMessage?` | `string \| null` | Toast text; `null` stays silent. Defaults to "Copied to clipboard" |
-| `className?` | `string` | Button wrapper classes |
-| `iconClassName?` | `string` | Icon size/color classes |
-| + all `ButtonProps` except `onCopy` | | Passed through to inner `Button` |
+| Prop                                | Type             | Description                                                        |
+| ----------------------------------- | ---------------- | ------------------------------------------------------------------ |
+| `value`                             | `string`         | **Required.** Text to copy                                         |
+| `successMessage?`                   | `string \| null` | Toast text; `null` stays silent. Defaults to "Copied to clipboard" |
+| `className?`                        | `string`         | Button wrapper classes                                             |
+| `iconClassName?`                    | `string`         | Icon size/color classes                                            |
+| + all `ButtonProps` except `onCopy` |                  | Passed through to inner `Button`                                   |
 
 > `onCopy` is intentionally rejected by the type. It is a native clipboard DOM event, so passing
 > it looks like a "copied" callback but only fires when the user copies a text selection inside
@@ -237,13 +235,13 @@ import SnippetCard from '../ui/SnippetCard';
 
 ### Props
 
-| Prop | Type | Description |
-|---|---|---|
-| `icon` | `ReactNode` | Leading icon in the header |
-| `title` | `string` | Snippet title |
-| `description` | `string` | Supporting description text |
-| `code` | `string` | Code content |
-| `language` | `'json' \| 'xml' \| 'javascript' \| 'bash' \| 'plaintext'` | Highlight language |
+| Prop          | Type                                                       | Description                 |
+| ------------- | ---------------------------------------------------------- | --------------------------- |
+| `icon`        | `ReactNode`                                                | Leading icon in the header  |
+| `title`       | `string`                                                   | Snippet title               |
+| `description` | `string`                                                   | Supporting description text |
+| `code`        | `string`                                                   | Code content                |
+| `language`    | `'json' \| 'xml' \| 'javascript' \| 'bash' \| 'plaintext'` | Highlight language          |
 
 ```tsx
 <SnippetCard
@@ -270,9 +268,11 @@ import { Switch } from '../ui/Switch';
   <Switch
     id="uppercase"
     checked={options.uppercase}
-    onCheckedChange={(checked) => setOptions(prev => ({ ...prev, uppercase: checked }))}
+    onCheckedChange={(checked) => setOptions((prev) => ({ ...prev, uppercase: checked }))}
   />
-  <label htmlFor="uppercase" className="text-sm">Include uppercase</label>
+  <label htmlFor="uppercase" className="text-sm">
+    Include uppercase
+  </label>
 </div>
 ```
 
@@ -287,13 +287,7 @@ import { Slider } from '../ui/Slider';
 ```
 
 ```tsx
-<Slider
-  value={[length]}
-  min={4}
-  max={128}
-  step={1}
-  onValueChange={([val]) => setLength(val)}
-/>
+<Slider value={[length]} min={4} max={128} step={1} onValueChange={([val]) => setLength(val)} />
 ```
 
 > **Note:** `value` and `onValueChange` use arrays (Radix convention). For single values: `value={[n]}`, destructure `([val]) =>`.
@@ -310,11 +304,11 @@ import { CodeHighlight } from '../ui/CodeHighlight';
 
 ### Props
 
-| Prop | Type | Description |
-|---|---|---|
-| `code` | `string` | Code string to highlight |
-| `language` | `'json' \| 'xml' \| 'javascript' \| 'bash' \| 'plaintext'` | Syntax language |
-| `className?` | `string` | Additional classes |
+| Prop         | Type                                                       | Description              |
+| ------------ | ---------------------------------------------------------- | ------------------------ |
+| `code`       | `string`                                                   | Code string to highlight |
+| `language`   | `'json' \| 'xml' \| 'javascript' \| 'bash' \| 'plaintext'` | Syntax language          |
+| `className?` | `string`                                                   | Additional classes       |
 
 ```tsx
 <CodeHighlight code={formattedJson} language="json" />
@@ -357,20 +351,20 @@ import { CodeEditor } from '../ui/CodeEditor';
 
 ### Props
 
-| Prop | Type | Description |
-|---|---|---|
-| `value` | `string` | Current text |
-| `onChange` | `(value: string) => void` | Receives the new text, not the event |
-| `language` | same union as `CodeHighlight` | Syntax language for the preview |
-| `placeholder?` | `string` | Shown while editing |
-| `initialHeightClassName?` | `string` | Default `h-40` |
-| `className?` | `string` | Additional classes |
+| Prop                      | Type                          | Description                          |
+| ------------------------- | ----------------------------- | ------------------------------------ |
+| `value`                   | `string`                      | Current text                         |
+| `onChange`                | `(value: string) => void`     | Receives the new text, not the event |
+| `language`                | same union as `CodeHighlight` | Syntax language for the preview      |
+| `placeholder?`            | `string`                      | Shown while editing                  |
+| `initialHeightClassName?` | `string`                      | Default `h-40`                       |
+| `className?`              | `string`                      | Additional classes                   |
 
 ```tsx
 <CodeEditor value={left} onChange={setLeft} language="json" placeholder="Paste JSON…" />
 ```
 
-A `<textarea>` renders plain text and nothing else, so highlighting *while typing* would need a
+A `<textarea>` renders plain text and nothing else, so highlighting _while typing_ would need a
 transparent overlay kept in sync with a `<pre>` behind it, or an editor dependency. The overlay
 drifts on line height, scroll position and selection colour, and re-highlights on every keystroke of
 documents this app routinely receives at three thousand lines. Toggling avoids both.
@@ -405,8 +399,19 @@ toast.info('Processing...');
 ```tsx
 <ToolLayout>
   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-    <ToolLayout.Panel title="Input" actions={<Button variant="ghost" size="sm" onClick={clear}>Clear</Button>}>
-      <Textarea value={input} onChange={e => setInput(e.target.value)} className="min-h-[300px] font-mono" />
+    <ToolLayout.Panel
+      title="Input"
+      actions={
+        <Button variant="ghost" size="sm" onClick={clear}>
+          Clear
+        </Button>
+      }
+    >
+      <Textarea
+        value={input}
+        onChange={(e) => setInput(e.target.value)}
+        className="min-h-[300px] font-mono"
+      />
     </ToolLayout.Panel>
     <ToolLayout.Panel title="Output" actions={<CopyButton value={output} />}>
       <pre className="font-mono text-sm whitespace-pre-wrap">{output}</pre>
@@ -421,13 +426,9 @@ toast.info('Processing...');
 <ToolLayout>
   <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
     <Card className="lg:col-span-1">
-      <CardContent className="p-6 space-y-6">
-        {/* switches, sliders, inputs */}
-      </CardContent>
+      <CardContent className="p-6 space-y-6">{/* switches, sliders, inputs */}</CardContent>
     </Card>
-    <div className="lg:col-span-2 space-y-4">
-      {/* main output area */}
-    </div>
+    <div className="lg:col-span-2 space-y-4">{/* main output area */}</div>
   </div>
 </ToolLayout>
 ```
@@ -440,7 +441,9 @@ toast.info('Processing...');
   actions={
     <div className="flex gap-2">
       <CopyButton value={result} />
-      <Button variant="ghost" size="icon" onClick={download}><Download className="w-4 h-4" /></Button>
+      <Button variant="ghost" size="icon" onClick={download}>
+        <Download className="w-4 h-4" />
+      </Button>
     </div>
   }
 >

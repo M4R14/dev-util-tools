@@ -8,17 +8,17 @@ DevPulse is a React 19 + TypeScript + Vite single-page app with 21 developer too
 ## Start Here (Read Order)
 
 1. `README.md`  
-Project/product overview and available scripts.
+   Project/product overview and available scripts.
 2. `.ai/docs/01-project-overview.md`  
-Core stack and runtime expectations.
+   Core stack and runtime expectations.
 3. `.ai/docs/02-architecture.md`  
-How routing, lazy loading, and state flow work.
+   How routing, lazy loading, and state flow work.
 4. `.ai/docs/04-tool-registry.md`  
-Source of truth for Tool ID -> Route -> Component -> Hook -> Lib.
+   Source of truth for Tool ID -> Route -> Component -> Hook -> Lib.
 5. `.ai/docs/08-build-env-conventions.md`  
-Build commands, env vars, and coding conventions.
+   Build commands, env vars, and coding conventions.
 6. `.ai/docs/10-doc-reading-checklist.md`  
-Pre-edit checklist to avoid doc-reading misses and wrong file placement.
+   Pre-edit checklist to avoid doc-reading misses and wrong file placement.
 
 ## Fast Project Facts
 
@@ -49,6 +49,7 @@ Pre-edit checklist to avoid doc-reading misses and wrong file placement.
 ## Task Playbooks
 
 ### Add new tool
+
 - Follow `.ai/docs/05-adding-new-tool.md` exactly.
 - Keep naming convention:
   - Component: PascalCase (`MyTool.tsx`)
@@ -56,21 +57,25 @@ Pre-edit checklist to avoid doc-reading misses and wrong file placement.
 - Update registry (`src/data/tools.tsx`) and any route/lazy-load wiring.
 
 ### Modify existing tool behavior
+
 - Locate tool mapping in `.ai/docs/04-tool-registry.md`.
 - Prefer editing hook/lib logic before JSX layout.
 - Keep output deterministic for copy/share features.
 
 ### UI-only changes
+
 - Reuse primitives from `src/components/ui`.
 - Preserve keyboard accessibility and ARIA labels.
 - Do not introduce new UI libraries unless required.
 
 ### AI Assistant changes
+
 - Main entry: `src/components/tools/AIAssistant.tsx`
 - Service/API layer: `src/services/gemini.ts`
 - Respect existing localStorage/user preference behavior.
 
 ### AI Agent automation (new)
+
 - Browser endpoint: `/ai-bridge`
 - Catalog endpoint: `/ai-bridge/catalog`
 - Schema endpoint: `/ai-bridge/spec`
@@ -90,6 +95,7 @@ Pre-edit checklist to avoid doc-reading misses and wrong file placement.
   - `thai-date-converter`: `format`, `parse`
 
 #### Endpoint usage
+
 - `/ai-bridge`
   - Use for executing tool requests and getting result/error.
   - Example: `/ai-bridge?tool=json-formatter&op=format&input={"a":1}`
@@ -109,6 +115,7 @@ Pre-edit checklist to avoid doc-reading misses and wrong file placement.
 Note: on static hosting, `curl` to SPA routes (e.g. `/ai-bridge`) returns HTML, not executed JSON.
 
 #### Query mode examples
+
 ```text
 /ai-bridge?tool=json-formatter&op=format&input={"a":1}
 /ai-bridge?tool=case-converter&op=convert&input=hello%20world&options={"target":"snake"}
@@ -122,6 +129,7 @@ Note: on static hosting, `curl` to SPA routes (e.g. `/ai-bridge`) returns HTML, 
 ```
 
 #### Browser API quickstart
+
 ```js
 // 1) Open /ai-bridge page first
 window.DevPulseAI.catalog();
@@ -143,16 +151,16 @@ window.DevPulseAI.run({
 
 ## Documentation Index
 
-| # | File | Use when... |
-|---|---|---|
-| 01 | `.ai/docs/01-project-overview.md` | Need quick stack and project model |
-| 02 | `.ai/docs/02-architecture.md` | Need component graph and patterns |
-| 03 | `.ai/docs/03-directory-map.md` | Need exact file location map |
-| 04 | `.ai/docs/04-tool-registry.md` | Need tool-to-code mapping |
-| 05 | `.ai/docs/05-adding-new-tool.md` | Adding a new tool |
-| 06 | `.ai/docs/06-types-and-interfaces.md` | Updating shared types/contracts |
-| 07 | `.ai/docs/07-dependencies.md` | Checking package purpose/impact |
-| 08 | `.ai/docs/08-build-env-conventions.md` | Commands, env, naming conventions |
-| 09 | `.ai/docs/09-ui-building-blocks.md` | Building UI with existing primitives |
-| 10 | `.ai/docs/10-doc-reading-checklist.md` | Preventing doc-read misses before edits |
-| 11 | `.ai/docs/tools/*.md` | Working on a specific tool |
+| #   | File                                   | Use when...                             |
+| --- | -------------------------------------- | --------------------------------------- |
+| 01  | `.ai/docs/01-project-overview.md`      | Need quick stack and project model      |
+| 02  | `.ai/docs/02-architecture.md`          | Need component graph and patterns       |
+| 03  | `.ai/docs/03-directory-map.md`         | Need exact file location map            |
+| 04  | `.ai/docs/04-tool-registry.md`         | Need tool-to-code mapping               |
+| 05  | `.ai/docs/05-adding-new-tool.md`       | Adding a new tool                       |
+| 06  | `.ai/docs/06-types-and-interfaces.md`  | Updating shared types/contracts         |
+| 07  | `.ai/docs/07-dependencies.md`          | Checking package purpose/impact         |
+| 08  | `.ai/docs/08-build-env-conventions.md` | Commands, env, naming conventions       |
+| 09  | `.ai/docs/09-ui-building-blocks.md`    | Building UI with existing primitives    |
+| 10  | `.ai/docs/10-doc-reading-checklist.md` | Preventing doc-read misses before edits |
+| 11  | `.ai/docs/tools/*.md`                  | Working on a specific tool              |

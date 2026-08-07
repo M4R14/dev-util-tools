@@ -77,8 +77,8 @@ const FamilyTree: React.FC = () => {
      * has a parent it is decided by who was added first, and a guess based on "no parent and has a
      * spouse" gets the slot holder themselves exactly backwards.
      */
-    const holder = flattenHierarchy(hierarchy.roots).find(
-      (node) => node.spouses.some((spouse) => spouse.id === memberId),
+    const holder = flattenHierarchy(hierarchy.roots).find((node) =>
+      node.spouses.some((spouse) => spouse.id === memberId),
     );
 
     createAndSelect({ name: '', parentId: holder ? holder.member.id : memberId });
@@ -261,8 +261,8 @@ const FamilyTree: React.FC = () => {
       </details>
 
       <p className="mt-4 text-xs text-muted-foreground">
-        Saved in this browser only. Unlike the other tools here, the tree is kept out of the URL —
-        a shareable link would carry your relatives&rsquo; names into browser history and link
+        Saved in this browser only. Unlike the other tools here, the tree is kept out of the URL — a
+        shareable link would carry your relatives&rsquo; names into browser history and link
         previews. Use <span className="font-medium">Export</span> to move it yourself.
       </p>
     </ToolLayout>

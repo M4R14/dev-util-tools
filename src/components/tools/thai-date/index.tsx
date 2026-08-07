@@ -1,13 +1,6 @@
 import React, { useState } from 'react';
 import dayjs from 'dayjs';
-import {
-  CircleAlert,
-  CircleCheckBig,
-  Info,
-  Keyboard,
-  ListOrdered,
-  Sparkles,
-} from 'lucide-react';
+import { CircleAlert, CircleCheckBig, Info, Keyboard, ListOrdered, Sparkles } from 'lucide-react';
 import { ToolLayout } from '../../ui/ToolLayout';
 import { Card, CardContent } from '../../ui/Card';
 import { useThaiDateConverter } from '../../../hooks/tools/useThaiDateConverter';
@@ -30,10 +23,22 @@ const PARSER_MODES = [
 
 const ThaiDateConverter: React.FC = () => {
   const {
-    date, setDate, parseInput, setParseInput, formats, parseResult,
-    pickerDay, setPickerDay, pickerMonth, setPickerMonth,
-    pickerYear, setPickerYear, pickerMonthFormat, setPickerMonthFormat,
-    monthOptions, parsedFormats,
+    date,
+    setDate,
+    parseInput,
+    setParseInput,
+    formats,
+    parseResult,
+    pickerDay,
+    setPickerDay,
+    pickerMonth,
+    setPickerMonth,
+    pickerYear,
+    setPickerYear,
+    pickerMonthFormat,
+    setPickerMonthFormat,
+    monthOptions,
+    parsedFormats,
   } = useThaiDateConverter();
 
   const [parserMode, setParserMode] = useState<ParserInputMode>('picker');
@@ -80,9 +85,10 @@ const ThaiDateConverter: React.FC = () => {
                   <div className="rounded-xl border border-border/60 bg-gradient-to-r from-muted/40 to-muted/10 px-4 py-3 flex items-start gap-2.5">
                     <Info className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                     <p className="text-xs text-muted-foreground leading-relaxed">
-                      รองรับการกรอกวันที่ไทยทั้งแบบ <span className="text-foreground font-medium">เลือกค่า</span>{' '}
-                      และ <span className="text-foreground font-medium">พิมพ์เอง</span> พร้อมแปลงออกเป็น ISO
-                      และรูปแบบไทยหลายแบบทันที
+                      รองรับการกรอกวันที่ไทยทั้งแบบ{' '}
+                      <span className="text-foreground font-medium">เลือกค่า</span> และ{' '}
+                      <span className="text-foreground font-medium">พิมพ์เอง</span> พร้อมแปลงออกเป็น
+                      ISO และรูปแบบไทยหลายแบบทันที
                     </p>
                   </div>
 
@@ -115,9 +121,12 @@ const ThaiDateConverter: React.FC = () => {
                   <div
                     className={cn(
                       'flex items-start gap-2 rounded-lg border px-3 py-2.5 text-sm leading-relaxed',
-                      parserStatus === 'success' && 'border-green-500/30 bg-green-500/10 text-green-700 dark:text-green-300',
-                      parserStatus === 'invalid' && 'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300',
-                      parserStatus === 'idle' && 'border-border/60 bg-muted/20 text-muted-foreground',
+                      parserStatus === 'success' &&
+                        'border-green-500/30 bg-green-500/10 text-green-700 dark:text-green-300',
+                      parserStatus === 'invalid' &&
+                        'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300',
+                      parserStatus === 'idle' &&
+                        'border-border/60 bg-muted/20 text-muted-foreground',
                     )}
                   >
                     {parserStatus === 'success' ? (
@@ -151,10 +160,7 @@ const ThaiDateConverter: React.FC = () => {
                       onClear={clearPicker}
                     />
                   ) : (
-                    <TextParserInput
-                      parseInput={parseInput}
-                      onChange={handleTextChange}
-                    />
+                    <TextParserInput parseInput={parseInput} onChange={handleTextChange} />
                   )}
                 </div>
 

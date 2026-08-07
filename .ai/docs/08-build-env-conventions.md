@@ -2,16 +2,16 @@
 
 ## Build & Dev
 
-| Command | Description |
-|---|---|
-| `npm run dev` | Vite dev server on `http://localhost:3000` |
-| `npm run build` | Production build (code-split, 3 vendor chunks) |
+| Command                          | Description                                                                             |
+| -------------------------------- | --------------------------------------------------------------------------------------- |
+| `npm run dev`                    | Vite dev server on `http://localhost:3000`                                              |
+| `npm run build`                  | Production build (code-split, 3 vendor chunks)                                          |
 | `npm run release-notes:generate` | Generate `src/content/blog/auto-release-notes.md` from recent git commits/PR references |
-| `npm test` | Vitest (watch mode) |
-| `npm run typecheck` | `tsc --noEmit` |
-| `npm run lint` | ESLint |
-| `npm run format` | Prettier |
-| `npm run format:check` | Prettier (check only) |
+| `npm test`                       | Vitest (watch mode)                                                                     |
+| `npm run typecheck`              | `tsc --noEmit`                                                                          |
+| `npm run lint`                   | ESLint                                                                                  |
+| `npm run format`                 | Prettier                                                                                |
+| `npm run format:check`           | Prettier (check only)                                                                   |
 
 PWA/offline assets:
 
@@ -23,8 +23,8 @@ PWA/offline assets:
 
 ### Deployment
 
-| Target | URL |
-|---|---|
+| Target           | URL                                                                                |
+| ---------------- | ---------------------------------------------------------------------------------- |
 | **GitHub Pages** | [https://m4r14.github.io/dev-util-tools/](https://m4r14.github.io/dev-util-tools/) |
 
 Deploy is automatic on push to `main` via `.github/workflows/deploy.yml`. Vite `base` is set to `/dev-util-tools/` when `GITHUB_ACTIONS` env is detected. `BrowserRouter` uses `import.meta.env.BASE_URL` as `basename`. A `public/404.html` handles SPA routing on GitHub Pages.
@@ -33,18 +33,18 @@ Service worker is registered in production from `src/main.tsx` using the same `B
 
 ### Vendor Chunks (Rollup)
 
-| Chunk | Contents |
-|---|---|
-| `vendor-react` | react, react-dom, react-router-dom |
-| `vendor-radix` | @radix-ui/react-slot, switch, slider |
-| `vendor-ui` | lucide-react, sonner, CVA, clsx, tailwind-merge |
+| Chunk          | Contents                                        |
+| -------------- | ----------------------------------------------- |
+| `vendor-react` | react, react-dom, react-router-dom              |
+| `vendor-radix` | @radix-ui/react-slot, switch, slider            |
+| `vendor-ui`    | lucide-react, sonner, CVA, clsx, tailwind-merge |
 
 Each tool component is its own lazy chunk (~2–12 kB gzipped).
 
 ## Environment Variables
 
-| Variable | Required | Description |
-|---|---|---|
+| Variable         | Required | Description                                                                                                |
+| ---------------- | -------- | ---------------------------------------------------------------------------------------------------------- |
 | `GEMINI_API_KEY` | Optional | Google Gemini API key (in `.env.local`). Can also be set via the AI Assistant UI (stored in localStorage). |
 
 ## Conventions

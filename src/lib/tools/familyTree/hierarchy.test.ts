@@ -49,10 +49,7 @@ describe('buildHierarchy', () => {
     expect(roots).toHaveLength(1);
     expect(roots[0].member.id).toBe('grandpa');
     expect(roots[0].children.map((child) => child.member.id)).toEqual(['dad', 'uncle']);
-    expect(roots[0].children[0].children.map((child) => child.member.id)).toEqual([
-      'me',
-      'sister',
-    ]);
+    expect(roots[0].children[0].children.map((child) => child.member.id)).toEqual(['me', 'sister']);
   });
 
   it('records depth from the root', () => {
@@ -95,7 +92,6 @@ describe('buildHierarchy', () => {
   });
 });
 
-
 describe('collapseHierarchy', () => {
   it('leaves an uncollapsed tree exactly as it was', () => {
     const { roots } = buildHierarchy(family());
@@ -115,12 +111,7 @@ describe('collapseHierarchy', () => {
   });
 
   it('counts the whole branch, not just the first generation', () => {
-    const deep = [
-      member('a', null),
-      member('b', 'a'),
-      member('c', 'b'),
-      member('d', 'c'),
-    ];
+    const deep = [member('a', null), member('b', 'a'), member('c', 'b'), member('d', 'c')];
     const folded = collapseHierarchy(buildHierarchy(deep).roots, new Set(['a']));
 
     expect(folded[0].hiddenDescendants).toBe(3);
@@ -169,12 +160,6 @@ describe('tree measurements', () => {
   it('flattens parents immediately above their children', () => {
     const flat = flattenHierarchy(buildHierarchy(family()).roots);
 
-    expect(flat.map((node) => node.member.id)).toEqual([
-      'grandpa',
-      'dad',
-      'me',
-      'sister',
-      'uncle',
-    ]);
+    expect(flat.map((node) => node.member.id)).toEqual(['grandpa', 'dad', 'me', 'sister', 'uncle']);
   });
 });

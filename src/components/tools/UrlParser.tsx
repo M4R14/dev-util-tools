@@ -8,8 +8,18 @@ import { toast } from 'sonner';
 import { UrlComponents, UrlInputSection, UrlQueryParams } from './url-parser';
 
 const UrlParser: React.FC = () => {
-  const { input, setInput, parsedUrl, error, params, getEncoded, decodeUrl, updateParam, addParam, removeParam } =
-    useUrlParser();
+  const {
+    input,
+    setInput,
+    parsedUrl,
+    error,
+    params,
+    getEncoded,
+    decodeUrl,
+    updateParam,
+    addParam,
+    removeParam,
+  } = useUrlParser();
   const { copy } = useCopyToClipboard();
 
   const handleEncode = () => {

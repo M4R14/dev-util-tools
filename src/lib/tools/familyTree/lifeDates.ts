@@ -78,10 +78,7 @@ export const isDeceased = (death: string): boolean => death.trim().length > 0;
  * Returns 0 for two unknowns so a stable sort leaves them in the order the owner entered them —
  * which is the only ordering information left at that point.
  */
-export const byBirthYear = (
-  left: { birth: string },
-  right: { birth: string },
-): number => {
+export const byBirthYear = (left: { birth: string }, right: { birth: string }): number => {
   const a = parseLifeYear(left.birth);
   const b = parseLifeYear(right.birth);
 

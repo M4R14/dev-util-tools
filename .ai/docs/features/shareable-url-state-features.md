@@ -6,20 +6,20 @@ This document tracks shareable query-string state support across tools.
 
 ## Coverage (Phase 2)
 
-| Tool | Route | Query Keys | Synced State |
-|---|---|---|---|
-| JSON Formatter | `/json-formatter` | `input`, `indent` | JSON text input and formatting indentation |
-| XML Formatter | `/xml-formatter` | `input` | XML editor content |
-| Base64 Tool | `/base64-tool` | `text`, `b64` | Plain text and Base64 text |
-| Case Converter | `/case-converter` | `input` | Source input text |
-| Timezone Converter | `/timezone-converter` | `date`, `from`, `to` | Datetime, source timezone, target timezone |
+| Tool                | Route                  | Query Keys                               | Synced State                                                        |
+| ------------------- | ---------------------- | ---------------------------------------- | ------------------------------------------------------------------- |
+| JSON Formatter      | `/json-formatter`      | `input`, `indent`                        | JSON text input and formatting indentation                          |
+| XML Formatter       | `/xml-formatter`       | `input`                                  | XML editor content                                                  |
+| Base64 Tool         | `/base64-tool`         | `text`, `b64`                            | Plain text and Base64 text                                          |
+| Case Converter      | `/case-converter`      | `input`                                  | Source input text                                                   |
+| Timezone Converter  | `/timezone-converter`  | `date`, `from`, `to`                     | Datetime, source timezone, target timezone                          |
 | Thai Date Converter | `/thai-date-converter` | `date`, `parse`, `pd`, `pm`, `py`, `pmf` | Date value, parser text, picker day/month/year, picker month format |
-| Thai ID Decoder | `/thai-id` | `input` | Thai ID input value |
-| UUID Generator | `/uuid-generator` | `q`, `hy`, `up` | Quantity, hyphen toggle, uppercase toggle |
-| URL Parser | `/url-parser` | `input` | URL input value |
-| Diff Viewer | `/diff-viewer` | `original`, `modified`, `view` | Original text, modified text, view mode |
-| Password Generator | `/password-gen` | `len`, `u`, `l`, `n`, `s` | Length and charset toggles |
-| XML to JSON | `/xml-to-json` | `input`, `attrs` | XML input and include-attributes toggle |
+| Thai ID Decoder     | `/thai-id`             | `input`                                  | Thai ID input value                                                 |
+| UUID Generator      | `/uuid-generator`      | `q`, `hy`, `up`                          | Quantity, hyphen toggle, uppercase toggle                           |
+| URL Parser          | `/url-parser`          | `input`                                  | URL input value                                                     |
+| Diff Viewer         | `/diff-viewer`         | `original`, `modified`, `view`           | Original text, modified text, view mode                             |
+| Password Generator  | `/password-gen`        | `len`, `u`, `l`, `n`, `s`                | Length and charset toggles                                          |
+| XML to JSON         | `/xml-to-json`         | `input`, `attrs`                         | XML input and include-attributes toggle                             |
 
 ## UX Notes
 
@@ -35,13 +35,14 @@ Source: `src/lib/platform/shareableUrlState.ts`
 
 `buildShareableSearchParams(currentQuery, params)` accepts a list of `ShareableQueryParam`:
 
-| Field | Type | Behavior |
-|---|---|---|
-| `key` | `string` | Query key to set/delete |
-| `value` | `string \| null \| undefined` | Current state value to sync |
-| `defaultValue` | `string` (optional) | If `value === defaultValue`, key is removed from URL |
+| Field          | Type                          | Behavior                                             |
+| -------------- | ----------------------------- | ---------------------------------------------------- |
+| `key`          | `string`                      | Query key to set/delete                              |
+| `value`        | `string \| null \| undefined` | Current state value to sync                          |
+| `defaultValue` | `string` (optional)           | If `value === defaultValue`, key is removed from URL |
 
 Rules:
+
 - `value` is empty string/null/undefined -> delete key
 - `value` equals `defaultValue` -> delete key
 - otherwise -> set key with that value
@@ -68,6 +69,7 @@ useEffect(() => {
 ## Current Adoption
 
 `buildShareableSearchParams` is used by:
+
 - `useJsonFormatter`
 - `useXmlFormatter`
 - `useBase64`

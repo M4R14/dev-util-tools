@@ -30,9 +30,10 @@ const ToolPageLayout: React.FC<ToolPageLayoutProps> = ({ tool, children, classNa
   };
 
   const handleShareClick = async () => {
-    const shareUrl = typeof window === 'undefined'
-      ? `${location.pathname}${location.search}${location.hash}`
-      : `${window.location.origin}${location.pathname}${location.search}${location.hash}`;
+    const shareUrl =
+      typeof window === 'undefined'
+        ? `${location.pathname}${location.search}${location.hash}`
+        : `${window.location.origin}${location.pathname}${location.search}${location.hash}`;
 
     await copy(shareUrl, {
       success: 'Shareable link copied',
@@ -53,7 +54,7 @@ const ToolPageLayout: React.FC<ToolPageLayoutProps> = ({ tool, children, classNa
                 <span className="min-w-0 truncate">{tool.name}</span>
               </h1>
             </div>
-            <div className="flex items-center my-auto" >
+            <div className="flex items-center my-auto">
               <FavoriteButton
                 isFavorite={isFavorite}
                 onToggle={() => toggleFavorite(tool.id)}
@@ -71,7 +72,6 @@ const ToolPageLayout: React.FC<ToolPageLayoutProps> = ({ tool, children, classNa
                 Share
               </Button>
             </div>
-            
           </div>
 
           <p className="text-sm mb-1 md:text-base text-muted-foreground leading-relaxed md:pl-[3.2rem]">
@@ -97,14 +97,7 @@ const ToolPageLayout: React.FC<ToolPageLayoutProps> = ({ tool, children, classNa
         </div>
       </div>
 
-      <div
-        className={cn(
-          'overflow-hidden',
-          className,
-        )}
-      >
-        {children}
-      </div>
+      <div className={cn('overflow-hidden', className)}>{children}</div>
 
       <RelatedTools tool={tool} />
     </div>

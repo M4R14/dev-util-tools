@@ -71,10 +71,7 @@ export const FamilyDiagram: React.FC<FamilyDiagramProps> = ({
    * Stable identities so `MemberNode` can skip re-rendering. An arrow built per node per render
    * would fail its comparison every time and undo the memo.
    */
-  const flagged = useMemo(
-    () => new Set([...orphanedIds, ...cycleIds]),
-    [orphanedIds, cycleIds],
-  );
+  const flagged = useMemo(() => new Set([...orphanedIds, ...cycleIds]), [orphanedIds, cycleIds]);
 
   const selectedRef = React.useRef(selectedId);
   selectedRef.current = selectedId;
@@ -87,9 +84,7 @@ export const FamilyDiagram: React.FC<FamilyDiagramProps> = ({
   const viewport = useDiagramViewport({
     contentWidth: layout.width,
     contentHeight: layout.height,
-    reveal: selectedBox
-      ? { key: selectedBox.member.id, x: selectedBox.x, y: selectedBox.y }
-      : null,
+    reveal: selectedBox ? { key: selectedBox.member.id, x: selectedBox.x, y: selectedBox.y } : null,
   });
   const { scale } = viewport;
 

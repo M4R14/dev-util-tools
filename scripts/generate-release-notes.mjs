@@ -63,9 +63,7 @@ const toDisplayDate = (isoDate) => {
   });
 };
 
-const logOutput = runGit(
-  `git log -n ${COMMIT_LIMIT} --pretty=format:%H%x09%h%x09%cI%x09%s`,
-);
+const logOutput = runGit(`git log -n ${COMMIT_LIMIT} --pretty=format:%H%x09%h%x09%cI%x09%s`);
 const remoteUrl = runGit('git config --get remote.origin.url');
 const githubRepoUrl = toGithubRepoUrl(remoteUrl);
 

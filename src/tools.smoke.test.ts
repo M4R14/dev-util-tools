@@ -37,13 +37,16 @@ const MAIN_TOOL_SMOKE_CASES: ToolSmokeCase[] = [
 ];
 
 describe('Main tool page smoke tests', () => {
-  it.each(MAIN_TOOL_SMOKE_CASES)('loads module and registry for $id', async ({ id, expectedName, load }) => {
-    const module = await load();
-    expect(typeof module.default).toBe('function');
+  it.each(MAIN_TOOL_SMOKE_CASES)(
+    'loads module and registry for $id',
+    async ({ id, expectedName, load }) => {
+      const module = await load();
+      expect(typeof module.default).toBe('function');
 
-    const tool = getToolById(id);
-    expect(tool).toBeDefined();
-    expect(tool?.name).toBe(expectedName);
-    expect(`/${tool?.id}`).toBe(`/${id}`);
-  });
+      const tool = getToolById(id);
+      expect(tool).toBeDefined();
+      expect(tool?.name).toBe(expectedName);
+      expect(`/${tool?.id}`).toBe(`/${id}`);
+    },
+  );
 });

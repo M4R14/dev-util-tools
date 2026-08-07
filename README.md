@@ -12,75 +12,75 @@
 
 ## 🛠️ Tools (21)
 
-| #  | Tool | Description |
-|----|------|-------------|
-| 1  | 📝 **JSON Formatter** | Prettify, minify, and validate JSON data |
-| 2  | 🔢 **Base64 Tool** | Encode and decode strings/files to Base64 |
-| 3  | 🔠 **Case Converter** | camelCase ↔ PascalCase ↔ snake_case ↔ kebab-case and more |
-| 4  | 🔐 **Password Generator** | Secure random passwords with strength meter |
-| 5  | 🌍 **Timezone Converter** | Convert dates/times across global timezones |
-| 6  | 📅 **Thai Date Converter** | Gregorian ↔ Thai Buddhist Era (พ.ศ.) formats |
-| 7  | 🪪 **Thai ID Decoder** | Decode Thai citizen ID digits and verify checksum |
-| 8  | ⏰ **Crontab Guru** | Generate and explain cron schedule expressions |
-| 9  | ✨ **AI Smart Assistant** | Code analysis & suggestions via Gemini AI |
-| 10 | 🆔 **UUID Generator** | Version 4 UUIDs (GUIDs) |
-| 11 | 🔗 **URL Parser** | Parse, encode, and decode URLs |
-| 12 | 📊 **Diff Viewer** | Side-by-side text comparison |
-| 13 | 🔍 **Regex Tester** | Live regex matching & debugging |
-| 14 | 📚 **Word Counter** | Quick access to wordcounter.net for writing metrics |
-| 15 | 🎡 **Wheel Random** | Spin a random wheel for names, tasks, and giveaways |
-| 16 | 🖼️ **Dummy Image** | Generate placeholder images via dummyimage.com |
-| 17 | 📄 **XML Formatter** | Prettify and minify XML data |
-| 18 | 🔁 **XML to JSON** | Convert XML documents into structured JSON |
-| 19 | 🚗 **VIN Generator & Decoder** | Random ISO 3779 VINs with valid check digit, via tetono.com |
-| 20 | 🔑 **JWT Decoder** | Decode JWT claims and verify HMAC signatures |
-| 21 | ✍️ **JWT Encoder** | Build a JWT — unsigned or signed with HS256/384/512 |
+| #   | Tool                           | Description                                                 |
+| --- | ------------------------------ | ----------------------------------------------------------- |
+| 1   | 📝 **JSON Formatter**          | Prettify, minify, and validate JSON data                    |
+| 2   | 🔢 **Base64 Tool**             | Encode and decode strings/files to Base64                   |
+| 3   | 🔠 **Case Converter**          | camelCase ↔ PascalCase ↔ snake_case ↔ kebab-case and more   |
+| 4   | 🔐 **Password Generator**      | Secure random passwords with strength meter                 |
+| 5   | 🌍 **Timezone Converter**      | Convert dates/times across global timezones                 |
+| 6   | 📅 **Thai Date Converter**     | Gregorian ↔ Thai Buddhist Era (พ.ศ.) formats                |
+| 7   | 🪪 **Thai ID Decoder**         | Decode Thai citizen ID digits and verify checksum           |
+| 8   | ⏰ **Crontab Guru**            | Generate and explain cron schedule expressions              |
+| 9   | ✨ **AI Smart Assistant**      | Code analysis & suggestions via Gemini AI                   |
+| 10  | 🆔 **UUID Generator**          | Version 4 UUIDs (GUIDs)                                     |
+| 11  | 🔗 **URL Parser**              | Parse, encode, and decode URLs                              |
+| 12  | 📊 **Diff Viewer**             | Side-by-side text comparison                                |
+| 13  | 🔍 **Regex Tester**            | Live regex matching & debugging                             |
+| 14  | 📚 **Word Counter**            | Quick access to wordcounter.net for writing metrics         |
+| 15  | 🎡 **Wheel Random**            | Spin a random wheel for names, tasks, and giveaways         |
+| 16  | 🖼️ **Dummy Image**             | Generate placeholder images via dummyimage.com              |
+| 17  | 📄 **XML Formatter**           | Prettify and minify XML data                                |
+| 18  | 🔁 **XML to JSON**             | Convert XML documents into structured JSON                  |
+| 19  | 🚗 **VIN Generator & Decoder** | Random ISO 3779 VINs with valid check digit, via tetono.com |
+| 20  | 🔑 **JWT Decoder**             | Decode JWT claims and verify HMAC signatures                |
+| 21  | ✍️ **JWT Encoder**             | Build a JWT — unsigned or signed with HS256/384/512         |
 
 ---
 
 ## 💻 Tech Stack
 
-| Category | Technologies |
-|----------|-------------|
-| ⚛️ Frontend | React 19 · TypeScript 5.8 · Vite 6 |
-| 🎨 Styling | Tailwind CSS 3 · Radix UI |
-| 🧠 AI | Google Gemini API (`@google/genai`) |
-| 🛣️ Routing | React Router DOM 7 |
+| Category     | Technologies                                        |
+| ------------ | --------------------------------------------------- |
+| ⚛️ Frontend  | React 19 · TypeScript 5.8 · Vite 6                  |
+| 🎨 Styling   | Tailwind CSS 3 · Radix UI                           |
+| 🧠 AI        | Google Gemini API (`@google/genai`)                 |
+| 🛣️ Routing   | React Router DOM 7                                  |
 | 📦 Utilities | CVA · clsx · tailwind-merge · Sonner · Lucide icons |
-| 🔍 Search | MiniSearch (fuzzy full-text) |
-| 📅 Date | Day.js + timezone plugin |
-| 📊 Diff | `diff` (line-based comparison) |
-| 🧪 Testing | Vitest · React Testing Library · jsdom |
-| 🧹 Quality | ESLint 8 · Prettier 3 · TypeScript strict |
-| 🚀 Deploy | GitHub Actions → GitHub Pages |
+| 🔍 Search    | MiniSearch (fuzzy full-text)                        |
+| 📅 Date      | Day.js + timezone plugin                            |
+| 📊 Diff      | `diff` (line-based comparison)                      |
+| 🧪 Testing   | Vitest · React Testing Library · jsdom              |
+| 🧹 Quality   | ESLint 8 · Prettier 3 · TypeScript strict           |
+| 🚀 Deploy    | GitHub Actions → GitHub Pages                       |
 
 ---
 
 ## ✨ Highlights
 
-| | |
-|---|---|
-| ⌘ **Command Palette** | `Cmd+K` / `Ctrl+K` — instant fuzzy search + quick actions (`Open settings`, `Check updates`, `Clear offline cache`) |
-| ⌨️ **Keyboard-First** | Arrow keys, Enter, Escape — navigate without a mouse |
-| 🌑 **Dark Mode** | Clean UI designed for long coding sessions |
-| 🤖 **AI-Powered** | Gemini AI assistant for code review & problem-solving |
-| ⚡ **Lazy Loading** | Code-split routes via `React.lazy()` + optimized vendor chunks |
-| 🛡️ **Error Boundaries** | Per-tool isolation — one crash won't break the app |
-| 🔍 **Fuzzy Search** | MiniSearch with prefix matching, typo tolerance & tag filtering |
-| ♿ **Accessible** | ARIA labels, skip-to-content, focus management |
-| 📶 **Offline-Ready** | PWA service worker caches app shell and local tools for offline usage |
-| 📰 **Auto Release Notes** | Blog includes mini release notes generated from recent commits/PR references |
+|                           |                                                                                                                     |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| ⌘ **Command Palette**     | `Cmd+K` / `Ctrl+K` — instant fuzzy search + quick actions (`Open settings`, `Check updates`, `Clear offline cache`) |
+| ⌨️ **Keyboard-First**     | Arrow keys, Enter, Escape — navigate without a mouse                                                                |
+| 🌑 **Dark Mode**          | Clean UI designed for long coding sessions                                                                          |
+| 🤖 **AI-Powered**         | Gemini AI assistant for code review & problem-solving                                                               |
+| ⚡ **Lazy Loading**       | Code-split routes via `React.lazy()` + optimized vendor chunks                                                      |
+| 🛡️ **Error Boundaries**   | Per-tool isolation — one crash won't break the app                                                                  |
+| 🔍 **Fuzzy Search**       | MiniSearch with prefix matching, typo tolerance & tag filtering                                                     |
+| ♿ **Accessible**         | ARIA labels, skip-to-content, focus management                                                                      |
+| 📶 **Offline-Ready**      | PWA service worker caches app shell and local tools for offline usage                                               |
+| 📰 **Auto Release Notes** | Blog includes mini release notes generated from recent commits/PR references                                        |
 
 ---
 
 ## ⌨️ Keyboard Shortcuts
 
-| Shortcut | Action |
-|----------|--------|
-| `Cmd+K` / `Ctrl+K` | Open Command Palette |
-| `↑` / `↓` | Navigate results |
-| `Enter` | Run selected tool/action |
-| `Escape` | Close palette |
+| Shortcut           | Action                   |
+| ------------------ | ------------------------ |
+| `Cmd+K` / `Ctrl+K` | Open Command Palette     |
+| `↑` / `↓`          | Navigate results         |
+| `Enter`            | Run selected tool/action |
+| `Escape`           | Close palette            |
 
 ---
 
@@ -148,20 +148,20 @@ Or enter your key in the AI Assistant settings UI (stored in localStorage).
 
 ## 📜 Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start dev server |
-| `npm run build` | Production build |
-| `npm run preview` | Preview production build |
+| Command                          | Description                                       |
+| -------------------------------- | ------------------------------------------------- |
+| `npm run dev`                    | Start dev server                                  |
+| `npm run build`                  | Production build                                  |
+| `npm run preview`                | Preview production build                          |
 | `npm run release-notes:generate` | Generate blog mini release notes from git history |
-| `npm test` | Run tests (Vitest) |
-| `npm run test:ui` | Vitest UI |
-| `npm run coverage` | Tests with coverage |
-| `npm run lint` | ESLint check |
-| `npm run lint:fix` | ESLint auto-fix |
-| `npm run format` | Prettier format |
-| `npm run format:check` | Prettier check |
-| `npm run typecheck` | `tsc --noEmit` |
+| `npm test`                       | Run tests (Vitest)                                |
+| `npm run test:ui`                | Vitest UI                                         |
+| `npm run coverage`               | Tests with coverage                               |
+| `npm run lint`                   | ESLint check                                      |
+| `npm run lint:fix`               | ESLint auto-fix                                   |
+| `npm run format`                 | Prettier format                                   |
+| `npm run format:check`           | Prettier check                                    |
+| `npm run typecheck`              | `tsc --noEmit`                                    |
 
 ---
 

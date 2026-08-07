@@ -1,6 +1,11 @@
 import { useCallback, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { analyzeThaiId, formatThaiId, generateThaiId, ThaiIdAnalysis } from '../../lib/tools/thaiId';
+import {
+  analyzeThaiId,
+  formatThaiId,
+  generateThaiId,
+  ThaiIdAnalysis,
+} from '../../lib/tools/thaiId';
 import { useShareableUrlState } from '../useShareableUrlState';
 
 export const useThaiId = () => {
@@ -11,15 +16,18 @@ export const useThaiId = () => {
 
   useShareableUrlState([{ key: 'input', value: input }]);
 
-  const handleInputChange = useCallback((value: string) => {
-    const normalized = formatThaiId(value);
-    setInput(normalized);
-    setAnalysis(null);
+  const handleInputChange = useCallback(
+    (value: string) => {
+      const normalized = formatThaiId(value);
+      setInput(normalized);
+      setAnalysis(null);
 
-    if (error) {
-      setError(null);
-    }
-  }, [error]);
+      if (error) {
+        setError(null);
+      }
+    },
+    [error],
+  );
 
   const runAnalysis = useCallback((): boolean => {
     try {

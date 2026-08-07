@@ -75,12 +75,7 @@ const ParserResultSection: React.FC<ParserResultSectionProps> = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
               {parsedFormats.map((fmt, i) => (
-                <DateFormatCard
-                  key={`${fmt.label}-${i}`}
-                  item={fmt}
-                  index={i}
-                  variant="compact"
-                />
+                <DateFormatCard key={`${fmt.label}-${i}`} item={fmt} index={i} variant="compact" />
               ))}
             </div>
           </div>

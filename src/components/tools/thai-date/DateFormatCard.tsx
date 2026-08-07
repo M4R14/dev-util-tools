@@ -12,7 +12,11 @@ interface DateFormatCardProps {
   variant?: 'default' | 'compact';
 }
 
-const DateFormatCard: React.FC<DateFormatCardProps> = ({ item, index = 0, variant = 'default' }) => {
+const DateFormatCard: React.FC<DateFormatCardProps> = ({
+  item,
+  index = 0,
+  variant = 'default',
+}) => {
   return (
     <div className="group relative rounded-lg border border-border bg-card p-3 shadow-sm transition-all hover:border-primary/35">
       <div className="flex items-start gap-2.5">

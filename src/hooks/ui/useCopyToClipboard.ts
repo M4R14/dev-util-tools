@@ -39,7 +39,11 @@ export const resolveCopyMessages = (
   hookLevel: CopyMessages = {},
   perCall: CopyMessages = {},
 ): { success: string | null; error: string | null } => {
-  const pick = (call: string | null | undefined, hook: string | null | undefined, fallback: string) => {
+  const pick = (
+    call: string | null | undefined,
+    hook: string | null | undefined,
+    fallback: string,
+  ) => {
     if (call !== undefined) return call;
     if (hook !== undefined) return hook;
     return fallback;

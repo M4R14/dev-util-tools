@@ -1,27 +1,31 @@
 # JSON Formatter
 
-| Field | Value |
-|---|---|
-| **ToolID** | `json-formatter` |
-| **Route** | `/json-formatter` |
+| Field         | Value               |
+| ------------- | ------------------- |
+| **ToolID**    | `json-formatter`    |
+| **Route**     | `/json-formatter`   |
 | **Component** | `JSONFormatter.tsx` |
-| **Hook** | `useJsonFormatter` |
-| **Lib** | — |
+| **Hook**      | `useJsonFormatter`  |
+| **Lib**       | —                   |
 
 ## Description
+
 Prettify, minify, and validate JSON data. Supports error highlighting and copy-to-clipboard.
 
 ## Files
+
 - `src/components/tools/JSONFormatter.tsx`
 - `src/hooks/tools/useJsonFormatter.ts`
 
 ## Usage Pattern
+
 - Input: Paste or type JSON in a textarea
 - Output: Formatted JSON with syntax highlighting
 - Actions: Format, Minify, Copy, Clear, indent selection (`2/4/8`)
 - Shareability: Input text and indent sync with URL query (`?input=...&indent=...`) for link sharing
 
 ## UI
+
 - Uses `ToolLayout`, `Textarea`, `CopyButton`, `CodeHighlight`
 
 ## Related

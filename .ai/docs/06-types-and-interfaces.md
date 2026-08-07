@@ -56,21 +56,42 @@ const getRelatedTools: (
 ```ts
 // src/lib/tools/diffUtils.ts
 type DiffLineType = 'added' | 'removed' | 'unchanged';
-interface DiffLine { type: DiffLineType; value: string; oldLineNumber?: number; newLineNumber?: number }
-interface DiffStats { additions: number; deletions: number; unchanged: number }
+interface DiffLine {
+  type: DiffLineType;
+  value: string;
+  oldLineNumber?: number;
+  newLineNumber?: number;
+}
+interface DiffStats {
+  additions: number;
+  deletions: number;
+  unchanged: number;
+}
 ```
 
 ```ts
 // src/lib/tools/passwordStrength.ts
-interface PasswordStrength { label: 'Weak' | 'Medium' | 'Strong'; color: string; textColor: string; percent: number; message: string }
-interface PasswordOptions { length: number; includeUpper: boolean; includeLower: boolean; includeNumbers: boolean; includeSymbols: boolean }
+interface PasswordStrength {
+  label: 'Weak' | 'Medium' | 'Strong';
+  color: string;
+  textColor: string;
+  percent: number;
+  message: string;
+}
+interface PasswordOptions {
+  length: number;
+  includeUpper: boolean;
+  includeLower: boolean;
+  includeNumbers: boolean;
+  includeSymbols: boolean;
+}
 ```
 
 ```ts
 // src/lib/platform/randomUtils.ts — all credential randomness; throws if Web Crypto is unavailable
-const randomInt: (maxExclusive: number) => number;      // uniform, rejection-sampled
+const randomInt: (maxExclusive: number) => number; // uniform, rejection-sampled
 const randomString: (charset: string, length: number) => string;
-const randomUUID: () => string;                          // RFC 4122 v4
+const randomUUID: () => string; // RFC 4122 v4
 
 // src/lib/tools/passwordGenerator.ts
 const getPasswordCharset: (options: PasswordOptions) => string;
@@ -79,7 +100,10 @@ const generatePassword: (options: PasswordOptions) => string;
 
 ```ts
 // src/lib/tools/urlUtils.ts
-interface UrlParam { key: string; value: string }
+interface UrlParam {
+  key: string;
+  value: string;
+}
 ```
 
 ---

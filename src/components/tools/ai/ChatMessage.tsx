@@ -13,9 +13,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => (
     <div
       className={cn(
         'w-8 h-8 rounded-full flex items-center justify-center shrink-0 shadow-sm',
-        message.role === 'user'
-          ? 'bg-primary text-primary-foreground'
-          : 'bg-green-600 text-white',
+        message.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-green-600 text-white',
       )}
     >
       {message.role === 'user' ? (

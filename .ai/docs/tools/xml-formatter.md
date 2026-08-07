@@ -1,27 +1,31 @@
 # XML Formatter
 
-| Field | Value |
-|---|---|
-| **ToolID** | `xml-formatter` |
-| **Route** | `/xml-formatter` |
+| Field         | Value              |
+| ------------- | ------------------ |
+| **ToolID**    | `xml-formatter`    |
+| **Route**     | `/xml-formatter`   |
 | **Component** | `XMLFormatter.tsx` |
-| **Hook** | `useXmlFormatter` |
-| **Lib** | xml-formatter lib |
+| **Hook**      | `useXmlFormatter`  |
+| **Lib**       | xml-formatter lib  |
 
 ## Description
+
 Prettify, minify, and validate XML data. Supports syntax highlighting and copy.
 
 ## Files
+
 - `src/components/tools/XMLFormatter.tsx`
 - `src/hooks/tools/useXmlFormatter.ts`
 
 ## Usage Pattern
+
 - Input: Paste or type XML in a textarea
 - Output: Formatted XML with syntax highlighting
 - Actions: Format, Minify, Copy, Clear
 - Share: URL sync via query key `input`
 
 ## UI
+
 - Uses `ToolLayout`, `Textarea`, `CopyButton`, `CodeHighlight`, `Button`
 
 ## Related

@@ -80,9 +80,7 @@ const AnchorButton: React.FC<AnchorButtonProps> = ({
     onClick={onClick}
     className={cn(
       'group inline-flex items-center gap-1.5 rounded-md text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40',
-      variant === 'title'
-        ? 'px-1 py-0.5 hover:bg-muted/40'
-        : 'px-1.5 py-1 hover:bg-muted/60',
+      variant === 'title' ? 'px-1 py-0.5 hover:bg-muted/40' : 'px-1.5 py-1 hover:bg-muted/60',
     )}
     title={variant === 'title' ? 'Copy title link' : 'Copy section link'}
   >
@@ -99,7 +97,9 @@ const AnchorButton: React.FC<AnchorButtonProps> = ({
     <span
       className={cn(
         'transition-colors group-hover:text-primary group-hover:underline underline-offset-4',
-        variant === 'title' ? 'text-foreground' : 'text-muted-foreground group-hover:text-foreground',
+        variant === 'title'
+          ? 'text-foreground'
+          : 'text-muted-foreground group-hover:text-foreground',
       )}
     >
       {label}
@@ -113,7 +113,13 @@ const AnchorButton: React.FC<AnchorButtonProps> = ({
   </button>
 );
 
-export const ToolLayout = ({ children, className, title, description, icon: Icon }: ToolLayoutProps) => {
+export const ToolLayout = ({
+  children,
+  className,
+  title,
+  description,
+  icon: Icon,
+}: ToolLayoutProps) => {
   const titleId = title ? `tool-${toAnchorId(title)}` : undefined;
   const { copied, copyAnchorLink } = useAnchorCopy();
 
@@ -138,7 +144,10 @@ export const ToolLayout = ({ children, className, title, description, icon: Icon
           )}
           <div className="space-y-1.5 min-w-0">
             {title && (
-              <h1 id={titleId} className="text-2xl md:text-3xl font-bold tracking-tight text-foreground leading-tight">
+              <h1
+                id={titleId}
+                className="text-2xl md:text-3xl font-bold tracking-tight text-foreground leading-tight"
+              >
                 <AnchorButton
                   label={title}
                   copied={copied}
@@ -147,7 +156,9 @@ export const ToolLayout = ({ children, className, title, description, icon: Icon
                 />
               </h1>
             )}
-            {description && <p className="text-muted-foreground text-sm md:text-base max-w-3xl">{description}</p>}
+            {description && (
+              <p className="text-muted-foreground text-sm md:text-base max-w-3xl">{description}</p>
+            )}
           </div>
         </div>
       )}
@@ -172,11 +183,7 @@ const Section = ({ title, children, actions, className }: ToolSectionProps) => {
           {title && (
             <div className="flex items-center gap-1.5 min-w-0">
               <h3 id={sectionId} className="text-sm font-semibold uppercase tracking-wider">
-                <AnchorButton
-                  label={title}
-                  copied={copied}
-                  onClick={handleCopyLink}
-                />
+                <AnchorButton label={title} copied={copied} onClick={handleCopyLink} />
               </h3>
             </div>
           )}
@@ -211,4 +218,3 @@ const Panel = ({ title, children, actions, className }: ToolPanelProps) => {
 
 ToolLayout.Section = Section;
 ToolLayout.Panel = Panel;
-

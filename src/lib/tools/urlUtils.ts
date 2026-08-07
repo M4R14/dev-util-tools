@@ -13,7 +13,9 @@ const urlParamSchema = z.object({
 const urlParamsSchema = z.array(urlParamSchema);
 const nonNegativeIntSchema = z.number().int().nonnegative();
 
-export const parseUrl = (input: string): { parsed: URL | null; error: string | null; params: UrlParam[] } => {
+export const parseUrl = (
+  input: string,
+): { parsed: URL | null; error: string | null; params: UrlParam[] } => {
   if (!input) {
     return { parsed: null, error: null, params: [] };
   }
@@ -58,7 +60,7 @@ export const updateUrlParam = (
   currentParams: UrlParam[],
   index: number,
   newKey: string,
-  newValue: string
+  newValue: string,
 ): string | null => {
   if (!parsedUrl) return null;
   if (!nonNegativeIntSchema.safeParse(index).success) return null;
@@ -77,7 +79,7 @@ export const addUrlParam = (
   parsedUrl: URL | null,
   currentParams: UrlParam[],
   newKey: string,
-  newValue: string
+  newValue: string,
 ): string | null => {
   if (!parsedUrl) return null;
   if (!z.string().safeParse(newKey).success || !z.string().safeParse(newValue).success) return null;
@@ -93,7 +95,7 @@ export const addUrlParam = (
 export const removeUrlParam = (
   parsedUrl: URL | null,
   currentParams: UrlParam[],
-  index: number
+  index: number,
 ): string | null => {
   if (!parsedUrl) return null;
   if (!nonNegativeIntSchema.safeParse(index).success) return null;

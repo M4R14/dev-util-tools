@@ -1,27 +1,31 @@
 # Timezone Converter
 
-| Field | Value |
-|---|---|
-| **ToolID** | `timezone-converter` |
-| **Route** | `/timezone-converter` |
+| Field         | Value                   |
+| ------------- | ----------------------- |
+| **ToolID**    | `timezone-converter`    |
+| **Route**     | `/timezone-converter`   |
 | **Component** | `TimezoneConverter.tsx` |
-| **Hook** | `useTimezoneConverter` |
-| **Lib** | dayjs + timezone plugin |
+| **Hook**      | `useTimezoneConverter`  |
+| **Lib**       | dayjs + timezone plugin |
 
 ## Description
+
 Convert dates and times across different global timezones with instant result updates, quick-target shortcuts, and copy support.
 
 ## Files
+
 - `src/components/tools/TimezoneConverter.tsx`
 - `src/hooks/tools/useTimezoneConverter.ts`
 
 ## Usage Pattern
+
 - Input: Date/time picker, source timezone, target timezone
 - Output: Converted timestamp card with timezone abbreviation and preview
 - Actions: Set now, Swap, Copy converted result, Quick target zone buttons
 - Share: URL sync via query keys `date`, `from`, `to`
 
 ## UI
+
 - Uses `ToolLayout`, `Input`, `Button`, `CopyButton`
 - Includes source/target summary cards and compact action toolbar
 - Provides quick target timezone chips (UTC/ET/London/Tokyo/Bangkok/Sydney)

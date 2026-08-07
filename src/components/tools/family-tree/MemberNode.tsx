@@ -18,11 +18,7 @@ interface MemberNodeProps {
 }
 
 /** Keeps the flag, the selection and the ordinary state from being spelled out at four call sites. */
-const outlineClass = (
-  isFlagged: boolean,
-  isSelected: boolean,
-  ordinary: string,
-): string =>
+const outlineClass = (isFlagged: boolean, isSelected: boolean, ordinary: string): string =>
   isFlagged
     ? 'fill-amber-500/10 stroke-amber-500'
     : isSelected
@@ -106,7 +102,11 @@ export const MemberNode: React.FC<MemberNodeProps> = ({
         <g
           className={cn(
             'pointer-events-none',
-            isFlagged ? 'stroke-amber-600' : isSelected ? 'stroke-primary' : 'stroke-muted-foreground',
+            isFlagged
+              ? 'stroke-amber-600'
+              : isSelected
+                ? 'stroke-primary'
+                : 'stroke-muted-foreground',
           )}
           fill="none"
           strokeWidth={1.5}
@@ -155,7 +155,10 @@ export const MemberNode: React.FC<MemberNodeProps> = ({
       </g>
 
       {isFlagged && (
-        <g transform={`translate(${box.x + radius - 6} ${box.y - 2})`} className="pointer-events-none">
+        <g
+          transform={`translate(${box.x + radius - 6} ${box.y - 2})`}
+          className="pointer-events-none"
+        >
           <circle r={8} className="fill-amber-500" />
           <TriangleAlert x={-5} y={-5} width={10} height={10} className="stroke-white" />
         </g>
@@ -201,4 +204,3 @@ export const MemberNode: React.FC<MemberNodeProps> = ({
     </g>
   );
 };
-

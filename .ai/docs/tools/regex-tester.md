@@ -1,25 +1,29 @@
 # Regex Tester
 
-| Field | Value |
-|---|---|
-| **ToolID** | `regex-tester` |
-| **Route** | `/regex-tester` |
+| Field         | Value             |
+| ------------- | ----------------- |
+| **ToolID**    | `regex-tester`    |
+| **Route**     | `/regex-tester`   |
 | **Component** | `RegexTester.tsx` |
-| **Hook** | — |
-| **Lib** | — |
+| **Hook**      | —                 |
+| **Lib**       | —                 |
 
 ## Description
+
 Test and debug regular expressions with live matching. Supports pattern, flags, and test string input.
 
 ## Files
+
 - `src/components/tools/RegexTester.tsx`
 
 ## Usage Pattern
+
 - Input: Regex pattern, flags, test string
 - Output: Match results, highlighted matches
 - Actions: Copy, Clear
 
 ## UI
+
 - Uses `ToolLayout`, `Input`, `Button`, `CopyButton`, `Card`
 
 ## Related

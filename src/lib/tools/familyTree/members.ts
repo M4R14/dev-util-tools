@@ -86,10 +86,7 @@ export const createMember = (input: CreateMemberInput): FamilyMember => ({
  * Split from `addMember` so a caller can hold on to the id: adding from the diagram selects the new
  * member and focuses their name field, which needs the id before the state update lands.
  */
-export const appendMember = (
-  members: FamilyMember[],
-  member: FamilyMember,
-): FamilyMember[] => {
+export const appendMember = (members: FamilyMember[], member: FamilyMember): FamilyMember[] => {
   const withMember = [...members, member];
   const partnerId = member.spouseIds[0];
   if (!partnerId) return withMember;
@@ -97,9 +94,7 @@ export const appendMember = (
   // The link is symmetric, so the partner has to learn about it too — otherwise the pair renders
   // from one side only and unlinking from the other side silently does nothing.
   return withMember.map((entry) =>
-    entry.id === partnerId
-      ? { ...entry, spouseIds: [...entry.spouseIds, member.id] }
-      : entry,
+    entry.id === partnerId ? { ...entry, spouseIds: [...entry.spouseIds, member.id] } : entry,
   );
 };
 

@@ -30,7 +30,10 @@ export const parseQueryRequest = (params: URLSearchParams): AIToolRequest | null
 
   const tool = params.get('tool');
   const operation = params.get('op');
-  if (!nonEmptyStringSchema.safeParse(tool).success || !nonEmptyStringSchema.safeParse(operation).success) {
+  if (
+    !nonEmptyStringSchema.safeParse(tool).success ||
+    !nonEmptyStringSchema.safeParse(operation).success
+  ) {
     return null;
   }
 

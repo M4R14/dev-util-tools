@@ -62,12 +62,8 @@ const MyTool = () => {
   const { input, setInput, result } = useMyTool();
   return (
     <ToolLayout>
-      <ToolLayout.Section title="Input">
-        {/* input controls */}
-      </ToolLayout.Section>
-      <ToolLayout.Section title="Output">
-        {/* result display */}
-      </ToolLayout.Section>
+      <ToolLayout.Section title="Input">{/* input controls */}</ToolLayout.Section>
+      <ToolLayout.Section title="Output">{/* result display */}</ToolLayout.Section>
     </ToolLayout>
   );
 };
@@ -104,16 +100,16 @@ That's it — **routing, sidebar, search, command palette, and dashboard** all p
 
 ## Key Conventions
 
-| Convention | Detail |
-|---|---|
-| **Component** | `export default`, PascalCase filename |
-| **Hook** | Named export, `use` prefix, camelCase filename |
-| **Lib** | Named exports, camelCase filename, no React imports |
-| **Icon** | Always from `lucide-react` |
-| **Tags** | 5-7 lowercase keywords for search discoverability |
-| **Toast** | Use `toast.success()` / `toast.error()` from `sonner` |
-| **Copy** | Use `<CopyButton />` from `ui/CopyButton.tsx` |
-| **Styling** | Tailwind classes only, use `cn()` for conditionals |
+| Convention    | Detail                                                |
+| ------------- | ----------------------------------------------------- |
+| **Component** | `export default`, PascalCase filename                 |
+| **Hook**      | Named export, `use` prefix, camelCase filename        |
+| **Lib**       | Named exports, camelCase filename, no React imports   |
+| **Icon**      | Always from `lucide-react`                            |
+| **Tags**      | 5-7 lowercase keywords for search discoverability     |
+| **Toast**     | Use `toast.success()` / `toast.error()` from `sonner` |
+| **Copy**      | Use `<CopyButton />` from `ui/CopyButton.tsx`         |
+| **Styling**   | Tailwind classes only, use `cn()` for conditionals    |
 
 ## UI Building Blocks
 

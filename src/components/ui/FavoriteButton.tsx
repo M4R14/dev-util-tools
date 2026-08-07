@@ -8,8 +8,10 @@ import { FavoriteIcon } from './FavoriteIcon';
  * announces itself the same way. Pass `itemName` in list contexts — a page full of identical
  * "Add to Favorites" buttons is useless to a screen reader.
  */
-interface FavoriteButtonProps
-  extends Omit<ButtonProps, 'onClick' | 'children' | 'aria-label' | 'title' | 'aria-pressed'> {
+interface FavoriteButtonProps extends Omit<
+  ButtonProps,
+  'onClick' | 'children' | 'aria-label' | 'title' | 'aria-pressed'
+> {
   isFavorite: boolean;
   onToggle: () => void;
   /** Names the thing being favourited, e.g. "Add JSON Formatter to favorites". */
@@ -55,4 +57,3 @@ export const FavoriteButton: React.FC<FavoriteButtonProps> = ({
     </Button>
   );
 };
-

@@ -1,25 +1,29 @@
 # Crontab Guru
 
-| Field | Value |
-|---|---|
-| **ToolID** | `crontab-guru` |
-| **Route** | `/crontab-guru` |
+| Field         | Value             |
+| ------------- | ----------------- |
+| **ToolID**    | `crontab-guru`    |
+| **Route**     | `/crontab-guru`   |
 | **Component** | `CrontabTool.tsx` |
-| **Hook** | — (static) |
-| **Lib** | — |
+| **Hook**      | — (static)        |
+| **Lib**       | —                 |
 
 ## Description
+
 Generate and explain cron schedule expressions. Provides human-readable explanations and links to external resources.
 
 ## Files
+
 - `src/components/tools/CrontabTool.tsx`
 
 ## Usage Pattern
+
 - Input: Cron expression (text input)
 - Output: Human-readable explanation, next run times
 - Actions: Copy, Clear, External link
 
 ## UI
+
 - Uses `ToolLayout`, `Input`, `Button`, `CopyButton`
 - May link out to [crontab.guru](https://crontab.guru/)
 

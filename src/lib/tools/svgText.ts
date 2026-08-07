@@ -33,11 +33,7 @@ const toClusters = (text: string): string[] => {
  * Returns the ellipsis alone rather than an empty string when not even one cluster fits — a label
  * that vanishes reads as "this person has no name", which is a different and wrong statement.
  */
-export const truncateToWidth = (
-  text: string,
-  maxWidth: number,
-  measure: MeasureText,
-): string => {
+export const truncateToWidth = (text: string, maxWidth: number, measure: MeasureText): string => {
   if (!text || measure(text) <= maxWidth) return text;
 
   const clusters = toClusters(text);

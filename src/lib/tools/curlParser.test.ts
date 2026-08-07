@@ -131,7 +131,12 @@ describe('triageHeaders', () => {
   it('sets browser boilerplate aside without dropping it', () => {
     const { significant, noise } = triageHeaders(headers);
 
-    expect(noise.map((h) => h.key)).toEqual(['sec-ch-ua', 'sec-fetch-mode', 'user-agent', 'priority']);
+    expect(noise.map((h) => h.key)).toEqual([
+      'sec-ch-ua',
+      'sec-fetch-mode',
+      'user-agent',
+      'priority',
+    ]);
     // Nothing may go missing — the two halves must still account for every header.
     expect(significant.length + noise.length).toBe(headers.length);
   });
@@ -149,12 +154,9 @@ describe('isBrowserNoiseHeader', () => {
     },
   );
 
-  it.each(['authorization', 'content-type', 'accept', 'cookie', 'x-api-key'])(
-    'keeps %s',
-    (key) => {
-      expect(isBrowserNoiseHeader(key)).toBe(false);
-    },
-  );
+  it.each(['authorization', 'content-type', 'accept', 'cookie', 'x-api-key'])('keeps %s', (key) => {
+    expect(isBrowserNoiseHeader(key)).toBe(false);
+  });
 
   it('does not mistake a custom header that merely starts with the same letters', () => {
     // `security-token` is not a `sec-` fetch metadata header.

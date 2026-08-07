@@ -44,9 +44,7 @@ const CurrentTimeSection: React.FC = () => {
                 {formatThaiDateTime(currentTime)}
               </div>
 
-              <p className="mt-2 text-xs text-muted-foreground/80">
-                Updates every second
-              </p>
+              <p className="mt-2 text-xs text-muted-foreground/80">Updates every second</p>
             </div>
 
             <div className="rounded-2xl border border-border/60 bg-background/70 p-4 sm:p-5 space-y-3">
@@ -74,7 +72,9 @@ const CurrentTimeSection: React.FC = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 <div className="rounded-lg border border-border/60 bg-muted/20 p-2.5">
-                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Unix (s)</p>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                    Unix (s)
+                  </p>
                   <div className="mt-1 flex items-center justify-between gap-2">
                     <p className="font-mono text-xs sm:text-sm text-foreground truncate">
                       {Math.floor(currentTime.valueOf() / 1000)}
@@ -88,7 +88,9 @@ const CurrentTimeSection: React.FC = () => {
                 </div>
 
                 <div className="rounded-lg border border-border/60 bg-muted/20 p-2.5">
-                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground">Unix (ms)</p>
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                    Unix (ms)
+                  </p>
                   <div className="mt-1 flex items-center justify-between gap-2">
                     <p className="font-mono text-xs sm:text-sm text-foreground truncate">
                       {currentTime.valueOf()}
