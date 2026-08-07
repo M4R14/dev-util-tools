@@ -1,0 +1,10 @@
+# Commits that changed formatting only, and would otherwise sit on top of every blame line
+# they touched, hiding whoever actually wrote the code.
+#
+# Enable locally (once per clone):
+#   git config blame.ignoreRevsFile .git-blame-ignore-revs
+#
+# GitHub honours this file automatically in its blame view.
+
+# style: run Prettier across the repo
+1a81cd6f426a09dd99591770bf319e6a14f76f38
