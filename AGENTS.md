@@ -74,20 +74,24 @@ When a tool uses query-string state syncing:
 
 ## Validation Gate
 
-After edits to code, run:
+After any edit, run:
 
 ```bash
-npm run typecheck
+npm run verify
 ```
 
-Recommended:
+That is `typecheck`, `lint`, `format:check` and `test:run` in one command. Run the single
+command rather than picking steps out of it: this gate used to list `typecheck` as required and
+everything else as "recommended", and it never mentioned `format:check` at all — so agents
+followed the gate, passed it, and still pushed 101 unformatted files into a red CI.
 
-```bash
-npm run lint
-npm test -- --run
-```
+`verify` is deliberately a **superset** of `.github/workflows/ci.yml`, which runs `lint`,
+`format:check` and `typecheck` but **no tests at all**. Green `verify` therefore implies green
+CI; green CI does not imply passing tests. Until a test step is added to CI, `verify` is the
+only thing standing between a broken test and `main`.
 
-For doc-only changes, lint/typecheck is optional.
+Doc-only changes still need `format:check` — Prettier formats Markdown, and `.ai/docs` is
+covered.
 
 ## Final Response Contract
 
