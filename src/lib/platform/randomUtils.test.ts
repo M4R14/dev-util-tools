@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { randomInt, randomString, randomUUID } from './randomUtils';
+import { randomHex, randomInt, randomString, randomUUID } from './randomUtils';
 
 const UUID_V4 = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 
@@ -122,6 +122,36 @@ describe('randomUUID without native crypto.randomUUID', () => {
   });
 });
 
+describe('randomHex', () => {
+  it('returns two lower-case hex characters per byte', () => {
+    expect(randomHex(32)).toMatch(/^[0-9a-f]{64}$/);
+    expect(randomHex(4)).toMatch(/^[0-9a-f]{8}$/);
+  });
+
+  it('pads a byte that needs a leading zero', () => {
+    vi.stubGlobal('crypto', {
+      getRandomValues: (bytes: Uint8Array) => {
+        bytes.fill(0x0a);
+        return bytes;
+      },
+    });
+
+    expect(randomHex(3)).toBe('0a0a0a');
+    vi.unstubAllGlobals();
+  });
+
+  it('rejects a byte length that is not a positive integer', () => {
+    expect(() => randomHex(0)).toThrow(RangeError);
+    expect(() => randomHex(1.5)).toThrow(RangeError);
+  });
+
+  it('does not repeat itself', () => {
+    const samples = new Set(Array.from({ length: 200 }, () => randomHex(16)));
+
+    expect(samples.size).toBe(200);
+  });
+});
+
 describe('secure randomness is required', () => {
   afterEach(() => {
     vi.unstubAllGlobals();
@@ -132,5 +162,6 @@ describe('secure randomness is required', () => {
 
     expect(() => randomInt(10)).toThrow(/crypto.getRandomValues/);
     expect(() => randomUUID()).toThrow(/crypto.getRandomValues/);
+    expect(() => randomHex(8)).toThrow(/crypto.getRandomValues/);
   });
 });

@@ -25,6 +25,7 @@ import {
   Car,
   Signature,
   KeyRound,
+  KeySquare,
 } from 'lucide-react';
 import { ToolID, ToolMetadata } from '../types';
 
@@ -193,6 +194,26 @@ export const TOOLS: ToolMetadata[] = [
       ToolID.UUID_GENERATOR,
       ToolID.THAI_DATE_CONVERTER,
     ],
+  },
+  {
+    id: ToolID.API_KEY_GEN,
+    name: 'API Key Generator',
+    description:
+      'Issue a client API key with the sha256 hash, INSERT and env line the service needs.',
+    icon: KeySquare,
+    tags: [
+      'api key',
+      'client key',
+      'sha256',
+      'hash',
+      'auth',
+      'rotate',
+      'revoke',
+      'secret',
+      'คีย์',
+      'ออกคีย์',
+    ],
+    related: [ToolID.PASSWORD_GEN, ToolID.JWT_ENCODER, ToolID.UUID_GENERATOR, ToolID.JWT_DECODER],
   },
   {
     id: ToolID.TIMESTAMP_CONVERTER,

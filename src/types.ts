@@ -12,6 +12,7 @@ export enum ToolID {
   UUID_GENERATOR = 'uuid-generator',
   PASSWORD_GEN = 'password-gen',
   TEST_DATA_GENERATOR = 'test-data-generator',
+  API_KEY_GEN = 'api-key-gen',
 
   // converter
   THAI_DATE_CONVERTER = 'thai-date-converter',

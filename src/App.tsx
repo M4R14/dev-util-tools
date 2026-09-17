@@ -21,6 +21,7 @@ const TOOL_COMPONENTS: Record<ToolID, React.LazyExoticComponent<ComponentType>> 
   [ToolID.CASE_CONVERTER]: lazy(() => import('./components/tools/CaseConverter')),
   [ToolID.PASSWORD_GEN]: lazy(() => import('./components/tools/PasswordGenerator')),
   [ToolID.TEST_DATA_GENERATOR]: lazy(() => import('./components/tools/TestDataGenerator')),
+  [ToolID.API_KEY_GEN]: lazy(() => import('./components/tools/ApiKeyGenerator')),
   [ToolID.AI_ASSISTANT]: lazy(() => import('./components/tools/AIAssistant')),
   [ToolID.THAI_DATE_CONVERTER]: lazy(() => import('./components/tools/thai-date')),
   [ToolID.THAI_ID]: lazy(() => import('./components/tools/ThaiIdTool')),

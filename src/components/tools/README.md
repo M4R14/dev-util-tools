@@ -26,6 +26,7 @@ External-link tools need no hook at all: they render `ExternalToolPage.tsx` with
 | `CaseConverter.tsx`     | `useCaseConverter`                | Case transforms (`snake`, `kebab`, `camel`, `pascal`)                |
 | `PasswordGenerator.tsx` | `usePasswordGenerator`            | Password generation + strength meter (`src/lib/passwordStrength.ts`) |
 | `UUIDGenerator.tsx`     | `useUUIDGenerator`                | Batch UUID generation with copy/download                             |
+| `ApiKeyGenerator.tsx`   | `useApiKeyGenerator`              | Client API key + sha256 hash, with INSERT/env snippets               |
 | `TimezoneConverter.tsx` | `useTimezoneConverter`            | Convert datetime between source/target timezones                     |
 | `thai-date/index.tsx`   | `useThaiDateConverter`            | Thai date formatting/parsing with subcomponents                      |
 | `ThaiIdTool.tsx`        | `useThaiId`                       | Decode Thai ID digits and validate checksum                          |
