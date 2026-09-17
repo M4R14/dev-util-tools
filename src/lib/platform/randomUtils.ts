@@ -74,6 +74,23 @@ export const randomString = (charset: string, length: number): string => {
 };
 
 /**
+ * Hex string of `byteLength` random bytes — the `openssl rand -hex <n>` of this codebase.
+ *
+ * Lower-case hex, no separators, so the output can be pasted straight into a credential or a
+ * database column without a second normalisation step deciding the case for you.
+ */
+export const randomHex = (byteLength: number): string => {
+  if (!Number.isInteger(byteLength) || byteLength < 1) {
+    throw new RangeError(`randomHex needs a positive integer byte length, received ${byteLength}`);
+  }
+
+  const bytes = new Uint8Array(byteLength);
+  getCrypto().getRandomValues(bytes);
+
+  return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
+};
+
+/**
  * RFC 4122 version 4 UUID.
  *
  * Prefers the native `crypto.randomUUID`, which only exists in secure contexts; otherwise

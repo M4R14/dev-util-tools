@@ -34,6 +34,11 @@ const MAIN_TOOL_SMOKE_CASES: ToolSmokeCase[] = [
     expectedName: 'Password Generator',
     load: () => import('./components/tools/PasswordGenerator'),
   },
+  {
+    id: ToolID.API_KEY_GEN,
+    expectedName: 'API Key Generator',
+    load: () => import('./components/tools/ApiKeyGenerator'),
+  },
 ];
 
 describe('Main tool page smoke tests', () => {
