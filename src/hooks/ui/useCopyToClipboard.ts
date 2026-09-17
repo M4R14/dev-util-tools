@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
+import { writeToClipboard } from '../../lib/platform/clipboard';
 
 /**
  * Copy-to-clipboard behaviour, separated from any particular button.
@@ -10,6 +11,9 @@ import { toast } from 'sonner';
  * up with three different reset delays and two stray timers.
  *
  * Copying an empty string is a no-op: it reports false and shows nothing.
+ *
+ * The write itself lives in `src/lib/platform/clipboard.ts`, which decides between the secure
+ * context API and a selection fallback — the reason copy works on a plain-HTTP LAN origin.
  */
 
 export interface CopyMessages {
@@ -81,10 +85,9 @@ export const useCopyToClipboard = (options: UseCopyToClipboardOptions = {}) => {
         messages,
       );
 
-      try {
-        await navigator.clipboard.writeText(value);
-      } catch {
+      if (!(await writeToClipboard(value))) {
         if (errorMessage) toast.error(errorMessage);
+
         return false;
       }
 
